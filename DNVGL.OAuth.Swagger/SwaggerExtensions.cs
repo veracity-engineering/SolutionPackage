@@ -10,61 +10,40 @@ namespace DNVGL.OAuth.Swagger
 {
 	public static class SwaggerExtensions
 	{
-		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
+		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
 		{
-			var config = configuration.GetSection("SwaggerOptions");
+			var config = configuration.GetSection(swaggerOptionName);
 
 			if (config == null)
 			{
-				throw new ArgumentNullException("Cannot find SwaggerOptions in appsettings.json");
+				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
 			}
 
-			var options = config.Get<SwaggerOption>();
+			var option = config.Get<SwaggerOption>();
 
-			if (options.Enabled)
+			if (option.Enabled)
 			{
-				services.AddSwaggerGen(c =>
+				services.AddSwaggerGen(o =>
 				{
-					c.SwaggerDoc(options.Version, new OpenApiInfo { Title = options.Name, Version = options.Version });
+					o.SwaggerDoc(option.Version, new OpenApiInfo { Title = option.Name, Version = option.Version });
 
-					//c.CustomOperationIds(s =>
-					//{
-					//	var controller = s.ActionDescriptor.RouteValues["controller"];
-					//	var action = s.ActionDescriptor.RouteValues["action"];
-					//	var method = s.HttpMethod;
-					//	return $"{controller}_{action}_{method}";
-					//});
-
-					//var ss = new OpenApiSecurityScheme
-					//{
-					//	Name = "Veracity Identity Service",
-					//	Type = SecuritySchemeType.OAuth2,
-					//	Flows = new OpenApiOAuthFlows
-					//	{
-					//		AuthorizationCode = new OpenApiOAuthFlow
-					//		{
-					//			Scopes = new Dictionary<string, string> { { oidcOptions.ClientId, null } },
-					//			AuthorizationUrl = new Uri(oidcOptions.MetadataAddress + "/oauth2/v2.0/authorize"),
-					//			TokenUrl = new Uri("../auth/swaggerToken", UriKind.Relative)
-					//		}
-					//	}
-					//};
-
-					var ss = new OpenApiSecurityScheme
+					var securityScheme = new OpenApiSecurityScheme
 					{
 						Type = SecuritySchemeType.OAuth2,
 						Flows = new OpenApiOAuthFlows
 						{
 							Implicit = new OpenApiOAuthFlow
 							{
-								AuthorizationUrl = new Uri(options.AuthorizationUrl),
-								Scopes = options.Scopes.ToDictionary(k => k)
+								AuthorizationUrl = new Uri(option.AuthorizationUrl),
+								Scopes = option.Scopes.ToDictionary(k => k)
 							}
 						}
 					};
 
-					var sr = new OpenApiSecurityRequirement();
-					sr.Add(new OpenApiSecurityScheme
+					o.AddSecurityDefinition("oauth2", securityScheme);
+
+					var securityRequirement = new OpenApiSecurityRequirement();
+					securityRequirement.Add(new OpenApiSecurityScheme
 					{
 						Reference = new OpenApiReference
 						{
@@ -73,35 +52,34 @@ namespace DNVGL.OAuth.Swagger
 						}
 					}, new List<string>());
 
-					c.AddSecurityDefinition("oauth2", ss);
-					c.AddSecurityRequirement(sr);
+					o.AddSecurityRequirement(securityRequirement);
 				});
 			}
 
 			return services;
 		}
 
-		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration)
+		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
 		{
-			var config = configuration.GetSection("SwaggerOptions");
+			var config = configuration.GetSection(swaggerOptionName);
 
 			if (config == null)
 			{
-				throw new ArgumentNullException("Cannot find SwaggerOptions in appsettings.json");
+				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
 			}
 
-			var options = config.Get<SwaggerOption>();
+			var option = config.Get<SwaggerOption>();
 
-			if (options.Enabled)
+			if (option.Enabled)
 			{
 				app.UseSwagger();
 
-				app.UseSwaggerUI(c =>
+				app.UseSwaggerUI(o =>
 				{
-					c.SwaggerEndpoint($"{options.Version}/swagger.json", $"{options.Name} {options.Version}");
-					c.DisplayRequestDuration();
-					c.OAuthAppName($"{options.Name} {options.Version}");
-					c.OAuthClientId(options.ClientId);
+					o.SwaggerEndpoint($"{option.Version}/swagger.json", $"{option.Name} {option.Version}");
+					o.DisplayRequestDuration();
+					o.OAuthAppName($"{option.Name} {option.Version}");
+					o.OAuthClientId(option.ClientId);
 				});
 			}
 
