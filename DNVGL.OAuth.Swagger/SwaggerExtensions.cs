@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DNVGL.OAuth.Swagger
 {
@@ -12,14 +11,28 @@ namespace DNVGL.OAuth.Swagger
 	{
 		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
 		{
-			var config = configuration.GetSection(swaggerOptionName);
+			return services.AddSwagger(configuration.GetSection(swaggerOptionName));
+		}
 
-			if (config == null)
+		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfigurationSection section)
+		{
+			if (section == null)
 			{
 				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
 			}
 
-			var option = config.Get<SwaggerOption>();
+			return services.AddSwagger(o => section.Bind(o));
+		}
+
+		public static IServiceCollection AddSwagger(this IServiceCollection services, Action<SwaggerOption> setupAction)
+		{
+			var option = new SwaggerOption
+			{
+				Enabled = true,
+				Version = "v1"
+			};
+
+			setupAction(option);
 
 			if (option.Enabled)
 			{
@@ -35,7 +48,7 @@ namespace DNVGL.OAuth.Swagger
 							Implicit = new OpenApiOAuthFlow
 							{
 								AuthorizationUrl = new Uri(option.AuthorizationUrl),
-								Scopes = option.Scopes.ToDictionary(k => k)
+								Scopes = option.Scopes
 							}
 						}
 					};
@@ -61,14 +74,28 @@ namespace DNVGL.OAuth.Swagger
 
 		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
 		{
-			var config = configuration.GetSection(swaggerOptionName);
+			return app.UseSwagger(configuration.GetSection(swaggerOptionName));
+		}
 
-			if (config == null)
+		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfigurationSection section)
+		{
+			if (section == null)
 			{
 				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
 			}
 
-			var option = config.Get<SwaggerOption>();
+			return app.UseSwagger(o => section.Bind(o));
+		}
+
+		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, Action<SwaggerOption> setupAction)
+		{
+			var option = new SwaggerOption
+			{
+				Enabled = true,
+				Version = "v1"
+			};
+
+			setupAction(option);
 
 			if (option.Enabled)
 			{
@@ -80,6 +107,10 @@ namespace DNVGL.OAuth.Swagger
 					o.DisplayRequestDuration();
 					o.OAuthAppName($"{option.Name} {option.Version}");
 					o.OAuthClientId(option.ClientId);
+				}).UseReDoc(o =>
+				{
+					o.RoutePrefix = "redoc";
+					o.SpecUrl = $"/swagger/{option.Version}/swagger.json";
 				});
 			}
 

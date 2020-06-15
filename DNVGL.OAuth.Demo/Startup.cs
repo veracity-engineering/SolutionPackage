@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace DNVGL.SolutionPackage.Demo
 {
 	public class Startup
 	{
 		public IConfiguration Configuration { get; }
-		public OidcOption OidcOptions { get; set; }
 
 		public Startup(IConfiguration configuration)
 		{
@@ -20,28 +18,27 @@ namespace DNVGL.SolutionPackage.Demo
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddOidc(this.Configuration, "ECOInsightMobileApi");
+			services.AddOidc(this.Configuration, "ECOInsightMobileApi", "JanusWeb");
 
-			services.AddControllers();
+			services.AddMvc();
 
+			// add swagger generation and swagger UI with authentication feature
 			services.AddSwagger(this.Configuration);
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseHttpsRedirection().UseRouting();
-
+			app.UseHttpsRedirection();
 			app.UseOidc();
+			app.UseMvc();
 
-			app.UseEndpoints(endpoints => endpoints.MapControllers());
-
+			// provide parameters to swagger UI
 			app.UseSwagger(this.Configuration);
 		}
-
 	}
 }

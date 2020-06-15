@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +19,7 @@ namespace DNVGL.OAuth.Common
 	{
 		public static IServiceCollection AddOidc(this IServiceCollection services, IConfiguration configuration, params string[] authSchemes)
 		{
-			if(authSchemes == null || authSchemes.Length == 0)
+			if (authSchemes == null || authSchemes.Length == 0)
 			{
 				throw new ArgumentNullException("No AuthenticationScheme is provided.");
 			}
@@ -29,12 +31,25 @@ namespace DNVGL.OAuth.Common
 				throw new ArgumentNullException("Cannot find OidcOptions in appsettings.json.");
 			}
 
-			var oidcOptions = config.GetChildren();
+			return services.AddOidc(o =>
+			{
+				foreach (var section in config.GetChildren())
+				{
+					o.Add(section.Key, section.Get<OidcOption>());
+				}
+			});
+		}
+
+		public static IServiceCollection AddOidc(this IServiceCollection services, Action<Dictionary<string, OidcOption>> setupAction)
+		{
+			var sections = new Dictionary<string, OidcOption>();
+			setupAction(sections);
+
 			var authBuilder = services.AddAuthentication();
 
-			foreach (var section in oidcOptions.Where(o => authSchemes.Contains(o.Key)))
+			foreach (var section in sections)
 			{
-				var option = section.Get<OidcOption>();
+				var option = section.Value;
 
 				authBuilder.AddJwtBearer(section.Key, o =>
 				{
@@ -48,27 +63,33 @@ namespace DNVGL.OAuth.Common
 					{
 						OnAuthenticationFailed = context =>
 						{
-							context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+							return Task.CompletedTask;
+						},
+						OnChallenge = context =>
+						{
 							return Task.CompletedTask;
 						}
 					};
 				});
 			}
 
-			services.AddAuthorization(options =>
-			{
-				options.DefaultPolicy = new AuthorizationPolicyBuilder()
-					.RequireAuthenticatedUser()
-					.AddAuthenticationSchemes(authSchemes)
-					.Build();
-			});
+			services.AddAuthorization();
+			//services.AddAuthorization(options =>
+			//{
+			//	options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+			//		.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+			//		.RequireAuthenticatedUser()
+			//		.Build()
+			//	);
+			//});
 
 			return services;
 		}
 
 		public static IApplicationBuilder UseOidc(this IApplicationBuilder app)
 		{
-			return app.UseAuthentication().UseAuthorization();
+			app.UseAuthentication();
+			return app;
 		}
 	}
 }

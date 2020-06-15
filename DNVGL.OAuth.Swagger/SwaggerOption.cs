@@ -1,4 +1,6 @@
-﻿namespace DNVGL.OAuth.Swagger
+﻿using System.Collections.Generic;
+
+namespace DNVGL.OAuth.Swagger
 {
 	public class SwaggerOption
 	{
@@ -7,7 +9,7 @@
 		public string Name { get; set; }
 
 		public string AuthorizationUrl { get; set; }
-		public string[] Scopes { get; set; }
+		public Dictionary<string, string> Scopes { get; set; }
 		public string ClientId { get; set; }
 	}
 }
