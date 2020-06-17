@@ -1,0 +1,22 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+</head>
+<body>
+    <dl>
+        @foreach(var claim in User.Claims)
+		{
+            <dt><strong>@claim.Type</strong></dt>
+            <dd>@claim.Value</dd>
+		}
+    </dl>
+</body>
+</html>

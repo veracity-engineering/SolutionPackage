@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DNVGL.SolutionPackage.Demo.Controllers
+namespace DNVGL.SolutionPackage.Demo.Controllers.Api
 {
 	[ApiController]
-	[Route("[controller]")]
-	[Authorize]
+	[Route("api/[controller]")]
+	[Authorize(AuthenticationSchemes = "ECOInsightMobileApi, JanusWeb")]
 	public class WeatherForecastController : ControllerBase
 	{
 		private static readonly string[] Summaries = new[]

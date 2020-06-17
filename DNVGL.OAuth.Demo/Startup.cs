@@ -18,7 +18,11 @@ namespace DNVGL.SolutionPackage.Demo
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddAuthentication().AddOidc(this.Configuration, "ECOInsightMobileApi", "JanusWeb");
+			// add authentication for web app
+			services.AddOidc(this.Configuration.GetSection("Oidc"))
+				// add authentication for web api
+				.AddJwt(this.Configuration, "ECOInsightMobileApi", "JanusWeb");
+
 			services.AddMvc();
 
 			// add swagger generation and swagger UI with authentication feature
@@ -34,7 +38,11 @@ namespace DNVGL.SolutionPackage.Demo
 
 			app.UseHttpsRedirection();
 			app.UseAuthentication();
-			app.UseMvc();
+
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+			});
 
 			// provide parameters to swagger UI
 			app.UseSwagger(this.Configuration);

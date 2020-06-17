@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DNVGL.SolutionPackage.Demo.Controllers
+namespace DNVGL.SolutionPackage.Demo.Controllers.Api
 {
 	[ApiController]
-	[Route("[controller]")]
+	[Route("api/[controller]")]
 	public class TestController : ControllerBase
 	{
 		[HttpGet("mobile")]

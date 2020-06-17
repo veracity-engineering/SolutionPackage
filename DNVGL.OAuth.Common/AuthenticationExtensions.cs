@@ -1,0 +1,164 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace DNVGL.OAuth.Common
+{
+	public static class AuthenticationExtensions
+	{
+		#region AddJwt for Web Api
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IConfiguration configuration, params string[] authSchemes)
+		{
+			if (authSchemes == null || authSchemes.Length == 0)
+			{
+				throw new ArgumentNullException("No AuthenticationScheme is provided.");
+			}
+
+			var config = configuration.GetSection("OidcOptions");
+
+			if (config == null)
+			{
+				throw new ArgumentNullException("Cannot find OidcOptions in appsettings.json.");
+			}
+
+			return builder.AddJwt(o =>
+			{
+				foreach (var section in config.GetChildren())
+				{
+					o.Add(section.Key, section.Get<OidcOption>());
+				}
+			});
+		}
+
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, params IConfigurationSection[] sections)
+		{
+			if (sections == null || sections.Length == 0)
+			{
+				throw new ArgumentNullException("No AuthenticationScheme is provided.");
+			}
+
+			return builder.AddJwt(o =>
+			{
+				foreach (var section in sections)
+				{
+					o.Add(section.Key, section.Get<OidcOption>());
+				}
+			});
+		}
+
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOption>> setupAction)
+		{
+			var sections = new Dictionary<string, OidcOption>();
+			setupAction(sections);
+
+			foreach (var section in sections)
+			{
+				var option = section.Value;
+
+				builder.AddJwtBearer(section.Key, o =>
+				{
+					var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
+					o.ConfigurationManager = configManager;
+					o.Authority = option.Authority;
+					o.Audience = option.ClientId;
+					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
+
+					o.Events = new JwtBearerEvents
+					{
+						OnAuthenticationFailed = context =>
+						{
+							return Task.CompletedTask;
+						},
+						OnChallenge = context =>
+						{
+							return Task.CompletedTask;
+						}
+					};
+				});
+			}
+
+			return builder;
+		}
+		#endregion
+
+		#region AddOidc for Web App
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, IConfigurationSection section, OpenIdConnectEvents events = null)
+		{
+			if (section == null)
+			{
+				throw new ArgumentNullException("section");
+			}
+
+			return builder.AddOidc(section.Get<OidcOption>(), events);
+		}
+
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOption> setupAction, OpenIdConnectEvents events = null)
+		{
+			var option = new OidcOption();
+			setupAction(option);
+			return builder.AddOidc(option, events);
+		}
+
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOption option, OpenIdConnectEvents events = null)
+		{
+			if (option == null)
+			{
+				throw new ArgumentNullException("option");
+			}
+
+			builder.AddCookie(o =>
+			{
+				o.Events = new CookieAuthenticationEvents { OnRedirectToLogin = c => c.HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme) };
+			}).AddOpenIdConnect(o =>
+			{
+				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
+				o.Authority = option.Authority;
+				o.ClientId = option.ClientId;
+				o.CallbackPath = option.CallbackPath;
+
+				if (events != null) { o.Events = events; }
+			});
+
+			return builder;
+		}
+
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, IConfigurationSection section, OpenIdConnectEvents events = null)
+		{
+			if (section == null)
+			{
+				throw new ArgumentNullException("section");
+			}
+
+			return services.AddOidc(section.Get<OidcOption>(), events);
+		}
+
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOption> setupAction, OpenIdConnectEvents events = null)
+		{
+			var option = new OidcOption();
+			setupAction(option);
+			return services.AddOidc(setupAction, events);
+		}
+
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOption option, OpenIdConnectEvents events = null)
+		{
+			var builder = services.AddAuthentication(o =>
+			{
+				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+			});
+
+			builder.AddOidc(option, events);
+			return builder;
+		}
+		#endregion
+	}
+}
