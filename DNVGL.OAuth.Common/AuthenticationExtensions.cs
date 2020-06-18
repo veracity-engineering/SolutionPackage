@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +8,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace DNVGL.OAuth.Common
 {
@@ -23,7 +22,7 @@ namespace DNVGL.OAuth.Common
 				throw new ArgumentNullException("No AuthenticationScheme is provided.");
 			}
 
-			var config = configuration.GetSection("OidcOptions");
+			var config = configuration as IConfigurationSection ?? configuration.GetSection("OidcOptions");
 
 			if (config == null)
 			{
@@ -32,7 +31,7 @@ namespace DNVGL.OAuth.Common
 
 			return builder.AddJwt(o =>
 			{
-				foreach (var section in config.GetChildren())
+				foreach (var section in config.GetChildren().Where(s => authSchemes.Contains(s.Key)))
 				{
 					o.Add(section.Key, section.Get<OidcOption>());
 				}
@@ -43,22 +42,31 @@ namespace DNVGL.OAuth.Common
 		{
 			if (sections == null || sections.Length == 0)
 			{
-				throw new ArgumentNullException("No AuthenticationScheme is provided.");
+				throw new ArgumentNullException("sections");
 			}
 
-			return builder.AddJwt(o =>
-			{
-				foreach (var section in sections)
-				{
-					o.Add(section.Key, section.Get<OidcOption>());
-				}
-			});
+			var options = sections.ToDictionary(s => s.Key, s => s.Get<OidcOption>());
+			return builder.AddJwt(options);
 		}
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOption>> setupAction)
 		{
+			if (setupAction == null)
+			{
+				throw new ArgumentNullException("setupAction");
+			}
+
 			var sections = new Dictionary<string, OidcOption>();
 			setupAction(sections);
+			return builder.AddJwt(sections);
+		}
+
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, OidcOption> sections)
+		{
+			if (sections == null || sections.Count == 0)
+			{
+				throw new ArgumentNullException("sections");
+			}
 
 			foreach (var section in sections)
 			{
@@ -72,17 +80,17 @@ namespace DNVGL.OAuth.Common
 					o.Audience = option.ClientId;
 					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
 
-					o.Events = new JwtBearerEvents
-					{
-						OnAuthenticationFailed = context =>
-						{
-							return Task.CompletedTask;
-						},
-						OnChallenge = context =>
-						{
-							return Task.CompletedTask;
-						}
-					};
+					//o.Events = new JwtBearerEvents
+					//{
+					//	OnAuthenticationFailed = context =>
+					//	{
+					//		return Task.CompletedTask;
+					//	},
+					//	OnChallenge = context =>
+					//	{
+					//		return Task.CompletedTask;
+					//	}
+					//};
 				});
 			}
 
@@ -103,6 +111,11 @@ namespace DNVGL.OAuth.Common
 
 		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOption> setupAction, OpenIdConnectEvents events = null)
 		{
+			if (setupAction == null)
+			{
+				throw new ArgumentNullException("setupAction");
+			}
+
 			var option = new OidcOption();
 			setupAction(option);
 			return builder.AddOidc(option, events);
@@ -143,6 +156,11 @@ namespace DNVGL.OAuth.Common
 
 		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOption> setupAction, OpenIdConnectEvents events = null)
 		{
+			if (setupAction == null)
+			{
+				throw new ArgumentNullException("setupAction");
+			}
+
 			var option = new OidcOption();
 			setupAction(option);
 			return services.AddOidc(setupAction, events);
@@ -150,6 +168,11 @@ namespace DNVGL.OAuth.Common
 
 		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOption option, OpenIdConnectEvents events = null)
 		{
+			if (option == null)
+			{
+				throw new ArgumentNullException("option");
+			}
+
 			var builder = services.AddAuthentication(o =>
 			{
 				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

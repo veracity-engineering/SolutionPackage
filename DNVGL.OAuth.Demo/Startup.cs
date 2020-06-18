@@ -21,7 +21,7 @@ namespace DNVGL.SolutionPackage.Demo
 			// add authentication for web app
 			services.AddOidc(this.Configuration.GetSection("Oidc"))
 				// add authentication for web api
-				.AddJwt(this.Configuration, "ECOInsightMobileApi", "JanusWeb");
+				.AddJwt(this.Configuration.GetSection("OidcOptions"), "ECOInsightMobileApi", "JanusWeb");
 
 			services.AddMvc();
 
