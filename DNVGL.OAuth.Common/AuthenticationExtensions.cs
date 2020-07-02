@@ -128,10 +128,7 @@ namespace DNVGL.OAuth.Common
 				throw new ArgumentNullException("option");
 			}
 
-			builder.AddCookie(o =>
-			{
-				o.Events = new CookieAuthenticationEvents { OnRedirectToLogin = c => c.HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme) };
-			}).AddOpenIdConnect(o =>
+			builder.AddCookie().AddOpenIdConnect(o =>
 			{
 				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
 				o.Authority = option.Authority;
