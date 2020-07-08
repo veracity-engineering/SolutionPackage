@@ -18,7 +18,7 @@
 
             public static string MetaDataAddress => $"{Authority}.well-known/openid-configuration?p={AuthPolicy}";
 
-            public const string CallbackPath = "/arrive";
+            public const string CallbackPath = "/signin-oidc";
             public const string RedirectUri = "https://localhost:5001/arrive";
         }
     }
