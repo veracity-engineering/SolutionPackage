@@ -10,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -26,32 +28,37 @@ namespace DNVGL.AuthTest.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var authBuilder = services.AddAuthentication(options =>
+            services.AddAuthentication(options =>
             {
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            });
-
-            authBuilder.AddOpenIdConnect(options =>
+                //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(o =>
             {
-                var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    HardConfig.OpenIdConnectEndpoint,//oauthOptions.GetOpenIdConnectEndpoint(),
-                    new OpenIdConnectConfigurationRetriever()
-                );
-                var config = configManager.GetConfigurationAsync().Result;
-
-                options.ClientId = HardConfig.ClientId;
-                options.ClientSecret = HardConfig.ClientSecret;
-                options.Authority = HardConfig.Authority;
-
-                options.TokenValidationParameters = new TokenValidationParameters
+                o.Events = new CookieAuthenticationEvents
                 {
-                    IssuerSigningKeys = config.SigningKeys,//.Concat(config_v1.SigningKeys),
-                    ValidIssuers = new[] { HardConfig.Authority },
-                    ValidAudiences = new[] { HardConfig.Audience },
+                    OnRedirectToLogin = c => c.HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme),
+                    OnValidatePrincipal = c => {
+                        var p = c.Principal;
+                        return Task.CompletedTask;
+                    },
+                    OnSignedIn = c =>
+                    {
+                        var p = c.Principal;
+                        return Task.CompletedTask;
+                    }
                 };
+            }).AddOpenIdConnect(o =>
+            {
+                //o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(OpenIdConnectDefaults.AuthenticationScheme, new OpenIdConnectConfigurationRetriever());
+                //o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(HardConfig.MetaDataAddress, new OpenIdConnectConfigurationRetriever());
+                //o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(HardConfig.OpenIdConnectEndpoint, new OpenIdConnectConfigurationRetriever());
+                o.MetadataAddress = HardConfig.OpenIdConnectEndpoint;
+                o.Authority = HardConfig.Authority;
+                o.ClientId = HardConfig.ClientId;
+                o.ClientSecret = HardConfig.ClientSecret;
+                o.CallbackPath = HardConfig.CallbackPath;
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
