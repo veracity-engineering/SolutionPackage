@@ -12,7 +12,9 @@ namespace DNVGL.AuthTest.Web.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            return View();
+            var user = HttpContext.User.Identity;
+            var signedInUserId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Json(new { signedInUserId, user });
         }
 
         [Authorize]

@@ -1,20 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Identity.Client;
+using DNVGL.OAuth.UserCredentials;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -41,7 +38,8 @@ namespace DNVGL.AuthTest.Web
                 o.Events = new CookieAuthenticationEvents
                 {
                     //OnRedirectToLogin = c => c.HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme),
-                    OnValidatePrincipal = c => {
+                    OnValidatePrincipal = c =>
+                    {
                         var p = c.Principal;
                         return Task.CompletedTask;
                     },
@@ -51,50 +49,13 @@ namespace DNVGL.AuthTest.Web
                         return Task.CompletedTask;
                     }
                 };
-            }).AddOpenIdConnect(o =>
+            }).AddUserCredentialsAuthentication(o =>
             {
-                //o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(OpenIdConnectDefaults.AuthenticationScheme, new OpenIdConnectConfigurationRetriever());
-                //o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(HardConfig.MetaDataAddress, new OpenIdConnectConfigurationRetriever());
-                o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(HardConfig.OpenIdConnectEndpoint, new OpenIdConnectConfigurationRetriever());
-                //o.MetadataAddress = HardConfig.OpenIdConnectEndpoint;
-                o.Authority = HardConfig.Authority;
-                o.ClientId = HardConfig.ClientId;
-                o.ClientSecret = HardConfig.ClientSecret;
-                o.CallbackPath = HardConfig.CallbackPath;
-                o.ResponseType = "code";
-                o.Scope.Add("https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation");
-                o.Events = new OpenIdConnectEvents()
-                {
-
-                    OnAuthorizationCodeReceived = async context =>
-                    {
-                        var code = context.ProtocolMessage.Code;
-                        var request = context.HttpContext.Request;
-                        string currentUri = UriHelper.BuildAbsolute(
-                            request.Scheme,
-                            request.Host,
-                            request.PathBase,
-                            o.CallbackPath);
-
-                        IConfidentialClientApplication cca = ConfidentialClientApplicationBuilder.Create(o.ClientId)
-                            .WithB2CAuthority($"https://login.microsoftonline.com/tfp/{HardConfig.Tenant}/{HardConfig.AuthPolicy}")
-                            .WithRedirectUri(currentUri)
-                            .WithClientSecret(o.ClientSecret)
-                            .Build();
-                        
-                        try
-                        {
-                            AuthenticationResult result = await cca.AcquireTokenByAuthorizationCode(o.Scope, code)
-                                .ExecuteAsync();
-                            context.HandleCodeRedemption(result.AccessToken, result.IdToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            //TODO: Handle
-                            throw;
-                        }
-                    }
-                };
+                o.ClientId = "6f0bb6fa-e604-43cd-9414-42def1ac7deb"; // Marketplace client id
+                o.ClientSecret = "g.i1k-B_63p-oi5U6oQSL5V0DVY2iGZXJ~"; // Marketplace secret
+                o.Tenant = "dnvglb2ctest.onmicrosoft.com"; // Azure ADB2C tenant
+                o.Policy = "B2C_1A_SignInWithADFSIdp";
+                o.ResourceId = "a4a8e726-c1cc-407c-83a0-4ce37f1ce130"; // Resource ID for APIv3 and Identity API
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
