@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
-namespace DNVGL.OAuth.UserCredentials
+namespace DNVGL.OAuth.UserCredentials.Extensions
 {
     public static class ConfigurationExtensions
     {
