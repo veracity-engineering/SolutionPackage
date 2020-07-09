@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,6 @@ namespace DNVGL.OAuth.UserCredentials
     {
         private readonly IEnumerable<OAuthHttpClientFactoryOptions> _options;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _baseUrl;
 
         public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor)
         {
@@ -23,13 +23,19 @@ namespace DNVGL.OAuth.UserCredentials
 
         public HttpClient Create(string name)
         {
-            var config = _options.First(o => o.Name.Equals(name));
+            var config = _options.FirstOrDefault(o => o.Name.Equals(name));
+            if (config == null)
+                throw new Exception($"No {nameof(OAuthHttpClientFactoryOptions)} could be retrieved where Name = '{name}'.");
             return BuildClient(config);
         }
 
         private HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
         {
-            return new HttpClient(new UserCredentialsClientHandler(_httpContextAccessor, options));
+            if (options.Flow == OAuthCredentialFlow.UserCredentials)
+                return new HttpClient(new UserCredentialsClientHandler(options, _httpContextAccessor)) { BaseAddress = new Uri(options.BaseUrl) };
+            if (options.Flow == OAuthCredentialFlow.ClientCredentials)
+                return new HttpClient(new ClientCredentialsClientHandler(options)) { BaseAddress = new Uri(options.BaseUrl) };
+            throw new Exception($"Invalid credential flow '{options.Flow}'.");
         }
     }
 
@@ -40,10 +46,10 @@ namespace DNVGL.OAuth.UserCredentials
 
         private IConfidentialClientApplication _confidentialClientApplication;
 
-        public UserCredentialsClientHandler(IHttpContextAccessor httpContextAccessor, OAuthHttpClientFactoryOptions options)
+        public UserCredentialsClientHandler(OAuthHttpClientFactoryOptions options, IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _options = options ?? throw new ArgumentNullException(nameof(options));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage original, CancellationToken cancellationToken)
@@ -68,23 +74,23 @@ namespace DNVGL.OAuth.UserCredentials
             if (_confidentialClientApplication == null)
             {
                 _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
-                .WithB2CAuthority(_options.Authority)
-                //.WithRedirectUri(CallbackRedirectUri(context, options.CallbackPath))
-                .WithClientSecret(_options.ClientSecret)
-                .Build();
+                    .WithB2CAuthority(_options.Authority)
+                    .WithClientSecret(_options.ClientSecret)
+                    .Build();
             }
 
             // User token cache?
 
             try
             {
-                var account = await _confidentialClientApplication.GetAccountAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-                //var authResult = await confidentialClientApplication.AcquireTokenByAuthorizationCode(options.Scopes, context.ProtocolMessage.Code).ExecuteAsync();
+                var accountIdentifier = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                var accounts = await _confidentialClientApplication.GetAccountsAsync();
+                var account = await _confidentialClientApplication.GetAccountAsync(accountIdentifier);
+
                 var authResult = await _confidentialClientApplication.AcquireTokenSilent(_options.Scopes, account).ExecuteAsync();
 
                 return authResult.AccessToken;
-                // 'AccessToken' may be relayed as bearer token and made available to APIs
-                //context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
             }
             catch (Exception)
             {
@@ -92,6 +98,11 @@ namespace DNVGL.OAuth.UserCredentials
                 throw;
             }
         }
+    }
+
+    public interface ITokenCacheProvider
+    {
+        void SetCache(ITokenCache cache);
     }
 
     internal class ClientCredentialsClientHandler : HttpClientHandler
@@ -128,7 +139,6 @@ namespace DNVGL.OAuth.UserCredentials
             {
                 _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
                     .WithB2CAuthority(_options.Authority)
-                    //.WithRedirectUri(CallbackRedirectUri(context, options.CallbackPath))
                     .WithClientSecret(_options.ClientSecret)
                     .Build();
             }
@@ -148,15 +158,8 @@ namespace DNVGL.OAuth.UserCredentials
         }
     }
 
-    interface IOAuthHttpClientFactory
+    public interface IOAuthHttpClientFactory
     {
         HttpClient Create(string name);
-    }
-
-    interface ITokenProvider
-    {
-        Task<string> GetToken();
-
-        Task RenewToken();
     }
 }

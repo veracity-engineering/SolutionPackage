@@ -43,13 +43,17 @@ namespace DNVGL.AuthTest.Web
                         try
                         {
                             var authResult = await clientApplication.AcquireTokenByAuthorizationCode(o.Scope, code).ExecuteAsync();
-                        // AccessToken may be relayed as bearer token and made available to APIs
-                        context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
+
+                            var accounts = await clientApplication.GetAccountsAsync();
+                            var account = authResult.Account;
+
+                            // AccessToken may be relayed as bearer token and made available to APIs
+                            context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
                         }
                         catch (Exception)
                         {
-                        //TODO: Handle
-                        throw;
+                            //TODO: Handle
+                            throw;
                         }
                     }
                 };

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DNVGL.OAuth.UserCredentials
 {
     public class OAuthHttpClientFactoryOptions
     {
         public string Name { get; private set; }
+        public OAuthCredentialFlow Flow { get; set; }
 
         // API
         public string BaseUrl { get; set; }
@@ -20,5 +22,13 @@ namespace DNVGL.OAuth.UserCredentials
         {
             Name = name;
         }
+    }
+
+    public enum OAuthCredentialFlow
+    {
+        [EnumMember(Value = "user-credentials")]
+        UserCredentials,
+        [EnumMember(Value = "client-credentials")]
+        ClientCredentials
     }
 }
