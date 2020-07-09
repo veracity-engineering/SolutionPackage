@@ -21,8 +21,8 @@ namespace DNVGL.AuthTest.Web.Controllers
         [Route("auth")]
         public IActionResult Auth()
         {
-            var user = HttpContext.User;
             /*
+            var user = HttpContext.User;
             var scope = new[] { "https://dnvglb2ctest.onmicrosoft.com/efb3e529-2f80-458b-aedf-7f4c8c794b45" };// AzureAdB2COptions.ApiScopes.Split(' ');
             var signedInUserID = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
