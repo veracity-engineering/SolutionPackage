@@ -5,12 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Extensions;
 using DNVGL.OAuth.UserCredentials;
+using DNVGL.OAuth.UserCredentials.Extensions;
 
 namespace DNVGL.AuthTest.Web
 {

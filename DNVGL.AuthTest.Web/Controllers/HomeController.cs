@@ -44,5 +44,12 @@ namespace DNVGL.AuthTest.Web.Controllers
         {
             return Json(await _userService.GetUser());
         }
+
+        [Route("/sign-out")]
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.SignOutAsync();
+            return Json(new { message = "You signed out" });
+        }
     }
 }
