@@ -1,22 +1,24 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+	Layout = null;
 }
 
 <!DOCTYPE html>
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Home</title>
+	<meta name="viewport" content="width=device-width" />
+	<title>Home</title>
 </head>
 <body>
-    <dl>
-        @foreach(var claim in User.Claims)
+	<form>
+		<button type="submit" name="a" formmethod="post" formaction="@Url.Action("Signout")">Clear cookies</button>
+	</form>
+	<dl>
+		@foreach (var claim in this.User.Claims)
 		{
-            <dt><strong>@claim.Type</strong></dt>
-            <dd>@claim.Value</dd>
+			<dt><strong>@claim.Type</strong></dt>
+			<dd>@claim.Value</dd>
 		}
-    </dl>
+	</dl>
 </body>
 </html>

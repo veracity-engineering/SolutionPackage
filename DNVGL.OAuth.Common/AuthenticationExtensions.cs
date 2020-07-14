@@ -8,7 +8,9 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Common
 {
@@ -135,7 +137,30 @@ namespace DNVGL.OAuth.Common
 				o.ClientId = option.ClientId;
 				o.CallbackPath = option.CallbackPath;
 
+				// switch to authorization code flow if client secret exist.
+				if(!string.IsNullOrWhiteSpace(option.ClientSecret))
+				{
+					o.ClientSecret = option.ClientSecret;
+					o.ResponseType = OpenIdConnectResponseType.Code;
+
+					// set to true to store tokens into cookies.
+					o.SaveTokens = false;
+
+					o.Scope.Add(o.ClientId);
+
+					// offline_access scope is required to retreive refresh token.
+					o.Scope.Add(OpenIdConnectScope.OfflineAccess);
+				}
+
 				if (events != null) { o.Events = events; }
+
+				// intecept token response.
+				o.Events.OnTokenResponseReceived = context => {
+					var tokenResponse = context.TokenEndpointResponse;
+					context.HttpContext.Response.Headers.Add("access_token", tokenResponse.AccessToken);
+					context.HttpContext.Response.Headers.Add("refresh_token", tokenResponse.RefreshToken);
+					return Task.CompletedTask;
+				};
 			});
 
 			return builder;
