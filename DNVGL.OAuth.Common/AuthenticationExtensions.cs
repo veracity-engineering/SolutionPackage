@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -146,7 +147,10 @@ namespace DNVGL.OAuth.Common
 					// set to true to store tokens into cookies.
 					o.SaveTokens = false;
 
-					o.Scope.Add(o.ClientId);
+					if(option.Scopes != null)
+					{
+						option.Scopes.ToList().ForEach(s => o.Scope.Add(s));
+					}
 
 					// offline_access scope is required to retreive refresh token.
 					o.Scope.Add(OpenIdConnectScope.OfflineAccess);
@@ -154,7 +158,7 @@ namespace DNVGL.OAuth.Common
 
 				if (events != null) { o.Events = events; }
 
-				// intecept token response.
+				// sample code of intecepting token response.
 				o.Events.OnTokenResponseReceived = context => {
 					var tokenResponse = context.TokenEndpointResponse;
 					context.HttpContext.Response.Headers.Add("access_token", tokenResponse.AccessToken);
