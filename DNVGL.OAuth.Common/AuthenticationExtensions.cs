@@ -137,14 +137,14 @@ namespace DNVGL.OAuth.Common
 				o.Authority = option.Authority;
 				o.ClientId = option.ClientId;
 				o.CallbackPath = option.CallbackPath;
+				o.ResponseType = option.ResponseType;
 
-				// switch to authorization code flow if client secret exist.
-				if(!string.IsNullOrWhiteSpace(option.ClientSecret))
+				// switch to authorization code flow.
+				if (o.ResponseType == OpenIdConnectResponseType.Code)
 				{
 					o.ClientSecret = option.ClientSecret;
-					o.ResponseType = OpenIdConnectResponseType.Code;
 
-					// set to true to store tokens into cookies.
+					// set to true to store tokens into cookies. retreive tokens by calling HttpContext.GetTokenAsync().
 					o.SaveTokens = false;
 
 					if(option.Scopes != null)
@@ -158,7 +158,7 @@ namespace DNVGL.OAuth.Common
 
 				if (events != null) { o.Events = events; }
 
-				// sample code of intecepting token response.
+				// sample code of intecepting token response. add tokens to response header of /signin-oidc.
 				o.Events.OnTokenResponseReceived = context => {
 					var tokenResponse = context.TokenEndpointResponse;
 					context.HttpContext.Response.Headers.Add("access_token", tokenResponse.AccessToken);

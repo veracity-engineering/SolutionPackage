@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System;
 
 namespace DNVGL.OAuth.Common
 {
@@ -15,6 +16,8 @@ namespace DNVGL.OAuth.Common
 		public string ClientSecret { get; set; }
 
 		public string CallbackPath { get; set; }
+
+		public string ResponseType { get; set; }
 
 		public string MetadataAddress => $"{this.Authority}.well-known/openid-configuration?p={this.SignInPolicy}";
 	}
