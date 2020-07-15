@@ -139,21 +139,18 @@ namespace DNVGL.OAuth.Common
 				o.CallbackPath = option.CallbackPath;
 				o.ResponseType = option.ResponseType;
 
+				// set to true to store tokens into cookies. retreive tokens by calling HttpContext.GetTokenAsync().
+				o.SaveTokens = false;
+
+				if (option.Scopes != null)
+				{
+					option.Scopes.ToList().ForEach(s => o.Scope.Add(s));
+				}
+
 				// switch to authorization code flow.
 				if (o.ResponseType == OpenIdConnectResponseType.Code)
 				{
 					o.ClientSecret = option.ClientSecret;
-
-					// set to true to store tokens into cookies. retreive tokens by calling HttpContext.GetTokenAsync().
-					o.SaveTokens = false;
-
-					if(option.Scopes != null)
-					{
-						option.Scopes.ToList().ForEach(s => o.Scope.Add(s));
-					}
-
-					// offline_access scope is required to retreive refresh token.
-					o.Scope.Add(OpenIdConnectScope.OfflineAccess);
 				}
 
 				if (events != null) { o.Events = events; }
