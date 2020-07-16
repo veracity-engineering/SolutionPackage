@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Domain.EventHub.Media
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.AuthTest.Web", "DNVGL.AuthTest.Web\DNVGL.AuthTest.Web.csproj", "{90CF4D1E-6E56-4CE6-8C7C-DD0C5F82AE01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.OAuth.UserCredentials", "DNVGL.OAuth.UserCredentials\DNVGL.OAuth.UserCredentials.csproj", "{406FE48B-EC3E-4676-A025-86822FCF680B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Api.HttpClient", "DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj", "{406FE48B-EC3E-4676-A025-86822FCF680B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

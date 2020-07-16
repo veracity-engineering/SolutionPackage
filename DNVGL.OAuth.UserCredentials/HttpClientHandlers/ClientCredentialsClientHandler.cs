@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DNVGL.OAuth.UserCredentials.HttpClientHandlers
+namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
     internal class ClientCredentialsClientHandler : HttpClientHandler
     {

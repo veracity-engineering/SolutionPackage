@@ -1,11 +1,10 @@
-﻿using DNVGL.OAuth.UserCredentials.HttpClientHandlers;
+﻿using DNVGL.OAuth.Api.HttpClient.HttpClientHandlers;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 
-namespace DNVGL.OAuth.UserCredentials
+namespace DNVGL.OAuth.Api.HttpClient
 {
     public class OAuthHttpClientFactory : IOAuthHttpClientFactory
     {
@@ -18,7 +17,7 @@ namespace DNVGL.OAuth.UserCredentials
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public HttpClient Create(string name)
+        public System.Net.Http.HttpClient Create(string name)
         {
             var config = _options.FirstOrDefault(o => o.Name.Equals(name));
             if (config == null)
@@ -26,12 +25,12 @@ namespace DNVGL.OAuth.UserCredentials
             return BuildClient(config);
         }
 
-        private HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
+        private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
         {
             if (options.Flow == OAuthCredentialFlow.UserCredentials)
-                return new HttpClient(new UserCredentialsClientHandler(options, _httpContextAccessor)) { BaseAddress = new Uri(options.BaseUrl) };
+                return new System.Net.Http.HttpClient(new UserCredentialsClientHandler(options, _httpContextAccessor)) { BaseAddress = new Uri(options.BaseUrl) };
             if (options.Flow == OAuthCredentialFlow.ClientCredentials)
-                return new HttpClient(new ClientCredentialsClientHandler(options)) { BaseAddress = new Uri(options.BaseUrl) };
+                return new System.Net.Http.HttpClient(new ClientCredentialsClientHandler(options)) { BaseAddress = new Uri(options.BaseUrl) };
             throw new Exception($"Invalid credential flow '{options.Flow}'.");
         }
     }

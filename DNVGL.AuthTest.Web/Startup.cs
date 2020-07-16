@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using DNVGL.OAuth.UserCredentials;
-using DNVGL.OAuth.UserCredentials.Extensions;
+using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 
 namespace DNVGL.AuthTest.Web
 {

@@ -1,9 +1,7 @@
-﻿using System.Net.Http;
-
-namespace DNVGL.OAuth.UserCredentials
+﻿namespace DNVGL.OAuth.Api.HttpClient
 {
     public interface IOAuthHttpClientFactory
     {
-        HttpClient Create(string name);
+        System.Net.Http.HttpClient Create(string name);
     }
 }

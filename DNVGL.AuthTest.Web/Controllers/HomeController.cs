@@ -1,11 +1,7 @@
-﻿using DNVGL.OAuth.UserCredentials;
+﻿using DNVGL.OAuth.Api.HttpClient;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DNVGL.AuthTest.Web.Controllers
@@ -28,16 +24,6 @@ namespace DNVGL.AuthTest.Web.Controllers
             var identityUser = await _userService.GetUser();
             return Json(new { user, identityUser });
         }
-
-        /*
-        [HttpPost]
-        [Route("/signin-oidc")]
-        public IActionResult SignIn()
-        {
-            var form = HttpContext.Request.Form;
-            return Json(form);
-        }
-        */
 
         [Route("/me")]
         public async Task<IActionResult> FetchUser()

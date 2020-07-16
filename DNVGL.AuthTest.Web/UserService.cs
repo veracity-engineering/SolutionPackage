@@ -1,5 +1,6 @@
-﻿using DNVGL.OAuth.UserCredentials;
+﻿using DNVGL.OAuth.Api.HttpClient;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace DNVGL.AuthTest.Web
 
         public UserService(IOAuthHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<object> GetUser()

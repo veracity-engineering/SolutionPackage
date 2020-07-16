@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace DNVGL.OAuth.UserCredentials
+namespace DNVGL.OAuth.Api.HttpClient
 {
     public class OAuthHttpClientFactoryOptions
     {

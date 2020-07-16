@@ -20,7 +20,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.UserCredentials.csproj" />
+    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
   </ItemGroup>
 
 </Project>
