@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.OAuth.Common\DNVGL.OAuth.Common.csproj" />
-    <ProjectReference Include="..\DNVGL.OAuth.Swagger\DNVGL.OAuth.Swagger.csproj" />
+    <ProjectReference Include="..\DNVGL.OAuth.Web.Swagger\DNVGL.OAuth.Web.Swagger.csproj" />
+    <ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
   </ItemGroup>
 
 

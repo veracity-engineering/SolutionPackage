@@ -1,7 +1,6 @@
-﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
-namespace DNVGL.OAuth.Common
+namespace DNVGL.OAuth.Web
 {
 	public class OidcOption
 	{
@@ -20,5 +19,7 @@ namespace DNVGL.OAuth.Common
 		public string ResponseType { get; set; }
 
 		public string MetadataAddress => $"{this.Authority}.well-known/openid-configuration?p={this.SignInPolicy}";
+
+		public OpenIdConnectEvents Events { get; set; }
 	}
 }

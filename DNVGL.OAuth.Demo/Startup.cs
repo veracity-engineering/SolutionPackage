@@ -1,5 +1,5 @@
-using DNVGL.OAuth.Common;
-using DNVGL.OAuth.Swagger;
+using DNVGL.OAuth.Web;
+using DNVGL.OAuth.Web.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,17 +11,16 @@ namespace DNVGL.SolutionPackage.Demo
 	{
 		public IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration)
-		{
-			this.Configuration = configuration;
-		}
+		public Startup(IConfiguration configuration) { this.Configuration = configuration; }
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddDistributedMemoryCache();
+
 			// add authentication for web app
-			services.AddOidc(this.Configuration.GetSection("Oidc"))
+			services.AddOidc(o => this.Configuration.GetSection("Oidc").Bind(o))
 				// add authentication for web api
-				.AddJwt(this.Configuration.GetSection("OidcOptions"), "ECOInsightMobileApi", "JanusWeb");
+				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
 			services.AddMvc();
 

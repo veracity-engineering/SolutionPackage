@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DNVGL.OAuth.Swagger
+namespace DNVGL.OAuth.Web.Swagger
 {
 	public class SwaggerOption
 	{
