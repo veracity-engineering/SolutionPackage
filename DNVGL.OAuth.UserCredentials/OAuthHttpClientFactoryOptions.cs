@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 
 namespace DNVGL.OAuth.Api.HttpClient
@@ -9,7 +10,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         public OAuthCredentialFlow Flow { get; set; }
 
         // API
-        public string BaseUrl { get; set; }
+        public string BaseUri { get; set; }
         public string SubscriptionKey { get; set; }
 
         // OAuth

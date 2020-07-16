@@ -8,7 +8,9 @@ namespace DNVGL.AuthTest.Web
 {
     public class UserService
     {
-        private IOAuthHttpClientFactory _httpClientFactory;
+        private readonly IOAuthHttpClientFactory _httpClientFactory;
+
+        private const string V1Path = "/internal/test/identity/v1";
 
         public UserService(IOAuthHttpClientFactory httpClientFactory)
         {
@@ -17,13 +19,19 @@ namespace DNVGL.AuthTest.Web
 
         public async Task<object> GetUser()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/users/me");
-            using (var client = _httpClientFactory.Create("identity-api"))
+            using (var client = BuildHttpClient())
             {
-                var response = await client.SendAsync(request);
+                var response = await client.GetAsync($"{V1Path}/users/me");
                 response.EnsureSuccessStatusCode();
                 return JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
             }
+        }
+
+        private HttpClient BuildHttpClient()
+        {
+            var client = _httpClientFactory.Create("identity-api");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            return client;
         }
     }
 }

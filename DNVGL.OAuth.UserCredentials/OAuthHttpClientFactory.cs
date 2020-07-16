@@ -21,16 +21,16 @@ namespace DNVGL.OAuth.Api.HttpClient
         {
             var config = _options.FirstOrDefault(o => o.Name.Equals(name));
             if (config == null)
-                throw new Exception($"No {nameof(OAuthHttpClientFactoryOptions)} could be retrieved where Name = '{name}'.");
+                throw new Exception($"No instance of {nameof(OAuthHttpClientFactoryOptions)} could be retrieved where Name = '{name}'.");
             return BuildClient(config);
         }
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
         {
             if (options.Flow == OAuthCredentialFlow.UserCredentials)
-                return new System.Net.Http.HttpClient(new UserCredentialsClientHandler(options, _httpContextAccessor)) { BaseAddress = new Uri(options.BaseUrl) };
+                return new System.Net.Http.HttpClient(new UserCredentialsHandler(options, _httpContextAccessor)) { BaseAddress = new Uri(options.BaseUri) };
             if (options.Flow == OAuthCredentialFlow.ClientCredentials)
-                return new System.Net.Http.HttpClient(new ClientCredentialsClientHandler(options)) { BaseAddress = new Uri(options.BaseUrl) };
+                return new System.Net.Http.HttpClient(new ClientCredentialsHandler(options)) { BaseAddress = new Uri(options.BaseUri) };
             throw new Exception($"Invalid credential flow '{options.Flow}'.");
         }
     }
