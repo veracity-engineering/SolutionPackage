@@ -1,6 +1,6 @@
 using System;
 
-namespace DNVGL.SolutionPackage.Demo.Models
+namespace DNVGL.OAuth.Demo.Models
 {
 	public class WeatherForecast
 	{

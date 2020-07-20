@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DNVGL.SolutionPackage.Demo.Controllers.Api
+namespace DNVGL.OAuth.Demo.Controllers.Api
 {
 	[ApiController]
 	[Route("api/[controller]")]

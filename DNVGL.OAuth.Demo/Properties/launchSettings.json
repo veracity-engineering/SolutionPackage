@@ -1,4 +1,4 @@
-{
+﻿{
 	"iisSettings": {
 		"windowsAuthentication": false,
 		"anonymousAuthentication": true,
@@ -7,24 +7,21 @@
 			"sslPort": 44310
 		}
 	},
-	"$schema": "http://json.schemastore.org/launchsettings.json",
 	"profiles": {
 		"IIS Express": {
 			"commandName": "IISExpress",
 			"launchBrowser": true,
-			"launchUrl": "",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			}
 		},
-		"DNVGL.SolutionPackage.Demo": {
+		"DNVGL.OAuth.Demo": {
 			"commandName": "Project",
 			"launchBrowser": true,
-			"launchUrl": "",
+			"applicationUrl": "https://localhost:44310;http://localhost:4431",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
-			},
-			"applicationUrl": "https://localhost:44310;http://localhost:4431"
+			}
 		}
 	}
 }

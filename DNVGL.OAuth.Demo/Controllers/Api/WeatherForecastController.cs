@@ -1,4 +1,4 @@
-﻿using DNVGL.SolutionPackage.Demo.Models;
+﻿using DNVGL.OAuth.Demo.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DNVGL.SolutionPackage.Demo.Controllers.Api
+namespace DNVGL.OAuth.Demo.Controllers.Api
 {
 	[ApiController]
 	[Route("api/[controller]")]

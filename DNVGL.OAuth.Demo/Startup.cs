@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-namespace DNVGL.SolutionPackage.Demo
+namespace DNVGL.OAuth.Demo
 {
 	public class Startup
 	{
@@ -22,25 +23,29 @@ namespace DNVGL.SolutionPackage.Demo
 				// add authentication for web api
 				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
-			services.AddMvc();
+			services.AddControllersWithViews();
 
 			// add swagger generation and swagger UI with authentication feature
 			services.AddSwagger(this.Configuration);
 		}
 
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseHttpsRedirection();
-			app.UseAuthentication();
+			app.UseHttpsRedirection().UseRouting();
 
-			app.UseMvc(routes =>
+			app.UseAuthentication().UseAuthorization();
+
+			app.UseEndpoints(endpoints =>
 			{
-				routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
+				endpoints.MapControllerRoute(
+					name: "default",
+					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
 
 			// provide parameters to swagger UI
