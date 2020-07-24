@@ -9,21 +9,6 @@ namespace DNVGL.OAuth.Web.Swagger
 {
 	public static class SwaggerExtensions
 	{
-		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
-		{
-			return services.AddSwagger(configuration.GetSection(swaggerOptionName));
-		}
-
-		public static IServiceCollection AddSwagger(this IServiceCollection services, IConfigurationSection section)
-		{
-			if (section == null)
-			{
-				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
-			}
-
-			return services.AddSwagger(o => section.Bind(o));
-		}
-
 		public static IServiceCollection AddSwagger(this IServiceCollection services, Action<SwaggerOption> setupAction)
 		{
 			var option = new SwaggerOption
@@ -72,22 +57,7 @@ namespace DNVGL.OAuth.Web.Swagger
 			return services;
 		}
 
-		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration, string swaggerOptionName = "SwaggerOption")
-		{
-			return app.UseSwagger(configuration.GetSection(swaggerOptionName));
-		}
-
-		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfigurationSection section)
-		{
-			if (section == null)
-			{
-				throw new ArgumentNullException("Cannot find SwaggerOption in appsettings.json");
-			}
-
-			return app.UseSwagger(o => section.Bind(o));
-		}
-
-		public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, Action<SwaggerOption> setupAction)
+		public static IApplicationBuilder UseSwaggerWithUI(this IApplicationBuilder app, Action<SwaggerOption> setupAction)
 		{
 			var option = new SwaggerOption
 			{

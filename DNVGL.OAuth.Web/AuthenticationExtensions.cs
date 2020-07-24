@@ -110,7 +110,7 @@ namespace DNVGL.OAuth.Web
 				o.Authority = option.Authority;
 				o.ClientId = option.ClientId;
 				o.CallbackPath = option.CallbackPath;
-				o.ResponseType = option.ResponseType;
+				o.ResponseType = option.ResponseType ?? OpenIdConnectResponseType.IdToken;
 
 				if (option.Scopes != null)
 				{
@@ -126,12 +126,19 @@ namespace DNVGL.OAuth.Web
 				if (option.Events != null) { o.Events = option.Events; }
 
 				// sample code to intecept token response and to add tokens to cache.
+				var onTokenResponseReceived = o.Events.OnTokenResponseReceived;
+
 				o.Events.OnTokenResponseReceived = async context =>
 				{
 					var tokenResponse = context.TokenEndpointResponse;
 					var cache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
 					await cache.SetStringAsync("access_token", tokenResponse.AccessToken);
 					await cache.SetStringAsync("refresh_token", tokenResponse.RefreshToken);
+
+					if(onTokenResponseReceived != null)
+					{
+						await onTokenResponseReceived(context);
+					}
 				};
 			});
 

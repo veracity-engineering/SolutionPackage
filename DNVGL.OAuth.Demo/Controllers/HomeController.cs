@@ -18,7 +18,13 @@ namespace DNVGL.OAuth.Demo.Controllers
 
 		public async Task<IActionResult> Index()
 		{
+#if NETCORE2
+			var version = "v2.1";
+#elif NETCORE3
+			var version = "v3.1";
+#endif
 
+			this.ViewBag.Version = version;
 			return View();
 		}
 
