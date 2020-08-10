@@ -23,11 +23,11 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(sections));
 			}
 
-			var schemaOptions = new Dictionary<string, OidcOption>();
+			var schemaOptions = new Dictionary<string, OidcOptions>();
 
 			foreach (var section in sections)
 			{
-				var option = new OidcOption();
+				var option = new OidcOptions();
 				section.Bind(option);
 				schemaOptions.Add(section.Key, option);
 			}
@@ -35,19 +35,19 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(schemaOptions);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOption>> setupAction)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOptions>> setupAction)
 		{
 			if (setupAction == null)
 			{
 				throw new ArgumentNullException(nameof(setupAction));
 			}
 
-			var sections = new Dictionary<string, OidcOption>();
+			var sections = new Dictionary<string, OidcOptions>();
 			setupAction(sections);
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, OidcOption> schemaOptions)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, OidcOptions> schemaOptions)
 		{
 			if (schemaOptions == null || schemaOptions.Count() == 0)
 			{
@@ -73,7 +73,7 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddOidc for Web App
-		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOption> setupAction)
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			var builder = services.AddAuthentication(o =>
 			{
@@ -81,49 +81,54 @@ namespace DNVGL.OAuth.Web
 				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 			});
 
-			builder.AddOidc(setupAction);
+			builder.AddOidc(oidcSetupAction, cookieSetupAction);
 			return builder;
 		}
 
-		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOption> setupAction)
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
-			if (setupAction == null)
+			if (oidcSetupAction == null)
 			{
-				throw new ArgumentNullException(nameof(setupAction));
+				throw new ArgumentNullException(nameof(oidcSetupAction));
 			}
 
-			var option = new OidcOption();
-			setupAction(option);
-			return builder.AddOidc(option);
+			var oidcOptions = new OidcOptions();
+			oidcSetupAction(oidcOptions);
+			return builder.AddOidc(oidcOptions, cookieSetupAction);
 		}
 
-		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOption option)
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
-			if (option == null)
+			if (oidcOptions == null)
 			{
-				throw new ArgumentNullException(nameof(option));
+				throw new ArgumentNullException(nameof(oidcOptions));
 			}
 
-			builder.AddCookie().AddOpenIdConnect(o =>
-			{
-				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-				o.Authority = option.Authority;
-				o.ClientId = option.ClientId;
-				o.CallbackPath = option.CallbackPath;
-				o.ResponseType = option.ResponseType ?? OpenIdConnectResponseType.IdToken;
+			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
 
-				if (option.Scopes != null)
+			builder.AddOpenIdConnect(o =>
+			{
+				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(oidcOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever());
+				o.Authority = oidcOptions.Authority;
+				o.ClientId = oidcOptions.ClientId;
+				o.CallbackPath = oidcOptions.CallbackPath;
+				o.ResponseType = oidcOptions.ResponseType ?? OpenIdConnectResponseType.IdToken;
+#if NETCORE3
+				o.UsePkce = true;
+#endif
+
+				if (oidcOptions.Scopes != null)
 				{
-					option.Scopes.ToList().ForEach(s => o.Scope.Add(s));
+					oidcOptions.Scopes.ToList().ForEach(s => o.Scope.Add(s));
 				}
 
 				// switch to authorization code flow.
 				if (o.ResponseType == OpenIdConnectResponseType.Code)
 				{
-					o.ClientSecret = option.ClientSecret;
+					o.ClientSecret = oidcOptions.ClientSecret;
 				}
 
-				if (option.Events != null) { o.Events = option.Events; }
+				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
 
 				// sample code to intecept token response and to add tokens to cache.
 				var onTokenResponseReceived = o.Events.OnTokenResponseReceived;
@@ -131,11 +136,15 @@ namespace DNVGL.OAuth.Web
 				o.Events.OnTokenResponseReceived = async context =>
 				{
 					var tokenResponse = context.TokenEndpointResponse;
-					var cache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
-					await cache.SetStringAsync("access_token", tokenResponse.AccessToken);
-					await cache.SetStringAsync("refresh_token", tokenResponse.RefreshToken);
 
-					if(onTokenResponseReceived != null)
+					if (tokenResponse != null)
+					{
+						var cache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
+						await cache.SetStringAsync("access_token", tokenResponse.AccessToken ?? string.Empty);
+						await cache.SetStringAsync("refresh_token", tokenResponse.RefreshToken ?? string.Empty);
+					}
+
+					if (onTokenResponseReceived != null)
 					{
 						await onTokenResponseReceived(context);
 					}
