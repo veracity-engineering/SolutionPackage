@@ -18,7 +18,7 @@ namespace DNVGL.OAuth.Web
 
 		public string SignInPolicy { get; set; }
 
-		public string Authority => $"https://login.microsoftonline.com/tfp/a68572e3-63ce-4bc1-acdc-b64943502e9d/{this.SignInPolicy}";
+		public string Authority => $"https://login.microsoftonline.com/tfp/{this.TenantId}/{this.SignInPolicy}";
 
 		public string MetadataAddress => $"{this.Authority}/v2.0/.well-known/openid-configuration";
 

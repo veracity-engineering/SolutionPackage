@@ -1,4 +1,6 @@
-﻿using DNVGL.OAuth.Web;
+﻿using DNVGL.OAuth.Demo.TokenCache;
+using DNVGL.OAuth.Web;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,10 +11,9 @@ namespace DNVGL.OAuth.Demo
 {
 	public static class MsalAppBuilder
 	{
-		//public static IServiceCollection AddInMemoryTokenCaches()
-		public static IConfidentialClientApplication BuildConfidentialClientApplication(OidcOptions oidcOptions, HttpContext httpContext)
+		public static IConfidentialClientApplication BuildConfidentialClientApplication(OidcOptions oidcOptions, HttpContext httpContext, string codeVerifier = null)
 		{
-			var clientApp = BuildClientApp(oidcOptions, httpContext);
+			var clientApp = BuildClientApp(oidcOptions, httpContext, codeVerifier);
 			return clientApp;
 		}
 
@@ -27,25 +28,28 @@ namespace DNVGL.OAuth.Demo
 		//	}
 		//}
 
-		private static IConfidentialClientApplication BuildClientApp(OidcOptions oidcOptions, HttpContext httpContext)
+		private static IConfidentialClientApplication BuildClientApp(OidcOptions oidcOptions, HttpContext httpContext, string codeVerifier)
 		{
 			var request = httpContext.Request;
 			var returnUri = $"{request.Scheme}://{request.Host}{request.PathBase}{oidcOptions.CallbackPath}";
-			var clientapp = ConfidentialClientApplicationBuilder.Create(oidcOptions.ClientId)
+			var builder = ConfidentialClientApplicationBuilder.Create(oidcOptions.ClientId)
 				.WithAuthority(new Uri(oidcOptions.Authority))
 				.WithClientSecret(oidcOptions.ClientSecret)
-				.WithRedirectUri(returnUri)
-				.Build();
+				.WithRedirectUri(returnUri);
 
+			if (!string.IsNullOrWhiteSpace(codeVerifier))
+			{
+				builder.WithExtraQueryParameters($"code_verifier={codeVerifier}");
+			}
+
+			var clientApp = builder.Build();
 			var cache = httpContext.RequestServices.GetService<IDistributedCache>();
 			var provider = new MsalMemoryTokenCacheProvider(cache, new DistributedCacheEntryOptions
 			{
 				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60)
 			});
-
-			provider.InitializeAsync(clientapp.UserTokenCache);
-			//MsalMemoryTokenCacheProvider(cache, clientapp.UserTokenCache);
-			return clientapp;
+			provider.InitializeAsync(clientApp.UserTokenCache);
+			return clientApp;
 		}
 	}
 }

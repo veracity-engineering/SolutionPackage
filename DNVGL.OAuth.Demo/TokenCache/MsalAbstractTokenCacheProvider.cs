@@ -3,7 +3,7 @@ using Microsoft.Identity.Client.TokenCacheProviders;
 using System;
 using System.Threading.Tasks;
 
-namespace DNVGL.OAuth.Demo
+namespace DNVGL.OAuth.Demo.TokenCache
 {
 	public abstract class MsalAbstractTokenCacheProvider : IMsalTokenCacheProvider
 	{

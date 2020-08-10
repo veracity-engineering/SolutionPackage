@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client.TokenCacheProviders;
 using System;
 
-namespace DNVGL.OAuth.Demo
+namespace DNVGL.OAuth.Demo.TokenCache
 {
 	public static class InMemoryTokenCacheProviderExtension
 	{

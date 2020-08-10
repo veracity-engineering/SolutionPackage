@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
-namespace DNVGL.OAuth.Demo
+namespace DNVGL.OAuth.Demo.TokenCache
 {
 	public class MsalMemoryTokenCacheProvider : MsalAbstractTokenCacheProvider
 	{
