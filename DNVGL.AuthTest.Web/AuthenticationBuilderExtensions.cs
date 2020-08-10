@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Identity.Client;
 using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
+using DNVGL.OAuth.Api.HttpClient;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -39,6 +40,9 @@ namespace DNVGL.AuthTest.Web
                             .WithRedirectUri(CallbackRedirectUri(context, o.CallbackPath))
                             .WithClientSecret(o.ClientSecret)
                             .Build();
+
+                        var cacheManager = context.HttpContext.RequestServices.GetService<IDistributedTokenCacheManager>();
+                        cacheManager.SetCacheInstance(clientApplication.UserTokenCache);
 
                         try
                         {

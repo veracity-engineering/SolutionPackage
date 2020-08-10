@@ -23,6 +23,10 @@ namespace DNVGL.AuthTest.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDistributedRedisCache(o => { });
+            services.AddDistributedMemoryCache();
+            services.AddScoped<IDistributedTokenCacheManager, DistributedTokenCacheManager>();
+
             services.AddAuthentication(o =>
             {
                 o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
