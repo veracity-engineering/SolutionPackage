@@ -1,5 +1,4 @@
 ﻿using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.TokenCacheProviders;
 using System;
 using System.Threading.Tasks;
 
@@ -26,11 +25,11 @@ namespace DNVGL.OAuth.Demo.TokenCache
 			{
 				if (args.HasTokens)
 				{
-					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, args.TokenCache.SerializeMsalV3()).ConfigureAwait(false);
+					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, args.TokenCache.SerializeMsalV3());
 				}
 				else
 				{
-					await this.RemoveKeyAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+					await this.RemoveKeyAsync(args.SuggestedCacheKey);
 				}
 			}
 		}
@@ -39,17 +38,17 @@ namespace DNVGL.OAuth.Demo.TokenCache
 		{
 			if (!string.IsNullOrEmpty(args.SuggestedCacheKey))
 			{
-				var bytes = await this.ReadCacheBytesAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+				var bytes = await this.ReadCacheBytesAsync(args.SuggestedCacheKey);
 				args.TokenCache.DeserializeMsalV3(bytes, true);
 			}
 		}
 
 		protected virtual Task OnBeforeWriteAsync(TokenCacheNotificationArgs args) => Task.CompletedTask;
 
-		public async Task ClearAsync(string homeAccountId)
+		public async Task ClearAsync(string identifier)
 		{
 			// This is a user token cache
-			await RemoveKeyAsync(homeAccountId).ConfigureAwait(false);
+			await this.RemoveKeyAsync(identifier);
 
 			// TODO: Clear the cookie session if any. Get inspiration from
 			// https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/240

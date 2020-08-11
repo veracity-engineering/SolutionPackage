@@ -131,6 +131,7 @@ namespace DNVGL.OAuth.Web
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
 
 				// sample code to intecept token response and to add tokens to cache.
+				/*
 				var onTokenResponseReceived = o.Events.OnTokenResponseReceived;
 
 				o.Events.OnTokenResponseReceived = async context =>
@@ -149,6 +150,7 @@ namespace DNVGL.OAuth.Web
 						await onTokenResponseReceived(context);
 					}
 				};
+				*/
 			});
 
 			return builder;

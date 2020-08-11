@@ -1,9 +1,7 @@
-﻿using DNVGL.OAuth.Web;
+﻿using DNVGL.OAuth.Demo.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -12,13 +10,11 @@ namespace DNVGL.OAuth.Demo.Controllers
 	[Authorize]
 	public class HomeController : Controller
 	{
-		private IDistributedCache cache;
-		private IConfiguration config;
+		private MsalAppBuilder _msalAppBuilder;
 
-		public HomeController(IDistributedCache cache, IConfiguration config)
+		public HomeController(MsalAppBuilder msalAppBuilder)
 		{
-			this.cache = cache;
-			this.config = config;
+			_msalAppBuilder = msalAppBuilder;
 		}
 
 		public async Task<IActionResult> Index()
@@ -29,11 +25,7 @@ namespace DNVGL.OAuth.Demo.Controllers
 			var version = "v3.1";
 #endif
 
-			var options = new OidcOptions();
-			this.config.GetSection("Oidc").Bind(options);
-			var clientApp = MsalAppBuilder.BuildConfidentialClientApplication(options, this.HttpContext);
-			var tokenKey = this.User.FindFirst("TokenKey").Value;
-			var account = await clientApp.GetAccountAsync(tokenKey);
+			var account = await _msalAppBuilder.GetAccount(this.HttpContext);
 			Debug.WriteLine(account);
 			this.ViewBag.Version = version;
 			return View();

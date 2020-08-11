@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Identity.Client;
+using System.Threading.Tasks;
 
-namespace Microsoft.Identity.Client.TokenCacheProviders
+namespace DNVGL.OAuth.Demo.TokenCache
 {
 	public interface IMsalTokenCacheProvider
 	{
-		Task InitializeAsync(ITokenCache tokenCache);
-		Task ClearAsync(string homeAccountId);
+		Task InitializeAsync(ITokenCache tokenCache); 
+		Task ClearAsync(string identifier);
 	}
 }
 

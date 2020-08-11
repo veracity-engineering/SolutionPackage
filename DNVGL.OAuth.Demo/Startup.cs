@@ -1,8 +1,10 @@
+using DNVGL.OAuth.Demo.TokenCache;
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Swagger;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 #if NETCORE3
@@ -16,46 +18,35 @@ namespace DNVGL.OAuth.Demo
 {
 	public class Startup
 	{
-		public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-
 		public IConfiguration Configuration { get; }
 
 		public Startup(IConfiguration configuration) { this.Configuration = configuration; }
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddDistributedMemoryCache()
+				.AddSingleton<IMsalTokenCacheProvider>(f => new MsalMemoryTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) }))
+				.AddSingleton(f => new MsalAppBuilder(this.Configuration.GetSection("Oidc").Get<OidcOptions>(), f.GetRequiredService<IMsalTokenCacheProvider>()));
+
 			// add authentication for web app
 			services.AddOidc(o =>
 			{
-				this.Configuration.GetSection("Oidc").Bind(o);
+				this.Configuration.Bind("Oidc", o);
 
 				o.Events = new OpenIdConnectEvents
 				{
 					OnAuthorizationCodeReceived = async context =>
 					{
-						var code = context.ProtocolMessage.Code;
-						var clientApp = MsalAppBuilder.BuildConfidentialClientApplication(o, context.HttpContext, context.TokenEndpointRequest.GetParameter("code_verifier"));
-
-						try
-						{
-							var authResult = await clientApp.AcquireTokenByAuthorizationCode(o.Scopes, code).ExecuteAsync();
-							var account = authResult.Account;
-							var accounts = await clientApp.GetAccountsAsync();
-							account = await clientApp.GetAccountAsync(account.HomeAccountId.Identifier);
-							// AccessToken may be relayed as bearer token and made available to APIs
-							context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
-						}
-						catch (Exception ex)
-						{
-							//TODO: Handle
-							throw;
-						}
+						var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
+						var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
 					},
-					OnTokenValidated = context =>
-					{
-						var objectId = context.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-						var tokenKeyClaim = new Claim("TokenKey", $"{objectId}-{o.SignInPolicy}.{o.TenantId}");
-						(context.Principal.Identity as ClaimsIdentity)?.AddClaim(tokenKeyClaim);
+					OnTokenValidated = context => {
+						var claimType = context.Principal.GetMsalAccountIdClaimType();
+						var objectId = context.Principal.GetObjectId();
+						var tenantId = o.TenantId;
+						var policy = o.SignInPolicy;
+						var msalAccountId = $"{objectId}-{policy}.{tenantId}";
+						(context.Principal.Identity as ClaimsIdentity).AddClaim(new Claim(claimType, msalAccountId));
 						return Task.CompletedTask;
 					}
 				};
