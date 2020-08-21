@@ -1,0 +1,24 @@
+﻿@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>DotNET Core @this.ViewBag.Version</title>
+</head>
+<body>
+	<form>
+		<button type="submit" name="a" formmethod="post" formaction="@Url.Action("Signout")">Clear cookies</button>
+	</form>
+	<dl>
+		@foreach (var claim in this.User.Claims)
+		{
+			<dt><strong>@claim.Type</strong></dt>
+			<dd>@claim.Value</dd>
+		}
+	</dl>
+</body>
+</html>
