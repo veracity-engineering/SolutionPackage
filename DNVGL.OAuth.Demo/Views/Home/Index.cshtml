@@ -1,5 +1,6 @@
 ﻿@{
 	Layout = null;
+	var account = this.ViewBag.Account as Microsoft.Identity.Client.IAccount;
 }
 
 <!DOCTYPE html>
@@ -13,6 +14,7 @@
 	<form>
 		<button type="submit" name="a" formmethod="post" formaction="@Url.Action("Signout")">Clear cookies</button>
 	</form>
+	<h2>Claims</h2>
 	<dl>
 		@foreach (var claim in this.User.Claims)
 		{
@@ -20,5 +22,18 @@
 			<dd>@claim.Value</dd>
 		}
 	</dl>
+
+	<h2>Account</h2>
+	@if (account != null)
+	{
+		<dl>
+			<dt><strong>Account Username</strong></dt>
+			<dd>@account.Username</dd>
+			<dt><strong>Account Environment</strong></dt>
+			<dd>@account.Environment</dd>
+			<dt><strong>Account AccountId</strong></dt>
+			<dd>@account.HomeAccountId</dd>
+		</dl>
+	}
 </body>
 </html>

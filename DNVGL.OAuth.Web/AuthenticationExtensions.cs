@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using DNVGL.OAuth.Web.TokenCache;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
@@ -154,6 +155,18 @@ namespace DNVGL.OAuth.Web
 			});
 
 			return builder;
+		}
+		#endregion
+
+		#region AddDistributedTokenCache
+		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		{
+			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
+			cacheSetupAction?.Invoke(cacheEntryOptions);
+
+			services.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions))
+				.AddSingleton(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+			return services;
 		}
 		#endregion
 	}

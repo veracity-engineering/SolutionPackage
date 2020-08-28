@@ -1,18 +1,14 @@
-using DNVGL.OAuth.Demo.TokenCache;
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Swagger;
+using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 #if NETCORE3
 using Microsoft.Extensions.Hosting;
 #endif
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Demo
 {
@@ -24,9 +20,20 @@ namespace DNVGL.OAuth.Demo
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDistributedMemoryCache()
-				.AddSingleton<IMsalTokenCacheProvider>(f => new MsalMemoryTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) }))
-				.AddSingleton(f => new MsalAppBuilder(this.Configuration.GetSection("Oidc").Get<OidcOptions>(), f.GetRequiredService<IMsalTokenCacheProvider>()));
+			var oidcOptions = this.Configuration.GetSection("Oidc").Get<OidcOptions>();
+
+			// add memory cache
+			//services.AddDistributedMemoryCache();
+
+			// add redis cache
+			services.AddDistributedRedisCache(o =>
+			{
+				o.InstanceName = "localhost";
+				o.Configuration = "localhost";
+			});
+
+			// add token cache support
+			services.AddDistributedTokenCache(oidcOptions);
 
 			// add authentication for web app
 			services.AddOidc(o =>
@@ -39,20 +46,10 @@ namespace DNVGL.OAuth.Demo
 					{
 						var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
 						var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
-					},
-					OnTokenValidated = context => {
-						var claimType = context.Principal.GetMsalAccountIdClaimType();
-						var objectId = context.Principal.GetObjectId();
-						var tenantId = o.TenantId;
-						var policy = o.SignInPolicy;
-						var msalAccountId = $"{objectId}-{policy}.{tenantId}";
-						(context.Principal.Identity as ClaimsIdentity).AddClaim(new Claim(claimType, msalAccountId));
-						return Task.CompletedTask;
+
 					}
 				};
-			})
-				// add authentication for web api
-				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
+			}).AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
 #if NETCORE2
 			services.AddMvc();
