@@ -4,8 +4,8 @@
 		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
 		<Authors>Eric Liu &lt;li.eric.liu@dnvgl.com&gt;</Authors>
 		<Company>DNVGL</Company>
-		<AssemblyName>DNVGL.OAuth.Demo.v2</AssemblyName>
-		<RootNamespace>DNVGL.OAuth.Demo.v2</RootNamespace>
+		<AssemblyName>DNVGL.OAuth.Demo</AssemblyName>
+		<RootNamespace>DNVGL.OAuth.Demo</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
@@ -18,7 +18,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="TokenCache\**" />
+	  <Content Remove="TokenCache\**" />
+	  <EmbeddedResource Remove="TokenCache\**" />
+	  <None Remove="TokenCache\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
+	  <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
 	  <PackageReference Include="Microsoft.Identity.Client" Version="4.17.1" />
 	  <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.12.0" />

@@ -1,8 +1,7 @@
-﻿using DNVGL.OAuth.Demo.TokenCache;
+﻿using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Demo.Controllers
@@ -26,7 +25,7 @@ namespace DNVGL.OAuth.Demo.Controllers
 #endif
 
 			var account = await _msalAppBuilder.GetAccount(this.HttpContext);
-			Debug.WriteLine(account);
+			this.ViewBag.Account = account;
 			this.ViewBag.Version = version;
 			return View();
 		}
