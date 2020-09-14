@@ -76,13 +76,24 @@ namespace DNVGL.OAuth.Web
 		#region AddOidc for Web App
 		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
+			if (oidcSetupAction == null)
+			{
+				throw new ArgumentNullException(nameof(oidcSetupAction));
+			}
+
+			var oidcOptions = new OidcOptions();
+			oidcSetupAction(oidcOptions);
+			return services.AddOidc(oidcOptions, cookieSetupAction);
+		}
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		{
 			var builder = services.AddAuthentication(o =>
 			{
 				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 			});
 
-			builder.AddOidc(oidcSetupAction, cookieSetupAction);
+			builder.AddOidc(oidcOptions, cookieSetupAction);
 			return builder;
 		}
 
@@ -164,8 +175,18 @@ namespace DNVGL.OAuth.Web
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
 
-			services.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions))
-				.AddSingleton(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+			services.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions));
+
+			oidcOptions.Events = new OpenIdConnectEvents
+			{
+				OnAuthorizationCodeReceived = async context =>
+				{
+					var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
+					var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
+				}
+			};
+
+			services.AddSingleton(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
 			return services;
 		}
 		#endregion

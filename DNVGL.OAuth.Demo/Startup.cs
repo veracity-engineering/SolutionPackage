@@ -30,26 +30,9 @@ namespace DNVGL.OAuth.Demo
 			{
 				o.InstanceName = "localhost";
 				o.Configuration = "localhost";
-			});
-
-			// add token cache support
-			services.AddDistributedTokenCache(oidcOptions);
-
-			// add authentication for web app
-			services.AddOidc(o =>
-			{
-				this.Configuration.Bind("Oidc", o);
-
-				o.Events = new OpenIdConnectEvents
-				{
-					OnAuthorizationCodeReceived = async context =>
-					{
-						var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
-						var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
-
-					}
-				};
-			}).AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
+			}).AddDistributedTokenCache(oidcOptions)
+				.AddOidc(oidcOptions)
+				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
 #if NETCORE2
 			services.AddMvc();
