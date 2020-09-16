@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
@@ -13,15 +11,30 @@ namespace DNVGL.OAuth.Api.HttpClient
         public string BaseUri { get; set; }
         public string SubscriptionKey { get; set; }
 
-        // OAuth
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-        public string Authority { get; set; }
-        public IEnumerable<string> Scopes { get; set; }
+        public OpenIdConnectionOptions OpenIdConnectOptions { get; set; }
 
         public OAuthHttpClientFactoryOptions(string name)
         {
             Name = name;
+        }
+
+        public class OpenIdConnectionOptions
+        {
+            public string TenantId { get; set; }
+
+            public string ClientId { get; set; }
+
+            public string ClientSecret { get; set; }
+
+            public string CallbackPath { get; set; }
+
+            public string ResponseType { get; set; }
+
+            public string[] Scopes { get; set; }
+
+            public string SignInPolicy { get; set; }
+
+            public string Authority => $"https://login.microsoftonline.com/tfp/{TenantId}/{SignInPolicy}";
         }
     }
 

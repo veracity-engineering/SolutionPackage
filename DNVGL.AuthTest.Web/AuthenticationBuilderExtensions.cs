@@ -41,8 +41,8 @@ namespace DNVGL.AuthTest.Web
                             .WithClientSecret(o.ClientSecret)
                             .Build();
 
-                        var cacheManager = context.HttpContext.RequestServices.GetService<IDistributedTokenCacheManager>();
-                        cacheManager.SetCacheInstance(clientApplication.UserTokenCache);
+                        //var cacheManager = context.HttpContext.RequestServices.GetService<IDistributedTokenCacheManager>();
+                        //cacheManager.SetCacheInstance(clientApplication.UserTokenCache);
 
                         try
                         {

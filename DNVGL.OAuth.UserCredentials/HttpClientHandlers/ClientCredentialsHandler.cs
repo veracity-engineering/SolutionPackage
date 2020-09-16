@@ -19,13 +19,13 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
         {
             if (_confidentialClientApplication == null)
             {
-                _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
-                    .WithB2CAuthority(_options.Authority)
-                    .WithClientSecret(_options.ClientSecret)
+                _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_options.OpenIdConnectOptions.ClientId)
+                    .WithB2CAuthority(_options.OpenIdConnectOptions.Authority)
+                    .WithClientSecret(_options.OpenIdConnectOptions.ClientSecret)
                     .Build();
             }
 
-            var authResult = await _confidentialClientApplication.AcquireTokenForClient(_options.Scopes).ExecuteAsync();
+            var authResult = await _confidentialClientApplication.AcquireTokenForClient(_options.OpenIdConnectOptions.Scopes).ExecuteAsync();
             return authResult.AccessToken;
         }
     }

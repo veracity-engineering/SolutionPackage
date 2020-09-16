@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
+using DNVGL.OAuth.Web;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -23,10 +22,7 @@ namespace DNVGL.AuthTest.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDistributedRedisCache(o => { });
-            services.AddDistributedMemoryCache();
-            services.AddScoped<IDistributedTokenCacheManager, DistributedTokenCacheManager>();
-
+            /*
             services.AddAuthentication(o =>
             {
                 o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -56,6 +52,39 @@ namespace DNVGL.AuthTest.Web
                 o.ResourceId = "a4a8e726-c1cc-407c-83a0-4ce37f1ce130"; // Resource ID for APIv3 and Identity API
                 o.Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" };
             });
+            */
+
+            var oidcOptions = new OidcOptions
+            {
+                TenantId = "dnvglb2ctest.onmicrosoft.com",
+                ClientId = "6f0bb6fa-e604-43cd-9414-42def1ac7deb", // Marketplace client id
+                ClientSecret = "g.i1k-B_63p-oi5U6oQSL5V0DVY2iGZXJ~", // Marketplace secret
+                CallbackPath = "/signin-oidc",
+                Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" },
+                SignInPolicy = "B2C_1A_SignInWithADFSIdp"
+            };
+
+            /*
+            services.AddDistributedRedisCache(o =>
+            {
+                o.InstanceName = "localhost";
+                o.Configuration = "localhost";
+            })
+            */
+            services.AddDistributedMemoryCache()
+            .AddDistributedTokenCache()
+            //.AddDistributedMemoryCache()
+            //.AddDistributedTokenCache(oidcOptions)
+            .AddOidc(o =>
+            {
+                o.ResponseType = OpenIdConnectResponseType.Code;
+                o.TenantId = oidcOptions.TenantId;
+                o.ClientId = oidcOptions.ClientId;
+                o.ClientSecret = oidcOptions.ClientSecret;
+                o.CallbackPath = oidcOptions.CallbackPath;
+                o.Scopes = oidcOptions.Scopes;
+                o.SignInPolicy = oidcOptions.SignInPolicy;
+            });
 
             services.AddOAuthHttpClientFactory(o =>
             {
@@ -64,14 +93,19 @@ namespace DNVGL.AuthTest.Web
                     Flow = OAuthCredentialFlow.UserCredentials,
                     BaseUri = "https://api-test.veracity.com",
                     SubscriptionKey = "81243fa4-5bf8-4974-b77d-37111e1033ea",
-                    ClientId = "6f0bb6fa-e604-43cd-9414-42def1ac7deb", // Marketplace client id
-                    ClientSecret = "g.i1k-B_63p-oi5U6oQSL5V0DVY2iGZXJ~", // Marketplace secret
-                    Authority = $"https://login.microsoftonline.com/tfp/dnvglb2ctest.onmicrosoft.com/B2C_1A_SignInWithADFSIdp", // ADB2C Authority
-                    Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" },
+                    OpenIdConnectOptions = new OAuthHttpClientFactoryOptions.OpenIdConnectionOptions
+                    {
+                        TenantId = oidcOptions.TenantId,
+                        ClientId = oidcOptions.ClientId,
+                        ClientSecret = oidcOptions.ClientSecret,
+                        CallbackPath = oidcOptions.CallbackPath,
+                        Scopes = oidcOptions.Scopes,
+                        SignInPolicy = oidcOptions.SignInPolicy
+                    }
                 });
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
