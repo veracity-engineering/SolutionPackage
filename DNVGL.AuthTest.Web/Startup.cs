@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.OAuth.Web;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using DNVGL.OAuth.Web.Abstractions;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -72,9 +72,18 @@ namespace DNVGL.AuthTest.Web
             })
             */
             services.AddDistributedMemoryCache()
-            .AddDistributedTokenCache()
+            /*
+            .AddDistributedTokenCache(new OAuthHttpClientFactoryOptions.OpenIdConnectionOptions
+            {
+                TenantId = oidcOptions.TenantId,
+                ClientId = oidcOptions.ClientId,
+                ClientSecret = oidcOptions.ClientSecret,
+                CallbackPath = oidcOptions.CallbackPath,
+                Scopes = oidcOptions.Scopes,
+                SignInPolicy = oidcOptions.SignInPolicy
+            })*/
             //.AddDistributedMemoryCache()
-            //.AddDistributedTokenCache(oidcOptions)
+            .AddDistributedTokenCache(oidcOptions)
             .AddOidc(o =>
             {
                 o.ResponseType = OpenIdConnectResponseType.Code;
@@ -84,6 +93,14 @@ namespace DNVGL.AuthTest.Web
                 o.CallbackPath = oidcOptions.CallbackPath;
                 o.Scopes = oidcOptions.Scopes;
                 o.SignInPolicy = oidcOptions.SignInPolicy;
+                o.Events = new Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectEvents
+                {
+                    OnAuthorizationCodeReceived = async context =>
+                    {
+                        var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
+                        var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
+                    }
+                };
             });
 
             services.AddOAuthHttpClientFactory(o =>
@@ -93,7 +110,7 @@ namespace DNVGL.AuthTest.Web
                     Flow = OAuthCredentialFlow.UserCredentials,
                     BaseUri = "https://api-test.veracity.com",
                     SubscriptionKey = "81243fa4-5bf8-4974-b77d-37111e1033ea",
-                    OpenIdConnectOptions = new OAuthHttpClientFactoryOptions.OpenIdConnectionOptions
+                    OpenIdConnectOptions = new OpenIdConnectOptions
                     {
                         TenantId = oidcOptions.TenantId,
                         ClientId = oidcOptions.ClientId,

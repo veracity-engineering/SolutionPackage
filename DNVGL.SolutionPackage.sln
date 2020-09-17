@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.AuthTest.Web", "DNVGL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Api.HttpClient", "DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj", "{406FE48B-EC3E-4676-A025-86822FCF680B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.OAuth.Web.Abstractions", "DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj", "{C16A9D40-DFB4-4CBB-9CD2-DCF5788F3859}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{406FE48B-EC3E-4676-A025-86822FCF680B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{406FE48B-EC3E-4676-A025-86822FCF680B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{406FE48B-EC3E-4676-A025-86822FCF680B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C16A9D40-DFB4-4CBB-9CD2-DCF5788F3859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C16A9D40-DFB4-4CBB-9CD2-DCF5788F3859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C16A9D40-DFB4-4CBB-9CD2-DCF5788F3859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C16A9D40-DFB4-4CBB-9CD2-DCF5788F3859}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

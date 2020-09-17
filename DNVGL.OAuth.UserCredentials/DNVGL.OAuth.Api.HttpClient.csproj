@@ -9,7 +9,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.16.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
