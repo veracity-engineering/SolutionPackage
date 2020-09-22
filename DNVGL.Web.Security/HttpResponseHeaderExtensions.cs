@@ -12,7 +12,7 @@ namespace DNVGL.Web.Security
     {
         /// <summary>
         ///<para> Adds and configures the predefined headers for Http response headers.</para> 
-        ///<para>TO avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+        ///<para>To avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
         /// </summary>
         /// <remarks>
         /// <para>The prefined security headers includes:</para>

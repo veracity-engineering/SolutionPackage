@@ -11,10 +11,11 @@ namespace DNVGL.Web.Security
     {
         /// <summary>
         ///<para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
-        ///<para>TO avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+        ///<para>To avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+        ///<para>To remove 'server' header on Kestrel Server, add the folowing code into ConfigureService method: services.PostConfigure&lt;KestrelServerOptions&gt;(t => t.AddServerHeader = false);</para>
         /// <example>
         /// This sample shows how to call the <see cref="UseDefaultHeaders"/> method in the Configure method of Startup class.
-        /// <list type="bullet">
+        /// <list type="number">
         /// <item>
         /// No customized response headers is required:  
         /// <code>
@@ -44,7 +45,7 @@ namespace DNVGL.Web.Security
         /// </summary>
         /// <remarks>
         /// <para>The prefined security headers includes:</para>
-        /// <list type="bullet">
+        /// <list type="number">
         /// <item>
         /// <description>X-Xss-Protection = 1</description>
         /// </item>
