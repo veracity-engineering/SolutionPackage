@@ -59,21 +59,55 @@ namespace DNVGL.Web.Security
             }
         }
 
-        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary)
+        /// <summary>
+        /// <para> Add your own Content-Security-Policy by passing value to specified parameters</para> 
+        /// </summary>
+        /// <param name="headerDictionary">The Response.Headers</param>
+        /// <param name="defaultSrc">The value of default-src, default value is 'self'</param>
+        /// <param name="objectSrc">The value of object-src, default value is 'self'</param>
+        /// <param name="connectSrc">The value of connect-src, default value is 'self' https://dc.services.visualstudio.com</param>
+        /// <param name="scriptSrc">The value of script-src, default value is 'self'  https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn</param>
+        /// <param name="fontSrc">The value of font-src, default value is 'self' data: https://onedesign.azureedge.net</param>
+        /// <param name="mediaSrc">The value of media-src, default value is 'self'</param>
+        /// <param name="workerSrc">The value of worker-src, default value is 'self' blob:</param>
+        /// <param name="imgSrc">The value of img-src, default value is 'self' data: https://onedesign.azureedge.net</param>
+        /// <param name="frameSrc">The value of frame-src, default value is 'self' https://www.google.com https://www.recaptcha.net/</param>
+        /// <param name="styleSrc">The value of style-src, default value is 'self' https://onedesign.azureedge.net</param>
+        /// <example>
+        /// This sample shows how to call the <see cref="AddContentSecurityPolicy"/> method to overwrite specific csp.
+        /// <code>
+        ///  app.UseDefaultHeaders(h =>
+        ///  {
+        ///  h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  });
+        /// </code>
+        /// </example>
+        public static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary
+            , string defaultSrc = "'self'"
+            , string objectSrc = "'self'"
+            , string connectSrc = "'self' https://dc.services.visualstudio.com"
+            , string scriptSrc = "'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn"
+            , string fontSrc = "'self' data: https://onedesign.azureedge.net"
+            , string mediaSrc = "'self'"
+            , string workerSrc = "'self' blob:"
+            , string imgSrc = "'self' data: https://onedesign.azureedge.net"
+            , string frameSrc = "'self' https://www.google.com https://www.recaptcha.net/"
+            , string styleSrc = "'self' https://onedesign.azureedge.net")
         {
             if (headerDictionary.ContainsKey("Content-Security-Policy") || headerDictionary.ContainsKey("Content-Security-Policy-Report-Only"))
                 return;
 
-            var csp = string.Join("; ", "default-src 'self'", "object-src 'self'", 
-                string.Join(" ", "connect-src 'self'", "https://dc.services.visualstudio.com"), 
-                string.Join(" ", "script-src 'self'", "https://www.recaptcha.net", "https://www.gstatic.com", "https://www.gstatic.cn"),
-                string.Join(" ", "font-src 'self' data:", "https://onedesign.azureedge.net"),
-                string.Join(" ", "media-src 'self'"),
-                string.Join(" ", "worker-src 'self' blob:"),
-                string.Join(" ", "img-src 'self' data:", "https://onedesign.azureedge.net"),
-                string.Join(" ", "frame-src 'self'", "https://www.google.com", "https://www.recaptcha.net/"),
-                string.Join(" ", "style-src 'self'","https://onedesign.azureedge.net")
-                );
+            var csp = string.Join("; "
+                , $"default-src {defaultSrc}"
+                , $"object-src {objectSrc}"
+                , $"connect-src {connectSrc}"
+                , $"script-src {scriptSrc}"
+                , $"font-src {fontSrc}"
+                , $"media-src {mediaSrc}"
+                , $"worker-src {workerSrc}"
+                , $"img-src {imgSrc}"
+                , $"frame-src {frameSrc}"
+                , $"style-src {styleSrc}");
 
             headerDictionary.Add("Content-Security-Policy", new[] { csp });
         }
