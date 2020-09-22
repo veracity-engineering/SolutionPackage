@@ -12,6 +12,35 @@ namespace DNVGL.Web.Security
         /// <summary>
         ///<para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
         ///<para>TO avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+        /// <example>
+        /// This sample shows how to call the <see cref="UseDefaultHeaders"/> method in the Configure method of Startup class.
+        /// <list type="bullet">
+        /// <item>
+        /// No customized response headers is required:  
+        /// <code>
+        /// app.UseDefaultHeaders();
+        /// </code>
+        /// </item>
+        /// <item>
+        /// To customize X-Frame-Options in response headers:
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.Add("X-Frame-Options", "DENNY");;
+        ///  <para/>});
+        /// </code>
+        /// </item>
+        /// <item>
+        /// To customize csp in response headers:
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  <para/>});
+        /// </code>
+        /// </item>
+        /// </list>
+        /// </example>
         /// </summary>
         /// <remarks>
         /// <para>The prefined security headers includes:</para>
@@ -44,12 +73,6 @@ namespace DNVGL.Web.Security
         /// </remarks>
         /// <param name="makeHeaders">make your own response headers, It will overwrite the default headers.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        /// <example>
-        /// This sample shows how to call the <see cref="UseDefaultHeaders"/> method in the Configure method of Startup class.
-        /// <code>
-        /// app.UseDefaultHeaders(responseHeaders.Add("X-Xss-Protection", "0"));
-        /// </code>
-        /// </example>
         public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary> makeHeaders = null)
         {
             return builder.Use(async (context, next) =>

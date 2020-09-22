@@ -61,6 +61,15 @@ namespace DNVGL.Web.Security
 
         /// <summary>
         /// <para> Add your own Content-Security-Policy by passing value to specified parameters</para> 
+        /// <example>
+        /// This sample shows how to call the <see cref="AddContentSecurityPolicy"/> method to overwrite specific csp.
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  <para/>});
+        /// </code>
+        /// </example>
         /// </summary>
         /// <param name="headerDictionary">The Response.Headers</param>
         /// <param name="defaultSrc">The value of default-src, default value is 'self'</param>
@@ -73,15 +82,6 @@ namespace DNVGL.Web.Security
         /// <param name="imgSrc">The value of img-src, default value is 'self' data: https://onedesign.azureedge.net</param>
         /// <param name="frameSrc">The value of frame-src, default value is 'self' https://www.google.com https://www.recaptcha.net/</param>
         /// <param name="styleSrc">The value of style-src, default value is 'self' https://onedesign.azureedge.net</param>
-        /// <example>
-        /// This sample shows how to call the <see cref="AddContentSecurityPolicy"/> method to overwrite specific csp.
-        /// <code>
-        ///  app.UseDefaultHeaders(h =>
-        ///  {
-        ///  h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
-        ///  });
-        /// </code>
-        /// </example>
         public static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary
             , string defaultSrc = "'self'"
             , string objectSrc = "'self'"
