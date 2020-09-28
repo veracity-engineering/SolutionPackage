@@ -1,6 +1,7 @@
 ﻿using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web
 {
@@ -24,11 +26,11 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(sections));
 			}
 
-			var schemaOptions = new Dictionary<string, OidcOptions>();
+			var schemaOptions = new Dictionary<string, JwtOptions>();
 
 			foreach (var section in sections)
 			{
-				var option = new OidcOptions();
+				var option = new JwtOptions();
 				section.Bind(option);
 				schemaOptions.Add(section.Key, option);
 			}
@@ -36,19 +38,19 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(schemaOptions);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOptions>> setupAction)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
 			{
 				throw new ArgumentNullException(nameof(setupAction));
 			}
 
-			var sections = new Dictionary<string, OidcOptions>();
+			var sections = new Dictionary<string, JwtOptions>();
 			setupAction(sections);
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, OidcOptions> schemaOptions)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
 			if (schemaOptions == null || schemaOptions.Count() == 0)
 			{
@@ -66,6 +68,7 @@ namespace DNVGL.OAuth.Web
 					o.Authority = option.Authority;
 					o.Audience = option.ClientId;
 					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
+					if (option.Events != null) { o.Events = option.Events; }
 				});
 			}
 
@@ -141,28 +144,6 @@ namespace DNVGL.OAuth.Web
 				}
 
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
-
-				// sample code to intecept token response and to add tokens to cache.
-				/*
-				var onTokenResponseReceived = o.Events.OnTokenResponseReceived;
-
-				o.Events.OnTokenResponseReceived = async context =>
-				{
-					var tokenResponse = context.TokenEndpointResponse;
-
-					if (tokenResponse != null)
-					{
-						var cache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
-						await cache.SetStringAsync("access_token", tokenResponse.AccessToken ?? string.Empty);
-						await cache.SetStringAsync("refresh_token", tokenResponse.RefreshToken ?? string.Empty);
-					}
-
-					if (onTokenResponseReceived != null)
-					{
-						await onTokenResponseReceived(context);
-					}
-				};
-				*/
 			});
 
 			return builder;
