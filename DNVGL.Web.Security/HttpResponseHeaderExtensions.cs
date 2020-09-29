@@ -10,6 +10,8 @@ namespace DNVGL.Web.Security
     /// </summary>
     public static class HttpResponseHeaderExtensions
     {
+        private static string csp = string.Empty;
+        private static Func<HttpRequest, bool> SkipRequest = (req) => req.Path.ToString().ToLowerInvariant().Contains("/swagger/");
         /// <summary>
         ///<para> Adds and configures the predefined headers for Http response headers.</para> 
         ///<para>To avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
@@ -38,6 +40,9 @@ namespace DNVGL.Web.Security
         /// <item>
         /// <description>X-Xss-Protection = 1</description>
         /// </item>
+        /// <item>
+        /// <description>Strict-Transport-Security = max-age=15552000; includeSubDomains</description>
+        /// </item>
         /// </list>
         /// </remarks>
         /// <param name="headerDictionary">The Response.Headers</param>
@@ -49,6 +54,7 @@ namespace DNVGL.Web.Security
             headerDictionary.AddKeyOnlyIfNotExists("X-Content-Type-Options", "nosniff");
             headerDictionary.AddKeyOnlyIfNotExists("X-Permitted-Cross-Domain-Policies", "none");
             headerDictionary.AddKeyOnlyIfNotExists("Expect-CT", "enforce, max-age=7776000");
+            headerDictionary.AddKeyOnlyIfNotExists("Strict-Transport-Security", "max-age=15552000; includeSubDomains");
         }
 
         private static void AddKeyOnlyIfNotExists(this IHeaderDictionary headerDictionary, string key, string value)
@@ -97,19 +103,50 @@ namespace DNVGL.Web.Security
             if (headerDictionary.ContainsKey("Content-Security-Policy") || headerDictionary.ContainsKey("Content-Security-Policy-Report-Only"))
                 return;
 
-            var csp = string.Join("; "
-                , $"default-src {defaultSrc}"
-                , $"object-src {objectSrc}"
-                , $"connect-src {connectSrc}"
-                , $"script-src {scriptSrc}"
-                , $"font-src {fontSrc}"
-                , $"media-src {mediaSrc}"
-                , $"worker-src {workerSrc}"
-                , $"img-src {imgSrc}"
-                , $"frame-src {frameSrc}"
-                , $"style-src {styleSrc}");
+            if (string.IsNullOrEmpty(csp))
+            {
+                csp = string.Join("; "
+                    , $"default-src {defaultSrc}"
+                    , $"object-src {objectSrc}"
+                    , $"connect-src {connectSrc}"
+                    , $"script-src {scriptSrc}"
+                    , $"font-src {fontSrc}"
+                    , $"media-src {mediaSrc}"
+                    , $"worker-src {workerSrc}"
+                    , $"img-src {imgSrc}"
+                    , $"frame-src {frameSrc}"
+                    , $"style-src {styleSrc}");
+            }
+
 
             headerDictionary.Add("Content-Security-Policy", new[] { csp });
         }
+
+        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest)
+        {
+            if (!SkipRequest(httpRequest))
+                headerDictionary.AddContentSecurityPolicy();
+        }
+
+        /// <summary>
+        /// <para>Do not add Content-Security-Policy header for specific requests. By default it do not add csp for request url which contains word 'swagger'.</para> 
+        /// <example>
+        /// This sample shows how to call the method to skip csp for specific requests.
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.SkipContentSecurityPolicyForRequests((req) => req.Path.ToString().ToLowerInvariant().Contains("/swagger/"));
+        ///  <para/>});
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="headerDictionary">The Response.Headers</param>
+        /// <param name="skipRequest">Predict function which accept <see cref="HttpRequest"/> as a parameter and return true if CSP should be skipped for the request.</param>
+        public static void SkipContentSecurityPolicyOnRequests(this IHeaderDictionary headerDictionary, Func<HttpRequest,bool> skipRequest)
+        {
+            SkipRequest = skipRequest;
+        }
+
+
     }
 }
