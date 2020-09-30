@@ -40,6 +40,15 @@ namespace DNVGL.Web.Security
         ///  <para/>});
         /// </code>
         /// </item>
+        /// <item>
+        /// To skip csp for specific requests:
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.SkipContentSecurityPolicyForRequests((req) => req.Path.ToString().ToLowerInvariant().Contains("/swagger/"));
+        ///  <para/>});
+        /// </code>
+        /// </item>
         /// </list>
         /// </example>
         /// </summary>
@@ -80,10 +89,7 @@ namespace DNVGL.Web.Security
             {
                 makeHeaders?.Invoke(context.Response.Headers);
                 context.Response.Headers.SetupDefaultHeaders();
-                if (!context.Request.Path.ToString().ToLowerInvariant().Contains("/swagger/"))
-                {
-                    context.Response.Headers.AddContentSecurityPolicy();
-                }
+                context.Response.Headers.AddContentSecurityPolicy(context.Request);
                 await next();
             });
         }
