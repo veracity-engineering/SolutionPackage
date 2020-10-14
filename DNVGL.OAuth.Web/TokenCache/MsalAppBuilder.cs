@@ -50,6 +50,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			if (_clientApp != null)
 			{
+				_clientApp.AppConfig.ExtraQueryParameters["code_verifier"] = codeVerifier;
 				return _clientApp;
 			}
 

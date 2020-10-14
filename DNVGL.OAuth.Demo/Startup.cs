@@ -23,14 +23,15 @@ namespace DNVGL.OAuth.Demo
 			var oidcOptions = this.Configuration.GetSection("Oidc").Get<OidcOptions>();
 
 			// add memory cache
-			//services.AddDistributedMemoryCache();
+			services.AddDistributedMemoryCache()
 
 			// add redis cache
-			services.AddDistributedRedisCache(o =>
-			{
-				o.InstanceName = "localhost";
-				o.Configuration = "localhost";
-			}).AddDistributedTokenCache(oidcOptions)
+			//services.AddDistributedRedisCache(o =>
+			//{
+			//	o.InstanceName = "localhost";
+			//	o.Configuration = "localhost";
+			//})
+				.AddDistributedTokenCache(oidcOptions)
 				.AddOidc(oidcOptions)
 				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
