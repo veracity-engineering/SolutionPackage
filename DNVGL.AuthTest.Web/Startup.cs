@@ -32,14 +32,12 @@ namespace DNVGL.AuthTest.Web
                 SignInPolicy = "B2C_1A_SignInWithADFSIdp"
             };
 
-            /*
             services.AddDistributedRedisCache(o =>
             {
                 o.InstanceName = "localhost";
                 o.Configuration = "localhost";
             });
-            */
-            services.AddDistributedMemoryCache();
+            //services.AddDistributedMemoryCache();
             services.AddDistributedTokenCache(oidcOptions)
             .AddOidc(o =>
             {
