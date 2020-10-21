@@ -26,7 +26,7 @@ namespace DNVGL.OAuth.Web.TokenCache
             var authContext = context as AuthorizationCodeReceivedContext;
             authContext.HandleCodeRedemption();
             var clientApp = this.BuildClientApp(authContext.HttpContext, authContext.TokenEndpointRequest.GetParameter("code_verifier"));
-            var result = await clientApp.AcquireTokenByAuthorizationCode(null, authContext.ProtocolMessage.Code).ExecuteAsync();
+            var result = await clientApp.AcquireTokenByAuthorizationCode(_oidcOptions.Scopes, authContext.ProtocolMessage.Code).ExecuteAsync();
             authContext.HandleCodeRedemption(result.AccessToken, result.IdToken);
             return result;
         }
@@ -60,6 +60,7 @@ namespace DNVGL.OAuth.Web.TokenCache
         {
             if (_clientApp != null)
             {
+                _clientApp.AppConfig.ExtraQueryParameters["code_verifier"] = codeVerifier;
                 return _clientApp;
             }
 
@@ -70,21 +71,15 @@ namespace DNVGL.OAuth.Web.TokenCache
                 .WithRedirectUri(returnUri);
 
             if (!string.IsNullOrWhiteSpace(_oidcOptions.ClientSecret))
-            {
                 builder.WithClientSecret(_oidcOptions.ClientSecret);
-            }
 
             if (!string.IsNullOrWhiteSpace(codeVerifier))
-            {
                 builder.WithExtraQueryParameters($"code_verifier={codeVerifier}");
-            }
 
             _clientApp = builder.Build();
 
             if (_tokenCacheProvider != null)
-            {
                 _tokenCacheProvider.InitializeAsync(_clientApp.UserTokenCache);
-            }
 
             return _clientApp;
         }
