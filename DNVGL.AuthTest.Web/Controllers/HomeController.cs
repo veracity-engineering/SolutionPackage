@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace DNVGL.AuthTest.Web.Controllers
@@ -20,9 +21,7 @@ namespace DNVGL.AuthTest.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var user = HttpContext.User.Identity;
-            var identityUser = await _userService.GetUser();
-            return Json(new { user, identityUser });
+            return Ok(await _userService.GetUser());
         }
 
         [Route("/me")]

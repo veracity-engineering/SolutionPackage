@@ -11,19 +11,20 @@ namespace DNVGL.AuthTest.Web
         private readonly IOAuthHttpClientFactory _httpClientFactory;
 
         private const string V1Path = "/internal/test/identity/v1";
+        //private const string V1Path = "/identity/v1";
 
         public UserService(IOAuthHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<object> GetUser()
+        public async Task<string> GetUser()
         {
             using (var client = BuildHttpClient())
             {
                 var response = await client.GetAsync($"{V1Path}/users/me");
                 response.EnsureSuccessStatusCode();
-                return JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                return await response.Content.ReadAsStringAsync();
             }
         }
 

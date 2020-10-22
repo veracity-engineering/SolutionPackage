@@ -24,20 +24,22 @@ namespace DNVGL.AuthTest.Web
         {
             var oidcOptions = new OidcOptions
             {
-                TenantId = "dnvglb2ctest.onmicrosoft.com",
-                ClientId = "6f0bb6fa-e604-43cd-9414-42def1ac7deb", // Marketplace client id
-                ClientSecret = "g.i1k-B_63p-oi5U6oQSL5V0DVY2iGZXJ~", // Marketplace secret
+                TenantId = "ed815121-cdfa-4097-b524-e2b23cd36eb6", // Tenant id
+                ClientId = "35807f23-80d5-4e97-b07a-21b86013a9ff",//, // Marketplace client id
+                ClientSecret = "44-TyAb|e:0b^HaL.DlQ)&|6", //"g.i1k-B_63p-oi5U6oQSL5V0DVY2iGZXJ~", // Marketplace secret
                 CallbackPath = "/signin-oidc",
-                Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" },
-                SignInPolicy = "B2C_1A_SignInWithADFSIdp"
+                Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation", "offline_access" },
+                SignInPolicy = "B2C_1A_SignInWithADFSIdp",
             };
 
+            /*
             services.AddDistributedRedisCache(o =>
             {
                 o.InstanceName = "localhost";
                 o.Configuration = "localhost";
             });
-            //services.AddDistributedMemoryCache();
+            */
+            services.AddDistributedMemoryCache();
             services.AddDistributedTokenCache(oidcOptions)
             .AddOidc(o =>
             {
@@ -63,8 +65,8 @@ namespace DNVGL.AuthTest.Web
                 o.Add(new OAuthHttpClientFactoryOptions("identity-api")
                 {
                     Flow = OAuthCredentialFlow.UserCredentials,
-                    BaseUri = "https://api-test.veracity.com",
-                    SubscriptionKey = "81243fa4-5bf8-4974-b77d-37111e1033ea",
+                    BaseUri = "https://api-test.veracity.com", //https://api-test.veracity.com/internal/test/identity/v1
+                    SubscriptionKey = "8974ad4960b34d2a825653311a8b8b1f",
                     OpenIdConnectOptions = new OpenIdConnectOptions
                     {
                         TenantId = oidcOptions.TenantId,

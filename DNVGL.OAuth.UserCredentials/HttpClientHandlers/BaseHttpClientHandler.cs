@@ -25,7 +25,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
         {
             var request = original;
             request.Headers.Add("Authorization", $"Bearer {token}");
-            if (string.IsNullOrEmpty(subscriptionKey))
+            if (!string.IsNullOrEmpty(subscriptionKey))
                 request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
             return request;
         }

@@ -1,4 +1,4 @@
-﻿using DNVGL.OAuth.Web.TokenCache;
+﻿using DNVGL.OAuth.Web.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Demo.Controllers
 {
-	[Authorize]
+    [Authorize]
 	public class HomeController : Controller
 	{
-		private MsalAppBuilder _msalAppBuilder;
+		private IMsalAppBuilder _msalAppBuilder;
 
-		public HomeController(MsalAppBuilder msalAppBuilder)
+		public HomeController(IMsalAppBuilder msalAppBuilder)
 		{
 			_msalAppBuilder = msalAppBuilder;
 		}
