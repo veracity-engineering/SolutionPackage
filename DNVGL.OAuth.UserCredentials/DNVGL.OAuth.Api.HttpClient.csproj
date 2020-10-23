@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
     <Company>DNVGL</Company>
-    <AssemblyName>DNVGL.OAuth.Demo</AssemblyName>
+    <AssemblyName>DNVGL.OAuth.Api.HttpClient</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
