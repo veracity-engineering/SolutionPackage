@@ -24,12 +24,6 @@ namespace DNVGL.AuthTest.Web.Controllers
             return Ok(await _userService.GetUser());
         }
 
-        [Route("/me")]
-        public async Task<IActionResult> FetchUser()
-        {
-            return Json(await _userService.GetUser());
-        }
-
         [Route("/sign-out")]
         public async Task<IActionResult> SignOut()
         {
