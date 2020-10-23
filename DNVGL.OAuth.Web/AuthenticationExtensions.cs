@@ -1,7 +1,6 @@
 ﻿using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -12,10 +11,12 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class AuthenticationExtensions
 	{
 		#region AddJwt for Web Api
@@ -112,6 +113,13 @@ namespace DNVGL.OAuth.Web
 			return builder.AddOidc(oidcOptions, cookieSetupAction);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="oidcOptions"></param>
+		/// <param name="cookieSetupAction"></param>
+		/// <returns></returns>
 		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			if (oidcOptions == null)
@@ -151,6 +159,13 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
+		/// <summary>
+		/// Setups distributed cache for MSAL token to OidcOptions.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="oidcOptions"></param>
+		/// <param name="cacheSetupAction"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };

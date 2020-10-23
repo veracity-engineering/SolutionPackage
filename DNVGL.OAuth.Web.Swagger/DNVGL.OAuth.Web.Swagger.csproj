@@ -6,22 +6,19 @@
 		<Company>DNVGL</Company>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="5.6.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.6.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.6.3" />
+	</ItemGroup>
+
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
-		<PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="5.5.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.5.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.6" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
-		<PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="5.5.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.5.1" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
@@ -30,5 +27,9 @@
 	
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
 		<DefineConstants>NETCORE3</DefineConstants>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
+	  <DocumentationFile>C:\Git\dnvgl\DNVGL.SolutionPackage\DNVGL.OAuth.Web.Swagger\DNVGL.OAuth.Web.Swagger.xml</DocumentationFile>
 	</PropertyGroup>
 </Project>

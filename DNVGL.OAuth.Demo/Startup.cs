@@ -1,7 +1,5 @@
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Swagger;
-using DNVGL.OAuth.Web.TokenCache;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,15 +21,16 @@ namespace DNVGL.OAuth.Demo
 			var oidcOptions = this.Configuration.GetSection("Oidc").Get<OidcOptions>();
 
 			// add memory cache
-			services.AddDistributedMemoryCache()
+			services.AddDistributedMemoryCache();
 
 			// add redis cache
 			//services.AddDistributedRedisCache(o =>
 			//{
 			//	o.InstanceName = "localhost";
 			//	o.Configuration = "localhost";
-			//})
-				.AddDistributedTokenCache(oidcOptions)
+			//});
+
+			services.AddDistributedTokenCache(oidcOptions)
 				.AddOidc(oidcOptions)
 				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
 
