@@ -2,12 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Abstractions;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -36,9 +33,7 @@ namespace DNVGL.AuthTest.Web
             services.AddDistributedTokenCache(oidcOptions)
             .AddOidc(o =>
             {
-                //o = oidcOptions;
                 this.Configuration.Bind("Oidc", o);
-
                 o.Events = new Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectEvents
                 {
                     OnAuthorizationCodeReceived = async context =>
@@ -49,16 +44,8 @@ namespace DNVGL.AuthTest.Web
                 };
             });
 
-            /*
-            services.AddOAuthHttpClientFactory(o =>
-            {
-                foreach (var child in this.Configuration.GetSection("OAuthHttpClients").GetChildren())
-                {
-                    o.Add(child.Get<OAuthHttpClientFactoryOptions>());
-                }
-            });
-            */
-            services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+            services.AddOAuthHttpClientFactory(o => this.Configuration.Bind("OAuthHttpClients", o));
+            //services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 
             services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

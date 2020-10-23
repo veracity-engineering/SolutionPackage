@@ -15,7 +15,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
             return services;
         }
 
-        public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, Action<ICollection<OAuthHttpClientFactoryOptions>> configureOptions)
+        public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, Action<IEnumerable<OAuthHttpClientFactoryOptions>> configureOptions)
         {
             var options = new List<OAuthHttpClientFactoryOptions>();
             configureOptions(options);
