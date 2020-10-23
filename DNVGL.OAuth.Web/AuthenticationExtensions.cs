@@ -1,4 +1,5 @@
-﻿using DNVGL.OAuth.Web.TokenCache;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -14,7 +15,7 @@ using System.Linq;
 
 namespace DNVGL.OAuth.Web
 {
-	public static class AuthenticationExtensions
+    public static class AuthenticationExtensions
 	{
 		#region AddJwt for Web Api
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IEnumerable<IConfigurationSection> sections)
@@ -163,9 +164,9 @@ namespace DNVGL.OAuth.Web
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
-
-			services.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions))
-				.AddSingleton(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+			services
+				.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions))
+				.AddSingleton<IMsalAppBuilder>(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
 			return services;
 		}
 		#endregion

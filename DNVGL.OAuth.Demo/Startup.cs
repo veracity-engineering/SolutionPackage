@@ -1,4 +1,5 @@
 using DNVGL.OAuth.Web;
+using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.OAuth.Web.Swagger;
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -26,13 +27,15 @@ namespace DNVGL.OAuth.Demo
 			//services.AddDistributedMemoryCache();
 
 			// add redis cache
+			/*
 			services.AddDistributedRedisCache(o =>
 			{
 				o.InstanceName = "localhost";
 				o.Configuration = "localhost";
 			});
-
+			*/
 			// add token cache support
+            services.AddDistributedMemoryCache();
 			services.AddDistributedTokenCache(oidcOptions);
 
 			// add authentication for web app
@@ -44,7 +47,7 @@ namespace DNVGL.OAuth.Demo
 				{
 					OnAuthorizationCodeReceived = async context =>
 					{
-						var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
+						var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
 						var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
 
 					}
