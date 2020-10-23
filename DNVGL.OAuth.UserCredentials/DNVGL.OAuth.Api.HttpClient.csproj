@@ -5,6 +5,7 @@
     <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
     <Company>DNVGL</Company>
     <AssemblyName>DNVGL.OAuth.Api.HttpClient</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
