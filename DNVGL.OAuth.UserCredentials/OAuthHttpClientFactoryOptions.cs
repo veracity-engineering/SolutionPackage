@@ -4,7 +4,7 @@ namespace DNVGL.OAuth.Api.HttpClient
 {
     public class OAuthHttpClientFactoryOptions
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
         public OAuthCredentialFlow Flow { get; set; }
 
         // API
@@ -12,11 +12,6 @@ namespace DNVGL.OAuth.Api.HttpClient
         public string SubscriptionKey { get; set; }
 
         public OpenIdConnectOptions OpenIdConnectOptions { get; set; }
-
-        public OAuthHttpClientFactoryOptions(string name)
-        {
-            Name = name;
-        }
     }
 
     public enum OAuthCredentialFlow

@@ -1,5 +1,4 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
-using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ namespace DNVGL.AuthTest.Web
         private readonly IOAuthHttpClientFactory _httpClientFactory;
 
         private const string V1Path = "/internal/test/identity/v1";
-        //private const string V1Path = "/identity/v1";
 
         public UserService(IOAuthHttpClientFactory httpClientFactory)
         {

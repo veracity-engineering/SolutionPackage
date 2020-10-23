@@ -8,7 +8,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
     public static class ConfigurationExtensions
     {
-        public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, ICollection<OAuthHttpClientFactoryOptions> options)
+        public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, IEnumerable<OAuthHttpClientFactoryOptions> options)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IOAuthHttpClientFactory>(s => new OAuthHttpClientFactory(options, s.GetService<IHttpContextAccessor>(), s.GetRequiredService<IMsalAppBuilder>()));
