@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.OAuth.Web;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using DNVGL.OAuth.Web.Abstractions;
-using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -49,7 +49,6 @@ namespace DNVGL.AuthTest.Web
                 };
             });
 
-            services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").ToCollection<OAuthHttpClientFactoryOptions>());
             /*
             services.AddOAuthHttpClientFactory(o =>
             {
@@ -59,6 +58,7 @@ namespace DNVGL.AuthTest.Web
                 }
             });
             */
+            services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 
             services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
