@@ -1,8 +1,6 @@
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.OAuth.Web.Swagger;
-using DNVGL.OAuth.Web.TokenCache;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,38 +19,23 @@ namespace DNVGL.OAuth.Demo
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			var oidcOptions = this.Configuration.GetSection("Oidc").Get<OidcOptions>();
+			var oidcOptions = this.Configuration.GetSection("OidcOptions").Get<OidcOptions>();
 
 			// add memory cache
-			//services.AddDistributedMemoryCache();
+			services.AddDistributedMemoryCache();
 
 			// add redis cache
-			/*
-			services.AddDistributedRedisCache(o =>
-			{
-				o.InstanceName = "localhost";
-				o.Configuration = "localhost";
-			});
-			*/
+			//services.AddDistributedRedisCache(o =>
+			//{
+			//	o.InstanceName = "localhost";
+			//	o.Configuration = "localhost";
+			//});
+
 			// add token cache support
-            services.AddDistributedMemoryCache();
 			services.AddDistributedTokenCache(oidcOptions);
 
-			// add authentication for web app
-			services.AddOidc(o =>
-			{
-				this.Configuration.Bind("Oidc", o);
-
-				o.Events = new OpenIdConnectEvents
-				{
-					OnAuthorizationCodeReceived = async context =>
-					{
-						var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
-						var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
-
-					}
-				};
-			}).AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
+			services.AddOidc(oidcOptions)
+				.AddJwt(this.Configuration.GetSection("JwtOptions").GetChildren());
 
 #if NETCORE2
 			services.AddMvc();

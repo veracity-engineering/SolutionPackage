@@ -9,29 +9,26 @@
 		<UserSecretsId>0fd1fe19-768c-4426-bb22-998f608067bf</UserSecretsId>
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
-		<PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
-		<PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.1.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Identity.Client" Version="4.21.1" />
+		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.16.3" />
+		<PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Remove="TokenCache\**" />
-	  <Content Remove="TokenCache\**" />
-	  <EmbeddedResource Remove="TokenCache\**" />
-	  <None Remove="TokenCache\**" />
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
+		<PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
-	  <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
-	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
-	  <PackageReference Include="Microsoft.Identity.Client" Version="4.18.0" />
-	  <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="2.12.0" />
-	  <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -15,7 +15,10 @@ using System.Linq;
 
 namespace DNVGL.OAuth.Web
 {
-    public static class AuthenticationExtensions
+	/// <summary>
+	/// 
+	/// </summary>
+	public static class AuthenticationExtensions
 	{
 		#region AddJwt for Web Api
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IEnumerable<IConfigurationSection> sections)
@@ -25,11 +28,11 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(sections));
 			}
 
-			var schemaOptions = new Dictionary<string, OidcOptions>();
+			var schemaOptions = new Dictionary<string, JwtOptions>();
 
 			foreach (var section in sections)
 			{
-				var option = new OidcOptions();
+				var option = new JwtOptions();
 				section.Bind(option);
 				schemaOptions.Add(section.Key, option);
 			}
@@ -37,19 +40,19 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(schemaOptions);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, OidcOptions>> setupAction)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
 			{
 				throw new ArgumentNullException(nameof(setupAction));
 			}
 
-			var sections = new Dictionary<string, OidcOptions>();
+			var sections = new Dictionary<string, JwtOptions>();
 			setupAction(sections);
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, OidcOptions> schemaOptions)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
 			if (schemaOptions == null || schemaOptions.Count() == 0)
 			{
@@ -67,6 +70,7 @@ namespace DNVGL.OAuth.Web
 					o.Authority = option.Authority;
 					o.Audience = option.ClientId;
 					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
+					if (option.Events != null) { o.Events = option.Events; }
 				});
 			}
 
@@ -77,13 +81,24 @@ namespace DNVGL.OAuth.Web
 		#region AddOidc for Web App
 		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
+			if (oidcSetupAction == null)
+			{
+				throw new ArgumentNullException(nameof(oidcSetupAction));
+			}
+
+			var oidcOptions = new OidcOptions();
+			oidcSetupAction(oidcOptions);
+			return services.AddOidc(oidcOptions, cookieSetupAction);
+		}
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		{
 			var builder = services.AddAuthentication(o =>
 			{
 				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 			});
 
-			builder.AddOidc(oidcSetupAction, cookieSetupAction);
+			builder.AddOidc(oidcOptions, cookieSetupAction);
 			return builder;
 		}
 
@@ -99,6 +114,13 @@ namespace DNVGL.OAuth.Web
 			return builder.AddOidc(oidcOptions, cookieSetupAction);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="oidcOptions"></param>
+		/// <param name="cookieSetupAction"></param>
+		/// <returns></returns>
 		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			if (oidcOptions == null)
@@ -131,28 +153,6 @@ namespace DNVGL.OAuth.Web
 				}
 
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
-
-				// sample code to intecept token response and to add tokens to cache.
-				/*
-				var onTokenResponseReceived = o.Events.OnTokenResponseReceived;
-
-				o.Events.OnTokenResponseReceived = async context =>
-				{
-					var tokenResponse = context.TokenEndpointResponse;
-
-					if (tokenResponse != null)
-					{
-						var cache = context.HttpContext.RequestServices.GetService<IDistributedCache>();
-						await cache.SetStringAsync("access_token", tokenResponse.AccessToken ?? string.Empty);
-						await cache.SetStringAsync("refresh_token", tokenResponse.RefreshToken ?? string.Empty);
-					}
-
-					if (onTokenResponseReceived != null)
-					{
-						await onTokenResponseReceived(context);
-					}
-				};
-				*/
 			});
 
 			return builder;
@@ -160,13 +160,30 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
+		/// <summary>
+		/// Setups distributed cache for MSAL token to OidcOptions.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="oidcOptions"></param>
+		/// <param name="cacheSetupAction"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
-			services
-				.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions))
-				.AddSingleton<IMsalAppBuilder>(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+
+			services.AddSingleton<IMsalTokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions));
+
+			oidcOptions.Events = new OpenIdConnectEvents
+			{
+				OnAuthorizationCodeReceived = async context =>
+				{
+					var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
+					var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
+				}
+			};
+
+			services.AddSingleton<IMsalAppBuilder>(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
 			return services;
 		}
 		#endregion
