@@ -2,6 +2,9 @@
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class ClaimsPrincipalExtension
 	{
 		/// <summary>
