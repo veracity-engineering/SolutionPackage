@@ -17,7 +17,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			var objectId = claimsPrincipal.GetObjectId();
 			var tenantId = oidcOptions.TenantId;
-			var policy = oidcOptions.SignInPolicy;
+			var policy = oidcOptions.SignInPolicy.ToLower();
 			var msalAccountId = $"{objectId}-{policy}.{tenantId}";
 			return msalAccountId?.ToLower();
 		}

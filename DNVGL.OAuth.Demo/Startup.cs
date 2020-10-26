@@ -1,4 +1,5 @@
 using DNVGL.OAuth.Web;
+using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.OAuth.Web.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,7 +19,7 @@ namespace DNVGL.OAuth.Demo
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			var oidcOptions = this.Configuration.GetSection("Oidc").Get<OidcOptions>();
+			var oidcOptions = this.Configuration.GetSection("OidcOptions").Get<OidcOptions>();
 
 			// add memory cache
 			services.AddDistributedMemoryCache();
@@ -30,9 +31,11 @@ namespace DNVGL.OAuth.Demo
 			//	o.Configuration = "localhost";
 			//});
 
-			services.AddDistributedTokenCache(oidcOptions)
-				.AddOidc(oidcOptions)
-				.AddJwt(this.Configuration.GetSection("OidcOptions").GetChildren());
+			// add token cache support
+			services.AddDistributedTokenCache(oidcOptions);
+
+			services.AddOidc(oidcOptions)
+				.AddJwt(this.Configuration.GetSection("JwtOptions").GetChildren());
 
 #if NETCORE2
 			services.AddMvc();

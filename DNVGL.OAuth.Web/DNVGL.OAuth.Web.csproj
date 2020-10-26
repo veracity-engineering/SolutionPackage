@@ -4,6 +4,7 @@
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 		<Authors>Eric Liu &lt;li.eric.liu@dnvgl.com&gt;</Authors>
 		<Company>DNVGL</Company>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
@@ -21,6 +22,10 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Identity.Client" Version="4.21.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">

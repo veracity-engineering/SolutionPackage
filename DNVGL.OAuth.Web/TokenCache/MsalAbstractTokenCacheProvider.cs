@@ -19,19 +19,15 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return Task.CompletedTask;
 		}
 
-		private async Task OnAfterAccessAsync(TokenCacheNotificationArgs args)
+		private Task OnAfterAccessAsync(TokenCacheNotificationArgs args)
 		{
 			if (args.HasStateChanged)
 			{
-				if (args.HasTokens)
-				{
-					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, args.TokenCache.SerializeMsalV3());
-				}
-				else
-				{
-					await this.RemoveKeyAsync(args.SuggestedCacheKey);
-				}
+				return args.HasTokens
+					? this.WriteCacheBytesAsync(args.SuggestedCacheKey, args.TokenCache.SerializeMsalV3())
+					: this.RemoveKeyAsync(args.SuggestedCacheKey);
 			}
+			return Task.CompletedTask;
 		}
 
 		private async Task OnBeforeAccessAsync(TokenCacheNotificationArgs args)
@@ -45,10 +41,10 @@ namespace DNVGL.OAuth.Web.TokenCache
 
 		protected virtual Task OnBeforeWriteAsync(TokenCacheNotificationArgs args) => Task.CompletedTask;
 
-		public async Task ClearAsync(string identifier)
+		public Task ClearAsync(string identifier)
 		{
 			// This is a user token cache
-			await this.RemoveKeyAsync(identifier);
+			return this.RemoveKeyAsync(identifier);
 
 			// TODO: Clear the cookie session if any. Get inspiration from
 			// https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/240

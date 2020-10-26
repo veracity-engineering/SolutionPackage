@@ -1,4 +1,5 @@
-﻿using DNVGL.OAuth.Web.TokenCache;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -177,12 +178,12 @@ namespace DNVGL.OAuth.Web
 			{
 				OnAuthorizationCodeReceived = async context =>
 				{
-					var msalAppBuilder = context.HttpContext.RequestServices.GetService<MsalAppBuilder>();
+					var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
 					var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
 				}
 			};
 
-			services.AddSingleton(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+			services.AddSingleton<IMsalAppBuilder>(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
 			return services;
 		}
 		#endregion

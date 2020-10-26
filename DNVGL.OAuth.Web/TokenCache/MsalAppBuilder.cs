@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Identity.Client;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
-	public class MsalAppBuilder
+	public class MsalAppBuilder : IMsalAppBuilder
 	{
 		private OidcOptions _oidcOptions;
 		private IMsalTokenCacheProvider _tokenCacheProvider;
@@ -19,13 +21,21 @@ namespace DNVGL.OAuth.Web.TokenCache
 			_tokenCacheProvider = tokenCacheProvider;
 		}
 
-		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode(AuthorizationCodeReceivedContext context)
+		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode<TOptions>(RemoteAuthenticationContext<TOptions> context) where TOptions : AuthenticationSchemeOptions
 		{
-			context.HandleCodeRedemption();
-			var clientApp = this.BuildClientApp(context.HttpContext, context.TokenEndpointRequest.GetParameter("code_verifier"));
-			var result = await clientApp.AcquireTokenByAuthorizationCode(null, context.ProtocolMessage.Code).ExecuteAsync();
-			context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+			var authContext = context as AuthorizationCodeReceivedContext;
+			authContext.HandleCodeRedemption();
+			var clientApp = this.BuildClientApp(authContext.HttpContext, authContext.TokenEndpointRequest.GetParameter("code_verifier"));
+			var result = await clientApp.AcquireTokenByAuthorizationCode(_oidcOptions.Scopes, authContext.ProtocolMessage.Code).ExecuteAsync();
+			authContext.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			return result;
+		}
+
+		public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext, string[] scopes)
+		{
+			var clientApp = this.BuildClientApp(httpContext);
+			var account = await clientApp.GetAccountAsync(httpContext.User.GetMsalAccountId(_oidcOptions));
+			return await clientApp.AcquireTokenSilent(scopes, account).ExecuteAsync();
 		}
 
 		public async Task<IAccount> GetAccount(HttpContext httpContext)
@@ -61,21 +71,15 @@ namespace DNVGL.OAuth.Web.TokenCache
 				.WithRedirectUri(returnUri);
 
 			if (!string.IsNullOrWhiteSpace(_oidcOptions.ClientSecret))
-			{
 				builder.WithClientSecret(_oidcOptions.ClientSecret);
-			}
 
 			if (!string.IsNullOrWhiteSpace(codeVerifier))
-			{
 				builder.WithExtraQueryParameters($"code_verifier={codeVerifier}");
-			}
 
 			_clientApp = builder.Build();
-			
-			if(_tokenCacheProvider != null)
-			{
+
+			if (_tokenCacheProvider != null)
 				_tokenCacheProvider.InitializeAsync(_clientApp.UserTokenCache);
-			}
 
 			return _clientApp;
 		}

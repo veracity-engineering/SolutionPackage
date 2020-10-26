@@ -6,6 +6,7 @@
 		<Company>DNVGL</Company>
 		<AssemblyName>DNVGL.OAuth.Demo</AssemblyName>
 		<RootNamespace>DNVGL.OAuth.Demo</RootNamespace>
+		<UserSecretsId>0fd1fe19-768c-4426-bb22-998f608067bf</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
