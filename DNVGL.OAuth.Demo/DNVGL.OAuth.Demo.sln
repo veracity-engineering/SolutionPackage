@@ -27,7 +27,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docfx_project", "..\docfx_p
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "53110"
+		SlnRelativePath = "..\docfx_project\"
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{8B181D2D-D7D9-440C-922D-AF4D6F934639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOidc", "..\Demos\SimpleOidc\SimpleOidc.csproj", "{22542BE8-A3B2-4C37-94E1-3064F4330A01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +56,16 @@ Global
 		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22542BE8-A3B2-4C37-94E1-3064F4330A01} = {8B181D2D-D7D9-440C-922D-AF4D6F934639}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA2F02B7-E26D-4422-82B5-5BA630E5ADBB}
