@@ -4,13 +4,30 @@ namespace DNVGL.OAuth.Api.HttpClient
 {
     public class OAuthHttpClientFactoryOptions
     {
+        /// <summary>
+        /// A unique identifier for HTTP client instance which is used to retrieve it from the IOAuthHttpClientFactory.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// The credential flow applied to requests by the HTTP client instance.
+        /// </summary>
         public OAuthCredentialFlow Flow { get; set; }
 
         // API
+        /// <summary>
+        /// The route URI (Universal Resource Identifier) for the Web API the HTTP client instance will make requests to.
+        /// </summary>
         public string BaseUri { get; set; }
+
+        /// <summary>
+        /// The subscription key (from API management) for the Web API the HTTP client instance will connect to.
+        /// </summary>
         public string SubscriptionKey { get; set; }
 
+        /// <summary>
+        /// The Open Id Connection options to apply to authentication by the HTTP client instance.
+        /// </summary>
         public OpenIdConnectOptions OpenIdConnectOptions { get; set; }
     }
 
