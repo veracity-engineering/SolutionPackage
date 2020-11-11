@@ -30,10 +30,13 @@ namespace DNVGL.OAuth.Api.HttpClient
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
         {
-            if (options.Flow == OAuthCredentialFlow.UserCredentials)
-                return new System.Net.Http.HttpClient(new UserCredentialsHandler(options, _httpContextAccessor, _appBuilder)) { BaseAddress = new Uri(options.BaseUri) };
-            if (options.Flow == OAuthCredentialFlow.ClientCredentials)
-                return new System.Net.Http.HttpClient(new ClientCredentialsHandler(options)) { BaseAddress = new Uri(options.BaseUri) };
+            var handlers = new Dictionary<OAuthCredentialFlow, Func<OAuthHttpClientFactoryOptions, System.Net.Http.HttpMessageHandler>>
+            {
+                { OAuthCredentialFlow.UserCredentials, o => new UserCredentialsHandler(o, _httpContextAccessor, _appBuilder) },
+                { OAuthCredentialFlow.ClientCredentials, o => new ClientCredentialsHandler(o) }
+            };
+            if (handlers.ContainsKey(options.Flow))
+                return new System.Net.Http.HttpClient(handlers[options.Flow](options)) { BaseAddress = new Uri(options.BaseUri) };
             throw new Exception($"Invalid credential flow '{options.Flow}'.");
         }
     }

@@ -30,9 +30,5 @@
         public string SignInPolicy { get; set; }
 
         public string Authority { get; set; }
-
-        //public string Authority => $"https://login.microsoftonline.com/tfp/{TenantId}/{SignInPolicy}";
-
-        public string Resource { get; set; }
     }
 }
