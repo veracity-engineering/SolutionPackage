@@ -23,6 +23,20 @@ namespace DNVGL.AuthTest.Web.Controllers
             return Ok(await _userService.GetUser());
         }
 
+        //[Authorize]
+        [Route("user/{id}")]
+        public async Task<IActionResult> UserById(string id)
+        {
+            return Ok(await _userService.GetUserById(id));
+        }
+
+        [Authorize]
+        [Route("user")]
+        public async Task<IActionResult> UserByEmail()
+        {
+            return Ok(await _userService.GetUserByEmail("steven.mark.alford@dnvgl.com"));
+        }
+
         [Route("/sign-out")]
         public async Task<IActionResult> SignOut()
         {
