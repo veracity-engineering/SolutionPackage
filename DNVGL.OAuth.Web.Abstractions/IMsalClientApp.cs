@@ -5,7 +5,7 @@ using Microsoft.Identity.Client;
 
 namespace DNVGL.OAuth.Web.Abstractions
 {
-    public interface IMsalAppBuilder
+    public interface IMsalClientApp
     {
         /// <summary>
         /// Attempts to authenticate using account retrieved from the specified context by calling <see cref="IConfidentialClientApplication.AcquireTokenByAuthorizationCode"/>.

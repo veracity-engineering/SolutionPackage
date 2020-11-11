@@ -178,12 +178,12 @@ namespace DNVGL.OAuth.Web
 			{
 				OnAuthorizationCodeReceived = async context =>
 				{
-					var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
-					var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
+					var msalClientApp = context.HttpContext.RequestServices.GetService<IMsalClientApp>();
+					var result = await msalClientApp.AcquireTokenByAuthorizationCode(context);
 				}
 			};
 
-			services.AddSingleton<IMsalAppBuilder>(f => new MsalAppBuilder(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
+			services.AddSingleton<IMsalClientApp>(f => new MsalClientApp(oidcOptions, f.GetRequiredService<IMsalTokenCacheProvider>()));
 			return services;
 		}
 		#endregion

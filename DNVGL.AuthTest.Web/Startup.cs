@@ -38,7 +38,7 @@ namespace DNVGL.AuthTest.Web
                 {
                     OnAuthorizationCodeReceived = async context =>
                     {
-                        var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
+                        var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalClientApp>();
                         var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
                     }
                 };

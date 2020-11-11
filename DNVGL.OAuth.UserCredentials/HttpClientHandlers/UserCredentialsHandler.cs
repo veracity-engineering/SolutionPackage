@@ -8,17 +8,17 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
     internal class UserCredentialsHandler : BaseHttpClientHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMsalAppBuilder _appBuilder;
+        private readonly IMsalClientApp _clientApp;
 
-        public UserCredentialsHandler(OAuthHttpClientFactoryOptions options, IHttpContextAccessor httpContextAccessor, IMsalAppBuilder appBuilder) : base(options)
+        public UserCredentialsHandler(OAuthHttpClientFactoryOptions options, IHttpContextAccessor httpContextAccessor, IMsalClientApp clientApp) : base(options)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            _appBuilder = appBuilder;
+            _clientApp = clientApp;
         }
 
         protected override async Task<string> RetrieveToken()
         {
-            var authResult = await _appBuilder.AcquireTokenSilent(_httpContextAccessor.HttpContext, _options.OpenIdConnectOptions.Scopes);
+            var authResult = await _clientApp.AcquireTokenSilent(_httpContextAccessor.HttpContext, _options.OpenIdConnectOptions.Scopes);
             return authResult.AccessToken;
         }
     }

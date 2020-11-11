@@ -9,9 +9,9 @@ namespace DNVGL.OAuth.Demo.Controllers
     [Authorize]
 	public class HomeController : Controller
 	{
-		private IMsalAppBuilder _msalAppBuilder;
+		private IMsalClientApp _msalAppBuilder;
 
-		public HomeController(IMsalAppBuilder msalAppBuilder)
+		public HomeController(IMsalClientApp msalAppBuilder)
 		{
 			_msalAppBuilder = msalAppBuilder;
 		}

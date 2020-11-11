@@ -11,9 +11,9 @@ namespace DNVGL.OAuth.Api.HttpClient
     {
         private readonly IEnumerable<OAuthHttpClientFactoryOptions> _options;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMsalAppBuilder _appBuilder;
+        private readonly IMsalClientApp _appBuilder;
 
-        public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IMsalAppBuilder appBuilder)
+        public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IMsalClientApp appBuilder)
         {
             _options = options;
             _httpContextAccessor = httpContextAccessor;
