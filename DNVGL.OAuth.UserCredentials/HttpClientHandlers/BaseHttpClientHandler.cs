@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
-    public abstract class BaseHttpClientHandler : HttpClientHandler
+    internal abstract class BaseHttpClientHandler : HttpClientHandler
     {
         private readonly OAuthHttpClientFactoryOptions _options;
 

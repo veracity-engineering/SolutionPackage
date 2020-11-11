@@ -24,7 +24,6 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
                     .WithClientSecret(_options.OpenIdConnectOptions.ClientSecret)
                     .Build();
             }
-
             var authResult = await _confidentialClientApplication.AcquireTokenForClient(_options.OpenIdConnectOptions.Scopes).ExecuteAsync();
             return authResult.AccessToken;
         }

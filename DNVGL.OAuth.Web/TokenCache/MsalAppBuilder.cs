@@ -49,7 +49,6 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			var clientApp = this.BuildClientApp(httpContext);
 			var userAccount = await clientApp.GetAccountAsync(httpContext.User.GetMsalAccountId(_oidcOptions));
-
 			if (userAccount != null)
 			{
 				await _clientApp.RemoveAsync(userAccount);
