@@ -11,9 +11,9 @@ namespace DNVGL.OAuth.Api.HttpClient
     {
         private readonly IEnumerable<OAuthHttpClientFactoryOptions> _options;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMsalClientApp _appBuilder;
+        private readonly IClientAppBuilder _appBuilder;
 
-        public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IMsalClientApp appBuilder)
+        public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder)
         {
             _options = options;
             _httpContextAccessor = httpContextAccessor;
@@ -33,7 +33,7 @@ namespace DNVGL.OAuth.Api.HttpClient
             var handlers = new Dictionary<OAuthCredentialFlow, Func<OAuthHttpClientFactoryOptions, System.Net.Http.HttpMessageHandler>>
             {
                 { OAuthCredentialFlow.UserCredentials, o => new UserCredentialsHandler(o, _httpContextAccessor, _appBuilder) },
-                { OAuthCredentialFlow.ClientCredentials, o => new ClientCredentialsHandler(o) }
+                { OAuthCredentialFlow.ClientCredentials, o => new ClientCredentialsHandler(o, _appBuilder) }
             };
             if (handlers.ContainsKey(options.Flow))
                 return new System.Net.Http.HttpClient(handlers[options.Flow](options)) { BaseAddress = new Uri(options.BaseUri) };

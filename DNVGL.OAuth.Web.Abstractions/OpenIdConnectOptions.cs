@@ -2,7 +2,6 @@
 {
     public class OpenIdConnectOptions
     {
-        
         public string TenantId { get; set; }
 
         /// <summary>

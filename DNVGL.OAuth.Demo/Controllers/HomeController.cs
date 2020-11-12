@@ -9,11 +9,11 @@ namespace DNVGL.OAuth.Demo.Controllers
     [Authorize]
 	public class HomeController : Controller
 	{
-		private IMsalClientApp _msalAppBuilder;
+		private IClientApp _clientApp;
 
-		public HomeController(IMsalClientApp msalAppBuilder)
+		public HomeController(IClientApp clientApp)
 		{
-			_msalAppBuilder = msalAppBuilder;
+			_clientApp = clientApp;
 		}
 
 		public async Task<IActionResult> Index()
@@ -24,7 +24,7 @@ namespace DNVGL.OAuth.Demo.Controllers
 			var version = "v3.1";
 #endif
 
-			var account = await _msalAppBuilder.GetAccount(this.HttpContext);
+			var account = await _clientApp.GetAccount(this.HttpContext);
 			this.ViewBag.Account = account;
 			this.ViewBag.Version = version;
 			return View();
