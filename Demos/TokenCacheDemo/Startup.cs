@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace SimpleOidc
+namespace TokenCacheDemo
 {
 	public class Startup
 	{
@@ -17,12 +18,16 @@ namespace SimpleOidc
 		{
 			var oidcOptions = new OidcOptions
 			{
-				TenantId = "a68572e3-63ce-4bc1-acdc-b64943502e9d",
+				TenantId = "ed815121-cdfa-4097-b524-e2b23cd36eb6",
 				SignInPolicy = "b2c_1a_signinwithadfsidp",
-				ClientId = "34598bb3-b07f-4187-a32b-d64ef8f086bc",
-				Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" },
-				CallbackPath = "/signin-oidc"
+				ClientId = "35807f23-80d5-4e97-b07a-21b86013a9ff",
+				ClientSecret = "44-TyAb|e:0b^HaL.DlQ)&|6",
+				Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation", "offline_access" },
+				CallbackPath = "/signin-oidc",
+				ResponseType = OpenIdConnectResponseType.Code
 			};
+			services.AddDistributedMemoryCache();
+			services.AddDistributedTokenCache(oidcOptions);
 			services.AddOidc(oidcOptions);
 
 			services.AddControllersWithViews();
