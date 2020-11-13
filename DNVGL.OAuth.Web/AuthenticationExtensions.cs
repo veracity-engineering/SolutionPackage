@@ -174,7 +174,6 @@ namespace DNVGL.OAuth.Web
             cacheSetupAction?.Invoke(cacheEntryOptions);
 
             services.AddSingleton<ITokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions));
-            services.AddSingleton<IClientAppBuilder>(f => new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()));
 
             oidcOptions.Events = new OpenIdConnectEvents
             {
@@ -187,6 +186,7 @@ namespace DNVGL.OAuth.Web
                 }
             };
 
+            services.AddSingleton(f => new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOpenIdConnectOptions(oidcOptions));
             return services;
         }
         #endregion

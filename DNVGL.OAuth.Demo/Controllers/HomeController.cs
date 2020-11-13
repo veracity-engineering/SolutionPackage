@@ -9,9 +9,9 @@ namespace DNVGL.OAuth.Demo.Controllers
     [Authorize]
 	public class HomeController : Controller
 	{
-		private IClientApp _clientApp;
+		private IClientAppBuilder _clientApp;
 
-		public HomeController(IClientApp clientApp)
+		public HomeController(IClientAppBuilder clientApp)
 		{
 			_clientApp = clientApp;
 		}
@@ -24,7 +24,8 @@ namespace DNVGL.OAuth.Demo.Controllers
 			var version = "v3.1";
 #endif
 
-			var account = await _clientApp.GetAccount(this.HttpContext);
+			var client = _clientApp.BuildForUserCredentials(this.HttpContext);
+			var account = await client.GetAccount(this.HttpContext);
 			this.ViewBag.Account = account;
 			this.ViewBag.Version = version;
 			return View();
