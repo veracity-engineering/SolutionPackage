@@ -135,6 +135,7 @@ namespace DNVGL.OAuth.Web
                 o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(oidcOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever());
                 o.Authority = oidcOptions.Authority;
                 o.ClientId = oidcOptions.ClientId;
+                o.ClientSecret = oidcOptions.ClientSecret;
                 o.CallbackPath = oidcOptions.CallbackPath;
                 o.ResponseType = oidcOptions.ResponseType ?? OpenIdConnectResponseType.IdToken;
 #if NETCORE3
