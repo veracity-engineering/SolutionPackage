@@ -8,13 +8,11 @@ namespace DNVGL.AuthTest.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IOAuthHttpClientFactory _httpClientFactory;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public HomeController(IOAuthHttpClientFactory httpClientFactory)
+        public HomeController(IUserService userService)
         {
-            _httpClientFactory = httpClientFactory;
-            _userService = new UserService(_httpClientFactory);
+            _userService = userService;
         }
 
         [Authorize]

@@ -47,6 +47,7 @@ namespace DNVGL.AuthTest.Web
             });
 
             services.AddOAuthHttpClientFactory(o => this.Configuration.Bind("OAuthHttpClients", o));
+            services.AddSingleton<IUserService, UserService>();
             //services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 
             services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
