@@ -2,3 +2,5 @@
   href: intro.md
 - name: DNVGL.OAuth.Web
   href: DNVGL.OAuth.Web.md
+- name: HTTP Response Security Header
+  href: securityHeader.md
