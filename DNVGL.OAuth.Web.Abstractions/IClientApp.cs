@@ -19,16 +19,14 @@ namespace DNVGL.OAuth.Web.Abstractions
         /// Attempts to authenticate using account retrieved from the <see cref="HttpContext"/> by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
         /// </summary>
         /// <param name="httpContext"></param>
-        /// <param name="scopes"></param>
-        /// <returns>Authentication result containing a token for the requested scopes.</returns>
-        Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext, string[] scopes);
+        /// <returns>Authentication result containing a token.</returns>
+        Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext);
 
         /// <summary>
         /// Attempts to authenticate using client credentials by calling <see cref="IConfidentialClientApplication.AcquireTokenForClient"/>.
         /// </summary>
-        /// <param name="scopes"></param>
-        /// <returns>Authentication result containing a token for the requested scopes.</returns>
-        Task<AuthenticationResult> AcquireTokenForClient(string[] scopes);
+        /// <returns>Authentication result containing a token.</returns>
+        Task<AuthenticationResult> AcquireTokenForClient();
 
         /// <summary>
         /// Gets the authenticated account from the specified <see cref="HttpContext"/>.

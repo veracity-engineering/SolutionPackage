@@ -17,7 +17,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
         protected override async Task<string> RetrieveToken()
         {
             var clientApp = GetOrCreateClientApp();
-            var authResult = await clientApp.AcquireTokenForClient(_options.OpenIdConnectOptions.Scopes);
+            var authResult = await clientApp.AcquireTokenForClient();
             return authResult.AccessToken;
         }
 

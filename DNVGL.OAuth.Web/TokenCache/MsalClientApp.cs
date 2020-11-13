@@ -28,15 +28,15 @@ namespace DNVGL.OAuth.Web.TokenCache
             return result;
         }
 
-        public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext, string[] scopes)
+        public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext)
         {
             var account = await _clientApp.GetAccountAsync(httpContext.User.GetMsalAccountId(_oidcOptions));
-            return await _clientApp.AcquireTokenSilent(scopes, account).ExecuteAsync();
+            return await _clientApp.AcquireTokenSilent(_oidcOptions.Scopes, account).ExecuteAsync();
         }
 
-        public Task<AuthenticationResult> AcquireTokenForClient(string[] scopes)
+        public Task<AuthenticationResult> AcquireTokenForClient()
         {
-            return _clientApp.AcquireTokenForClient(scopes).ExecuteAsync();
+            return _clientApp.AcquireTokenForClient(_oidcOptions.Scopes).ExecuteAsync();
         }
 
         public Task<IAccount> GetAccount(HttpContext httpContext)
