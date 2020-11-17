@@ -1,10 +1,11 @@
-﻿using Microsoft.Identity.Client;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using Microsoft.Identity.Client;
 using System;
 using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
-	public abstract class MsalAbstractTokenCacheProvider : IMsalTokenCacheProvider
+	public abstract class MsalAbstractTokenCacheProvider : ITokenCacheProvider
 	{
 		public Task InitializeAsync(ITokenCache tokenCache)
 		{

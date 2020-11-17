@@ -1,31 +1,34 @@
-﻿using Microsoft.Identity.Client;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using DNVGL.OAuth.Web.Abstractions;
 
 namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
     internal class ClientCredentialsHandler : BaseHttpClientHandler
     {
-        private readonly OAuthHttpClientFactoryOptions _options;
+        private readonly IClientAppBuilder _appBuilder;
+        private IClientApp _clientApp;
 
-        private IConfidentialClientApplication _confidentialClientApplication;
-
-        public ClientCredentialsHandler(OAuthHttpClientFactoryOptions options) : base(options)
+        public ClientCredentialsHandler(OAuthHttpClientFactoryOptions options, IClientAppBuilder appBuilder) : base(options)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _appBuilder = appBuilder ?? throw new ArgumentNullException(nameof(appBuilder));
         }
 
         protected override async Task<string> RetrieveToken()
         {
-            if (_confidentialClientApplication == null)
-            {
-                _confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(_options.OpenIdConnectOptions.ClientId)
-                    .WithB2CAuthority(_options.OpenIdConnectOptions.Authority)
-                    .WithClientSecret(_options.OpenIdConnectOptions.ClientSecret)
-                    .Build();
-            }
-            var authResult = await _confidentialClientApplication.AcquireTokenForClient(_options.OpenIdConnectOptions.Scopes).ExecuteAsync();
+            var clientApp = GetOrCreateClientApp();
+            var authResult = await clientApp.AcquireTokenForClient();
             return authResult.AccessToken;
+        }
+
+        private IClientApp GetOrCreateClientApp()
+        {
+            if (_clientApp != null)
+                return _clientApp;
+            _clientApp = _appBuilder
+                .WithOpenIdConnectOptions(_options.OpenIdConnectOptions)
+                .BuildForClientCredentials();
+            return _clientApp;
         }
     }
 }

@@ -8,19 +8,23 @@ namespace DNVGL.AuthTest.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IOAuthHttpClientFactory _httpClientFactory;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public HomeController(IOAuthHttpClientFactory httpClientFactory)
+        public HomeController(IUserService userService)
         {
-            _httpClientFactory = httpClientFactory;
-            _userService = new UserService(_httpClientFactory);
+            _userService = userService;
         }
 
         [Authorize]
         public async Task<IActionResult> Index()
         {
             return Ok(await _userService.GetUser());
+        }
+
+        [Route("user/{id}")]
+        public async Task<IActionResult> UserById(string id)
+        {
+            return Ok(await _userService.GetUserById(id));
         }
 
         [Route("/sign-out")]

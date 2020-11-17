@@ -7,7 +7,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
     internal abstract class BaseHttpClientHandler : HttpClientHandler
     {
-        private readonly OAuthHttpClientFactoryOptions _options;
+        protected readonly OAuthHttpClientFactoryOptions _options;
 
         public BaseHttpClientHandler(OAuthHttpClientFactoryOptions options)
         {
