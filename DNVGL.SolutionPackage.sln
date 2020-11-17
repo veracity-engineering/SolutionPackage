@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Demo", "DNVGL.O
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{322BB9CA-ADD7-4BF4-ADB0-52195325BE9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Web.Security.Tests", "DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{CA220DA8-71AC-4BA1-809B-6C073F7FF468}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{9D81C5FC-3B16-40BA-81DE-7D23B8331B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D81C5FC-3B16-40BA-81DE-7D23B8331B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D81C5FC-3B16-40BA-81DE-7D23B8331B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
