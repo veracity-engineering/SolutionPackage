@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using System.Security.Claims;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
@@ -11,9 +12,9 @@ namespace DNVGL.OAuth.Web.TokenCache
 		/// Generates a MSAL Account Id from user claims and OIDC Options.
 		/// </summary>
 		/// <param name="claimsPrincipal"></param>
-		/// <param name="oidcOptions">The <see cref="OidcOptions.TenantId">TenantId</see> of the options should be in GUID format.</param>
+		/// <param name="oidcOptions">The <see cref="OpenIdConnectOptions.TenantId">TenantId</see> of the options should be in GUID format.</param>
 		/// <returns></returns>
-		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal, OidcOptions oidcOptions)
+		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal, OpenIdConnectOptions oidcOptions)
 		{
 			var objectId = claimsPrincipal.GetObjectId();
 			var tenantId = oidcOptions.TenantId;
