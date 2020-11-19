@@ -1,4 +1,5 @@
 # Overview
+DNVGL.OAuth.Api.HttpClient package has two credentials. One is user credentials which use current user's credentials to access api. Other is client credentials which is a service to service model to access api. 
 
 # Package Install
 
@@ -9,8 +10,9 @@ https://dnvgl-one.pkgs.visualstudio.com/_packaging/DNVGL.SolutionPackage/nuget/v
 ```
 
 Package Manager Console
+```
 PM> `Install-Package DNVGL.OAuth.Api.HttpClient`
-
+```
 Or Package Manager for solution/project
 ![](../images/dnvgl.oauth.api.httpclient/add-package.png)
 
