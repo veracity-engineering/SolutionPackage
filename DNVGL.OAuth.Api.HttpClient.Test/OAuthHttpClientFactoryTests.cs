@@ -15,7 +15,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Test
             var context = new DefaultHttpContext();
             mockHttpContextAccessor.Setup(m => m.HttpContext).Returns(context);
 
-            var mockMsalAppBuilder = new Mock<IMsalAppBuilder>();
+            var mockClientAppBuilder = new Mock<IClientAppBuilder>();
 
             var userHttpClientName = "UserFlow";
             var serverHttpClientName = "ServerFlow";
@@ -36,7 +36,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Test
             };
             var oauthHttpClientFactory = new OAuthHttpClientFactory(options, 
                 mockHttpContextAccessor.Object, 
-                mockMsalAppBuilder.Object);
+                mockClientAppBuilder.Object);
 
             var userHttpClient = oauthHttpClientFactory.Create(userHttpClientName);
             Assert.IsNotNull(userHttpClient);
