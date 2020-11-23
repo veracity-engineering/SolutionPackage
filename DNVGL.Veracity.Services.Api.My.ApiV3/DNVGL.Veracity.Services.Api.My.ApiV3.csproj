@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
+  </ItemGroup>
+
+</Project>
