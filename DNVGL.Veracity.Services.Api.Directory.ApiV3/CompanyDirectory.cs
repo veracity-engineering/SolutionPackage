@@ -1,22 +1,16 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.Veracity.Services.Api.ApiV3;
 using DNVGL.Veracity.Services.Api.Models;
-using Newtonsoft.Json;
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 {
-    public class CompanyDirectory : ICompanyDirectory
+    public class CompanyDirectory : ApiResourceClient, ICompanyDirectory
     {
-        private IOAuthHttpClientFactory _httpClientFactory;
-
         private const string HttpClientConfigurationName = "company-directory-api";
-        private HttpClient _client;
 
-        public CompanyDirectory(IOAuthHttpClientFactory httpClientFactory)
+        public CompanyDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
         {
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<Company> Get(string companyId)
@@ -28,18 +22,6 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
             var content = await response.Content.ReadAsStringAsync();
             return Deserialize<Company>(content);
         }
-
-        private HttpClient GetOrCreateHttpClient()
-        {
-            if (_client == null)
-            {
-                _client = _httpClientFactory.Create(HttpClientConfigurationName);
-                _client.DefaultRequestHeaders.Add("Accept", "application/json");
-            }
-            return _client;
-        }
-
-        private T Deserialize<T>(string value) => JsonConvert.DeserializeObject<T>(value);
     }
 
     internal class CompanyDirectoryUrls

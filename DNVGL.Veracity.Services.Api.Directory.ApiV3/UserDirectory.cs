@@ -1,23 +1,17 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.Veracity.Services.Api.ApiV3;
 using DNVGL.Veracity.Services.Api.Models;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 {
-    public class UserDirectory : IUserDirectory
+    public class UserDirectory : ApiResourceClient, IUserDirectory
     {
-        private IOAuthHttpClientFactory _httpClientFactory;
-
         private const string HttpClientConfigurationName = "user-directory-api";
-        private HttpClient _client;
 
-        public UserDirectory(IOAuthHttpClientFactory httpClientFactory)
+        public UserDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
         {
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<User> Get(string userId)
@@ -69,18 +63,6 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
             var content = await response.Content.ReadAsStringAsync();
             return Deserialize<Subscription>(content);
         }
-
-        private HttpClient GetOrCreateHttpClient()
-        {
-            if (_client == null)
-            {
-                _client = _httpClientFactory.Create(HttpClientConfigurationName);
-                _client.DefaultRequestHeaders.Add("Accept", "application/json");
-            }
-            return _client;
-        }
-
-        private T Deserialize<T>(string value) => JsonConvert.DeserializeObject<T>(value);
     }
 
     internal class UserDirectoryUrls
