@@ -38,13 +38,16 @@ namespace DNVGL.AuthTest.Web
                 {
                     OnAuthorizationCodeReceived = async context =>
                     {
-                        var msalAppBuilder = context.HttpContext.RequestServices.GetService<IMsalAppBuilder>();
-                        var result = await msalAppBuilder.AcquireTokenByAuthorizationCode(context);
+                        var msalApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
+                            .WithOpenIdConnectOptions(o)
+                            .BuildForUserCredentials(context);
+                        var result = await msalApp.AcquireTokenByAuthorizationCode(context);
                     }
                 };
             });
 
             services.AddOAuthHttpClientFactory(o => this.Configuration.Bind("OAuthHttpClients", o));
+            services.AddSingleton<IUserService, UserService>();
             //services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 
             services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

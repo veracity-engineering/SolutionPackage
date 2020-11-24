@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Veracity.Services.Api.ApiV3", "DNVGL.Veracity.Services.Api.ApiV3\DNVGL.Veracity.Services.Api.ApiV3.csproj", "{51EB910C-ACEF-497C-95B5-136E36D2C429}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Web.Security.Tests", "DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{CA220DA8-71AC-4BA1-809B-6C073F7FF468}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

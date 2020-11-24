@@ -27,7 +27,7 @@ namespace DNVGL.Web.Security
         /// <code>
         ///  <para/>app.UseDefaultHeaders(h =>
         ///  <para/>{
-        ///  <para/>h.Add("X-Frame-Options", "DENNY");;
+        ///  <para/>h.Add("X-Frame-Options", "DENNY");
         ///  <para/>});
         /// </code>
         /// </item>
