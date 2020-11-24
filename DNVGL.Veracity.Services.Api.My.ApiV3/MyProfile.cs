@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My.ApiV3
 {
-    public class ProfileMy : IProfileMy
+    public class MyProfile : IMyProfile
     {
         private IOAuthHttpClientFactory _httpClientFactory;
 
         private const string HttpClientConfigurationName = "profile-my-api";
         private HttpClient _client;
 
-        public ProfileMy(IOAuthHttpClientFactory httpClientFactory)
+        public MyProfile(IOAuthHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }

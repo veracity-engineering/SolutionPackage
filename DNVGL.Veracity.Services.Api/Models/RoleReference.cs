@@ -1,6 +1,6 @@
 ﻿namespace DNVGL.Veracity.Services.Api.Models
 {
-    public class CompanyReference : Reference
+    public class RoleReference : Reference
     {
     }
 }

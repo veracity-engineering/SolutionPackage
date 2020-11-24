@@ -5,9 +5,9 @@ namespace DNVGL.Veracity.Services.Api.My.ApiV3.Extensions
 {
     public static class ConfigurationExtensions
     {
-        public static IServiceCollection AddUserDirectory(this IServiceCollection services)
+        public static IServiceCollection AddMyProfile(this IServiceCollection services)
         {
-            services.AddScoped<IProfileMy>(s => new ProfileMy(s.GetRequiredService<IOAuthHttpClientFactory>()));
+            services.AddScoped<IMyProfile>(s => new MyProfile(s.GetRequiredService<IOAuthHttpClientFactory>()));
             return services;
         }
     }

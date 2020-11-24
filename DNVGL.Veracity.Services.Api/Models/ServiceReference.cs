@@ -1,6 +1,6 @@
 ﻿namespace DNVGL.Veracity.Services.Api.Models
 {
-    public class ServiceReference
+    public class ServiceReference : Reference
     {
     }
 }

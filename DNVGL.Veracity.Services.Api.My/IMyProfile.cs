@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-    public interface IProfileMy
+    public interface IMyProfile
     {
         Task<Profile> Get();
     }
