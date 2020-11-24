@@ -10,11 +10,11 @@ namespace DNVGL.Veracity.Services.Api.Directory
 
         Task Delete(string userId);
 
-        Task<IEnumerable<User>> ListByEmail(string email);
+        Task<IEnumerable<UserReference>> ListByEmail(string email);
 
         Task<IEnumerable<CompanyReference>> ListCompanies(string userId);
 
-        Task<IEnumerable<ServiceReference>> ListServices(string userId);
+        Task<IEnumerable<ServiceReference>> ListServices(string userId, int page = 1, int pageSize = 20);
 
         Task<Subscription> GetSubscription(string userId, string serviceId);
     }

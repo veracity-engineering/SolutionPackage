@@ -3,6 +3,7 @@ using DNVGL.Veracity.Services.Api.ApiV3;
 using DNVGL.Veracity.Services.Api.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 {
@@ -30,12 +31,12 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<IEnumerable<User>> ListByEmail(string email)
+        public async Task<IEnumerable<UserReference>> ListByEmail(string email)
         {
             var response = await GetOrCreateHttpClient().GetAsync(UserDirectoryUrls.UsersByEmail(email));
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<User>>(content);
+            return Deserialize<IEnumerable<UserReference>>(content);
         }
 
         public async Task<IEnumerable<CompanyReference>> ListCompanies(string userId)
@@ -46,9 +47,9 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
             return Deserialize<IEnumerable<CompanyReference>>(content);
         }
 
-        public async Task<IEnumerable<ServiceReference>> ListServices(string userId)
+        public async Task<IEnumerable<ServiceReference>> ListServices(string userId, int page = 1, int pageSize = 20)
         {
-            var response = await GetOrCreateHttpClient().GetAsync(UserDirectoryUrls.UsersServices(userId));
+            var response = await GetOrCreateHttpClient().GetAsync(UserDirectoryUrls.UsersServices(userId, page, pageSize));
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             return Deserialize<IEnumerable<ServiceReference>>(content);
@@ -71,12 +72,12 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 
         public static string User(string userId) => $"{Root}/{userId}";
 
-        public static string UsersByEmail(string email) => $"{Root}/by/.email={email}";
+        public static string UsersByEmail(string email) => $"{Root}/by/email?email={HttpUtility.UrlEncode(email)}";
 
         public static string UsersCompanies(string userId) => $"{User(userId)}/companies";
 
-        public static string UsersServices(string userId) => $"{User(userId)}/services";
+        public static string UsersServices(string userId, int page, int pageSize) => $"{User(userId)}/services?page={page}&pageSize={pageSize}";
 
-        public static string UsersServiceSubscription(string userId, string serviceId) => $"{UsersServices(userId)}/{serviceId}";
+        public static string UsersServiceSubscription(string userId, string serviceId) => $"{User(userId)}/services/{serviceId}";
     }
 }

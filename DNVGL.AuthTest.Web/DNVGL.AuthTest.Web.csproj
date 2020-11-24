@@ -21,6 +21,9 @@
     <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
     <ProjectReference Include="..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
     <ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.Directory.ApiV3\DNVGL.Veracity.Services.Api.Directory.ApiV3.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.Directory\DNVGL.Veracity.Services.Api.Directory.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -41,9 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api", "DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj", "{7E4951E5-5949-476F-99E4-4D8D63A758A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Veracity.Services.Api.ApiV3", "DNVGL.Veracity.Services.Api.ApiV3\DNVGL.Veracity.Services.Api.ApiV3.csproj", "{51EB910C-ACEF-497C-95B5-136E36D2C429}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api.ApiV3", "DNVGL.Veracity.Services.Api.ApiV3\DNVGL.Veracity.Services.Api.ApiV3.csproj", "{51EB910C-ACEF-497C-95B5-136E36D2C429}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Web.Security.Tests", "DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{CA220DA8-71AC-4BA1-809B-6C073F7FF468}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Web.Security.Tests", "DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{CA220DA8-71AC-4BA1-809B-6C073F7FF468}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +115,10 @@ Global
 		{51EB910C-ACEF-497C-95B5-136E36D2C429}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51EB910C-ACEF-497C-95B5-136E36D2C429}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51EB910C-ACEF-497C-95B5-136E36D2C429}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,10 @@
-﻿namespace DNVGL.Veracity.Services.Api.Models
+﻿using Newtonsoft.Json;
+
+namespace DNVGL.Veracity.Services.Api.Models
 {
     public class UserReference : Reference
     {
-        public bool Activated { get; set; }
+        [JsonProperty("activated")]
+        public bool IsActivated { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace DNVGL.Veracity.Services.Api.Models
 {
@@ -13,8 +14,12 @@ namespace DNVGL.Veracity.Services.Api.Models
         public string Country { get; set; }
         public string CountryCode { get; set; }
         public string ZipCode { get; set; }
+
+        [JsonProperty("#employees")]
         public uint NumberOfEmployees { get; set; }
         public string Email { get; set; }
+
+        [JsonProperty("#requests")]
         public uint NumberOfRequests { get; set; }
         public string InternalId { get; set; }
     }
