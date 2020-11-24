@@ -23,7 +23,8 @@
     <ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
     <ProjectReference Include="..\DNVGL.Veracity.Services.Api.Directory.ApiV3\DNVGL.Veracity.Services.Api.Directory.ApiV3.csproj" />
     <ProjectReference Include="..\DNVGL.Veracity.Services.Api.Directory\DNVGL.Veracity.Services.Api.Directory.csproj" />
-    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.My.ApiV3\DNVGL.Veracity.Services.Api.My.ApiV3.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
   </ItemGroup>
 
 </Project>

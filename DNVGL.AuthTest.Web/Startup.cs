@@ -6,6 +6,7 @@ using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.Veracity.Services.Api.Directory.ApiV3.Extensions;
+using DNVGL.Veracity.Services.Api.My.ApiV3.Extensions;
 
 namespace DNVGL.AuthTest.Web
 {
@@ -51,6 +52,7 @@ namespace DNVGL.AuthTest.Web
             services.AddSingleton<IUserService, UserService>();
 
             services.AddUserDirectory();
+            services.AddMyProfile();
             //services.AddOAuthHttpClientFactory(this.Configuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 
             services.AddMvc(o => o.EnableEndpointRouting = false);//.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

@@ -1,4 +1,6 @@
-﻿namespace DNVGL.Veracity.Services.Api.Models
+﻿using Newtonsoft.Json;
+
+namespace DNVGL.Veracity.Services.Api.Models
 {
     public class Profile
     {
@@ -10,15 +12,25 @@
         public string Name { get; set; }
         public string Email { get; set; }
         public string Id { get; set; }
+
+        [JsonProperty("#companies")]
         public uint NumberOfCompanies { get; set; }
-        public bool VerifiedEmail { get; set; }
+
+        [JsonProperty("verifiedEmail")]
+        public bool IsEmailVerified { get; set; }
         public string Language { get; set; }
         public string Phone { get; set; }
-        public bool VerifiedPhone { get; set; }
+
+        [JsonProperty("verifiedPhone")]
+        public bool IsPhoneVerified { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string CountryCode { get; set; }
-        public bool ManagedAccount { get; set; }
-        public bool Activated { get; set; }
+
+        [JsonProperty("managedAccount")]
+        public bool IsAccountManaged { get; set; }
+
+        [JsonProperty("activated")]
+        public bool IsActivated { get; set; }
     }
 }
