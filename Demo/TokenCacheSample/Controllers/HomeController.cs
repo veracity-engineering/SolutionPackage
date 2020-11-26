@@ -10,20 +10,21 @@ namespace TokenCacheDemo.Controllers
 	[Authorize]
 	public class HomeController : Controller
 	{
-		private IMsalAppBuilder _msalAppBuilder;
+		private IClientAppBuilder _appBuilder;
 
-		public HomeController(IMsalAppBuilder msalAppBuilder)
+		public HomeController(IClientAppBuilder appBuilder)
 		{
-			_msalAppBuilder = msalAppBuilder;
+			_appBuilder = appBuilder;
 		}
 
 		public async Task<IActionResult> Index()
 		{
 			try
 			{
-				var account = await _msalAppBuilder.GetAccount(this.HttpContext);
+				var clientApp = _appBuilder.BuildForUserCredentials(this.HttpContext);
+				var account = await clientApp.GetAccount(this.HttpContext);
 				this.ViewBag.Account = account;
-				var result = await _msalAppBuilder.AcquireTokenSilent(this.HttpContext);
+				var result = await clientApp.AcquireTokenSilent(this.HttpContext);
 				this.ViewBag.Token = result.AccessToken ?? result.IdToken;
 			}
 			catch(Exception e)
