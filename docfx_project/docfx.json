@@ -4,13 +4,14 @@
 			"src": [
 				{
 					"files": [
-						"DNVGL.OAuth.Web.Abstractions/**.csproj",
-						"DNVGL.OAuth.Web/**.csproj",
-						"DNVGL.OAuth.Web.Swagger/**.csproj"
+						"DNVGL.OAuth.*/**.csproj",
+						"DNVGL.Web.*/**.csproj"
 					],
 					"exclude": [
 						"**/bin/**",
-						"**/obj/**"
+						"**/obj/**",
+						"*.Tests/**",
+						"*.Demo/**"
 					],
 					"src": ".."
 				}
