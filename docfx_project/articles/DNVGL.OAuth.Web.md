@@ -13,7 +13,7 @@ To install the DNVGL.OAuth.Web package, you may need to add the package feed bel
 https://dnvgl-one.pkgs.visualstudio.com/_packaging/DNVGL.SolutionPackage/nuget/v3/index.json
 ```
 
-![](../images/DNVGL.OAuth.Web/adding-feed.png)
+![](../images/DNVGL.OAuth.Web/add-feed.png)
 
 Search nuget package of DNVGL.OAuth.Web and add it to your project.
 ![](../images/DNVGL.OAuth.Web/download-package.png)
