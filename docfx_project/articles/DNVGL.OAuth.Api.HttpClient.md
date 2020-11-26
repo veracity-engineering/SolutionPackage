@@ -35,11 +35,9 @@ Or Package Manager for solution/project
         "BaseUri": "https://localhost/api/client",
         "SubscriptionKey": "eqrqisfs34s1qre734"
         "OpenIdConnectOptions": {
-          "ResponseType": "code",
           "TenantId": "ed815121-cdfa-4097-b524-e2b23cd36eb6",
           "ClientId": "35807f23-80d5-4e97-b07a-21b86013a9ff",
           "ClientSecret": "44adfa232#1ad6@#",
-          "CallbackPath": "/signin-oidc",
           "Scopes": [ "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation", "offline_access" ],
           "SignInPolicy": "B2C_1A_SignInWithADFSIdp"
         }
