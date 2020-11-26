@@ -1,5 +1,4 @@
 using DNVGL.OAuth.Web;
-using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.OAuth.Web.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

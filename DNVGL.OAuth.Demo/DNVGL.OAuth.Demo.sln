@@ -9,32 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Web", "..\DNVGL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Web.Swagger", "..\DNVGL.OAuth.Web.Swagger\DNVGL.OAuth.Web.Swagger.csproj", "{B3D844C4-2E91-4B35-B10A-C3DB435B6A48}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docfx_project", "..\docfx_project\", "{42559CEB-87F4-42FF-AE04-FA593B2885F3}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_53110"
-		Debug.AspNetCompiler.PhysicalPath = "..\docfx_project\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53110\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_53110"
-		Release.AspNetCompiler.PhysicalPath = "..\docfx_project\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53110\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "53110"
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{8B181D2D-D7D9-440C-922D-AF4D6F934639}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleOidc", "..\Demos\SimpleOidc\SimpleOidc.csproj", "{22542BE8-A3B2-4C37-94E1-3064F4330A01}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenCacheDemo", "..\Demos\TokenCacheDemo\TokenCacheDemo.csproj", "{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.AuthTest.Web", "..\DNVGL.AuthTest.Web\DNVGL.AuthTest.Web.csproj", "{D6613187-084A-4746-A2DF-4CCC2E2E5BCA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Web.Abstractions", "..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj", "{9910C9AF-B327-47E7-92D5-CD6591E1D778}"
@@ -57,18 +31,6 @@ Global
 		{B3D844C4-2E91-4B35-B10A-C3DB435B6A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3D844C4-2E91-4B35-B10A-C3DB435B6A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3D844C4-2E91-4B35-B10A-C3DB435B6A48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{42559CEB-87F4-42FF-AE04-FA593B2885F3}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22542BE8-A3B2-4C37-94E1-3064F4330A01}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6613187-084A-4746-A2DF-4CCC2E2E5BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6613187-084A-4746-A2DF-4CCC2E2E5BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6613187-084A-4746-A2DF-4CCC2E2E5BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -80,10 +42,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{22542BE8-A3B2-4C37-94E1-3064F4330A01} = {8B181D2D-D7D9-440C-922D-AF4D6F934639}
-		{97D4E5B4-8F7D-4042-AD23-36BA4F6747CD} = {8B181D2D-D7D9-440C-922D-AF4D6F934639}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA2F02B7-E26D-4422-82B5-5BA630E5ADBB}
