@@ -19,6 +19,7 @@ namespace TokenCacheDemo
 			var oidcOptions = new OidcOptions
 			{
 				TenantId = "ed815121-cdfa-4097-b524-e2b23cd36eb6",
+				Authority= "https://login.microsoftonline.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp",
 				SignInPolicy = "b2c_1a_signinwithadfsidp",
 				ClientId = "35807f23-80d5-4e97-b07a-21b86013a9ff",
 				ClientSecret = "44-TyAb|e:0b^HaL.DlQ)&|6",

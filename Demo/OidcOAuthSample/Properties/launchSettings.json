@@ -16,8 +16,8 @@
             },
             "applicationUrl": "https://localhost:5001"
         },
-        "BasicOidc": {
-            "commandName": "IISExpress",
+        "SimpleOidc": {
+            "commandName": "Project",
             "launchBrowser": true,
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
