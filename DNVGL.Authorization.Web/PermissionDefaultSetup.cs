@@ -7,16 +7,34 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DNVGL.Authorization.Web
 {
+    /// <summary>
+    /// Extension methods to register permission related service to <see cref="IServiceCollection"/>
+    /// </summary>
     public static class PermissionDefaultSetup
     {
-
-        public static IServiceCollection UseDefaultPermissionSource<T>(this IServiceCollection services) where T : IUserPermissionReader
-        {
-            return services.AddSingleton<IPermissionRepository, PermissionRepository>().AddPermissionAuthorization<T>();
-        }
-
+        /// <summary>
+        /// Setup permission authorization with default <see cref="PermissionRepository"/> and customized implementation of <see cref="IUserPermissionReader"/>.
+        /// <para>Register <see cref="IPermissionRepository"/>'s default implementation <see cref="PermissionRepository"/> which fetch all permissions defined in source code.</para>
+        /// <para>The implementation of <see cref="IUserPermissionReader"/> must be specified to replace generic type T</para>
+        /// </summary>
+        /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services) where T : IUserPermissionReader
         {
+            return services.AddPermissionAuthorization<T, PermissionRepository>();
+        }
+
+        /// <summary>
+        /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/> and  <see cref="IUserPermissionReader"/>.
+        /// </summary>
+        /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
+        /// <typeparam name="R">constraints to <see cref="IPermissionRepository"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddPermissionAuthorization<T,R>(this IServiceCollection services) where T : IUserPermissionReader where R: IPermissionRepository
+        {
+            services.AddSingleton(typeof(IPermissionRepository), typeof(R));
             services.AddScoped(typeof(IUserPermissionReader), typeof(T));
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
