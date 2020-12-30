@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DNVGL.Authorization.Web
 {
     /// <summary>
-    /// This attribute is attached to an enum filed to define a permission entity.
+    /// The definition a permission entity.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class PermissionValueAttribute : Attribute
+    public class PermissionEntity
     {
         /// <summary>
-        /// Permission's Id should be unique at global level. 1-4 are reserved Id.
+        /// Permission's Id should be unique at global level.
         /// </summary>
         public string Id { get; set; }
 
@@ -40,6 +38,5 @@ namespace DNVGL.Authorization.Web
         /// <para>group permissions on UI</para>
         /// </summary>
         public string Group { get; set; }
-
     }
 }
