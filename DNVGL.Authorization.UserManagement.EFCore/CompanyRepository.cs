@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
@@ -16,29 +18,36 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             _context = context;
         }
 
-        public Task<IEnumerable<Company>> All()
+        public async Task<IEnumerable<Company>> All()
         {
-            throw new NotImplementedException();
+            return await _context.Set<Company>().OrderBy(t => t.Name).ToListAsync();
         }
 
-        public Task<Company> Create(Company company)
+        public async Task<Company> Create(Company company)
         {
-            throw new NotImplementedException();
+            var item = (await _context.AddAsync(company)).Entity;
+
+            await _context.SaveChangesAsync();
+
+            return item;
         }
 
-        public Task Delete(string Id)
+        public async Task Delete(string Id)
         {
-            throw new NotImplementedException();
+            var company = await Read(Id);
+            _context.Companys.Remove(company);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<Company> Read(string Id)
+        public async Task<Company> Read(string Id)
         {
-            throw new NotImplementedException();
+            return await _context.Companys.FindAsync(Id);
         }
 
-        public Task<Company> Update(Company company)
+        public async Task Update(Company company)
         {
-            throw new NotImplementedException();
+            _context.Companys.Update(company);
+            await _context.SaveChangesAsync();
         }
     }
 }

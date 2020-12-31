@@ -10,7 +10,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
     {
         Task<User> Create(User user);
         Task<User> Read(string Id);
-        Task<User> Update(User user);
+        Task Update(User user);
         Task Delete(string Id);
         Task<IEnumerable<User>> All();
         Task<IEnumerable<User>> GetUsersOfRole(string roleId);
