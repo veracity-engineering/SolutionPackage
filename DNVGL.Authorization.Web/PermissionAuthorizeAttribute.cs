@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DNVGL.Authorization.Web
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class PermissionAuthorizeAttribute : AuthorizeAttribute
     {
@@ -16,11 +19,19 @@ namespace DNVGL.Authorization.Web
             get { return _permissionsToCheck; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="permissionsToCheck"></param>
         public PermissionAuthorizeAttribute(params string[] permissionsToCheck) : base("PermissionAuthorize")
         {
             _permissionsToCheck = permissionsToCheck;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="permissionsToCheck"></param>
         public PermissionAuthorizeAttribute(params Enum[] permissionsToCheck) : base("PermissionAuthorize") 
         {
             _permissionsToCheck = permissionsToCheck.Select(x => x.GetPermissionKey()).ToArray();

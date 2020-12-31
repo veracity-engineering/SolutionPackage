@@ -8,7 +8,7 @@ namespace DNVGL.Authorization.Web.Tests.Mock
     {
         public enum MockPremissions
         {
-            [PermissionValue(Id = "5", Key = "MockUser", Name = "MockUser", Group = "Admin", Description = "MockUser")]
+            [PermissionValue(id: "5", key: "MockUser", name: "MockUser", group: "Admin", description: "MockUser")]
             MockUser,
         }
     }

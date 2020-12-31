@@ -15,25 +15,25 @@ namespace DNVGL.Authorization.Web
             /// <summary>
             /// Permission of user crud operations
             /// </summary>
-            [PermissionValue(Id = "1", Key = "ManageUser", Name = "ManageUser", Group = "Admin", Description = "ManageUser")]
+            [PermissionValue(id: "1", key: "ManageUser", name: "ManageUser", group: "Admin", description: "ManageUser")]
             ManageUser,
 
             /// <summary>
             /// Permission of user readonly operation
             /// </summary>
-            [PermissionValue(Id = "2", Key = "ViewUser", Name = "ViewUser", Group = "Admin", Description = "ViewUser")]
+            [PermissionValue(id: "2", key: "ViewUser", name: "ViewUser", group: "Admin", description: "ViewUser")]
             ViewUser,
 
             /// <summary>
             /// Permission of role readonly operation
             /// </summary>
-            [PermissionValue(Id = "3", Key = "ViewRole", Name = "ViewRole", Group = "Admin", Description = "ViewRole")]
+            [PermissionValue(id: "3", key: "ViewRole", name: "ViewRole", group: "Admin", description: "ViewRole")]
             ViewRole,
 
             /// <summary>
             /// Permission of role crud operations
             /// </summary>
-            [PermissionValue(Id = "4", Key = "ManageRole", Name = "ManageRole", Group = "Admin", Description = "ManageRole")]
+            [PermissionValue(id: "4", key: "ManageRole", name: "ManageRole", group: "Admin", description: "ManageRole")]
             ManageRole
         }
     }
