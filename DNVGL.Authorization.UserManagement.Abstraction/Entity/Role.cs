@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
@@ -11,7 +12,8 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Description { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
-        public IEnumerable<string> PermissionKeys { get; set; }
+        public string Permissions { get; set; }
+        public IReadOnlyList<string> PermissionKeys => Permissions.Split(';').ToList();
         public string CreatedBy { get; private set; }
         public DateTime CreatedOnUtc { get; private set; }
         public string UpdatedBy { get; private set; }

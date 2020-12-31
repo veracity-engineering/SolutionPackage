@@ -49,17 +49,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiV3", "ApiV3", "{FB9BE59A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authorization", "Authorization", "{2E985B44-D129-41BC-8CA8-7AC4975CFE61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.Web", "DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web", "DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.Abstraction", "DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.Abstraction", "DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.MSSQL.EF", "DNVGL.Authorization.UserManagement.MSSQL.EF\DNVGL.Authorization.UserManagement.MSSQL.EF.csproj", "{3D6B3350-B412-4257-85EC-AD139BB8ACEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.MSSQL.EF", "DNVGL.Authorization.UserManagement.MSSQL.EF\DNVGL.Authorization.UserManagement.MSSQL.EF.csproj", "{3D6B3350-B412-4257-85EC-AD139BB8ACEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.CosmosSQL", "DNVGL.Authorization.UserManagement.CosmosSQL\DNVGL.Authorization.UserManagement.CosmosSQL.csproj", "{118D2A2B-66F8-45BD-85AA-6A4ACFDCC892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.CosmosSQL", "DNVGL.Authorization.UserManagement.CosmosSQL\DNVGL.Authorization.UserManagement.CosmosSQL.csproj", "{118D2A2B-66F8-45BD-85AA-6A4ACFDCC892}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.InMemory", "DNVGL.Authorization.UserManagement.InMemory\DNVGL.Authorization.UserManagement.InMemory.csproj", "{ADF9ADEC-389A-4560-8B79-ED0BF8AE2675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.InMemory", "DNVGL.Authorization.UserManagement.InMemory\DNVGL.Authorization.UserManagement.InMemory.csproj", "{ADF9ADEC-389A-4560-8B79-ED0BF8AE2675}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.Web.Tests", "DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web.Tests", "DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.EFCore", "DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj", "{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.ApiControllers", "DNVGL.Authorization.UserManagement.ApiControllers\DNVGL.Authorization.UserManagement.ApiControllers.csproj", "{E1083941-EBD5-43FF-ADD7-FDA087FF9900}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNVGL.Authorization.UserManagement.EFCore.Tests", "DNVGL.Authorization.UserManagement.EFCore.Tests\DNVGL.Authorization.UserManagement.EFCore.Tests.csproj", "{06A08091-8196-4629-A907-08C251BFD6A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +165,18 @@ Global
 		{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1083941-EBD5-43FF-ADD7-FDA087FF9900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1083941-EBD5-43FF-ADD7-FDA087FF9900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1083941-EBD5-43FF-ADD7-FDA087FF9900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1083941-EBD5-43FF-ADD7-FDA087FF9900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A08091-8196-4629-A907-08C251BFD6A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A08091-8196-4629-A907-08C251BFD6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A08091-8196-4629-A907-08C251BFD6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A08091-8196-4629-A907-08C251BFD6A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -180,6 +198,9 @@ Global
 		{118D2A2B-66F8-45BD-85AA-6A4ACFDCC892} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 		{ADF9ADEC-389A-4560-8B79-ED0BF8AE2675} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 		{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
+		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
+		{E1083941-EBD5-43FF-ADD7-FDA087FF9900} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
+		{06A08091-8196-4629-A907-08C251BFD6A3} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

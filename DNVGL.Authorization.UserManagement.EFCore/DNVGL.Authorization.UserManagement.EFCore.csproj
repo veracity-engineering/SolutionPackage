@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
     <ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
   </ItemGroup>
