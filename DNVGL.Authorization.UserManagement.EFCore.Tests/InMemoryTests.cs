@@ -37,7 +37,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
         }
 
         [Fact]
-        public async Task GetAllAsync()
+        public async Task GetAllRoleAsync()
         {
             var options = new DbContextOptionsBuilder<UserManagementContext>()
                 .UseInMemoryDatabase(databaseName: "GetAllAsync")
@@ -55,7 +55,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
         }
 
         [Fact]
-        public async Task ReadAsync()
+        public async Task ReadRoleAsync()
         {
             var options = new DbContextOptionsBuilder<UserManagementContext>()
                            .UseInMemoryDatabase(databaseName: "ReadAsync")
@@ -72,6 +72,62 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var roleRepository = new RoleRepository(context);
                 var role = await roleRepository.Read("1");
                 Assert.Equal("Admin", role.Name);
+            }
+        }
+
+        [Fact]
+        public async Task DeleteRoleAsync()
+        {
+            var options = new DbContextOptionsBuilder<UserManagementContext>()
+                           .UseInMemoryDatabase(databaseName: "DeleteAsync")
+                           .Options;
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                await roleRepository.Create(ExpectedRole);
+            }
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                await roleRepository.Delete("1");
+            }
+
+
+            using (var context = CreateContext(options))
+            {
+                Assert.Equal(0, context.Roles.Count());
+            }
+        }
+
+        [Fact]
+        public async Task UpdateRoleAsync()
+        {
+            var options = new DbContextOptionsBuilder<UserManagementContext>()
+                           .UseInMemoryDatabase(databaseName: "UpdateAsync")
+                           .Options;
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                await roleRepository.Create(ExpectedRole);
+            }
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                var role = await roleRepository.Read("1");
+                role.Permissions = role.Permissions + ";ViewRole";
+                await roleRepository.Update(role);
+            }
+
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                var role = await roleRepository.Read("1");
+                Assert.Contains(role.PermissionKeys, t => t == "ViewRole");
             }
         }
 

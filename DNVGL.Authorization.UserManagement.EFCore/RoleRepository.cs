@@ -32,9 +32,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             return item;
         }
 
+
         public async Task Delete(string Id)
         {
-            throw new NotImplementedException();
+            var role = await Read(Id);
+            _context.Roles.Remove(role);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Role> Read(string Id)
@@ -42,9 +45,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             return await _context.Roles.FindAsync(Id);
         }
 
-        public async Task<Role> Update(Role role)
+        public async Task Update(Role role)
         {
-            throw new NotImplementedException();
+            _context.Roles.Update(role);
+            await _context.SaveChangesAsync();
         }
     }
 }
