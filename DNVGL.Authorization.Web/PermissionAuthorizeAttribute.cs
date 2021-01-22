@@ -32,9 +32,9 @@ namespace DNVGL.Authorization.Web
         /// 
         /// </summary>
         /// <param name="permissionsToCheck"></param>
-        public PermissionAuthorizeAttribute(params Enum[] permissionsToCheck) : base("PermissionAuthorize") 
+        public PermissionAuthorizeAttribute(params object[] permissionsToCheck) : base("PermissionAuthorize") 
         {
-            _permissionsToCheck = permissionsToCheck.Select(x => x.GetPermissionKey()).ToArray();
+            _permissionsToCheck = permissionsToCheck.Select(x => (x as Enum).GetPermissionKey()).ToArray();
         }
     }
 }

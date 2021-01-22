@@ -21,7 +21,7 @@ namespace DNVGL.Authorization.Web.Tests
             var repo = new PermissionRepository();
             var lst = await repo.GetAll();
             Assert.NotNull(lst);
-            Assert.Contains(lst, t => t.Name == "ManageUser");
+            Assert.Contains(lst, t => t.Name == "Manage User");
         }
 
         [Fact]
