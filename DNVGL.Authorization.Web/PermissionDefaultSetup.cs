@@ -4,6 +4,8 @@ using System.Text;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authorization.Policy;
+using Microsoft.AspNetCore.Http;
 
 namespace DNVGL.Authorization.Web
 {
@@ -34,14 +36,31 @@ namespace DNVGL.Authorization.Web
         /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddPermissionAuthorization<T,R>(this IServiceCollection services) where T : IUserPermissionReader where R: IPermissionRepository
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(typeof(IPermissionRepository), typeof(R));
             services.AddScoped(typeof(IUserPermissionReader), typeof(T));
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
-            return services.AddAuthorization(config =>
+            return services.AddAuthorizationCore(config =>
             {
                 config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
             });
+
+            //return services.AddAuthorization(config =>
+            //{
+            //    config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
+            //});
+
+            //return services;
         }
+
+        //public static Action<AuthorizationOptions> ConfigureAuthorization<T>(this IServiceCollection services) where T : IUserPermissionReader
+        //{
+        //    services.AddPermissionAuthorization<T>();
+        //    return config =>
+        //    {
+        //        config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
+        //    };
+        //}
     }
 }
