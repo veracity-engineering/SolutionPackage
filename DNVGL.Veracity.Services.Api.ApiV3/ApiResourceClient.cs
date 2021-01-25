@@ -29,6 +29,8 @@ namespace DNVGL.Veracity.Services.Api.ApiV3
             return _client;
         }
 
+        protected string Serialize<T>(T value) => _serializer.Serialize<T>(value);
+
         protected T Deserialize<T>(string value) => _serializer.Deserialize<T>(value);
     }
 }

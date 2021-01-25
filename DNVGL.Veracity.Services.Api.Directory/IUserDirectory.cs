@@ -8,7 +8,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
     {
         Task<User> Get(string userId);
 
-        Task Delete(string userId);
+        Task<IEnumerable<User>> ListByUserId(params string[] userIds);
 
         Task<IEnumerable<UserReference>> ListByEmail(string email);
 
