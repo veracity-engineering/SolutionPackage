@@ -41,7 +41,7 @@ namespace DNVGL.Authorization.Web
             Group = group;
         }
         /// <summary>
-        /// Permission's Id should be unique at global level. 1-4 are reserved Id.
+        /// Permission's Id should be unique at global level. 1-6 are reserved Id.
         /// </summary>
         public string Id { get; set; }
 

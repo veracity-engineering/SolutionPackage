@@ -14,18 +14,21 @@ namespace DNVGL.Authorization.Web
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserPermissionReader _userPermission;
+        private readonly PermissionOptions _premissionOptions;
 
         public PermissionAuthorizationHandler(
-                IHttpContextAccessor httpContextAccessor, IUserPermissionReader userPermission)
+                IHttpContextAccessor httpContextAccessor, IUserPermissionReader userPermission, PermissionOptions permissionOptions)
         {
             _httpContextAccessor = httpContextAccessor;
             _userPermission = userPermission;
+            _premissionOptions = permissionOptions;
         }
 
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, IEnumerable<PermissionAuthorizeAttribute> attributes)
         {
-            var varacityId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
+            //var varacityId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
+            var varacityId = _premissionOptions.GetUserIdentity(_httpContextAccessor.HttpContext);
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
             var ownedPermissions = await _userPermission.GetPermissions(varacityId);
 
@@ -36,7 +39,8 @@ namespace DNVGL.Authorization.Web
             else
             {
                 var missedPermissions = requiredPermissions.Where(t => ownedPermissions.Any(x => x.Key == t) == false).ToList();
-                throw new UnauthorizedAccessException($"miss permissions: {string.Join(",", missedPermissions)}.");
+                //throw new UnauthorizedAccessException($"miss permissions: {string.Join(",", missedPermissions)}.");
+                _premissionOptions.HandleUnauthorizedAccess(_httpContextAccessor.HttpContext,string.Join(",", missedPermissions));
             }
         }
     }

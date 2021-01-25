@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace DNVGL.Authorization.Web
 {
@@ -14,6 +15,8 @@ namespace DNVGL.Authorization.Web
     /// </summary>
     public static class PermissionDefaultSetup
     {
+
+
         /// <summary>
         /// Setup permission authorization with default <see cref="PermissionRepository"/> and customized implementation of <see cref="IUserPermissionReader"/>.
         /// <para>Register <see cref="IPermissionRepository"/>'s default implementation <see cref="PermissionRepository"/> which fetch all permissions defined in source code.</para>
@@ -22,9 +25,9 @@ namespace DNVGL.Authorization.Web
         /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services) where T : IUserPermissionReader
+        public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserPermissionReader
         {
-            return services.AddPermissionAuthorization<T, PermissionRepository>();
+            return services.AddPermissionAuthorization<T, PermissionRepository>(buildPermissionOptions);
         }
 
         /// <summary>
@@ -34,9 +37,27 @@ namespace DNVGL.Authorization.Web
         /// <typeparam name="R">constraints to <see cref="IPermissionRepository"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T,R>(this IServiceCollection services) where T : IUserPermissionReader where R: IPermissionRepository
+        public static IServiceCollection AddPermissionAuthorization<T, R>(this IServiceCollection services, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserPermissionReader where R : IPermissionRepository
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddScoped<PermissionOptions>(provider =>
+            {
+                var permissionOptions = buildPermissionOptions == null ? new PermissionOptions() : buildPermissionOptions();
+                if (permissionOptions.GetUserIdentity == null)
+                {
+                    permissionOptions.GetUserIdentity = (httpContext) => httpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
+                }
+
+                if (permissionOptions.HandleUnauthorizedAccess == null)
+                {
+                    permissionOptions.HandleUnauthorizedAccess = BuiltinUnauthorizedAccessHandler.ThrowExceptionDirectly;
+                }
+
+                return permissionOptions;
+            });
+
+
             services.AddSingleton(typeof(IPermissionRepository), typeof(R));
             services.AddScoped(typeof(IUserPermissionReader), typeof(T));
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -45,22 +66,7 @@ namespace DNVGL.Authorization.Web
             {
                 config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
             });
-
-            //return services.AddAuthorization(config =>
-            //{
-            //    config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
-            //});
-
-            //return services;
         }
 
-        //public static Action<AuthorizationOptions> ConfigureAuthorization<T>(this IServiceCollection services) where T : IUserPermissionReader
-        //{
-        //    services.AddPermissionAuthorization<T>();
-        //    return config =>
-        //    {
-        //        config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
-        //    };
-        //}
     }
 }
