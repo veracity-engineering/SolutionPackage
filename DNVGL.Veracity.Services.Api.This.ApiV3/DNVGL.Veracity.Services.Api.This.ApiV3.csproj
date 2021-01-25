@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.ApiV3\DNVGL.Veracity.Services.Api.ApiV3.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.This\DNVGL.Veracity.Services.Api.This.csproj" />
+  </ItemGroup>
+
+</Project>
