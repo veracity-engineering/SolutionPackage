@@ -4,15 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
     <Company>DNVGL</Company>
-    <AssemblyName>DNVGL.Veracity.Services.Api</AssemblyName>
+    <AssemblyName>DNVGL.Veracity.Services.Api.Directory.Abstractions</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
   </ItemGroup>
 
 </Project>

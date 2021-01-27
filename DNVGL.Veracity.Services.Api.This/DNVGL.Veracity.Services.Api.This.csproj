@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj">
-      <Private>true</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
   </ItemGroup>
 
 </Project>
