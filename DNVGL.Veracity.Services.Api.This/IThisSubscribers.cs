@@ -7,12 +7,12 @@ namespace DNVGL.Veracity.Services.Api.This
 {
     public interface IThisSubscribers
     {
-        Task<IEnumerable<UserReference>> ListSubscribers();
+        Task<IEnumerable<UserReference>> List(int page, int pageSize);
 
-        Task<UserReference> GetSubscriber(string userId);
+        Task<UserReference> Get(string userId);
 
-        Task AddSubscriber(string userId, SubscriptionOptions options);
+        Task Add(string userId, SubscriptionOptions options);
 
-        Task RemoveSubscriber(string userId);
+        Task Remove(string userId);
     }
 }

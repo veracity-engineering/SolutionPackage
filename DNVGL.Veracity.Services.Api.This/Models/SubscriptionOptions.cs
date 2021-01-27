@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DNVGL.Veracity.Services.Api.This.Models
+﻿namespace DNVGL.Veracity.Services.Api.This.Models
 {
     public class SubscriptionOptions
     {
+        public string Role { get; set; }
     }
 }
