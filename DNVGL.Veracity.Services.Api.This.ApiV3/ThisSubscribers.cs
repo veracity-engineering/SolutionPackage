@@ -23,7 +23,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
 
         public async Task<UserReference> Get(string userId)
         {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisSubscribersUrls.Subscriber(userId)));
+            var response = await GetOrCreateHttpClient().GetAsync(ThisSubscribersUrls.Subscriber(userId));
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return null;
             response.EnsureSuccessStatusCode();

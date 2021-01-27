@@ -20,7 +20,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
         public async Task AddSubscription(string serviceId, string userId, SubscriptionOptions options)
         {
             var response = await GetOrCreateHttpClient().PutAsync(ThisServicesUrls.ServiceSubscriber(serviceId, userId), new StringContent(Serialize(options)));
-            object p = response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             await response.Content.ReadAsStringAsync();
         }
 

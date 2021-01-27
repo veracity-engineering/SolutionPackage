@@ -6,9 +6,9 @@ namespace DNVGL.Veracity.Services.Api.ApiV3
 {
     public abstract class ApiResourceClient
     {
-        private IOAuthHttpClientFactory _httpClientFactory;
-        private ISerializer _serializer;
-        private string _httpClientConfigurationName;
+        private readonly IOAuthHttpClientFactory _httpClientFactory;
+        private readonly ISerializer _serializer;
+        private readonly string _httpClientConfigurationName;
 
         private HttpClient _client;
 
