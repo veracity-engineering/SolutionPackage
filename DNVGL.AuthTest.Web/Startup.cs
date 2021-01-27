@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.OAuth.Web;
 using DNVGL.OAuth.Web.Abstractions;
-using DNVGL.Veracity.Services.Api.Directory.ApiV3.Extensions;
-using DNVGL.Veracity.Services.Api.My.ApiV3.Extensions;
+using DNVGL.Veracity.Services.Api.Directory.Extensions;
+using DNVGL.Veracity.Services.Api.My.Extensions;
 
 namespace DNVGL.AuthTest.Web
 {
