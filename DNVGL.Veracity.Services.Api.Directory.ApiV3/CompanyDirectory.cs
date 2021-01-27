@@ -8,9 +8,7 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 {
     public class CompanyDirectory : ApiResourceClient, ICompanyDirectory
     {
-        private const string HttpClientConfigurationName = "company-directory-api";
-
-        public CompanyDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public CompanyDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

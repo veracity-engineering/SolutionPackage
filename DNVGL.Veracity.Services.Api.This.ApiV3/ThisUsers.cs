@@ -11,9 +11,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
 {
     public class ThisUsers : ApiResourceClient, IThisUsers
     {
-        private const string HttpClientConfigurationName = "users-this-api";
-
-        public ThisUsers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public ThisUsers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

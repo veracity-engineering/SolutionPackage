@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
+    <Company>DNVGL</Company>
+    <AssemblyName>DNVGL.Veracity.Services.Api.Directory.ApiV3</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

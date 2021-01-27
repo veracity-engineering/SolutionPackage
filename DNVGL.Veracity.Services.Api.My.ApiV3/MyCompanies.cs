@@ -10,9 +10,7 @@ namespace DNVGL.Veracity.Services.Api.My.ApiV3
 {
     public class MyCompanies : ApiResourceClient, IMyCompanies
     {
-        private const string HttpClientConfigurationName = "companies-my-api";
-
-        public MyCompanies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public MyCompanies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

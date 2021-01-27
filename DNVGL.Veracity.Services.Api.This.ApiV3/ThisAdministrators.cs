@@ -8,9 +8,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
 {
     public class ThisAdministrators : ApiResourceClient, IThisAdministrators
     {
-        private const string HttpClientConfigurationName = "administrators-this-api";
-
-        public ThisAdministrators(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public ThisAdministrators(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

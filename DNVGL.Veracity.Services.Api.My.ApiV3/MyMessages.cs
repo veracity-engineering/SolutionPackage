@@ -10,9 +10,7 @@ namespace DNVGL.Veracity.Services.Api.My.ApiV3
 {
     public class MyMessages : ApiResourceClient, IMyMessages
     {
-        private const string HttpClientConfigurationName = "messages-my-api";
-
-        public MyMessages(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public MyMessages(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

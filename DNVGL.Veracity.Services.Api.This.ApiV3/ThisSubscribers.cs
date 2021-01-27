@@ -10,9 +10,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
 {
     public class ThisSubscribers : ApiResourceClient, IThisSubscribers
     {
-        private const string HttpClientConfigurationName = "subscribers-this-api";
-
-        public ThisSubscribers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public ThisSubscribers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

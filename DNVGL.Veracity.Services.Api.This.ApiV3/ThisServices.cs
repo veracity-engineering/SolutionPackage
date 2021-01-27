@@ -13,7 +13,7 @@ namespace DNVGL.Veracity.Services.Api.This.ApiV3
     {
         private const string HttpClientConfigurationName = "services-this-api";
 
-        public ThisServices(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public ThisServices(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName = HttpClientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

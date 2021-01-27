@@ -7,9 +7,7 @@ namespace DNVGL.Veracity.Services.Api.My.ApiV3
 {
     public class MyPolicies : ApiResourceClient, IMyPolicies
     {
-        private const string HttpClientConfigurationName = "policies-my-api";
-
-        public MyPolicies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public MyPolicies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

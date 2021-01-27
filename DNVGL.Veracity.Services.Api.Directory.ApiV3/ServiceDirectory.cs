@@ -8,9 +8,7 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
 {
     public class ServiceDirectory : ApiResourceClient, IServiceDirectory
     {
-        private const string HttpClientConfigurationName = "service-directory-api";
-
-        public ServiceDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public ServiceDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 
