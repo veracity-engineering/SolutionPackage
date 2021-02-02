@@ -41,17 +41,30 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<IEnumerable<User>> GetUsersOfCompany(string companyId)
         {
-            return await _context.Users.Include(t => t.Company).Include(t => t.Role).Where(t => t.CompanyId == companyId).ToListAsync();
+            //return await _context.Users.Include(t => t.Company).Include(t => t.Role).Where(t => t.CompanyId == companyId).ToListAsync();
+            return await _context.Users.Where(t => t.CompanyId == companyId).ToListAsync();
         }
 
         public async Task<IEnumerable<User>> GetUsersOfRole(string roleId)
         {
-            return await _context.Users.Include(t => t.Company).Include(t => t.Role).Where(t => t.RoleId == roleId).ToListAsync();
+            //return await _context.Users.Include(t => t.Company).Include(t => t.Role).Where(t => t.RoleId == roleId).ToListAsync();
+            return await _context.Users.Where(t => t.RoleId == roleId).ToListAsync();
         }
 
         public async Task<User> Read(string Id)
         {
-            return await _context.Users.Include(b => b.Company).Include(b => b.Role).SingleOrDefaultAsync(p => p.Id == Id);
+            //return await _context.Users.Include(b => b.Company).Include(b => b.Role).SingleOrDefaultAsync(p => p.Id == Id);
+
+            var user = await _context.Users.SingleOrDefaultAsync(p => p.Id == Id);
+
+            if (user == null)
+                return null;
+
+            var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
+            var role = await _context.Roles.SingleOrDefaultAsync(p => p.Id == user.RoleId);
+            user.Company = company;
+            user.Role = role;
+            return user;
         }
 
         public async Task Update(User user)

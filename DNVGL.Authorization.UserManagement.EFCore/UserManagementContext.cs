@@ -12,15 +12,27 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         public DbSet<Role> Roles { get; set; }
         public DbSet<Company> Companys { get; set; }
         public DbSet<User> Users { get; set; }
-
+        private Action<ModelBuilder> _prebuildModel;
         public UserManagementContext(DbContextOptions<UserManagementContext> options)
             : base(options)
         {
         }
 
+        public UserManagementContext(DbContextOptions<UserManagementContext> options, Action<ModelBuilder> buildModel)
+       : base(options)
+        {
+            _prebuildModel = buildModel;
+        }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            if (_prebuildModel != null)
+            {
+                _prebuildModel(modelBuilder);
+            }
 
             modelBuilder.Entity<Role>(entity =>
             {

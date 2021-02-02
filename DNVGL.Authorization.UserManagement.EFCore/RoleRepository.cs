@@ -42,7 +42,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<Role> Read(string Id)
         {
-            return await _context.Roles.FindAsync(Id);
+            return await _context.Roles.SingleOrDefaultAsync(t=>t.Id==Id);
         }
 
         public async Task Update(Role role)

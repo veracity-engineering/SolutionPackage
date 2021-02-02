@@ -41,7 +41,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<Company> Read(string Id)
         {
-            return await _context.Companys.FindAsync(Id);
+            return await _context.Companys.SingleOrDefaultAsync(t => t.Id == Id);
         }
 
         public async Task Update(Company company)

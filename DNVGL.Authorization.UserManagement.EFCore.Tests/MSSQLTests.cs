@@ -15,9 +15,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
     public class MSSQLTests
     {
         private const string CONNECTION_STRING = @"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;";
-        private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options)
-   => new UserManagementContext(options);
-        private Role ExpectedRole = new Role() { Id = "1", Name = "Admin", Permissions = "ManageUser;ViewUser" };
+        private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options) => new UserManagementContext(options);
 
 
         public MSSQLTests()
@@ -48,7 +46,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var roleRepository = new RoleRepository(context);
                 var roleAdded = await roleRepository.Create(new Role()
                 {
-                    Id = "1",
+                    Id = "2",
                     Name = "Admin",
                     Description = "Administrator",
                     Active = true,
@@ -64,19 +62,20 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
-                Assert.Equal(1, context.Roles.Count());
-                Assert.Equal("1", context.Roles.Single().Id);
+                Assert.Equal("2", context.Roles.Find("2").Id);
             }
 
             using (var context = CreateContext(options))
             {
                 var roleRepository = new RoleRepository(context);
-                await roleRepository.Delete("1");
+                await roleRepository.Delete("2");
             }
 
             using (var context = CreateContext(options))
             {
-                Assert.Equal(0, context.Roles.Count());
+                var roleRepository = new RoleRepository(context);
+                var role = await roleRepository.Read("2");
+                Assert.Null(role);
             }
         }
 
@@ -143,16 +142,16 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
-                Assert.Equal(1, context.Users.Count());
-                Assert.Equal("1", context.Users.Single().Id);
+                //Assert.Equal(1, context.Users.Count());
+                Assert.Equal("1", context.Users.Find("1").Id);
 
                 var userRepository = new UserRepository(context);
 
                 var users = await userRepository.GetUsersOfCompany("1");
-                Assert.Equal("1", users.Single().Id);
+                Assert.Equal("1", users.First().Id);
 
                 users = await userRepository.GetUsersOfRole("1");
-                Assert.Equal("1", users.Single().Id);
+                Assert.Equal("1", users.First().Id);
 
                 var user = await userRepository.Read("1");
                 Assert.Equal("1", user.Id);
@@ -176,9 +175,16 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
-                Assert.Equal(0, context.Users.Count());
-                Assert.Equal(0, context.Roles.Count());
-                Assert.Equal(0, context.Companys.Count());
+                var userRepository = new UserRepository(context);
+                var companyRepository = new CompanyRepository(context);
+                var roleRepository = new RoleRepository(context);
+
+                var role = await roleRepository.Read("1");
+                var company = await companyRepository.Read("1");
+                var user = await userRepository.Read("1");
+                Assert.Null(role);
+                Assert.Null(company);
+                Assert.Null(user);
             }
 
         }
