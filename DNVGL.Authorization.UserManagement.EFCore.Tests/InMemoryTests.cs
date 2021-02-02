@@ -15,6 +15,39 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
 
         [Fact]
+        public async Task CreateUserAsync()
+        {
+            var options = new DbContextOptionsBuilder<UserManagementContext>()
+                .UseInMemoryDatabase(databaseName: "CreateUser")
+                .Options;
+
+            using (var context = CreateContext(options))
+            {
+                var roleRepository = new RoleRepository(context);
+                var roleAdded = await roleRepository.Create(new Role() { Id = "1" });
+
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "2" });
+
+                var userRepository = new UserRepository(context);
+                var userAdded = await userRepository.Create(new User() { Id = "3", Company= companyAdded, Role = roleAdded });
+            }
+
+            using (var context = CreateContext(options))
+            {
+                Assert.Equal(1, context.Users.Count());
+                Assert.Equal("3", context.Users.Single().Id);
+
+                var userRepository = new UserRepository(context);
+                var userAdded = await userRepository.Read("3");
+                Assert.NotNull(userAdded.Company);
+                Assert.NotNull(userAdded.Role);
+            }
+
+        }
+
+
+        [Fact]
         public async Task CreateRoleAsync()
         {
             var options = new DbContextOptionsBuilder<UserManagementContext>()

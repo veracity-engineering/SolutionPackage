@@ -11,9 +11,9 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Description { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
-        public string CreatedBy { get; private set; }
-        public DateTime CreatedOnUtc { get; private set; }
-        public string UpdatedBy { get; private set; }
-        public DateTime UpdatedOnUtc { get; private set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedOnUtc { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime UpdatedOnUtc { get; set; }
     }
 }
