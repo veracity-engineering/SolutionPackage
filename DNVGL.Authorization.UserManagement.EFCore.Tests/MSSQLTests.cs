@@ -118,12 +118,32 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     UpdatedOnUtc = DateTime.UtcNow
                 });
 
+                //var userRepository = new UserRepository(context);
+                //var user = await userRepository.Create(new User()
+                //{
+                //    Id = "1",
+                //    Active = true,
+                //    Company = company,
+                //    CreatedBy = "system",
+                //    CreatedOnUtc = DateTime.UtcNow,
+                //    Deleted = false,
+                //    Description = "DNVGL User",
+                //    Email = "He.Ke.Henry.Zhang@Dnvgl.com",
+                //    FirstName = "Zhang",
+                //    LastName = "Henry",
+                //    Role = roleAdded,
+                //    UpdatedBy = "system",
+                //    UpdatedOnUtc = DateTime.UtcNow,
+                //    VeracityId = "aba"
+                //});
+
+
                 var userRepository = new UserRepository(context);
                 var user = await userRepository.Create(new User()
                 {
                     Id = "1",
                     Active = true,
-                    Company = company,
+                    CompanyId = "1",
                     CreatedBy = "system",
                     CreatedOnUtc = DateTime.UtcNow,
                     Deleted = false,
@@ -131,11 +151,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     Email = "He.Ke.Henry.Zhang@Dnvgl.com",
                     FirstName = "Zhang",
                     LastName = "Henry",
-                    Role = roleAdded,
+                    RoleId = "1",
                     UpdatedBy = "system",
                     UpdatedOnUtc = DateTime.UtcNow,
                     VeracityId = "aba"
                 });
+
 
             }
 

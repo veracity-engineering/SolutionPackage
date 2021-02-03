@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using DNVGL.Authorization.UserManagement.EFCore;
+using DNVGL.Authorization.Web;
+using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,9 +28,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <param name="services"></param>
         /// <param name="dbContextOptionBuilder"></param>
         /// <returns></returns>
-        public static IServiceCollection AddUserManagement(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder)
+        public static IServiceCollection AddUserManagement(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder, Func<PermissionOptions> buildPermissionOptions = null)
         {
-            return services.AddDbContext<UserManagementContext>(dbContextOptionBuilder);
+            return services.AddDbContext<UserManagementContext>(dbContextOptionBuilder).AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions);
         }
+
     }
 }
