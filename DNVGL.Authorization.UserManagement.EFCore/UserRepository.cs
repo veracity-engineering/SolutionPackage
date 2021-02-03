@@ -25,6 +25,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<User> Create(User user)
         {
+
+            if (string.IsNullOrEmpty(user.Id))
+            {
+                user.Id = Guid.NewGuid().ToString();
+            }
+
             var item = (await _context.AddAsync(user)).Entity;
 
             await _context.SaveChangesAsync();

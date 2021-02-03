@@ -25,6 +25,11 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<Role> Create(Role role)
         {
+            if (string.IsNullOrEmpty(role.Id))
+            {
+                role.Id = Guid.NewGuid().ToString();
+            }
+
             var item = (await _context.AddAsync(role)).Entity;
 
             await _context.SaveChangesAsync();
