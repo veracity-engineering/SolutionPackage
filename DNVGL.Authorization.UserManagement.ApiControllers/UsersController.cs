@@ -19,11 +19,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         private readonly IRole _roleRepository;
         private readonly IUser _userRepository;
+        private readonly IUserSynchronization _serSynchronization;
 
-        public UsersController(IUser userRepository, IRole roleRepository)
+        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _serSynchronization = userSynchronization;
         }
 
 
@@ -93,6 +95,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.Email = model.Email;
             await _userRepository.Update(user);
         }
+
+        [HttpPut]
+        [Route("sync/{id}")]
+        [PermissionAuthorize(Premissions.ManageUser)]
+        public async Task SyncUser([FromRoute] string id, UserEditModel model)
+        {
+            var user = await _userRepository.Read(id);
+
+            await _serSynchronization.SyncUser(user);
+        }
+
 
         [HttpDelete]
         [Route("{id}")]

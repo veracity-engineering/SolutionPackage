@@ -34,6 +34,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return services
                 .AddDbContext<UserManagementContext>(dbContextOptionBuilder)
                 .AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions)
+                .AddScoped<IUserSynchronization, DummyUserSynchronization>()
+                .AddScoped<IRole, RoleRepository>()
+                .AddScoped<IUser, UserRepository>()
+                .AddScoped<ICompany, CompanyRepository>();
+        }
+
+
+        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserSynchronization
+        {
+            return services
+                .AddDbContext<UserManagementContext>(dbContextOptionBuilder)
+                .AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions)
+                .AddScoped(typeof(IUserSynchronization), typeof(T))
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
                 .AddScoped<ICompany, CompanyRepository>();
