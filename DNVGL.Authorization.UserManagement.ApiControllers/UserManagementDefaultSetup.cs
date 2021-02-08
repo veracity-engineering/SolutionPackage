@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.EFCore;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
@@ -30,7 +31,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <returns></returns>
         public static IServiceCollection AddUserManagement(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder, Func<PermissionOptions> buildPermissionOptions = null)
         {
-            return services.AddDbContext<UserManagementContext>(dbContextOptionBuilder).AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions);
+            return services
+                .AddDbContext<UserManagementContext>(dbContextOptionBuilder)
+                .AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions)
+                .AddScoped<IRole, RoleRepository>()
+                .AddScoped<IUser, UserRepository>()
+                .AddScoped<ICompany, CompanyRepository>();
         }
 
     }

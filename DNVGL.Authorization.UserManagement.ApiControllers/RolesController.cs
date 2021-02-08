@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
+using DNVGL.Authorization.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static DNVGL.Authorization.Web.PermissionMatrix;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
@@ -23,6 +25,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
+        [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<IEnumerable<Role>> GetRoles()
         {
             var result = await _roleRepository.All();
@@ -32,6 +35,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<Role> GetRole([FromRoute] string id)
         {
             var result = await _roleRepository.Read(id);
@@ -40,6 +44,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
+        [PermissionAuthorize(Premissions.ManageRole)]
         public async Task<string> CreateRole([FromBody] RoleEditModel model)
         {
             var role = new Role
@@ -55,6 +60,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageRole)]
         public async Task UpdateRole([FromRoute] string id, RoleEditModel model)
         {
             var role = await _roleRepository.Read(id);
@@ -68,6 +74,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageRole)]
         public async Task DeleteRole([FromRoute] string id)
         {
             await _roleRepository.Delete(id);

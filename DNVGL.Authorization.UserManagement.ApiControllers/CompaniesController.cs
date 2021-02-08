@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
+using DNVGL.Authorization.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static DNVGL.Authorization.Web.PermissionMatrix;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
@@ -23,6 +25,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
+        [PermissionAuthorize(Premissions.ViewCompany)]
         public async Task<IEnumerable<Company>> GetCompanys()
         {
             var result = await _companyRepository.All();
@@ -32,6 +35,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ViewCompany)]
         public async Task<Company> GetCompany([FromRoute] string id)
         {
             var result = await _companyRepository.Read(id);
@@ -40,6 +44,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
         {
             var company = new Company
@@ -54,6 +59,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task UpdateCompany([FromRoute] string id, CompanyEditModel model)
         {
             var company = await _companyRepository.Read(id);
@@ -66,6 +72,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task DeleteCompany([FromRoute] string id)
         {
             await _companyRepository.Delete(id);

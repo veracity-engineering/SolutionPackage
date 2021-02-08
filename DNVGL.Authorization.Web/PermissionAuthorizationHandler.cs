@@ -30,7 +30,7 @@ namespace DNVGL.Authorization.Web
             //var varacityId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
             var varacityId = _premissionOptions.GetUserIdentity(_httpContextAccessor.HttpContext);
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
-            var ownedPermissions = await _userPermission.GetPermissions(varacityId);
+            var ownedPermissions = (await _userPermission.GetPermissions(varacityId))??new List<PermissionEntity>();
 
             if (requiredPermissions.Any() == false || requiredPermissions.All(t => ownedPermissions.Any(x => x.Key == t)) || requiredPermissions.All(t => ownedPermissions.Any(x => x.Id == t)))
             {

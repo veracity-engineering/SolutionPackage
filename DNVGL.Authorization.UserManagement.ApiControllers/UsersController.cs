@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
+using DNVGL.Authorization.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static DNVGL.Authorization.Web.PermissionMatrix;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
@@ -27,7 +29,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IEnumerable<User>> GetRoles()
+        [PermissionAuthorize(Premissions.ViewUser)]
+        public async Task<IEnumerable<User>> GetUsers()
         {
             var result = await _userRepository.All();
 
@@ -36,6 +39,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<User> GetUser([FromRoute] string id)
         {
             var result = await _userRepository.Read(id);
@@ -44,6 +48,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}/permissions")]
+        [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
@@ -53,6 +58,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
+        [PermissionAuthorize(Premissions.ManageUser)]
         public async Task<string> CreateUser([FromBody] UserEditModel model)
         {
             var user = new User
@@ -72,6 +78,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string id, UserEditModel model)
         {
             var user = await _userRepository.Read(id);
@@ -89,6 +96,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [PermissionAuthorize(Premissions.ManageUser)]
         public async Task DeleteUser([FromRoute] string id)
         {
             await _userRepository.Delete(id);
