@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
@@ -12,12 +13,13 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string LastName { get; set; }
         public string VeracityId { get; set; }
         public string Description { get; set; }
-        public string RoleId { get; set; }
+        public string RoleIds { get; set; }
+        public IReadOnlyList<string> RoleIdList => RoleIds.Split(';').ToList();
         public string CompanyId { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
 
-        public Role Role { get; set; }
+        public IReadOnlyList<Role> Roles { get; set; }
         public Company Company { get; set; }
 
         public string CreatedBy { get; set; }

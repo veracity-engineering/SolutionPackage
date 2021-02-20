@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
+using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
@@ -20,12 +22,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         private readonly IRole _roleRepository;
         private readonly IUser _userRepository;
         private readonly IUserSynchronization _serSynchronization;
+        private readonly PermissionOptions _premissionOptions;
 
-        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization)
+        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization,PermissionOptions premissionOptions)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _serSynchronization = userSynchronization;
+            _premissionOptions = premissionOptions;
         }
 
 
@@ -49,13 +53,23 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
+        [Route("currentUser")]
+        [PermissionAuthorize(Premissions.ViewUser)]
+        public async Task<User> GetUserByIdentityId()
+        {
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            var result = await _userRepository.ReadByIdentityId(varacityId);
+            return result;
+        }
+
+
+        [HttpGet]
         [Route("{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            var role = await _roleRepository.Read(user.Role.Id);
-            return role.PermissionKeys;
+            return user.Roles.SelectMany(t => t.PermissionKeys);
         }
 
         [HttpPost]
@@ -71,7 +85,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 VeracityId = model.VeracityId,
                 Active = model.Active,
                 CompanyId = model.CompanyId,
-                RoleId = model.RoleId,
+                RoleIds = string.Join(';', model.RoleIdList),
                 Email = model.Email,
             };
             user = await _userRepository.Create(user);
@@ -91,7 +105,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.LastName = model.LastName;
             user.VeracityId = model.VeracityId;
             user.CompanyId = model.CompanyId;
-            user.RoleId = model.RoleId;
+            user.RoleIds = string.Join(';', model.RoleIdList);
             user.Email = model.Email;
             await _userRepository.Update(user);
         }

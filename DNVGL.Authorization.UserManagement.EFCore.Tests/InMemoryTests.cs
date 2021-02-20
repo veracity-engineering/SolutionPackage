@@ -24,13 +24,14 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
             using (var context = CreateContext(options))
             {
                 var roleRepository = new RoleRepository(context);
-                var roleAdded = await roleRepository.Create(new Role() { Id = "1" });
+                var roleAdded = await roleRepository.Create(new Role() { Id = "1", Name = "Admin", Permissions = "ManageUser;ViewUser" });
+                var roleAdded2 = await roleRepository.Create(new Role() { Id = "2", Name = "Admin2", Permissions = "ManageUser;ViewUser" });
 
                 var companyRepository = new CompanyRepository(context);
                 var companyAdded = await companyRepository.Create(new Company() { Id = "2" });
 
                 var userRepository = new UserRepository(context);
-                var userAdded = await userRepository.Create(new User() { Id = "3", Company= companyAdded, Role = roleAdded });
+                var userAdded = await userRepository.Create(new User() { Id = "3", Company= companyAdded, RoleIds = "1;2" });
             }
 
             using (var context = CreateContext(options))
@@ -41,7 +42,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var userRepository = new UserRepository(context);
                 var userAdded = await userRepository.Read("3");
                 Assert.NotNull(userAdded.Company);
-                Assert.NotNull(userAdded.Role);
+                Assert.NotNull(userAdded.Roles);
+                Assert.Equal(2, userAdded.Roles.Count());
             }
 
         }

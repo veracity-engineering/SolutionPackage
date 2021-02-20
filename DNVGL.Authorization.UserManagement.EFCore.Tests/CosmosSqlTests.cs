@@ -40,7 +40,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var roleRepository = new RoleRepository(context);
                 var roleAdded = await roleRepository.Create(new Role()
                 {
-                    Id = "2",
+                    Id = "3",
                     Name = "Admin",
                     Description = "Administrator",
                     Active = true,
@@ -56,19 +56,19 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
-                Assert.Equal("2", context.Roles.Find("2").Id);
+                Assert.Equal("3", context.Roles.Find("3").Id);
             }
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
                 var roleRepository = new RoleRepository(context);
-                await roleRepository.Delete("2");
+                await roleRepository.Delete("3");
             }
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
                 var roleRepository = new RoleRepository(context);
-                var role = await roleRepository.Read("2");
+                var role = await roleRepository.Read("3");
                 Assert.Null(role);
             }
         }
@@ -96,6 +96,20 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     UpdatedOnUtc = DateTime.UtcNow,
                     Deleted = false,
                     Permissions = "ManageUser;ViewUser"
+                });
+
+                var roleAdded2 = await roleRepository.Create(new Role()
+                {
+                    Id = "2",
+                    Name = "Admin2",
+                    Description = "Administrator",
+                    Active = true,
+                    CreatedBy = "system",
+                    CreatedOnUtc = DateTime.UtcNow,
+                    UpdatedBy = "system",
+                    UpdatedOnUtc = DateTime.UtcNow,
+                    Deleted = false,
+                    Permissions = "ViewRole;ManageRole;ViewCompany;ManageCompany"
                 });
 
 
@@ -126,7 +140,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     Email = "He.Ke.Henry.Zhang@Dnvgl.com",
                     FirstName = "Zhang",
                     LastName = "Henry",
-                    Role = roleAdded,
+                    RoleIds = "1,2",
                     UpdatedBy = "system",
                     UpdatedOnUtc = DateTime.UtcNow,
                     VeracityId = "aba"
@@ -147,6 +161,9 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 users = await userRepository.GetUsersOfRole("1");
                 Assert.Equal("1", users.First().Id);
 
+                users = await userRepository.GetUsersOfRole("2");
+                Assert.Equal("1", users.First().Id);
+
                 var user = await userRepository.Read("1");
                 Assert.Equal("1", user.Id);
                 user.Description = "DNV";
@@ -164,6 +181,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
                 await userRepository.Delete("1");
                 await roleRepository.Delete("1");
+                await roleRepository.Delete("2");
                 await companyRepository.Delete("1");
             }
 

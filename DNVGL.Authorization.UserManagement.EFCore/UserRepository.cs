@@ -20,7 +20,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<IEnumerable<User>> All()
         {
-            return await _context.Set<User>().Include(b => b.Company).Include(b => b.Role).ToListAsync();
+            return await _context.Set<User>().ToListAsync();
+            //return await _context.Set<User>().Include(b => b.Company).Include(b => b.Role).ToListAsync();
         }
 
         public async Task<User> Create(User user)
@@ -54,7 +55,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         public async Task<IEnumerable<User>> GetUsersOfRole(string roleId)
         {
             //return await _context.Users.Include(t => t.Company).Include(t => t.Role).Where(t => t.RoleId == roleId).ToListAsync();
-            return await _context.Users.Where(t => t.RoleId == roleId).ToListAsync();
+            return await _context.Users.Where(t => t.RoleIds.Contains(roleId)).ToListAsync();
         }
 
         public async Task<User> Read(string Id)
@@ -67,9 +68,27 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 return null;
 
             var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
-            var role = await _context.Roles.SingleOrDefaultAsync(p => p.Id == user.RoleId);
+            var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
             user.Company = company;
-            user.Role = role;
+            user.Roles = roles;
+
+
+            return user;
+        }
+
+        public async Task<User> ReadByIdentityId(string IdentityId)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId == IdentityId);
+
+            if (user == null)
+                return null;
+
+            var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
+            var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
+            user.Company = company;
+            user.Roles = roles;
+
+
             return user;
         }
 

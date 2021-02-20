@@ -43,6 +43,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Ignore(t => t.RoleIdList);
+                entity.Ignore(t => t.Roles);
                 //entity.HasOne<Company>().WithMany().HasForeignKey("CompanyId");
                 //entity.HasOne<Role>().WithMany().HasForeignKey("RoleId");
             });
