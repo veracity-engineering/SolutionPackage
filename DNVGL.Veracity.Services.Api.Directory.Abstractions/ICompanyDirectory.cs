@@ -4,10 +4,22 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 {
-    public interface ICompanyDirectory
-    {
-        Task<Company> Get(string companyId);
+	public interface ICompanyDirectory
+	{
+		/// <summary>
+		/// Returns the company by company id.
+		/// </summary>
+		/// <param name="companyId"></param>
+		/// <returns></returns>
+		Task<Company> Get(string companyId);
 
-        Task<IEnumerable<UserReference>> ListUsers(string companyId, int page = 1, int pageSize = 20);
-    }
+		/// <summary>
+		/// Returns a collection of users affiliated with company by company id.
+		/// </summary>
+		/// <param name="companyId"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
+		/// <returns></returns>
+		Task<IEnumerable<UserReference>> ListUsers(string companyId, int page = 1, int pageSize = 20);
+	}
 }

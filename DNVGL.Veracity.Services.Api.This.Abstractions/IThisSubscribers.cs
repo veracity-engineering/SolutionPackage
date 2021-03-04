@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This.Abstractions
 {
+	// TODO: Understand and document this
     public interface IThisSubscribers
-    {
+	{
         Task<IEnumerable<UserReference>> List(int page, int pageSize);
 
         Task<UserReference> Get(string userId);

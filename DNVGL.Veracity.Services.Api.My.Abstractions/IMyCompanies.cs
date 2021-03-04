@@ -4,8 +4,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My.Abstractions
 {
-    public interface IMyCompanies
-    {
-        Task<IEnumerable<CompanyReference>> List();
-    }
+	public interface IMyCompanies
+	{
+		/// <summary>
+		/// Returns a collection of companies the authenticated user is affilated with.
+		/// </summary>
+		/// <returns></returns>
+		Task<IEnumerable<CompanyReference>> List();
+	}
 }

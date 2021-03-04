@@ -5,6 +5,10 @@ namespace DNVGL.Veracity.Services.Api.My.Abstractions
 {
     public interface IMyProfile
     {
-        Task<Profile> Get();
+		/// <summary>
+		/// Returns profile of authenticated user.
+		/// </summary>
+		/// <returns></returns>
+		Task<Profile> Get();
     }
 }

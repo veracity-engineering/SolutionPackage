@@ -5,12 +5,28 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This.Abstractions
 {
-    public interface IThisUsers
-    {
-        Task<IEnumerable<UserReference>> Resolve(string email);
+	// TODO: Verify documentation
+	public interface IThisUsers
+	{
+		/// <summary>
+		/// Create and affiliate a user with the authenticated company.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns></returns>
+		Task<CreateUserReference> Create(CreateUserOptions options);
 
-        Task<CreateUserReference> Create(CreateUserOptions options);
+		/// <summary>
+		/// Create and affiliate a collection of users with the authenticated company.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns></returns>
+		Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options);
 
-        Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options);
-    }
+		/// <summary>
+		/// Returns a user affiliated with the authenticated company by email.
+		/// </summary>
+		/// <param name="email"></param>
+		/// <returns></returns>
+		Task<IEnumerable<UserReference>> Resolve(string email);
+	}
 }

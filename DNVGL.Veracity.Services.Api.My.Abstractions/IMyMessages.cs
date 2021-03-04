@@ -6,10 +6,24 @@ namespace DNVGL.Veracity.Services.Api.My.Abstractions
 {
     public interface IMyMessages
     {
-        Task<IEnumerable<Message>> List(bool includeRead = false);
+		/// <summary>
+		/// Returns a collection of messages for the authenticated user, filtered by unread unless specified.
+		/// </summary>
+		/// <param name="includeRead">Set to true to include all messages, read and unread.</param>
+		/// <returns></returns>
+		Task<IEnumerable<Message>> List(bool includeRead = false);
 
-        Task<Message> Get(string messageId);
+		/// <summary>
+		/// Returns a message received by authenticated user by message id.
+		/// </summary>
+		/// <param name="messageId"></param>
+		/// <returns></returns>
+		Task<Message> Get(string messageId);
 
-        Task<int> GetUnreadCount();
+		/// <summary>
+		/// Returns the number of unread messages for the authenticated user.
+		/// </summary>
+		/// <returns></returns>
+		Task<int> GetUnreadCount();
     }
 }
