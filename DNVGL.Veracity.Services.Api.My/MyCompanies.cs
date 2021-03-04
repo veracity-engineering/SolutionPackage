@@ -1,18 +1,14 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
-using DNVGL.Veracity.Services.Api.ApiV3;
 using DNVGL.Veracity.Services.Api.Models;
-using System;
+using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace DNVGL.Veracity.Services.Api.My.ApiV3
+namespace DNVGL.Veracity.Services.Api.My
 {
     public class MyCompanies : ApiResourceClient, IMyCompanies
     {
-        private const string HttpClientConfigurationName = "companies-my-api";
-
-        public MyCompanies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public MyCompanies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 

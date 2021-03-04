@@ -1,17 +1,16 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
-using DNVGL.Veracity.Services.Api.ApiV3;
+using DNVGL.Veracity.Services.Api.Directory.Abstractions;
 using DNVGL.Veracity.Services.Api.Models;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
+namespace DNVGL.Veracity.Services.Api.Directory
 {
     public class UserDirectory : ApiResourceClient, IUserDirectory
     {
-        private const string HttpClientConfigurationName = "user-directory-api";
-
-        public UserDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer) : base(httpClientFactory, serializer, HttpClientConfigurationName)
+        public UserDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
         }
 
@@ -25,10 +24,14 @@ namespace DNVGL.Veracity.Services.Api.Directory.ApiV3
             return Deserialize<User>(content);
         }
 
-        public async Task Delete(string userId)
+        public async Task<IEnumerable<User>> ListByUserId(params string[] userIds)
         {
-            var response = await GetOrCreateHttpClient().DeleteAsync(UserDirectoryUrls.User(userId));
+            var response = await GetOrCreateHttpClient().PostAsync(UserDirectoryUrls.Root, new StringContent(Serialize(userIds)));
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
             response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return Deserialize<IEnumerable<User>>(content);
         }
 
         public async Task<IEnumerable<UserReference>> ListByEmail(string email)

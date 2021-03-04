@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DNVGL.Veracity.Services.Api.Directory
+namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 {
     public interface IUserDirectory
     {
         Task<User> Get(string userId);
 
-        Task Delete(string userId);
+        Task<IEnumerable<User>> ListByUserId(params string[] userIds);
 
         Task<IEnumerable<UserReference>> ListByEmail(string email);
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DNVGL.Veracity.Services.Api.My
+namespace DNVGL.Veracity.Services.Api.My.Abstractions
 {
     public interface IMyCompanies
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Net.Http;
 
-namespace DNVGL.Veracity.Services.Api.ApiV3
+namespace DNVGL.Veracity.Services.Api
 {
     public abstract class ApiResourceClient
     {
