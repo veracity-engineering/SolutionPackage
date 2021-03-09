@@ -55,7 +55,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                         if (r.PermissionKeys != null)
                         {
-                            RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                            RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
                         }
 
                         return RoleViewDto;
@@ -87,7 +87,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                     if (r.PermissionKeys != null)
                     {
-                        RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                        RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
                     }
 
                     return RoleViewDto;
@@ -98,7 +98,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             if (user.Company.PermissionKeys != null)
             {
-                result.company.Permission = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
+                result.company.permissions = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
             }
 
             return result;
@@ -122,7 +122,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                     if (r.PermissionKeys != null)
                     {
-                        RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                        RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
                     }
 
                     return RoleViewDto;
@@ -133,7 +133,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             if (user.Company.PermissionKeys != null)
             {
-                result.company.Permission = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
+                result.company.permissions = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
             }
 
 

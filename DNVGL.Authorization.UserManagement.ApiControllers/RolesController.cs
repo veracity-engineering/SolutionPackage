@@ -44,7 +44,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (t.PermissionKeys != null)
                 {
-                    dto.Permission = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
                 }
 
                 return dto;
@@ -61,7 +61,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var role = await _roleRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();
             var result = role.ToViewDto<RoleViewDto>();
-            result.Permission = allPermissions.Where(p => role.PermissionKeys.Contains(p.Key));
+            result.permissions = allPermissions.Where(p => role.PermissionKeys.Contains(p.Key));
 
             return result;
         }

@@ -27,6 +27,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 
         private new IReadOnlyList<string> PermissionKeys { get; set; }
 
-        public IEnumerable<PermissionEntity> Permission { get; set; }
+        public IEnumerable<PermissionEntity> permissions { get; set; }
     }
 }
