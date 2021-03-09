@@ -42,8 +42,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var userRepository = new UserRepository(context);
                 var userAdded = await userRepository.Read("3");
                 Assert.NotNull(userAdded.Company);
-                Assert.NotNull(userAdded.Roles);
-                Assert.Equal(2, userAdded.Roles.Count());
+                Assert.NotNull(userAdded.RoleList);
+                Assert.Equal(2, userAdded.RoleList.Count());
             }
 
         }

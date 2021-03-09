@@ -21,7 +21,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         private async Task FetchRoleForUsers(List<User> users)
         {
             var roles =  await _context.Set<Role>().ToListAsync();
-            users.ForEach(t => t.Roles = roles.Where(r => t.RoleIdList!=null && t.RoleIdList.Contains(r.Id)).ToList());
+            users.ForEach(t => t.RoleList = roles.Where(r => t.RoleIdList!=null && t.RoleIdList.Contains(r.Id)).ToList());
         }
 
         public async Task<IEnumerable<User>> All()
@@ -90,7 +90,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
             var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
             user.Company = company;
-            user.Roles = roles;
+            user.RoleList = roles;
 
 
             return user;
@@ -106,7 +106,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
             var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
             user.Company = company;
-            user.Roles = roles;
+            user.RoleList = roles;
 
 
             return user;

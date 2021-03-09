@@ -19,7 +19,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public bool Active { get; set; }
         public bool Deleted { get; set; }
 
-        public IReadOnlyList<Role> Roles { get; set; }
+        public IReadOnlyList<Role> RoleList { get; set; }
         public Company Company { get; set; }
 
         public string CreatedBy { get; set; }

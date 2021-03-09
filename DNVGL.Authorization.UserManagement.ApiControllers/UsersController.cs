@@ -23,22 +23,48 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         private readonly IUser _userRepository;
         private readonly IUserSynchronization _serSynchronization;
         private readonly PermissionOptions _premissionOptions;
+        private readonly IPermissionRepository _permissionRepository;
 
-        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization,PermissionOptions premissionOptions)
+        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization,PermissionOptions premissionOptions, IPermissionRepository permissionRepository)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _serSynchronization = userSynchronization;
             _premissionOptions = premissionOptions;
+            _permissionRepository = permissionRepository;
         }
 
 
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<UserViewModel>> GetUsers()
         {
-            var result = await _userRepository.All();
+            var users = await _userRepository.All();
+            var allPermissions = await _permissionRepository.GetAll();
+
+            var result = users.Select(t =>
+            {
+                var dto = t.ToViewDto<UserViewModel>();
+
+                if (t.RoleList != null)
+                {
+                    dto.Roles = t.RoleList.Select(r =>
+                    {
+                        var RoleViewDto = r.ToViewDto<RoleViewDto>();
+
+                        if (r.PermissionKeys != null)
+                        {
+                            RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                        }
+
+                        return RoleViewDto;
+                    });
+                }
+
+                return dto;
+            });
+
 
             return result;
         }
@@ -46,19 +72,55 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<User> GetUser([FromRoute] string id)
+        public async Task<UserViewModel> GetUser([FromRoute] string id)
         {
-            var result = await _userRepository.Read(id);
+            var allPermissions = await _permissionRepository.GetAll();
+            var user = await _userRepository.Read(id);
+
+            var result = user.ToViewDto<UserViewModel>();
+
+            if (user.RoleList != null)
+            {
+                result.Roles = user.RoleList.Select(r =>
+                {
+                    var RoleViewDto = r.ToViewDto<RoleViewDto>();
+
+                    if (r.PermissionKeys != null)
+                    {
+                        RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                    }
+
+                    return RoleViewDto;
+                });
+            }
+
             return result;
         }
 
         [HttpGet]
         [Route("currentUser")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<User> GetUserByIdentityId()
+        public async Task<UserViewModel> GetUserByIdentityId()
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-            var result = await _userRepository.ReadByIdentityId(varacityId);
+            var allPermissions = await _permissionRepository.GetAll();
+            var user = await _userRepository.ReadByIdentityId(varacityId);
+            var result = user.ToViewDto<UserViewModel>();
+
+            if (user.RoleList != null)
+            {
+                result.Roles = user.RoleList.Select(r =>
+                {
+                    var RoleViewDto = r.ToViewDto<RoleViewDto>();
+
+                    if (r.PermissionKeys != null)
+                    {
+                        RoleViewDto.Permission = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                    }
+
+                    return RoleViewDto;
+                });
+            }
             return result;
         }
 
@@ -69,7 +131,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return user.Roles.SelectMany(t => t.PermissionKeys);
+            return user.RoleList.SelectMany(t => t.PermissionKeys);
         }
 
         [HttpPost]
@@ -85,7 +147,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 VeracityId = model.VeracityId,
                 Active = model.Active,
                 CompanyId = model.CompanyId,
-                RoleIds = string.Join(';', model.RoleIdList),
+                RoleIds = string.Join(';', model.RoleIds),
                 Email = model.Email,
             };
             user = await _userRepository.Create(user);
@@ -105,7 +167,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.LastName = model.LastName;
             user.VeracityId = model.VeracityId;
             user.CompanyId = model.CompanyId;
-            user.RoleIds = string.Join(';', model.RoleIdList);
+            user.RoleIds = string.Join(';', model.RoleIds);
             user.Email = model.Email;
             await _userRepository.Update(user);
         }
