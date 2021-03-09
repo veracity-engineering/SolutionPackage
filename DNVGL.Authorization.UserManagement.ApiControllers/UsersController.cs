@@ -94,6 +94,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 });
             }
 
+            result.company = user.Company.ToViewDto<CompanyViewDto>();
+
+            if (user.Company.PermissionKeys != null)
+            {
+                result.company.Permission = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
+            }
+
             return result;
         }
 
@@ -121,6 +128,15 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                     return RoleViewDto;
                 });
             }
+
+            result.company = user.Company.ToViewDto<CompanyViewDto>();
+
+            if (user.Company.PermissionKeys != null)
+            {
+                result.company.Permission = allPermissions.Where(p => user.Company.PermissionKeys.Contains(p.Key));
+            }
+
+
             return result;
         }
 

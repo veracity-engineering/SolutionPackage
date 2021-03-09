@@ -32,7 +32,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 
         private new IReadOnlyList<Role> RoleList { get; set; }
 
+        private new Company Company { get; set; }
+
         public IEnumerable<RoleViewDto> Roles { get; set; }
+
+        public CompanyViewDto company { get; set; }
 
     }
 }
