@@ -34,6 +34,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 _prebuildModel(modelBuilder);
             }
 
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Ignore(t => t.PermissionKeys);
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.HasKey(e => e.Id);
