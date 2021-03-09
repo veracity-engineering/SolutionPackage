@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DNVGL.Authorization.UserManagement.Abstraction.Entity;
+using DNVGL.Authorization.Web;
 using Newtonsoft.Json;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
@@ -16,5 +18,15 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         public string Permissions { get; set; }
 
         public IList<string> PermissionKeys => Permissions.Split(';').ToList();
+    }
+
+
+    public class RoleViewDto : Role
+    {
+        private new string Permissions { get; set; }
+
+        private new IReadOnlyList<string> PermissionKeys { get; set; }
+
+        public IEnumerable<PermissionEntity> Permission { get; set; }
     }
 }

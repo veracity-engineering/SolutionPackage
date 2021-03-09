@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
+using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
@@ -18,17 +20,35 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     public class RolesController : ControllerBase
     {
         private readonly IRole _roleRepository;
+        private readonly IPermissionRepository _permissionRepository;
 
-        public RolesController(IRole roleRepository)
-            => _roleRepository = roleRepository;
+        public RolesController(IRole roleRepository, IPermissionRepository permissionRepository)
+        {
+            _roleRepository = roleRepository;
+            _permissionRepository = permissionRepository;
+        }
 
 
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewRole)]
-        public async Task<IEnumerable<Role>> GetRoles()
+        public async Task<IEnumerable<RoleViewDto>> GetRoles()
         {
-            var result = await _roleRepository.All();
+            var roles = await _roleRepository.All();
+            var allPermissions = await _permissionRepository.GetAll();
+
+
+            var result = roles.Select(t =>
+            {
+                var dto = t.ToViewDto<RoleViewDto>();
+
+                if (t.PermissionKeys != null)
+                {
+                    dto.Permission = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                }
+
+                return dto;
+            });
 
             return result;
         }
@@ -38,7 +58,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<Role> GetRole([FromRoute] string id)
         {
-            var result = await _roleRepository.Read(id);
+            var role = await _roleRepository.Read(id);
+            var allPermissions = await _permissionRepository.GetAll();
+            var result = role.ToViewDto<RoleViewDto>();
+            result.Permission = allPermissions.Where(p => role.PermissionKeys.Contains(p.Key));
+
             return result;
         }
 
