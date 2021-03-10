@@ -6,6 +6,10 @@ namespace DNVGL.Veracity.Services.Api.My.Abstractions
 {
     public interface IMyServices
     {
-        Task<IEnumerable<MyServiceReference>> List();
+		/// <summary>
+		/// Returns a collection of services the authenticated user is subscribed to.
+		/// </summary>
+		/// <returns></returns>
+		Task<IEnumerable<MyServiceReference>> List();
     }
 }
