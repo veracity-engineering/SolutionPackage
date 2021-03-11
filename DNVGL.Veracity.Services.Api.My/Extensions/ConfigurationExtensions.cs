@@ -28,7 +28,7 @@ namespace DNVGL.Veracity.Services.Api.My.Extensions
             return services;
         }
 
-        public static IServiceCollection AddMyProfile(this IServiceCollection services, string clientConfigurationName = "policies-my-api")
+        public static IServiceCollection AddMyProfile(this IServiceCollection services, string clientConfigurationName = "profile-my-api")
         {
             services.AddSerializer();
             services.AddSingleton<IMyProfile>(s => new MyProfile(s.GetRequiredService<IOAuthHttpClientFactory>(), s.GetRequiredService<ISerializer>(), clientConfigurationName));
