@@ -77,7 +77,7 @@ namespace DNVGL.Veracity.Services.Api.This
         }
     }
 
-    internal class ThisServicesUrls
+    internal static class ThisServicesUrls
     {
         public static string Root => "/veracity/services/v3/this/services";
 

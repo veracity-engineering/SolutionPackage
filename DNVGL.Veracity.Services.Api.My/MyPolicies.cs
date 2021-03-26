@@ -32,7 +32,7 @@ namespace DNVGL.Veracity.Services.Api.My
 		}
 	}
 
-	internal class MyPoliciesUrls
+	internal static class MyPoliciesUrls
 	{
 		public static string Root => "/veracity/services/v3/my/policies";
 

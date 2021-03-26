@@ -49,7 +49,7 @@ namespace DNVGL.Veracity.Services.Api.This
         }
     }
 
-    internal class ThisSubscribersUrls
+    internal static class ThisSubscribersUrls
     {
         public static string Root => "/veracity/services/v3/this/subscribers";
 

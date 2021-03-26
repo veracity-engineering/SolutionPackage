@@ -41,7 +41,7 @@ namespace DNVGL.Veracity.Services.Api.My
         }
     }
 
-    internal class MyMessagesUrls
+    internal static class MyMessagesUrls
     {
         public static string Root => "/veracity/services/v3/my/messages";
 
