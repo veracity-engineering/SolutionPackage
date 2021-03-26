@@ -12,7 +12,7 @@ namespace DNVGL.Veracity.Services.Api
 
         private HttpClient _client;
 
-        public ApiResourceClient(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName)
+        protected ApiResourceClient(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));

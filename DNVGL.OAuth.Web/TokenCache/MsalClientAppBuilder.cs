@@ -10,7 +10,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 {
     public class MsalClientAppBuilder : IClientAppBuilder
     {
-        private ITokenCacheProvider _tokenCacheProvider;
+        private readonly ITokenCacheProvider _tokenCacheProvider;
         private Abstractions.OpenIdConnectOptions _options;
 
         public MsalClientAppBuilder(ITokenCacheProvider tokenCacheProvider)

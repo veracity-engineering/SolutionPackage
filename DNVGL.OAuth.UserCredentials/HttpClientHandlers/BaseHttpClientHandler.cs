@@ -9,7 +9,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
     {
         protected readonly OAuthHttpClientFactoryOptions _options;
 
-        public BaseHttpClientHandler(OAuthHttpClientFactoryOptions options)
+        protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
