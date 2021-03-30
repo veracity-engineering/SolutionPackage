@@ -31,7 +31,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
-        [PermissionAuthorize(Premissions.ViewRole)]
+        [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
         public async Task<IEnumerable<RoleViewDto>> GetRoles()
         {
             var roles = await _roleRepository.All();
