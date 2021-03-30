@@ -8,9 +8,9 @@ using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    public static class DTOHelper
+    internal static class DTOHelper
     {
-        public static R ToViewDto<R>(this object obj) where R : new()
+        internal static R ToViewDto<R>(this object obj) where R : new()
         {
             Type type = typeof(R);
             Type declaringType = obj.GetType();
