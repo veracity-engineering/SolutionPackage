@@ -16,6 +16,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     [Authorize]
     [ApiController]
+    [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/mycompany/users")]
     public class UsersController : ControllerBase
     {

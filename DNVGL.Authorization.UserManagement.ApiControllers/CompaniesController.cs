@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
@@ -9,7 +10,9 @@ using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using static DNVGL.Authorization.Web.PermissionMatrix;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
@@ -17,6 +20,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [Authorize]
     [ApiController]
     [Route("api/companies")]
+    [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     public class CompaniesController : ControllerBase
     {
         private readonly ICompany _companyRepository;
@@ -38,7 +42,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var companys = await _companyRepository.All();
             var allPermissions = await _permissionRepository.GetAll();
 
-
             var result = companys.Select(t =>
             {
                 var dto = t.ToViewDto<CompanyViewDto>();
@@ -47,11 +50,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 {
                     dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
                 }
-                    
+
                 return dto;
             });
-
             return result;
+
         }
 
         [HttpGet]
