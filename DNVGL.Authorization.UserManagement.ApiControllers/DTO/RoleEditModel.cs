@@ -13,6 +13,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         public string Name { get; set; }
         public string Description { get; set; }
         public bool Active { get; set; }
+        public string CompanyId { get; set; }
 
         [JsonIgnore]
         public string Permissions { get; set; }
@@ -24,6 +25,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     public class RoleViewDto : Role
     {
         private new string Permissions { get; set; }
+
+        private new string CompanyId { get; set; }
 
         private new IReadOnlyList<string> PermissionKeys { get; set; }
 

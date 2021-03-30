@@ -18,9 +18,20 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             _context = context;
         }
 
+
+        private async Task FetchCompanyForRoles(List<Role> roles)
+        {
+            var companys = await _context.Set<Company>().ToListAsync();
+            roles.ForEach(t => t.Company = companys.Find(f=>f.Id==t.CompanyId));
+        }
+
+
+
         public async Task<IEnumerable<Role>> All()
         {
-            return await _context.Set<Role>().OrderBy(t => t.Name).ToListAsync();
+            var roles = await _context.Set<Role>().OrderBy(t => t.Name).ToListAsync();
+            await FetchCompanyForRoles(roles);
+            return roles;
         }
 
         public async Task<Role> Create(Role role)
@@ -45,9 +56,20 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Role>> GetRolesOfCompany(string companyId)
+        {
+            var roles = await _context.Roles.Where(t => t.CompanyId == companyId).ToListAsync();
+            await FetchCompanyForRoles(roles);
+            return roles;
+        }
+
         public async Task<Role> Read(string Id)
         {
-            return await _context.Roles.SingleOrDefaultAsync(t=>t.Id==Id);
+            var role = await _context.Roles.SingleOrDefaultAsync(t => t.Id == Id);
+
+            if (role != null)
+                role.Company = await _context.Companys.SingleOrDefaultAsync(t => t.Id == role.CompanyId);
+            return role;
         }
 
         public async Task Update(Role role)

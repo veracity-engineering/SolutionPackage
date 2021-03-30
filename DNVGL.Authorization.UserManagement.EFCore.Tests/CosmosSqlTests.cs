@@ -37,10 +37,26 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
+
+                var companyRepository = new CompanyRepository(context);
+                var company = await companyRepository.Create(new Company()
+                {
+                    Id = "ut2",
+                    Active = true,
+                    CreatedBy = "system",
+                    CreatedOnUtc = DateTime.UtcNow,
+                    Name = "Company A",
+                    Deleted = false,
+                    Description = "Company A",
+                    UpdatedBy = "system",
+                    UpdatedOnUtc = DateTime.UtcNow
+                });
+
+
                 var roleRepository = new RoleRepository(context);
                 var roleAdded = await roleRepository.Create(new Role()
                 {
-                    Id = "3",
+                    Id = "ut3",
                     Name = "Admin",
                     Description = "Administrator",
                     Active = true,
@@ -49,6 +65,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     UpdatedBy = "system",
                     UpdatedOnUtc = DateTime.UtcNow,
                     Deleted = false,
+                    CompanyId = company.Id,
                     Permissions = "ManageUser;ViewUser"
                 });
 
@@ -56,19 +73,22 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
-                Assert.Equal("3", context.Roles.Find("3").Id);
+                Assert.Equal("ut3", context.Roles.Find("ut3").Id);
             }
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
                 var roleRepository = new RoleRepository(context);
-                await roleRepository.Delete("3");
+                await roleRepository.Delete("ut3");
+
+                var companyRepository = new CompanyRepository(context);
+                await companyRepository.Delete("ut2");
             }
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
                 var roleRepository = new RoleRepository(context);
-                var role = await roleRepository.Read("3");
+                var role = await roleRepository.Read("ut3");
                 Assert.Null(role);
             }
         }
@@ -86,7 +106,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var roleRepository = new RoleRepository(context);
                 var roleAdded = await roleRepository.Create(new Role()
                 {
-                    Id = "1",
+                    Id = "ut1",
                     Name = "Admin",
                     Description = "Administrator",
                     Active = true,
@@ -100,7 +120,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
                 var roleAdded2 = await roleRepository.Create(new Role()
                 {
-                    Id = "2",
+                    Id = "ut2",
                     Name = "Admin2",
                     Description = "Administrator",
                     Active = true,
@@ -116,7 +136,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var companyRepository = new CompanyRepository(context);
                 var company = await companyRepository.Create(new Company()
                 {
-                    Id = "1",
+                    Id = "ut1",
                     Active = true,
                     CreatedBy = "system",
                     CreatedOnUtc = DateTime.UtcNow,
@@ -130,7 +150,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var userRepository = new UserRepository(context);
                 var user = await userRepository.Create(new User()
                 {
-                    Id = "1",
+                    Id = "ut1",
                     Active = true,
                     Company = company,
                     CreatedBy = "system",
@@ -140,7 +160,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                     Email = "He.Ke.Henry.Zhang@Dnvgl.com",
                     FirstName = "Zhang",
                     LastName = "Henry",
-                    RoleIds = "1,2",
+                    RoleIds = "ut1,ut2",
                     UpdatedBy = "system",
                     UpdatedOnUtc = DateTime.UtcNow,
                     VeracityId = "aba"
@@ -151,21 +171,21 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
             {
-                Assert.Equal("1", context.Users.Find("1").Id);
+                Assert.Equal("ut1", context.Users.Find("ut1").Id);
 
                 var userRepository = new UserRepository(context);
 
-                var users = await userRepository.GetUsersOfCompany("1");
-                Assert.Equal("1", users.First().Id);
+                var users = await userRepository.GetUsersOfCompany("ut1");
+                Assert.Equal("ut1", users.First().Id);
 
-                users = await userRepository.GetUsersOfRole("1");
-                Assert.Equal("1", users.First().Id);
+                users = await userRepository.GetUsersOfRole("ut1");
+                Assert.Equal("ut1", users.First().Id);
 
-                users = await userRepository.GetUsersOfRole("2");
-                Assert.Equal("1", users.First().Id);
+                users = await userRepository.GetUsersOfRole("ut2");
+                Assert.Equal("ut1", users.First().Id);
 
-                var user = await userRepository.Read("1");
-                Assert.Equal("1", user.Id);
+                var user = await userRepository.Read("ut1");
+                Assert.Equal("ut1", user.Id);
                 user.Description = "DNV";
                 await userRepository.Update(user);
             }
@@ -176,13 +196,13 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var userRepository = new UserRepository(context);
                 var companyRepository = new CompanyRepository(context);
                 var roleRepository = new RoleRepository(context);
-                var user = await userRepository.Read("1");
+                var user = await userRepository.Read("ut1");
                 Assert.Equal("DNV", user.Description);
 
-                await userRepository.Delete("1");
-                await roleRepository.Delete("1");
-                await roleRepository.Delete("2");
-                await companyRepository.Delete("1");
+                await userRepository.Delete("ut1");
+                await roleRepository.Delete("ut1");
+                await roleRepository.Delete("ut2");
+                await companyRepository.Delete("ut1");
             }
 
             using (var context = CreateContext(options, (modelBuilder) => modelBuilder.HasDefaultContainer("User")))
@@ -191,9 +211,9 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var companyRepository = new CompanyRepository(context);
                 var roleRepository = new RoleRepository(context);
 
-                var role = await roleRepository.Read("1");
-                var company = await companyRepository.Read("1");
-                var user = await userRepository.Read("1");
+                var role = await roleRepository.Read("ut1");
+                var company = await companyRepository.Read("ut1");
+                var user = await userRepository.Read("ut1");
                 Assert.Null(role);
                 Assert.Null(company);
                 Assert.Null(user);

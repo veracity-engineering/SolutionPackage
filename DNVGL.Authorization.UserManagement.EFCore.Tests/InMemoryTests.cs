@@ -58,8 +58,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "3" });
+
+
                 var roleRepository = new RoleRepository(context);
-                var roleAdded = await roleRepository.Create(new Role() { Id="1"});
+                var roleAdded = await roleRepository.Create(new Role() { Id="1",CompanyId= companyAdded.Id});
 
             }
 
@@ -80,6 +84,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "3" });
+                ExpectedRole.CompanyId = companyAdded.Id;
+
                 var roleRepository = new RoleRepository(context);
                 var roleAdded = await roleRepository.Create(ExpectedRole);
                 var roleList = await roleRepository.All();
@@ -98,6 +106,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "3" });
+                ExpectedRole.CompanyId = companyAdded.Id;
+
                 var roleRepository = new RoleRepository(context);
                 await roleRepository.Create(ExpectedRole);
             }
@@ -119,6 +131,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "3" });
+                ExpectedRole.CompanyId = companyAdded.Id;
+
                 var roleRepository = new RoleRepository(context);
                 await roleRepository.Create(ExpectedRole);
             }
@@ -145,6 +161,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
+                var companyRepository = new CompanyRepository(context);
+                var companyAdded = await companyRepository.Create(new Company() { Id = "3" });
+                ExpectedRole.CompanyId = companyAdded.Id;
+
                 var roleRepository = new RoleRepository(context);
                 await roleRepository.Create(ExpectedRole);
             }

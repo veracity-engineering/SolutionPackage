@@ -13,6 +13,8 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public bool Active { get; set; }
         public bool Deleted { get; set; }
         public string Permissions { get; set; }
+        public string CompanyId { get; set; }
+        public Company Company { get; set; }
         public IReadOnlyList<string> PermissionKeys => Permissions.Split(';').ToList();
         public string CreatedBy { get; set; }
         public DateTime CreatedOnUtc { get; set; }

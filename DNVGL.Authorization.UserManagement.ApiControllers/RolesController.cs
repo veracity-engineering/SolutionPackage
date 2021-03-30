@@ -54,6 +54,31 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
+        [Route("company/{id}")]
+        [PermissionAuthorize(Premissions.ViewRole)]
+        public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles([FromRoute] string id)
+        {
+            var roles = await _roleRepository.GetRolesOfCompany(id);
+            var allPermissions = await _permissionRepository.GetAll();
+
+
+            var result = roles.Select(t =>
+            {
+                var dto = t.ToViewDto<RoleViewDto>();
+
+                if (t.PermissionKeys != null)
+                {
+                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                }
+
+                return dto;
+            });
+
+            return result;
+        }
+
+
+        [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<Role> GetRole([FromRoute] string id)
@@ -76,6 +101,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Description = model.Description,
                 Name = model.Name,
                 Active = model.Active,
+                CompanyId = model.CompanyId,
                 Permissions = string.Join(';', model.PermissionKeys)
             };
             role = await _roleRepository.Create(role);
@@ -92,6 +118,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             role.Active = model.Active;
             role.Description = model.Description;
             role.Name = model.Name;
+            role.CompanyId = model.CompanyId;
             role.Permissions = string.Join(';', model.PermissionKeys);
             await _roleRepository.Update(role);
         }

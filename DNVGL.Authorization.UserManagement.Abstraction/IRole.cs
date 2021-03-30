@@ -12,6 +12,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         Task<Role> Read(string Id);
         Task Update(Role role);
         Task Delete(string Id);
+        Task<IEnumerable<Role>> GetRolesOfCompany(string companyId);
         Task<IEnumerable<Role>> All();
     }
 }
