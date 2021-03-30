@@ -191,6 +191,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task<string> CreateUser([FromBody] UserEditModel model)
         {
+            var roleIds = await PruneRoles(model.CompanyId, model.RoleIds);
             var user = new User
             {
                 Description = model.Description,
@@ -199,7 +200,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 VeracityId = model.VeracityId,
                 Active = model.Active,
                 CompanyId = model.CompanyId,
-                RoleIds = string.Join(';', model.RoleIds),
+                RoleIds = string.Join(';', roleIds),
                 Email = model.Email,
             };
             user = await _userRepository.Create(user);
@@ -211,6 +212,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string id, UserEditModel model)
         {
+            var roleIds = await PruneRoles(model.CompanyId, model.RoleIds);
             var user = await _userRepository.Read(id);
             user.Id = id;
             user.Active = model.Active;
@@ -219,7 +221,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.LastName = model.LastName;
             user.VeracityId = model.VeracityId;
             user.CompanyId = model.CompanyId;
-            user.RoleIds = string.Join(';', model.RoleIds);
+            user.RoleIds = string.Join(';', roleIds);
             user.Email = model.Email;
             await _userRepository.Update(user);
         }
@@ -241,6 +243,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task DeleteUser([FromRoute] string id)
         {
             await _userRepository.Delete(id);
+        }
+
+        private async Task<IList<string>> PruneRoles(string companyId, IList<string> sourceRoleIds)
+        {
+            var roles = await _roleRepository.GetRolesOfCompany(companyId);
+            return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
         }
     }
 }
