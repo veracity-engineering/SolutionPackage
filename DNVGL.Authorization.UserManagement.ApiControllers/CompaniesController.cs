@@ -70,7 +70,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
-        [HttpPost]
+        
+        [HttpPut]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
@@ -86,7 +87,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return company.Id;
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task UpdateCompany([FromRoute] string id, CompanyEditModel model)
