@@ -42,7 +42,7 @@ PM> `Install-Package DNVGL.Web.Security`
 |font-src|'self' data: https://onedesign.azureedge.net
 |media-src|'self'
 |worker-src|'self' blob:
-|img-src|'self' data: https://onedesign.azureedge.net
+|img-src|'self' https://onedesign.azureedge.net
 |frame-src|'self' https://www.google.com https://www.recaptcha.net/
 |style-src|'self' https://onedesign.azureedge.net
 
@@ -73,11 +73,26 @@ The pacakge supports to overwrite the above default setting. This is a code samp
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //...
-            app.UseDefaultHeaders(h=> h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'"););
+            app.UseDefaultHeaders(h=> h.ReplaceDefaultContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'"););
             //...
         }
     }
  ```
+
+ Or extend the above default setting. This is a code sample to extend styleSrc:
+ ```cs
+     public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=> h.ExtendDefaultContentSecurityPolicy(styleSrc: "'nonce-123456789909876543ghjklkjvcvbnm'"););
+            //...
+        }
+    }
+ ```
+
 
  ## 4. Skip CSP in Response Header for specific requests.
 By default, The package doesn't add csp into respsone for all http requests which url contain '/swagger/'.
