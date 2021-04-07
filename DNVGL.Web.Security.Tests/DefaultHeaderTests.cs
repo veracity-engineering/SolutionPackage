@@ -139,7 +139,7 @@ namespace DNVGL.Web.Security.Tests
                     webHost.Configure(app => app.UseDefaultHeaders(h =>
                     {
                         h.Add("Content-Security-Policy", ExpetctedCustomizedCSP);
-                        //h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+                        //h.ReplaceDefaultContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
                     })
                     .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
                 });
