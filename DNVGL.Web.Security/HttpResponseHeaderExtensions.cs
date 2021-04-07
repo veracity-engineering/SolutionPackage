@@ -17,7 +17,7 @@ namespace DNVGL.Web.Security
         private const string FontSrc = "'self' data: https://onedesign.azureedge.net";
         private const string MediaSrc = "'self'";
         private const string WorkerSrc = "'self' blob:";
-        private const string ImgSrc = "'self' data: https://onedesign.azureedge.net";
+        private const string ImgSrc = "'self' https://onedesign.azureedge.net";
         private const string FrameSrc = "'self' https://www.google.com https://www.recaptcha.net/";
         private const string StyleSrc = "'self' https://onedesign.azureedge.net";
         private static string csp = string.Empty;
@@ -202,7 +202,7 @@ namespace DNVGL.Web.Security
         }
 
         /// <summary>
-        /// <para>Do not add Content-Security-Policy header for specific requests. By default it do not add csp for request url which contains word 'swagger'.</para> 
+        /// <para>Not add Content-Security-Policy header for specific requests. By default it doesn't add csp for request url which contains word 'swagger'.</para> 
         /// <example>
         /// This sample shows how to call the method to skip csp for specific requests.
         /// <code>
