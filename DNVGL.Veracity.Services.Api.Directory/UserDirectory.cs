@@ -69,7 +69,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
         }
     }
 
-    internal class UserDirectoryUrls
+    internal static class UserDirectoryUrls
     {
         public static string Root => "/veracity/services/v3/directory/users";
 

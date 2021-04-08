@@ -33,7 +33,7 @@ namespace DNVGL.Veracity.Services.Api.This
         }
     }
 
-    internal class ThisAdministratorsUrls
+    internal static class ThisAdministratorsUrls
     {
         public static string Root => "/veracity/services/v3/this/administrators";
 

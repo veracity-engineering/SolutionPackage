@@ -23,7 +23,7 @@ namespace DNVGL.Veracity.Services.Api.My
         }
     }
 
-    internal class MyServicesUrls
+    internal static class MyServicesUrls
     {
         public static string Root => "/veracity/services/v3/my/services";
     }

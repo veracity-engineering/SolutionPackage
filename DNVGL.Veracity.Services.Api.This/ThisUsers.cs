@@ -46,7 +46,7 @@ namespace DNVGL.Veracity.Services.Api.This
         }
     }
 
-    internal class ThisUsersUrls
+    internal static class ThisUsersUrls
     {
         public static string Root => "/veracity/services/v3/this/users";
 
