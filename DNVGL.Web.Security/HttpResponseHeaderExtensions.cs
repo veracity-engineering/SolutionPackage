@@ -10,6 +10,16 @@ namespace DNVGL.Web.Security
     /// </summary>
     public static class HttpResponseHeaderExtensions
     {
+        private const string DefaultSrc = "'self'";
+        private const string ObjectSrc = "'self'";
+        private const string ConnectSrc = "'self' https://dc.services.visualstudio.com";
+        private const string ScriptSrc = "'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn";
+        private const string FontSrc = "'self' data: https://onedesign.azureedge.net";
+        private const string MediaSrc = "'self'";
+        private const string WorkerSrc = "'self' blob:";
+        private const string ImgSrc = "'self' https://onedesign.azureedge.net";
+        private const string FrameSrc = "'self' https://www.google.com https://www.recaptcha.net/";
+        private const string StyleSrc = "'self' https://onedesign.azureedge.net";
         private static string csp = string.Empty;
         private static Func<HttpRequest, bool> SkipRequest = (req) => req.Path.ToString().ToLowerInvariant().Contains("/swagger/");
         /// <summary>
@@ -72,7 +82,7 @@ namespace DNVGL.Web.Security
         /// <code>
         ///  <para/>app.UseDefaultHeaders(h =>
         ///  <para/>{
-        ///  <para/>h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  <para/>h.ReplaceDefaultContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
         ///  <para/>});
         /// </code>
         /// </example>
@@ -88,17 +98,17 @@ namespace DNVGL.Web.Security
         /// <param name="imgSrc">The value of img-src, default value is 'self' data: https://onedesign.azureedge.net</param>
         /// <param name="frameSrc">The value of frame-src, default value is 'self' https://www.google.com https://www.recaptcha.net/</param>
         /// <param name="styleSrc">The value of style-src, default value is 'self' https://onedesign.azureedge.net</param>
-        public static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary
-            , string defaultSrc = "'self'"
-            , string objectSrc = "'self'"
-            , string connectSrc = "'self' https://dc.services.visualstudio.com"
-            , string scriptSrc = "'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn"
-            , string fontSrc = "'self' data: https://onedesign.azureedge.net"
-            , string mediaSrc = "'self'"
-            , string workerSrc = "'self' blob:"
-            , string imgSrc = "'self' data: https://onedesign.azureedge.net"
-            , string frameSrc = "'self' https://www.google.com https://www.recaptcha.net/"
-            , string styleSrc = "'self' https://onedesign.azureedge.net")
+        public static void ReplaceDefaultContentSecurityPolicy(this IHeaderDictionary headerDictionary
+            , string defaultSrc = DefaultSrc
+            , string objectSrc = ObjectSrc
+            , string connectSrc = ConnectSrc
+            , string scriptSrc = ScriptSrc
+            , string fontSrc = FontSrc
+            , string mediaSrc = MediaSrc
+            , string workerSrc = WorkerSrc
+            , string imgSrc = ImgSrc
+            , string frameSrc = FrameSrc
+            , string styleSrc = StyleSrc)
         {
             if (headerDictionary.ContainsKey("Content-Security-Policy") || headerDictionary.ContainsKey("Content-Security-Policy-Report-Only"))
                 return;
@@ -122,14 +132,77 @@ namespace DNVGL.Web.Security
             headerDictionary.Add("Content-Security-Policy", new[] { csp });
         }
 
-        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest)
+        private static void PutDefaultContentSecurityPolicy(this IHeaderDictionary headerDictionary)
         {
-            if (!SkipRequest(httpRequest))
-                headerDictionary.AddContentSecurityPolicy();
+            headerDictionary.ReplaceDefaultContentSecurityPolicy();
         }
 
         /// <summary>
-        /// <para>Do not add Content-Security-Policy header for specific requests. By default it do not add csp for request url which contains word 'swagger'.</para> 
+        /// <para> Add your own Content-Security-Policy by passing value to specified parameters</para> 
+        /// <example>
+        /// This sample shows how to call the <see cref="ExtendDefaultContentSecurityPolicy"/> method to overwrite specific csp.
+        /// <code>
+        ///  <para/>app.UseDefaultHeaders(h =>
+        ///  <para/>{
+        ///  <para/>h.ExtendDefaultContentSecurityPolicy(styleSrc: "'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  <para/>});
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="headerDictionary">The Response.Headers</param>
+        /// <param name="defaultSrc">The value of default-src, default value is 'self'</param>
+        /// <param name="objectSrc">The value of object-src, default value is 'self'</param>
+        /// <param name="connectSrc">The value of connect-src, default value is 'self' https://dc.services.visualstudio.com</param>
+        /// <param name="scriptSrc">The value of script-src, default value is 'self'  https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn</param>
+        /// <param name="fontSrc">The value of font-src, default value is 'self' data: https://onedesign.azureedge.net</param>
+        /// <param name="mediaSrc">The value of media-src, default value is 'self'</param>
+        /// <param name="workerSrc">The value of worker-src, default value is 'self' blob:</param>
+        /// <param name="imgSrc">The value of img-src, default value is 'self' data: https://onedesign.azureedge.net</param>
+        /// <param name="frameSrc">The value of frame-src, default value is 'self' https://www.google.com https://www.recaptcha.net/</param>
+        /// <param name="styleSrc">The value of style-src, default value is 'self' https://onedesign.azureedge.net</param>
+        public static void ExtendDefaultContentSecurityPolicy(this IHeaderDictionary headerDictionary
+            , string defaultSrc = ""
+            , string objectSrc = ""
+            , string connectSrc = ""
+            , string scriptSrc = ""
+            , string fontSrc = ""
+            , string mediaSrc = ""
+            , string workerSrc = ""
+            , string imgSrc = ""
+            , string frameSrc = ""
+            , string styleSrc = "")
+        {
+            if (headerDictionary.ContainsKey("Content-Security-Policy") || headerDictionary.ContainsKey("Content-Security-Policy-Report-Only"))
+                return;
+
+            if (string.IsNullOrEmpty(csp))
+            {
+                csp = string.Join("; "
+                    , $"default-src {DefaultSrc} {defaultSrc}"
+                    , $"object-src {ObjectSrc} {objectSrc}"
+                    , $"connect-src {ConnectSrc} {connectSrc}"
+                    , $"script-src {ScriptSrc} {scriptSrc}"
+                    , $"font-src {FontSrc} {fontSrc}"
+                    , $"media-src {MediaSrc} {mediaSrc}"
+                    , $"worker-src {WorkerSrc} {workerSrc}"
+                    , $"img-src {ImgSrc} {imgSrc}"
+                    , $"frame-src {FrameSrc} {frameSrc}"
+                    , $"style-src {StyleSrc} {styleSrc}");
+            }
+
+
+            headerDictionary.Add("Content-Security-Policy", new[] { csp });
+        }
+
+
+        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest)
+        {
+            if (!SkipRequest(httpRequest))
+                headerDictionary.PutDefaultContentSecurityPolicy();
+        }
+
+        /// <summary>
+        /// <para>Not add Content-Security-Policy header for specific requests. By default it doesn't add csp for request url which contains word 'swagger'.</para> 
         /// <example>
         /// This sample shows how to call the method to skip csp for specific requests.
         /// <code>
