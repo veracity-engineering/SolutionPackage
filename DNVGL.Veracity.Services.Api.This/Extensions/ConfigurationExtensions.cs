@@ -24,7 +24,7 @@ namespace DNVGL.Veracity.Services.Api.This.Extensions
         public static IServiceCollection AddThisSubscribers(this IServiceCollection services, string clientConfigurationName = "subscribers-this-api")
         {
             services.AddSerializer();
-            services.AddSingleton<IThisServices>(s => new ThisServices(s.GetRequiredService<IOAuthHttpClientFactory>(), s.GetRequiredService<ISerializer>(), clientConfigurationName));
+            services.AddSingleton<IThisSubscribers>(s => new ThisSubscribers(s.GetRequiredService<IOAuthHttpClientFactory>(), s.GetRequiredService<ISerializer>(), clientConfigurationName));
             return services;
         }
 
