@@ -59,7 +59,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string id, UserEditModel model)
@@ -84,7 +84,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task<string> CreateUser([FromBody] UserEditModel model)
@@ -220,7 +220,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetUserById(id);
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("~/api/crosscompany/users")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task<string> CreateCrossCompanyUser([FromBody] UserEditModel model)
@@ -242,7 +242,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("~/api/crosscompany/users/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task UpdateCrossCompanyUser([FromRoute] string id, UserEditModel model)

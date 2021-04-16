@@ -62,7 +62,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task<string> CreateRole([FromBody] RoleEditModel model)
@@ -83,7 +83,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task UpdateRole([FromRoute] string id, RoleEditModel model)
@@ -160,7 +160,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        [HttpPut]
+        [HttpPost]
         [Route("~/api/crosscompany/roles")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         public async Task<string> CreateCrosscompanyRole([FromBody] RoleEditModel model)
@@ -180,7 +180,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("~/api/crosscompany/roles/{id}")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         public async Task UpdateCrosscompanyRole([FromRoute] string id, RoleEditModel model)
