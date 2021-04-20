@@ -37,7 +37,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
-        [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<UserViewModel>> GetUsers()
         {
             var user = await GetCurrentUser();
