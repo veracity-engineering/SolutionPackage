@@ -123,7 +123,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("~/api/users/currentUser")]
-        [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<UserViewModel> GetUserByIdentityId()
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
