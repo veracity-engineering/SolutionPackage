@@ -48,10 +48,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<UserViewModel> GetUser([FromRoute] string id)
         {
-            var cuurentUser = await GetCurrentUser();
+            var currentUser = await GetCurrentUser();
             var user = await GetUserById(id);
 
-            if (cuurentUser.CompanyId == user.CompanyId)
+            if (currentUser.CompanyId == user.CompanyId)
                 return user;
 
             return null;
@@ -63,12 +63,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string id, UserEditModel model)
         {
-            var cuurentUser = await GetCurrentUser();
+            var currentUser = await GetCurrentUser();
             var user = await _userRepository.Read(id);
 
-            if (cuurentUser.CompanyId == user.CompanyId)
+            if (currentUser.CompanyId == user.CompanyId)
             {
-                var roleIds = await PruneRoles(cuurentUser.CompanyId, model.RoleIds);
+                var roleIds = await PruneRoles(currentUser.CompanyId, model.RoleIds);
 
                 user.Id = id;
                 user.Active = model.Active;
@@ -76,9 +76,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.VeracityId = model.VeracityId;
-                user.CompanyId = cuurentUser.CompanyId;
+                user.CompanyId = currentUser.CompanyId;
                 user.RoleIds = string.Join(';', roleIds);
                 user.Email = model.Email;
+                user.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _userRepository.Update(user);
             }
         }
@@ -88,9 +89,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task<string> CreateUser([FromBody] UserEditModel model)
         {
-            var cuurentUser = await GetCurrentUser();
+            var currentUser = await GetCurrentUser();
 
-            var roleIds = await PruneRoles(cuurentUser.CompanyId, model.RoleIds);
+            var roleIds = await PruneRoles(currentUser.CompanyId, model.RoleIds);
             var user = new User
             {
                 Description = model.Description,
@@ -98,10 +99,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 LastName = model.LastName,
                 VeracityId = model.VeracityId,
                 Active = model.Active,
-                CompanyId = cuurentUser.CompanyId,
+                CompanyId = currentUser.CompanyId,
                 RoleIds = string.Join(';', roleIds),
                 Email = model.Email,
-            };
+                CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
+        };
             user = await _userRepository.Create(user);
             return user.Id;
         }
@@ -111,10 +113,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task DeleteUser([FromRoute] string id)
         {
-            var cuurentUser = await GetCurrentUser();
+            var currentUser = await GetCurrentUser();
             var user = await _userRepository.Read(id);
 
-            if (cuurentUser.CompanyId == user.CompanyId)
+            if (currentUser.CompanyId == user.CompanyId)
             {
                 await _userRepository.Delete(id);
             }
@@ -223,6 +225,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task<string> CreateCrossCompanyUser([FromBody] UserEditModel model)
         {
+            var currentUser = await GetCurrentUser();
             var roleIds = await PruneRoles(model.CompanyId, model.RoleIds);
             var user = new User
             {
@@ -234,6 +237,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 CompanyId = model.CompanyId,
                 RoleIds = string.Join(';', roleIds),
                 Email = model.Email,
+                CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
             };
             user = await _userRepository.Create(user);
             return user.Id;
@@ -245,6 +249,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task UpdateCrossCompanyUser([FromRoute] string id, UserEditModel model)
         {
+            var currentUser = await GetCurrentUser();
             var roleIds = await PruneRoles(model.CompanyId, model.RoleIds);
             var user = await _userRepository.Read(id);
             user.Id = id;
@@ -256,6 +261,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.CompanyId = model.CompanyId;
             user.RoleIds = string.Join(';', roleIds);
             user.Email = model.Email;
+            user.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _userRepository.Update(user);
         }
 

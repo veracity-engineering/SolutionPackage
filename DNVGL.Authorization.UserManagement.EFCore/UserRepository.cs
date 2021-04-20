@@ -42,7 +42,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             {
                 user.Id = Guid.NewGuid().ToString();
             }
-
+            user.CreatedOnUtc = DateTime.UtcNow;
             var item = (await _context.AddAsync(user)).Entity;
 
             await _context.SaveChangesAsync();
@@ -114,6 +114,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task Update(User user)
         {
+            user.UpdatedOnUtc = DateTime.UtcNow;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }

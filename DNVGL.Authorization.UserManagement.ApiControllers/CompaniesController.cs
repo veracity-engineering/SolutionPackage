@@ -25,10 +25,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         private readonly ICompany _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly IUser _userRepository;
+        private readonly PermissionOptions _premissionOptions;
 
-        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository)
+        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions)
         {
             _companyRepository = companyRepository;
+            _userRepository = userRepository;
+            _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
         }
 
@@ -76,12 +80,15 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
         {
+            var currentUser = await GetCurrentUser();
+
             var company = new Company
             {
                 Description = model.Description,
                 Name = model.Name,
                 Active = model.Active,
-                Permissions = string.Join(';', model.PermissionKeys)
+                Permissions = string.Join(';', model.PermissionKeys),
+                CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}"
             };
             company = await _companyRepository.Create(company);
             return company.Id;
@@ -93,11 +100,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task UpdateCompany([FromRoute] string id, CompanyEditModel model)
         {
             var company = await _companyRepository.Read(id);
+            var currentUser = await GetCurrentUser();
             company.Id = id;
             company.Active = model.Active;
             company.Description = model.Description;
             company.Name = model.Name;
             company.Permissions = string.Join(';', model.PermissionKeys);
+            company.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _companyRepository.Update(company);
         }
 
@@ -109,6 +118,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _companyRepository.Delete(id);
         }
 
+        private async Task<User> GetCurrentUser()
+        {
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            return await _userRepository.ReadByIdentityId(varacityId);
+        }
 
     }
 }

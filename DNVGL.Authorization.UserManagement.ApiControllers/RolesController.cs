@@ -76,7 +76,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Name = model.Name,
                 Active = model.Active,
                 CompanyId = user.CompanyId,
-                Permissions = string.Join(';', permissionKeys)
+                Permissions = string.Join(';', permissionKeys),
+                CreatedBy = $"{user.FirstName} {user.LastName}"
             };
             role = await _roleRepository.Create(role);
             return role.Id;
@@ -88,6 +89,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task UpdateRole([FromRoute] string id, RoleEditModel model)
         {
+            var currentUser = await GetCurrentUser();
             var roles = await GetCompanyRoles();
 
             if (roles.Any(t => t.Id == id))
@@ -100,6 +102,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 role.Name = model.Name;
                 role.CompanyId = model.CompanyId;
                 role.Permissions = string.Join(';', permissionKeys);
+                role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(role);
             }
 
@@ -166,6 +169,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<string> CreateCrosscompanyRole([FromBody] RoleEditModel model)
         {
             var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
+            var currentUser = await GetCurrentUser();
 
             var role = new Role
             {
@@ -173,7 +177,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Name = model.Name,
                 Active = model.Active,
                 CompanyId = model.CompanyId,
-                Permissions = string.Join(';', permissionKeys)
+                Permissions = string.Join(';', permissionKeys),
+                CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
             };
             role = await _roleRepository.Create(role);
             return role.Id;
@@ -185,6 +190,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         public async Task UpdateCrosscompanyRole([FromRoute] string id, RoleEditModel model)
         {
+            var currentUser = await GetCurrentUser();
             var role = await _roleRepository.Read(id);
             var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
             role.Id = id;
@@ -193,6 +199,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             role.Name = model.Name;
             role.CompanyId = model.CompanyId;
             role.Permissions = string.Join(';', permissionKeys);
+            role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _roleRepository.Update(role);
         }
 

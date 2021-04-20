@@ -40,7 +40,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             {
                 role.Id = Guid.NewGuid().ToString();
             }
-
+            role.CreatedOnUtc = DateTime.UtcNow;
             var item = (await _context.AddAsync(role)).Entity;
 
             await _context.SaveChangesAsync();
@@ -74,6 +74,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task Update(Role role)
         {
+            role.UpdatedOnUtc = DateTime.UtcNow;
             _context.Roles.Update(role);
             await _context.SaveChangesAsync();
         }
