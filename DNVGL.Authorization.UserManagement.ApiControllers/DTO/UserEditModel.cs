@@ -14,10 +14,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         public string LastName { get; set; }
         public string VeracityId { get; set; }
         public string Description { get; set; }
-        //[JsonIgnore]
         public IList<string> RoleIds { get; set; }
-
-        //public IList<string> RoleIdList => RoleIds.Split(';').ToList();
         public string CompanyId { get; set; }
         public bool Active { get; set; }
     }

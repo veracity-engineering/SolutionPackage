@@ -12,7 +12,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         public DbSet<Role> Roles { get; set; }
         public DbSet<Company> Companys { get; set; }
         public DbSet<User> Users { get; set; }
-        private Action<ModelBuilder> _prebuildModel;
+        private readonly Action<ModelBuilder> _prebuildModel;
         public UserManagementContext(DbContextOptions<UserManagementContext> options)
             : base(options)
         {

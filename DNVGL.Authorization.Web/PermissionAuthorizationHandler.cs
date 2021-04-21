@@ -29,16 +29,16 @@ namespace DNVGL.Authorization.Web
         {
             var varacityId = _premissionOptions.GetUserIdentity(_httpContextAccessor.HttpContext);
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
-            var ownedPermissions = (await _userPermission.GetPermissions(varacityId))??new List<PermissionEntity>();
+            var ownedPermissions = (await _userPermission.GetPermissions(varacityId)) ?? new List<PermissionEntity>();
 
-            if (requiredPermissions.Any() == false || requiredPermissions.All(t => ownedPermissions.Any(x => x.Key == t)) || requiredPermissions.All(t => ownedPermissions.Any(x => x.Id == t)))
+            if (!requiredPermissions.Any() || requiredPermissions.All(t => ownedPermissions.Any(x => x.Key == t)) || requiredPermissions.All(t => ownedPermissions.Any(x => x.Id == t)))
             {
                 context.Succeed(requirement);
             }
             else
             {
-                var missedPermissions = requiredPermissions.Where(t => ownedPermissions.Any(x => x.Key == t) == false).ToList();
-                _premissionOptions.HandleUnauthorizedAccess(_httpContextAccessor.HttpContext,string.Join(",", missedPermissions));
+                var missedPermissions = requiredPermissions.Where(t => !ownedPermissions.Any(x => x.Key == t)).ToList();
+                _premissionOptions.HandleUnauthorizedAccess(_httpContextAccessor.HttpContext, string.Join(",", missedPermissions));
             }
         }
     }
