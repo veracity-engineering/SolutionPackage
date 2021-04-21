@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         [JsonIgnore]
         public string Permissions { get; set; }
 
-        public IList<string> PermissionKeys => Permissions.Split(';').ToList();
+        public IList<string> PermissionKeys => Permissions.SplitToList(';');
     }
 
 

@@ -11,6 +11,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         public void LaunchMonitoring()
         {
+            throw new NotImplementedException();
         }
 
         public Task StopMonitoring()

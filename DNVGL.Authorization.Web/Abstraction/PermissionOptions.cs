@@ -7,8 +7,8 @@ namespace DNVGL.Authorization.Web.Abstraction
 {
     public class PermissionOptions
     {
-        public Func<HttpContext, string> GetUserIdentity;
-        public Action<HttpContext, string> HandleUnauthorizedAccess;
+        public Func<HttpContext, string> GetUserIdentity { get; set; }
+        public Action<HttpContext, string> HandleUnauthorizedAccess { get; set; }
     }
 
     public static class BuiltinUnauthorizedAccessHandler
