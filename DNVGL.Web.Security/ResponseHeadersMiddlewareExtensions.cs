@@ -36,7 +36,7 @@ namespace DNVGL.Web.Security
         /// <code>
         ///  <para/>app.UseDefaultHeaders(h =>
         ///  <para/>{
-        ///  <para/>h.AddContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
+        ///  <para/>h.ReplaceDefaultContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
         ///  <para/>});
         /// </code>
         /// </item>

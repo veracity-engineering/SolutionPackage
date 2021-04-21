@@ -1,4 +1,6 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
 namespace DNVGL.OAuth.Api.HttpClient
@@ -32,8 +34,9 @@ namespace DNVGL.OAuth.Api.HttpClient
         public OpenIdConnectOptions OpenIdConnectOptions { get; set; }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum OAuthCredentialFlow
-    {
+	{
         [EnumMember(Value = "user-credentials")]
         UserCredentials,
         [EnumMember(Value = "client-credentials")]

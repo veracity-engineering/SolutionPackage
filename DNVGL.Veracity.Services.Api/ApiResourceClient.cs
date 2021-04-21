@@ -2,7 +2,7 @@
 using System;
 using System.Net.Http;
 
-namespace DNVGL.Veracity.Services.Api.ApiV3
+namespace DNVGL.Veracity.Services.Api
 {
     public abstract class ApiResourceClient
     {
@@ -12,7 +12,7 @@ namespace DNVGL.Veracity.Services.Api.ApiV3
 
         private HttpClient _client;
 
-        public ApiResourceClient(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName)
+        protected ApiResourceClient(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));

@@ -32,7 +32,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 
 		protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
 		{
-			var tokenCacheBytes = _cache.Get(cacheKey) as byte[];
+			var tokenCacheBytes = _cache.Get(cacheKey);
 			return Task.FromResult(tokenCacheBytes);
 		}
 
