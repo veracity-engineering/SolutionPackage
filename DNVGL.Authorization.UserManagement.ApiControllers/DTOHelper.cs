@@ -8,7 +8,7 @@ using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    internal static class DTOHelper
+    internal static class DtoHelper
     {
         internal static R ToViewDto<R>(this object obj) where R : new()
         {

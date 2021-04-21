@@ -25,14 +25,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         private readonly ICompany _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
-        private readonly IUser _userRepository;
-        private readonly PermissionOptions _premissionOptions;
 
         public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _companyRepository = companyRepository;
-            _userRepository = userRepository;
-            _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
         }
 
@@ -117,12 +113,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             await _companyRepository.Delete(id);
         }
-
-        //private async Task<User> GetCurrentUser()
-        //{
-        //    var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-        //    return await _userRepository.ReadByIdentityId(varacityId);
-        //}
 
     }
 }

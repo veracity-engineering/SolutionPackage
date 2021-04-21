@@ -27,7 +27,6 @@ namespace DNVGL.Authorization.Web
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, IEnumerable<PermissionAuthorizeAttribute> attributes)
         {
-            //var varacityId = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
             var varacityId = _premissionOptions.GetUserIdentity(_httpContextAccessor.HttpContext);
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
             var ownedPermissions = (await _userPermission.GetPermissions(varacityId))??new List<PermissionEntity>();
@@ -39,7 +38,6 @@ namespace DNVGL.Authorization.Web
             else
             {
                 var missedPermissions = requiredPermissions.Where(t => ownedPermissions.Any(x => x.Key == t) == false).ToList();
-                //throw new UnauthorizedAccessException($"miss permissions: {string.Join(",", missedPermissions)}.");
                 _premissionOptions.HandleUnauthorizedAccess(_httpContextAccessor.HttpContext,string.Join(",", missedPermissions));
             }
         }

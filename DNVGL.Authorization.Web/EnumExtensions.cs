@@ -26,7 +26,7 @@ namespace DNVGL.Authorization.Web
 
         public static IEnumerable<Type> EnumerateNestedTypes(this Type type)
         {
-            const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic;
+            const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public;
             Queue<Type> toBeVisited = new Queue<Type>();
             toBeVisited.Enqueue(type);
             do
@@ -43,7 +43,7 @@ namespace DNVGL.Authorization.Web
 
         public static Type FindNestedType(this Type type, Predicate<Type> filter)
         {
-            const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic;
+            const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public;
             Type[] nestedTypes = type.GetNestedTypes(flags);
             foreach (var nestedType in nestedTypes)
             {

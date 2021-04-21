@@ -11,19 +11,16 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         public void LaunchMonitoring()
         {
-            //throw new NotImplementedException();
         }
 
         public Task StopMonitoring()
         {
             return Task.CompletedTask;
-            //throw new NotImplementedException();
         }
 
         public Task<User> SyncUser(User user)
         {
             return Task.FromResult(user);
-            //throw new NotImplementedException();
         }
     }
 }

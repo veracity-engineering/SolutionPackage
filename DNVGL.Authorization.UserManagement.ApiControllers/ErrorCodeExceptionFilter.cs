@@ -10,7 +10,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     internal class ErrorCodeExceptionFilter : IExceptionFilter
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         public ErrorCodeExceptionFilter(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<ErrorCodeExceptionFilter>();

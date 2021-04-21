@@ -22,7 +22,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         private readonly IRole _roleRepository;
         private readonly IUser _userRepository;
-        private readonly IUserSynchronization _userSynchronization;
         private readonly PermissionOptions _premissionOptions;
         private readonly IPermissionRepository _permissionRepository;
 
@@ -30,7 +29,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
-            _userSynchronization = userSynchronization;
             _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
         }
@@ -275,29 +273,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _userRepository.Delete(id);
         }
 
-
-        //[HttpPut]
-        //[Route("sync/{id}")]
-        //[PermissionAuthorize(Premissions.ManageUser)]
-        //public async Task SyncUser([FromRoute] string id, UserEditModel model)
-        //{
-        //    var user = await _userRepository.Read(id);
-
-        //    await _serSynchronization.SyncUser(user);
-        //}
-
         private async Task<IList<string>> PruneRoles(string companyId, IList<string> sourceRoleIds)
         {
             var roles = await _roleRepository.GetRolesOfCompany(companyId);
             return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
         }
-
-
-        //private async Task<User> GetCurrentUser()
-        //{
-        //    var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-        //    return await _userRepository.ReadByIdentityId(varacityId);
-        //}
 
 
         private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId)

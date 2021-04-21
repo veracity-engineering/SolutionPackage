@@ -20,7 +20,6 @@ namespace DNVGL.Authorization.Web
             var action = endpoint?.Metadata?
                 .SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
 
-            //var action = (context.Resource as AuthorizationFilterContext)?.ActionDescriptor as ControllerActionDescriptor;
             if (action != null)
             {
                 attributes.AddRange(GetAttributes(action.ControllerTypeInfo.UnderlyingSystemType));

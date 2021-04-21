@@ -12,7 +12,7 @@ namespace DNVGL.Authorization.Web
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     public class PermissionAuthorizeAttribute : AuthorizeAttribute
     {
-        private string[] _permissionsToCheck;
+        private readonly string[] _permissionsToCheck;
 
         public string[] PermissionsToCheck
         {

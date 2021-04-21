@@ -21,18 +21,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     public class RolesController : UserManagementBaseController
     {
         private readonly IRole _roleRepository;
-        private readonly IUser _userRepository;
         private readonly ICompany _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
-        private readonly PermissionOptions _premissionOptions;
 
         public RolesController(IUser userRepository, IRole roleRepository, ICompany companyRepository, IPermissionRepository permissionRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
-            _userRepository = userRepository;
             _roleRepository = roleRepository;
             _companyRepository = companyRepository;
             _permissionRepository = permissionRepository;
-            _premissionOptions = premissionOptions;
         }
 
 
@@ -210,11 +206,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             await _roleRepository.Delete(id);
         }
-        //private async Task<User> GetCurrentUser()
-        //{
-        //    var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-        //    return await _userRepository.ReadByIdentityId(varacityId);
-        //}
 
         private async Task<IList<string>> PrunePermissions(string companyId, IList<string> sourcePermissionKeys)
         {

@@ -13,7 +13,7 @@ namespace DNVGL.Authorization.Web.Abstraction
 
     public static class BuiltinUnauthorizedAccessHandler
     {
-        public static Action<HttpContext, string> Return403ForbiddenCode = (httpContext, missedPermission) =>
+        public static readonly Action<HttpContext, string> Return403ForbiddenCode = (httpContext, missedPermission) =>
         {
             httpContext.Response.StatusCode = 403;
             httpContext.Response.ContentType = "application/text";
@@ -22,7 +22,7 @@ namespace DNVGL.Authorization.Web.Abstraction
             httpContext.Response.WriteAsync($"miss permissions: {missedPermission}.");
         };
 
-        public static Action<HttpContext, string> ThrowExceptionDirectly = (httpContext, missedPermission) =>
+        public static readonly Action<HttpContext, string> ThrowExceptionDirectly = (httpContext, missedPermission) =>
         {
             throw new UnauthorizedAccessException($"miss permissions: {missedPermission}.");
         };

@@ -13,7 +13,7 @@ namespace DNVGL.Authorization.Web
     [Route("api/[controller]")]
     public class PermissionController : ControllerBase
     {
-        private IPermissionRepository _permissionRepository;
+        private readonly IPermissionRepository _permissionRepository;
         public PermissionController(IPermissionRepository permissionRepository)
         {
             _permissionRepository = permissionRepository;
