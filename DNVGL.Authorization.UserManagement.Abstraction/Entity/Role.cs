@@ -15,7 +15,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Permissions { get; set; }
         public string CompanyId { get; set; }
         public Company Company { get; set; }
-        public IReadOnlyList<string> PermissionKeys => Permissions.Split(';').ToList();
+        public IReadOnlyList<string> PermissionKeys => Permissions.SplitToList(';');
         public string CreatedBy { get; set; }
         public DateTime CreatedOnUtc { get; set; }
         public string UpdatedBy { get; set; }

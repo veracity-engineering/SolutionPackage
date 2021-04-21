@@ -14,7 +14,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public bool Deleted { get; set; }
         public string CreatedBy { get; set; }
         public string Permissions { get; set; }
-        public IReadOnlyList<string> PermissionKeys => (Permissions ?? string.Empty).Split(';').ToList();
+        public IReadOnlyList<string> PermissionKeys => (Permissions ?? string.Empty).SplitToList(';');
         public DateTime CreatedOnUtc { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedOnUtc { get; set; }

@@ -14,7 +14,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string VeracityId { get; set; }
         public string Description { get; set; }
         public string RoleIds { get; set; }
-        public IReadOnlyList<string> RoleIdList => RoleIds.Split(';').ToList();
+        public IReadOnlyList<string> RoleIdList => RoleIds.SplitToList(';');
         public string CompanyId { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
