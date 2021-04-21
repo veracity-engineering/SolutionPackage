@@ -21,14 +21,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiController]
     [Route("api/companies")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    public class CompaniesController : ControllerBase
+    public class CompaniesController : UserManagementBaseController
     {
         private readonly ICompany _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IUser _userRepository;
         private readonly PermissionOptions _premissionOptions;
 
-        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions)
+        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _companyRepository = companyRepository;
             _userRepository = userRepository;
@@ -74,7 +74,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
-        
+
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
@@ -118,11 +118,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _companyRepository.Delete(id);
         }
 
-        private async Task<User> GetCurrentUser()
-        {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-            return await _userRepository.ReadByIdentityId(varacityId);
-        }
+        //private async Task<User> GetCurrentUser()
+        //{
+        //    var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+        //    return await _userRepository.ReadByIdentityId(varacityId);
+        //}
 
     }
 }

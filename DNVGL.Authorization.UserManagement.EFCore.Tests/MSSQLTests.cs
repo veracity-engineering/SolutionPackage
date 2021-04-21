@@ -14,6 +14,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 {
     public class MSSQLTests
     {
+#if DEBUG
         private const string CONNECTION_STRING = @"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;";
         private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options) => new UserManagementContext(options);
 
@@ -249,5 +250,6 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
             }
 
         }
+#endif
     }
 }

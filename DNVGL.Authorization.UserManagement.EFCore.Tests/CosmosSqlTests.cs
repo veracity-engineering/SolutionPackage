@@ -11,7 +11,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 {
     public class CosmosSqlTests
     {
+#if DEBUG
         private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options, Action<ModelBuilder> buildModel) => new UserManagementContext(options, buildModel);
+
+
 
         public CosmosSqlTests()
         {
@@ -220,5 +223,6 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
             }
 
         }
+#endif
     }
 }

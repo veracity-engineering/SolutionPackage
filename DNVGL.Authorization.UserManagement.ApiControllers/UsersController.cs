@@ -18,19 +18,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/mycompany/users")]
-    public class UsersController : ControllerBase
+    public class UsersController : UserManagementBaseController
     {
         private readonly IRole _roleRepository;
         private readonly IUser _userRepository;
-        private readonly IUserSynchronization _serSynchronization;
+        private readonly IUserSynchronization _userSynchronization;
         private readonly PermissionOptions _premissionOptions;
         private readonly IPermissionRepository _permissionRepository;
 
-        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository)
+        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
-            _serSynchronization = userSynchronization;
+            _userSynchronization = userSynchronization;
             _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
         }
@@ -103,7 +103,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 RoleIds = string.Join(';', roleIds),
                 Email = model.Email,
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
-        };
+            };
             user = await _userRepository.Create(user);
             return user.Id;
         }
@@ -293,11 +293,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        private async Task<User> GetCurrentUser()
-        {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-            return await _userRepository.ReadByIdentityId(varacityId);
-        }
+        //private async Task<User> GetCurrentUser()
+        //{
+        //    var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+        //    return await _userRepository.ReadByIdentityId(varacityId);
+        //}
 
 
         private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId)
