@@ -85,9 +85,17 @@ namespace DNVGL.Web.Security
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
         public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary> makeHeaders = null)
         {
+            return builder.UseDefaultHeaders((headers, request) =>
+            {
+                makeHeaders?.Invoke(headers);
+            });
+        }
+
+        public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary, HttpRequest> makeHeaders)
+        {
             return builder.Use(async (context, next) =>
             {
-                makeHeaders?.Invoke(context.Response.Headers);
+                makeHeaders?.Invoke(context.Response.Headers, context.Request);
                 context.Response.Headers.SetupDefaultHeaders();
                 context.Response.Headers.AddContentSecurityPolicy(context.Request);
                 await next();
