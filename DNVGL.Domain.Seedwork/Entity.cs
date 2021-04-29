@@ -84,15 +84,5 @@ namespace DNVGL.Domain.Seedwork
 
             return Id == entity.Id;
         }
-
-        public static bool operator ==(Entity left, Entity right)
-        {
-            return left?.Equals(right) ?? Equals(right, null);
-        }
-
-        public static bool operator !=(Entity left, Entity right)
-        {
-            return !(left == right);
-        }
     }
 }

@@ -19,9 +19,9 @@ namespace DNVGL.Common.Core.Pagination
             EndOfResult = eor;
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            if (!(other is ContinuationToken o))
+            if (!(obj is ContinuationToken o))
                 return false;
 
             return Equals(o);
