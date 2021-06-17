@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web
 {
@@ -54,7 +55,7 @@ namespace DNVGL.OAuth.Web
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
-			if (schemaOptions == null || schemaOptions.Count() == 0)
+			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
@@ -130,6 +131,12 @@ namespace DNVGL.OAuth.Web
 
 			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
 
+			// switch to authorization code flow.
+			if (oidcOptions.ResponseType == OpenIdConnectResponseType.Code)
+			{
+				builder.Services.AddDistributedTokenCache(oidcOptions);
+			}
+
 			builder.AddOpenIdConnect(o =>
 			{
 				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(oidcOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever());
@@ -146,12 +153,6 @@ namespace DNVGL.OAuth.Web
 				if (oidcOptions.Scopes != null)
 				{
 					oidcOptions.Scopes.ToList().ForEach(s => o.Scope.Add(s));
-				}
-
-				// switch to authorization code flow.
-				if (o.ResponseType == OpenIdConnectResponseType.Code)
-				{
-					o.ClientSecret = oidcOptions.ClientSecret;
 				}
 
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
@@ -174,33 +175,60 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		/// <summary>
-		/// Setups distributed cache for MSAL token to OidcOptions.
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="oidcOptions"></param>
-		/// <param name="cacheSetupAction"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		private static void AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
 
-			services.AddSingleton<ITokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions));
-
-			oidcOptions.Events = new OpenIdConnectEvents
+			services.AddSingleton<ITokenCacheProvider>(f =>
 			{
-				OnAuthorizationCodeReceived = async context =>
-				{
-					var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
-						.WithOpenIdConnectOptions(oidcOptions)
-						.BuildForUserCredentials(context);
-					var result = await msalClientApp.AcquireTokenByAuthorizationCode(context);
-				}
-			};
+				var cache = f.GetRequiredService<IDistributedCache>();
 
-			services.AddSingleton(f => new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOpenIdConnectOptions(oidcOptions));
-			return services;
+				// add memory cache for token cache if no distributed cache set.
+				if (cache == null)
+				{
+					services.AddDistributedMemoryCache();
+					cache = f.GetRequiredService<IDistributedCache>();
+				}
+
+				var provider = new MsalTokenCacheProvider(cache, cacheEntryOptions);
+				return provider;
+			});
+
+			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
+			{
+				var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
+					.WithOpenIdConnectOptions(oidcOptions)
+					.BuildForUserCredentials(context);
+				await msalClientApp.AcquireTokenByAuthorizationCode(context);
+			}
+
+#if NETCORE2
+			if (oidcOptions.Events == null) oidcOptions.Events = new OpenIdConnectEvents();
+#else
+			oidcOptions.Events ??= new OpenIdConnectEvents();
+#endif
+
+			if (oidcOptions.Events.OnAuthorizationCodeReceived == null)
+			{
+				oidcOptions.Events.OnAuthorizationCodeReceived = onCodeReceived;
+			}
+			else
+			{
+				var onAuthorizationCodeReceived = oidcOptions.Events.OnAuthorizationCodeReceived;
+
+				oidcOptions.Events.OnAuthorizationCodeReceived = async context =>
+				{
+					await onCodeReceived(context);
+					await onAuthorizationCodeReceived(context);
+				};
+			}
+
+			services.AddSingleton(f =>
+			{
+				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOpenIdConnectOptions(oidcOptions);
+				return appBuilder;
+			});
 		}
 		#endregion
 	}
