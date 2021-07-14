@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DNVGL.OAuth.Web.Swagger
 {
@@ -33,7 +34,7 @@ namespace DNVGL.OAuth.Web.Swagger
 							Implicit = new OpenApiOAuthFlow
 							{
 								AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
-								Scopes = option.Scopes
+								Scopes = option.Scopes.ToDictionary(s => s.Scope, s => s.Description)
 							}
 						}
 					};
@@ -50,13 +51,13 @@ namespace DNVGL.OAuth.Web.Swagger
 
 					var securityRequirement = new OpenApiSecurityRequirement
 					{
-						{ 
+						{
 							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "OAuth2", Type = ReferenceType.SecurityScheme } },
-							new List<string>() 
+							new List<string>()
 						},
-						{ 
+						{
 							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "Bearer", Type = ReferenceType.SecurityScheme } },
-							new List<string>() 
+							new List<string>()
 						}
 					};
 
@@ -87,10 +88,6 @@ namespace DNVGL.OAuth.Web.Swagger
 					o.DisplayRequestDuration();
 					o.OAuthAppName($"{option.Name} {option.Version}");
 					o.OAuthClientId(option.ClientId);
-				}).UseReDoc(o =>
-				{
-					o.RoutePrefix = "redoc";
-					o.SpecUrl = $"/swagger/{option.Version}/swagger.json";
 				});
 			}
 
