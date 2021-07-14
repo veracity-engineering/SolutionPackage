@@ -68,8 +68,9 @@ namespace DNVGL.OAuth.Web
 					var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
 					o.ConfigurationManager = configManager;
 					o.Authority = option.Authority;
-					o.Audience = option.ClientId;
-					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
+
+					if (option.TokenValidationParameters != null) o.TokenValidationParameters = option.TokenValidationParameters;
+
 					if (option.Events != null) { o.Events = option.Events; }
 				});
 			}

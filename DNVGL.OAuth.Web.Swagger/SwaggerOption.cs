@@ -8,7 +8,7 @@ namespace DNVGL.OAuth.Web.Swagger
 		public string Version { get; set; }
 		public string Name { get; set; }
 
-		public string AuthorizationUrl { get; set; }
+		public string AuthorizationEndpoint { get; set; }
 		public Dictionary<string, string> Scopes { get; set; }
 		public string ClientId { get; set; }
 	}

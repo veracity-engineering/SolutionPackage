@@ -25,30 +25,40 @@ namespace DNVGL.OAuth.Web.Swagger
 				{
 					o.SwaggerDoc(option.Version, new OpenApiInfo { Title = option.Name, Version = option.Version });
 
-					var securityScheme = new OpenApiSecurityScheme
+					var oauth2Schema = new OpenApiSecurityScheme
 					{
 						Type = SecuritySchemeType.OAuth2,
 						Flows = new OpenApiOAuthFlows
 						{
 							Implicit = new OpenApiOAuthFlow
 							{
-								AuthorizationUrl = new Uri(option.AuthorizationUrl),
+								AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
 								Scopes = option.Scopes
 							}
 						}
 					};
 
-					o.AddSecurityDefinition("oauth2", securityScheme);
-
-					var securityRequirement = new OpenApiSecurityRequirement();
-					securityRequirement.Add(new OpenApiSecurityScheme
+					var apikeySchema = new OpenApiSecurityScheme
 					{
-						Reference = new OpenApiReference
-						{
-							Type = ReferenceType.SecurityScheme,
-							Id = "oauth2"
+						Name = "Authorization",
+						In = ParameterLocation.Header,
+						Type = SecuritySchemeType.ApiKey
+					};
+
+					o.AddSecurityDefinition("OAuth2", oauth2Schema);
+					o.AddSecurityDefinition("Bearer", apikeySchema);
+
+					var securityRequirement = new OpenApiSecurityRequirement
+					{
+						{ 
+							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "OAuth2", Type = ReferenceType.SecurityScheme } },
+							new List<string>() 
+						},
+						{ 
+							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "Bearer", Type = ReferenceType.SecurityScheme } },
+							new List<string>() 
 						}
-					}, new List<string>());
+					};
 
 					o.AddSecurityRequirement(securityRequirement);
 				});

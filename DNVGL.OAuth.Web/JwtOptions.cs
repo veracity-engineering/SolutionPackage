@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DNVGL.OAuth.Web
 {
 	public class JwtOptions
 	{
-		public string TenantId { get; set; }
-
 		public string ClientId { get; set; }
 
-		public string SignInPolicy { get; set; }
+		public string Authority { get; set; }
 
-		public string Authority => $"https://login.microsoftonline.com/tfp/{this.TenantId}/{this.SignInPolicy}";
+		public string MetadataAddress => $"{this.Authority}/.well-known/openid-configuration";
 
-		public string MetadataAddress => $"{this.Authority}/v2.0/.well-known/openid-configuration";
+		public TokenValidationParameters TokenValidationParameters { get; set; }
 
 		public JwtBearerEvents Events { get; set; }
 	}
