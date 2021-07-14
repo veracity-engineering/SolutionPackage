@@ -14,8 +14,8 @@ namespace DNVGL.Web.Security.Tests
 {
     public class DefaultHeaderTests
     {
-        private const string ExpetctedDefaultCSP = "default-src 'self'; object-src 'self'; connect-src 'self' https://dc.services.visualstudio.com; script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn; font-src 'self' data: https://onedesign.azureedge.net; media-src 'self'; worker-src 'self' blob:; img-src 'self' https://onedesign.azureedge.net; frame-src 'self' https://www.google.com https://www.recaptcha.net/; style-src 'self' https://onedesign.azureedge.net";
-        private const string ExpetctedCustomizedCSP = "default-src 'self'; object-src 'self'; connect-src 'self' https://dc.services.visualstudio.com; script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn; font-src 'self' data: https://onedesign.azureedge.net; media-src 'self'; worker-src 'self' blob:; img-src 'self' https://onedesign.azureedge.net; frame-src 'self' https://www.google.com https://www.recaptcha.net/; style-src 'self' 'nonce-123456789909876543ghjklkjvcvbnm'";
+        private const string ExpetctedDefaultCSP = "default-src 'self'; object-src 'self'; connect-src 'self' https://dc.services.visualstudio.com https://login.veracity.com https://login.microsoftonline.com; script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn; font-src 'self' data: https://onedesign.azureedge.net; media-src 'self'; worker-src 'self' blob:; img-src 'self' https://onedesign.azureedge.net; frame-src 'self' https://www.google.com https://www.recaptcha.net/; style-src 'self' https://onedesign.azureedge.net";
+        private const string ExpetctedCustomizedCSP = "default-src 'self'; object-src 'self'; connect-src 'self' https://dc.services.visualstudio.com https://login.veracity.com https://login.microsoftonline.com; script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn; font-src 'self' data: https://onedesign.azureedge.net; media-src 'self'; worker-src 'self' blob:; img-src 'self' https://onedesign.azureedge.net; frame-src 'self' https://www.google.com https://www.recaptcha.net/; style-src 'self' 'nonce-123456789909876543ghjklkjvcvbnm'";
 
         [Fact]
         public async Task TestDefaultHeader()
@@ -127,7 +127,6 @@ namespace DNVGL.Web.Security.Tests
             response.EnsureSuccessStatusCode();
             Assert.Equal("1", response.Headers.GetValues("X-Xss-Protection").FirstOrDefault());
         }
-
 
         [Fact]
         public async Task TestCustomizedCSPHeader()
