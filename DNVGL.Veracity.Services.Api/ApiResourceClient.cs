@@ -60,9 +60,9 @@ namespace DNVGL.Veracity.Services.Api
 				var content = await response.Content.ReadAsStringAsync();
 				return Deserialize<T>(content);
 			}
-			catch (HttpRequestException)
+			catch (HttpRequestException exception)
 			{
-				throw new ServerErrorException(response.StatusCode, await response.Content?.ReadAsStringAsync());
+				throw await ServerErrorException.FromResponse(response, exception);
 			}
 		}
 
@@ -73,9 +73,9 @@ namespace DNVGL.Veracity.Services.Api
 			{
 				response.EnsureSuccessStatusCode();
 			}
-			catch (HttpRequestException)
+			catch (HttpRequestException exception)
 			{
-				throw new ServerErrorException(response.StatusCode, await response.Content?.ReadAsStringAsync());
+				throw await ServerErrorException.FromResponse(response, exception);
 			}
 		}
 
