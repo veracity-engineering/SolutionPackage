@@ -17,7 +17,7 @@ namespace DNVGL.Veracity.Services.Api.This
 
         public async Task<CreateUserReference> Create(CreateUserOptions options)
         {
-            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.Root, new StringContent(Serialize(options)));
+            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.UserRoot, new StringContent(Serialize(options)));
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return null;
             response.EnsureSuccessStatusCode();
@@ -27,7 +27,7 @@ namespace DNVGL.Veracity.Services.Api.This
 
         public async Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options)
         {
-            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.Root, new StringContent(Serialize(options)));
+            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options)));
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return null;
             response.EnsureSuccessStatusCode();
@@ -48,8 +48,10 @@ namespace DNVGL.Veracity.Services.Api.This
 
     internal static class ThisUsersUrls
     {
-        public static string Root => "/veracity/services/v3/this/users";
+        public static string UsersRoot => "/veracity/services/v3/this/users";
 
-        public static string Resolve(string email) => $"{Root}/resolve({HttpUtility.UrlEncode(email)})";
+        public static string UserRoot => "/veracity/services/v3/this/user";
+
+        public static string Resolve(string email) => $"{UserRoot}/resolve({HttpUtility.UrlEncode(email)})";
     }
 }
