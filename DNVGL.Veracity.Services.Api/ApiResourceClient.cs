@@ -49,11 +49,8 @@ namespace DNVGL.Veracity.Services.Api
 		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull)
 		{
 			var response = await GetOrCreateHttpClient().SendAsync(request);
-			if (isNotFoundNull)
-			{
-				if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-					return default;
-			}
+			if (isNotFoundNull && response.StatusCode == System.Net.HttpStatusCode.NotFound)
+				return default;
 			try
 			{
 				response.EnsureSuccessStatusCode();

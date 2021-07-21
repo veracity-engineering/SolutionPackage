@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Exceptions
 {
-	public class ServerErrorException : Exception
+	public class ServerErrorException : Exception, ISerializable
 	{
 		public HttpStatusCode StatusCode { get; set; }
 
