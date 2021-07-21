@@ -12,33 +12,14 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
-        public async Task<IEnumerable<Message>> List(bool includeRead = false)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(MyMessagesUrls.List(includeRead));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<Message>>(content);
-        }
+		public Task<IEnumerable<Message>> List(bool includeRead = false) =>
+			GetResult<IEnumerable<Message>>(MyMessagesUrls.List(includeRead), false);
 
-        public async Task<Message> Get(string messageId)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(MyMessagesUrls.Message(messageId));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<Message>(content);
-        }
+		public Task<Message> Get(string messageId) =>
+			GetResult<Message>(MyMessagesUrls.Message(messageId));
 
-        public async Task<int> GetUnreadCount()
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(MyMessagesUrls.UnreadCount);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<int>(content);
-        }
+		public Task<int> GetUnreadCount() =>
+			GetResult<int>(MyMessagesUrls.UnreadCount, false);
     }
 
     internal static class MyMessagesUrls

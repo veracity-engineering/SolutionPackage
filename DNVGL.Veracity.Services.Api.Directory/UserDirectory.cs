@@ -15,7 +15,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		}
 
 		public Task<User> Get(string userId) =>
-			GetResult<User>(UserDirectoryUrls.User(userId), true);
+			GetResult<User>(UserDirectoryUrls.User(userId));
 
 		public Task<IEnumerable<User>> ListByUserId(params string[] userIds) =>
 			PostResult<IEnumerable<User>>(UserDirectoryUrls.Root, new StringContent(Serialize(userIds)), false);
@@ -30,7 +30,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 			GetResult<IEnumerable<ServiceReference>>(UserDirectoryUrls.UsersServices(userId, page, pageSize), false);
 
 		public Task<Subscription> GetSubscription(string userId, string serviceId) =>
-			GetResult<Subscription>(UserDirectoryUrls.UsersServiceSubscription(userId, serviceId), true);
+			GetResult<Subscription>(UserDirectoryUrls.UsersServiceSubscription(userId, serviceId));
 	}
 
 	internal static class UserDirectoryUrls

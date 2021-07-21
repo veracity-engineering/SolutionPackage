@@ -12,15 +12,8 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
-        public async Task<IEnumerable<CompanyReference>> List()
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(MyCompaniesUrls.Root);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<CompanyReference>>(content);
-        }
+		public Task<IEnumerable<CompanyReference>> List() =>
+			GetResult<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
     }
 
     internal static class MyCompaniesUrls

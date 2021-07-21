@@ -13,7 +13,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		}
 
 		public Task<Service> Get(string serviceId) =>
-			GetResult<Service>(ServiceDirectoryUrls.Service(serviceId), true);
+			GetResult<Service>(ServiceDirectoryUrls.Service(serviceId));
 
 		public Task<IEnumerable<UserReference>> ListUsers(string serviceId, int page = 1, int pageSize = 20) =>
 			GetResult<IEnumerable<UserReference>>(ServiceDirectoryUrls.ServiceUsers(serviceId, page, pageSize), false);

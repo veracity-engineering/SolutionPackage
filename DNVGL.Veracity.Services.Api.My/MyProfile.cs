@@ -11,15 +11,8 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
-        public async Task<Profile> Get()
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(MyProfileUrls.Root);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<Profile>(content);
-        }
+		public Task<Profile> Get() =>
+			GetResult<Profile>(MyProfileUrls.Root);
     }
 
     internal static class MyProfileUrls

@@ -31,13 +31,13 @@ namespace DNVGL.Veracity.Services.Api
 			return _client;
 		}
 
-		protected Task<T> GetResult<T>(string requestUri, bool isNotFoundNull) where T : class =>
+		protected Task<T> GetResult<T>(string requestUri, bool isNotFoundNull = true) =>
 			ToResourceResult<T>(new HttpRequestMessage(HttpMethod.Get, requestUri), isNotFoundNull);
 
-		protected Task<T> PostResult<T>(string requestUri, HttpContent content, bool isNotFoundNull) where T : class =>
+		protected Task<T> PostResult<T>(string requestUri, HttpContent content, bool isNotFoundNull = true) =>
 			ToResourceResult<T>(new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content }, isNotFoundNull);
 
-		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull) where T : class
+		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull)
 		{
 			var response = await GetOrCreateHttpClient().SendAsync(request);
 			if (isNotFoundNull)
