@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Exceptions
 {
+	[Serializable]
 	public class ServerErrorException : Exception, ISerializable
 	{
 		public HttpStatusCode StatusCode { get; set; }
@@ -16,6 +17,10 @@ namespace DNVGL.Veracity.Services.Api.Exceptions
 		{
 			StatusCode = httpStatusCode;
 			ResponseContent = responseContent;
+		}
+
+		protected ServerErrorException(SerializationInfo info, StreamingContext context): base(info, context)
+		{
 		}
 
 		public static async Task<ServerErrorException> FromResponse(HttpResponseMessage response, Exception innerException) =>
