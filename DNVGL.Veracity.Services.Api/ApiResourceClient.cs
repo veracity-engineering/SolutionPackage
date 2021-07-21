@@ -31,11 +31,20 @@ namespace DNVGL.Veracity.Services.Api
 			return _client;
 		}
 
-		protected Task<T> GetResult<T>(string requestUri, bool isNotFoundNull = true) =>
+		protected Task<T> GetResource<T>(string requestUri, bool isNotFoundNull = true) =>
 			ToResourceResult<T>(new HttpRequestMessage(HttpMethod.Get, requestUri), isNotFoundNull);
 
-		protected Task<T> PostResult<T>(string requestUri, HttpContent content, bool isNotFoundNull = true) =>
+		protected Task<T> PostResource<T>(string requestUri, HttpContent content, bool isNotFoundNull = true) =>
 			ToResourceResult<T>(new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content }, isNotFoundNull);
+
+		protected Task<T> PutResource<T>(string requestUri, HttpContent content, bool isNotFoundNull = true) =>
+			ToResourceResult<T>(new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = content }, isNotFoundNull);
+
+		protected Task PutResource(string requestUri, HttpContent content) =>
+			ToResourceResult(new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = content });
+
+		protected Task DeleteResource(string requestUri) =>
+			ToResourceResult(new HttpRequestMessage(HttpMethod.Delete, requestUri));
 
 		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull)
 		{
@@ -43,7 +52,7 @@ namespace DNVGL.Veracity.Services.Api
 			if (isNotFoundNull)
 			{
 				if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-					return null;
+					return default;
 			}
 			try
 			{
@@ -53,7 +62,20 @@ namespace DNVGL.Veracity.Services.Api
 			}
 			catch (HttpRequestException)
 			{
-				throw new ServerErrorException(response.StatusCode, await response.Content.ReadAsStringAsync());
+				throw new ServerErrorException(response.StatusCode, await response.Content?.ReadAsStringAsync());
+			}
+		}
+
+		protected async Task ToResourceResult(HttpRequestMessage request)
+		{
+			var response = await GetOrCreateHttpClient().SendAsync(request);
+			try
+			{
+				response.EnsureSuccessStatusCode();
+			}
+			catch (HttpRequestException)
+			{
+				throw new ServerErrorException(response.StatusCode, await response.Content?.ReadAsStringAsync());
 			}
 		}
 

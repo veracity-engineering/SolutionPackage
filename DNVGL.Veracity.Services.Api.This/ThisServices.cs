@@ -17,64 +17,35 @@ namespace DNVGL.Veracity.Services.Api.This
         {
         }
 
-        public async Task AddSubscription(string serviceId, string userId, SubscriptionOptions options)
-        {
-            var response = await GetOrCreateHttpClient().PutAsync(ThisServicesUrls.ServiceSubscriber(serviceId, userId), new StringContent(Serialize(options)));
-            response.EnsureSuccessStatusCode();
-            await response.Content.ReadAsStringAsync();
-        }
+		public Task AddSubscription(string serviceId, string userId, SubscriptionOptions options) =>
+			PutResource(ThisServicesUrls.ServiceSubscriber(serviceId, userId), new StringContent(Serialize(options)));
 
         public Task<AdministratorReference> GetAdministrator(string serviceId, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<UserReference> GetSubscriber(string serviceId, string userId)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisServicesUrls.ServiceSubscriber(serviceId, userId));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<UserReference>(content);
-        }
+		public Task<UserReference> GetSubscriber(string serviceId, string userId) =>
+			GetResource<UserReference>(ThisServicesUrls.ServiceSubscriber(serviceId, userId));
 
-        public async Task<IEnumerable<ServiceReference>> List(int page, int pageSize)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisServicesUrls.List(page, pageSize));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<ServiceReference>>(content);
-        }
+		public Task<IEnumerable<ServiceReference>> List(int page, int pageSize) =>
+			GetResource<IEnumerable<ServiceReference>>(ThisServicesUrls.List(page, pageSize), false);
 
         public Task<IEnumerable<AdministratorReference>> ListAdministrators(string serviceId, int page, int pageSize)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<UserReference>> ListSubscribers(string serviceId, int page, int pageSize)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisServicesUrls.ServiceSubscribers(serviceId, page, pageSize));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<UserReference>>(content);
-        }
+		public Task<IEnumerable<UserReference>> ListSubscribers(string serviceId, int page, int pageSize) =>
+			GetResource<IEnumerable<UserReference>>(ThisServicesUrls.ServiceSubscribers(serviceId, page, pageSize), false);
 
         public Task NotifySubscribers(string serviceId, NotificationOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public async Task RemoveSubscription(string serviceId, string userId)
-        {
-            var response = await GetOrCreateHttpClient().DeleteAsync(ThisServicesUrls.ServiceSubscriber(serviceId, userId));
-            response.EnsureSuccessStatusCode();
-            await response.Content.ReadAsStringAsync();
-        }
+		public Task RemoveSubscription(string serviceId, string userId) =>
+			DeleteResource(ThisServicesUrls.ServiceSubscriber(serviceId, userId));
     }
 
     internal static class ThisServicesUrls

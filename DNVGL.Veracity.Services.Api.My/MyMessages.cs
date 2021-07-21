@@ -13,13 +13,13 @@ namespace DNVGL.Veracity.Services.Api.My
         }
 
 		public Task<IEnumerable<Message>> List(bool includeRead = false) =>
-			GetResult<IEnumerable<Message>>(MyMessagesUrls.List(includeRead), false);
+			GetResource<IEnumerable<Message>>(MyMessagesUrls.List(includeRead), false);
 
 		public Task<Message> Get(string messageId) =>
-			GetResult<Message>(MyMessagesUrls.Message(messageId));
+			GetResource<Message>(MyMessagesUrls.Message(messageId));
 
 		public Task<int> GetUnreadCount() =>
-			GetResult<int>(MyMessagesUrls.UnreadCount, false);
+			GetResource<int>(MyMessagesUrls.UnreadCount, false);
     }
 
     internal static class MyMessagesUrls

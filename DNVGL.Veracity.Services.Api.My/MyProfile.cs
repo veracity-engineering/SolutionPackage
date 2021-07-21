@@ -12,7 +12,7 @@ namespace DNVGL.Veracity.Services.Api.My
         }
 
 		public Task<Profile> Get() =>
-			GetResult<Profile>(MyProfileUrls.Root);
+			GetResource<Profile>(MyProfileUrls.Root);
     }
 
     internal static class MyProfileUrls

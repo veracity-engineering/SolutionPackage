@@ -13,7 +13,7 @@ namespace DNVGL.Veracity.Services.Api.My
 		}
 
 		public Task<IEnumerable<MyServiceReference>> List() =>
-			GetResult<IEnumerable<MyServiceReference>>(MyServicesUrls.Root, false);
+			GetResource<IEnumerable<MyServiceReference>>(MyServicesUrls.Root, false);
 	}
 
 	internal static class MyServicesUrls

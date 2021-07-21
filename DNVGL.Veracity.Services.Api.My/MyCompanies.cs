@@ -13,7 +13,7 @@ namespace DNVGL.Veracity.Services.Api.My
         }
 
 		public Task<IEnumerable<CompanyReference>> List() =>
-			GetResult<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
+			GetResource<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
     }
 
     internal static class MyCompaniesUrls

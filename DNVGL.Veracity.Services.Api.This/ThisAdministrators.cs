@@ -6,39 +6,25 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-    public class ThisAdministrators : ApiResourceClient, IThisAdministrators
-    {
-        public ThisAdministrators(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
-        {
-        }
+	public class ThisAdministrators : ApiResourceClient, IThisAdministrators
+	{
+		public ThisAdministrators(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		{
+		}
 
-        public async Task<Administrator> Get(string userId)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisAdministratorsUrls.Administrator(userId));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<Administrator>(content);
-        }
+		public Task<Administrator> Get(string userId) =>
+			GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
 
-        public async Task<IEnumerable<AdministratorReference>> List(int page, int pageSize)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisAdministratorsUrls.List(page, pageSize));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<AdministratorReference>>(content);
-        }
-    }
+		public Task<IEnumerable<AdministratorReference>> List(int page, int pageSize) =>
+			GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
+	}
 
-    internal static class ThisAdministratorsUrls
-    {
-        public static string Root => "/veracity/services/v3/this/administrators";
+	internal static class ThisAdministratorsUrls
+	{
+		public static string Root => "/veracity/services/v3/this/administrators";
 
-        public static string List(int page, int pageSize) => $"{Root}?page={page}&pageSize={pageSize}";
+		public static string List(int page, int pageSize) => $"{Root}?page={page}&pageSize={pageSize}";
 
-        public static string Administrator(string userId) => $"{Root}/{userId}";
-    }
+		public static string Administrator(string userId) => $"{Root}/{userId}";
+	}
 }
