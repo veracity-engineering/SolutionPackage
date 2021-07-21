@@ -19,12 +19,7 @@ namespace DNVGL.Veracity.Services.Api.Exceptions
 			ResponseContent = responseContent;
 		}
 
-		protected ServerErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-		}
-
-		public override void GetObjectData(SerializationInfo info, StreamingContext context) =>
-			base.GetObjectData(info, context);
+		protected ServerErrorException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 		public static async Task<ServerErrorException> FromResponse(HttpResponseMessage response, Exception innerException) =>
 			new ServerErrorException(response.StatusCode, await response.Content?.ReadAsStringAsync(), "The status of the response did not indicate success.", innerException);
