@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Exceptions
 {
+	[Serializable]
 	public class ServerErrorException : Exception
 	{
 		public HttpStatusCode StatusCode { get; set; }
