@@ -18,7 +18,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException("Feature name can't be null or empty.");
+                throw new ArgumentNullException($"Feature {nameof(name)} can't be null or empty.");
             }
 
             if (features.Any(f => f.Name == name))
