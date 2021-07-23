@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace DNVGL.Web.Security.PermissionsPolicies
@@ -22,7 +23,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
 
             if (features.Any(f => f.Name == name))
             {
-                throw new Exception("Duplicate feature name.");
+                throw new DuplicateNameException($"Duplicate feature name ({name}).");
             }
 
             var feature = new Feature(name);

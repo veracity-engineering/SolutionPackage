@@ -28,7 +28,7 @@
 
         public override string ToString()
         {
-            return $"{Name}={builder.ToString()}";
+            return $"{Name}={builder}";
         }
     }
 }
