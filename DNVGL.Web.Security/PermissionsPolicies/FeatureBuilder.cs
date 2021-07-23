@@ -6,7 +6,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
 {
     public class FeatureBuilder
     {
-        private List<string> allows = new List<string>();
+        private readonly List<string> allows = new List<string>();
         
         internal FeatureBuilder()
         {
@@ -49,7 +49,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
 
         public override string ToString()
         {
-            if (allows.Count() == 1 && allows.First() == "*")
+            if (allows.Count == 1 && allows.First() == "*")
             {
                 return "*";
             }

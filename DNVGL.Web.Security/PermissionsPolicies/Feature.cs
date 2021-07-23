@@ -3,6 +3,7 @@
 
     public class Feature
     {
+        private readonly FeatureBuilder builder = new FeatureBuilder();
         public string Name { get; private set; }
         internal Feature(string name)
         {
@@ -13,8 +14,7 @@
         {
             get { return builder.Enabled; }
         }
-
-        private FeatureBuilder builder = new FeatureBuilder();
+        
         public FeatureBuilder Enable()
         {
             builder.Enable();

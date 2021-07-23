@@ -8,7 +8,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
     public class PermissionsPolicy
     {
         public static string Key {get { return "Permissions-Policy"; } }
-        private List<Feature> features = new List<Feature>();
+        private readonly List<Feature> features = new List<Feature>();
         public PermissionsPolicy()
         {
 
@@ -18,7 +18,7 @@ namespace DNVGL.Web.Security.PermissionsPolicies
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException($"Feature name can't be null or empty.");
+                throw new ArgumentNullException("Feature name can't be null or empty.");
             }
 
             if (features.Any(f => f.Name == name))
