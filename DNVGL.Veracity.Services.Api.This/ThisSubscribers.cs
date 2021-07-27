@@ -14,39 +14,17 @@ namespace DNVGL.Veracity.Services.Api.This
         {
         }
 
-        public async Task Add(string userId, SubscriptionOptions options)
-        {
-            var response = await GetOrCreateHttpClient().PutAsync(ThisSubscribersUrls.Subscriber(userId), new StringContent(Serialize(options)));
-            response.EnsureSuccessStatusCode();
-            await response.Content.ReadAsStringAsync();
-        }
+		public Task Add(string userId, SubscriptionOptions options) =>
+			PutResource(ThisSubscribersUrls.Subscriber(userId), new StringContent(Serialize(options)));
 
-        public async Task<UserReference> Get(string userId)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisSubscribersUrls.Subscriber(userId));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<UserReference>(content);
-        }
+		public Task<UserReference> Get(string userId) =>
+			GetResource<UserReference>(ThisSubscribersUrls.Subscriber(userId));
 
-        public async Task<IEnumerable<UserReference>> List(int page, int pageSize)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisSubscribersUrls.List(page, pageSize));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<UserReference>>(content);
-        }
+		public Task<IEnumerable<UserReference>> List(int page, int pageSize) =>
+			GetResource<IEnumerable<UserReference>>(ThisSubscribersUrls.List(page, pageSize));
 
-        public async Task Remove(string userId)
-        {
-            var response = await GetOrCreateHttpClient().DeleteAsync(ThisSubscribersUrls.Subscriber(userId));
-            response.EnsureSuccessStatusCode();
-            await response.Content.ReadAsStringAsync();
-        }
+		public Task Remove(string userId) =>
+			DeleteResource(ThisSubscribersUrls.Subscriber(userId));
     }
 
     internal static class ThisSubscribersUrls
