@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +52,7 @@ namespace DNVGL.OAuth.Web
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
-			if (schemaOptions == null || schemaOptions.Count() == 0)
+			if (schemaOptions == null || schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
@@ -65,8 +63,6 @@ namespace DNVGL.OAuth.Web
 
 				builder.AddJwtBearer(schemaOption.Key, o =>
 				{
-					var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-					o.ConfigurationManager = configManager;
 					o.Authority = option.Authority;
 
 					if (option.TokenValidationParameters != null) o.TokenValidationParameters = option.TokenValidationParameters;
@@ -133,7 +129,6 @@ namespace DNVGL.OAuth.Web
 
 			builder.AddOpenIdConnect(o =>
 			{
-				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(oidcOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever());
 				o.Authority = oidcOptions.Authority;
 				o.ClientId = oidcOptions.ClientId;
 				o.ClientSecret = oidcOptions.ClientSecret;
@@ -144,19 +139,11 @@ namespace DNVGL.OAuth.Web
 				o.UsePkce = true;
 #endif
 
-				if (oidcOptions.Scopes != null)
-				{
-					oidcOptions.Scopes.ToList().ForEach(s => o.Scope.Add(s));
-				}
+				if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any()) oidcOptions.Scopes = new string[] { oidcOptions.ClientId };
 
-				// switch to authorization code flow.
-				if (o.ResponseType == OpenIdConnectResponseType.Code)
-				{
-					o.ClientSecret = oidcOptions.ClientSecret;
-				}
+				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
-
 
 				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
 				{

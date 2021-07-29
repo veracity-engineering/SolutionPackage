@@ -12,13 +12,12 @@ namespace DNVGL.OAuth.Web.TokenCache
 		/// Generates a MSAL Account Id from user claims and OIDC Options.
 		/// </summary>
 		/// <param name="claimsPrincipal"></param>
-		/// <param name="oidcOptions">The <see cref="OpenIdConnectOptions.TenantId">TenantId</see> of the options should be in GUID format.</param>
 		/// <returns></returns>
-		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal, OpenIdConnectOptions oidcOptions)
+		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
 		{
-			var objectId = claimsPrincipal.GetObjectId();
-			var tenantId = oidcOptions.TenantId;
-			var policy = oidcOptions.SignInPolicy.ToLower();
+			var objectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
+			var policy = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/claims/authnclassreference");
+			var tenantId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier).Issuer.Split('/')[3];
 			var msalAccountId = $"{objectId}-{policy}.{tenantId}";
 			return msalAccountId?.ToLower();
 		}
@@ -36,22 +35,5 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return claim?.Value;
 		}
 #endif
-
-		/// <summary>
-		/// Gets the <see href="http://schemas.microsoft.com/identity/claims/objectidentifier">oid</see> from user claims.
-		/// </summary>
-		/// <param name="claimsPrincipal"></param>
-		/// <returns></returns>
-		public static string GetObjectId(this ClaimsPrincipal claimsPrincipal)
-		{
-			var objectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
-
-			if (string.IsNullOrEmpty(objectId))
-			{
-				objectId = claimsPrincipal.FindFirstValue("oid");
-			}
-
-			return objectId;
-		}
 	}
 }
