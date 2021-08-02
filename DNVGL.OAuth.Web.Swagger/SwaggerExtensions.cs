@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DNVGL.OAuth.Web.Swagger
 {
@@ -25,30 +26,40 @@ namespace DNVGL.OAuth.Web.Swagger
 				{
 					o.SwaggerDoc(option.Version, new OpenApiInfo { Title = option.Name, Version = option.Version });
 
-					var securityScheme = new OpenApiSecurityScheme
+					var oauth2Schema = new OpenApiSecurityScheme
 					{
 						Type = SecuritySchemeType.OAuth2,
 						Flows = new OpenApiOAuthFlows
 						{
 							Implicit = new OpenApiOAuthFlow
 							{
-								AuthorizationUrl = new Uri(option.AuthorizationUrl),
-								Scopes = option.Scopes
+								AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
+								Scopes = option.Scopes.ToDictionary(s => s.Scope, s => s.Description)
 							}
 						}
 					};
 
-					o.AddSecurityDefinition("oauth2", securityScheme);
-
-					var securityRequirement = new OpenApiSecurityRequirement();
-					securityRequirement.Add(new OpenApiSecurityScheme
+					var apikeySchema = new OpenApiSecurityScheme
 					{
-						Reference = new OpenApiReference
+						Name = "Authorization",
+						In = ParameterLocation.Header,
+						Type = SecuritySchemeType.ApiKey
+					};
+
+					o.AddSecurityDefinition("OAuth2", oauth2Schema);
+					o.AddSecurityDefinition("Bearer", apikeySchema);
+
+					var securityRequirement = new OpenApiSecurityRequirement
+					{
 						{
-							Type = ReferenceType.SecurityScheme,
-							Id = "oauth2"
+							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "OAuth2", Type = ReferenceType.SecurityScheme } },
+							new List<string>()
+						},
+						{
+							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "Bearer", Type = ReferenceType.SecurityScheme } },
+							new List<string>()
 						}
-					}, new List<string>());
+					};
 
 					o.AddSecurityRequirement(securityRequirement);
 				});
@@ -77,10 +88,6 @@ namespace DNVGL.OAuth.Web.Swagger
 					o.DisplayRequestDuration();
 					o.OAuthAppName($"{option.Name} {option.Version}");
 					o.OAuthClientId(option.ClientId);
-				}).UseReDoc(o =>
-				{
-					o.RoutePrefix = "redoc";
-					o.SpecUrl = $"/swagger/{option.Version}/swagger.json";
 				});
 			}
 

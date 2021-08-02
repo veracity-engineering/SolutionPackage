@@ -36,10 +36,10 @@ namespace DNVGL.OAuth.Web.TokenCache
 
             MountCache(clientApp);
 
-            return new MsalClientApp(clientApp, _options);
+            return new MsalClientApp(clientApp, _options.Scopes);
         }
 
-        public IClientApp BuildForUserCredentials(HttpContext httpContext, string codeVerifier)
+        public IClientApp BuildForUserCredentials(HttpContext httpContext, string codeVerifier = null)
         {
             var request = httpContext.Request;
             var returnUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, _options.CallbackPath);
@@ -57,7 +57,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 
             MountCache(clientApp);
 
-            return new MsalClientApp(clientApp, _options);
+            return new MsalClientApp(clientApp, _options.Scopes);
         }
 
         public IClientApp BuildForUserCredentials<TOptions>(RemoteAuthenticationContext<TOptions> context) where TOptions : AuthenticationSchemeOptions
