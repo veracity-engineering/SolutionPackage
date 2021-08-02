@@ -16,8 +16,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicies);
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
-			var response = await GetOrCreateHttpClient().SendAsync(request);
-			response.EnsureSuccessStatusCode();
+			await ToResourceResult(request);
 		}
 
 		public async Task ValidatePolicy(string serviceId, string returnUrl = null, string skipSubscriptionCheck = null)
@@ -27,8 +26,7 @@ namespace DNVGL.Veracity.Services.Api.My
 				request.Headers.Add("returnUrl", returnUrl);
 			if (!string.IsNullOrEmpty(skipSubscriptionCheck))
 				request.Headers.Add("skipSubscriptionCheck", skipSubscriptionCheck);
-			var response = await GetOrCreateHttpClient().SendAsync(request);
-			response.EnsureSuccessStatusCode();
+			await ToResourceResult(request);
 		}
 	}
 

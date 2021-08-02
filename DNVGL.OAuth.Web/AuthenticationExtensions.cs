@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +14,6 @@ using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public static class AuthenticationExtensions
 	{
 		#region AddJwt for Web Api
@@ -55,7 +50,7 @@ namespace DNVGL.OAuth.Web
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
-			if (schemaOptions == null || !schemaOptions.Any())
+			if (schemaOptions == null || schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
@@ -66,11 +61,10 @@ namespace DNVGL.OAuth.Web
 
 				builder.AddJwtBearer(schemaOption.Key, o =>
 				{
-					var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(option.MetadataAddress, new OpenIdConnectConfigurationRetriever());
-					o.ConfigurationManager = configManager;
 					o.Authority = option.Authority;
-					o.Audience = option.ClientId;
-					o.TokenValidationParameters = new TokenValidationParameters { ValidateIssuerSigningKey = true };
+
+					if (option.TokenValidationParameters != null) o.TokenValidationParameters = option.TokenValidationParameters;
+
 					if (option.Events != null) { o.Events = option.Events; }
 				});
 			}
@@ -116,7 +110,7 @@ namespace DNVGL.OAuth.Web
 		}
 
 		/// <summary>
-		/// 
+		/// Add OpenId Connect authentication
 		/// </summary>
 		/// <param name="builder"></param>
 		/// <param name="oidcOptions"></param>
@@ -139,7 +133,6 @@ namespace DNVGL.OAuth.Web
 
 			builder.AddOpenIdConnect(o =>
 			{
-				o.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(oidcOptions.MetadataAddress, new OpenIdConnectConfigurationRetriever());
 				o.Authority = oidcOptions.Authority;
 				o.ClientId = oidcOptions.ClientId;
 				o.ClientSecret = oidcOptions.ClientSecret;
@@ -150,13 +143,11 @@ namespace DNVGL.OAuth.Web
 				o.UsePkce = true;
 #endif
 
-				if (oidcOptions.Scopes != null)
-				{
-					oidcOptions.Scopes.ToList().ForEach(s => o.Scope.Add(s));
-				}
+				if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any()) oidcOptions.Scopes = new string[] { oidcOptions.ClientId };
+
+				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
-
 
 				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
 				{

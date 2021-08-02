@@ -15,41 +15,22 @@ namespace DNVGL.Veracity.Services.Api.This
         {
         }
 
-        public async Task<CreateUserReference> Create(CreateUserOptions options)
-        {
-            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.Root, new StringContent(Serialize(options)));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<CreateUserReference>(content);
-        }
+		public Task<CreateUserReference> Create(CreateUserOptions options) =>
+			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, new StringContent(Serialize(options)));
 
-        public async Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options)
-        {
-            var response = await GetOrCreateHttpClient().PostAsync(ThisUsersUrls.Root, new StringContent(Serialize(options)));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<CreateUserReference>>(content);
-        }
+		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options) =>
+			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options)));
 
-        public async Task<IEnumerable<UserReference>> Resolve(string email)
-        {
-            var response = await GetOrCreateHttpClient().GetAsync(ThisUsersUrls.Resolve(email));
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return null;
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return Deserialize<IEnumerable<CreateUserReference>>(content);
-        }
+		public Task<IEnumerable<UserReference>> Resolve(string email) =>
+			GetResource<IEnumerable<UserReference>>(ThisUsersUrls.Resolve(email));
     }
 
     internal static class ThisUsersUrls
     {
-        public static string Root => "/veracity/services/v3/this/users";
+        public static string UsersRoot => "/veracity/services/v3/this/users";
 
-        public static string Resolve(string email) => $"{Root}/resolve({HttpUtility.UrlEncode(email)})";
+        public static string UserRoot => "/veracity/services/v3/this/user";
+
+        public static string Resolve(string email) => $"{UserRoot}/resolve({HttpUtility.UrlEncode(email)})";
     }
 }

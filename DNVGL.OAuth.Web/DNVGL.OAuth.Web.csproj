@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-		<Authors>Eric Liu &lt;li.eric.liu@dnvgl.com&gt;</Authors>
+		<Authors>Eric Liu &lt;li.eric.liu@dnv.com&gt;</Authors>
 		<Company>DNVGL</Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>

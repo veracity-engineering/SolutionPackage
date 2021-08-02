@@ -12,14 +12,12 @@ namespace DNVGL.OAuth.Web.TokenCache
 		/// Generates a MSAL Account Id from user claims and OIDC Options.
 		/// </summary>
 		/// <param name="claimsPrincipal"></param>
-		/// <param name="oidcOptions">The <see cref="OpenIdConnectOptions.TenantId">TenantId</see> of the options should be in GUID format.</param>
 		/// <returns></returns>
-		public static string GetHomeAccountId(this ClaimsPrincipal claimsPrincipal, OpenIdConnectOptions oidcOptions = null)
+		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
 		{
 			var objectId = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
-			var claim = claimsPrincipal.FindFirst("http://schemas.microsoft.com/claims/authnclassreference");
-			var policy = string.IsNullOrWhiteSpace(oidcOptions?.SignInPolicy) ? claim.Value : oidcOptions.SignInPolicy;
-			var tenantId = string.IsNullOrWhiteSpace(oidcOptions?.TenantId) ? claim.Issuer.Split('/')[3] : oidcOptions.TenantId;
+			var policy = claimsPrincipal.FindFirstValue("http://schemas.microsoft.com/claims/authnclassreference");
+			var tenantId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier).Issuer.Split('/')[3];
 			var msalAccountId = $"{objectId}-{policy}.{tenantId}";
 			return msalAccountId?.ToLower();
 		}
