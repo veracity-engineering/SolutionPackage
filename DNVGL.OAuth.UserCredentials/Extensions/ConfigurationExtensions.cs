@@ -16,8 +16,8 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
         public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, IEnumerable<OAuthHttpClientFactoryOptions> options)
         {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IOAuthHttpClientFactory>(s => new OAuthHttpClientFactory(options, s.GetService<IHttpContextAccessor>(), s.GetRequiredService<IClientAppBuilder>()));
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IOAuthHttpClientFactory>(s => new OAuthHttpClientFactory(options, s.GetRequiredService<IHttpContextAccessor>(), s.GetRequiredService<IClientAppBuilder>()));
             return services;
         }
 
