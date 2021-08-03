@@ -18,7 +18,7 @@ namespace DNVGL.OAuth.Api.HttpClient
 
 		public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder)
 		{
-			_options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
 			_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
 			_appBuilder = appBuilder ?? throw new ArgumentNullException(nameof(appBuilder));
             _handlerCreators = new Func<OAuthHttpClientFactoryOptions, HttpMessageHandler>[Enum.GetValues(typeof(OAuthCredentialFlow)).Length];
@@ -43,6 +43,24 @@ namespace DNVGL.OAuth.Api.HttpClient
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
         {
+            if (!(config.OAuthClientOptions?.Scopes?.Any() ?? false))
+                throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.Scopes)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
+
+            if (config.Flow == OAuthCredentialFlow.ClientCredentials)
+            {
+                if (string.IsNullOrEmpty(config.OAuthClientOptions?.ClientId))
+                    throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.ClientId)} value.",
+                        $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.ClientId)}");
+
+                if (string.IsNullOrEmpty(config.OAuthClientOptions?.ClientSecret))
+                    throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.ClientSecret)} value.",
+                        $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.ClientSecret)}");
+
+                if (string.IsNullOrEmpty(config.OAuthClientOptions?.Authority))
+                    throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.Authority)} value.",
+                        $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Authority)}");
+            }
+
             var creator = _handlerCreators.ElementAtOrDefault((int)config.Flow);
 
             if (creator == null)
@@ -61,10 +79,10 @@ namespace DNVGL.OAuth.Api.HttpClient
                 BaseUri = config.BaseUri,
                 OAuthClientOptions = new OpenIdConnectOptions
                 {
-                    ClientId = config.OAuthClientOptions.ClientId,
-                    ClientSecret = config.OAuthClientOptions.ClientSecret,
-                    Scopes = (string[])config.OAuthClientOptions.Scopes.Clone(),
-                    Authority = config.OAuthClientOptions.Authority
+                    ClientId = config.OAuthClientOptions?.ClientId,
+                    ClientSecret = config.OAuthClientOptions?.ClientSecret,
+                    Scopes = (string[])config.OAuthClientOptions?.Scopes.Clone(),
+                    Authority = config.OAuthClientOptions?.Authority
                 }
             };
         }
