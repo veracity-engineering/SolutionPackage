@@ -5,40 +5,68 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
 	public class OAuthHttpClientFactory : IOAuthHttpClientFactory
-	{
+    {
+        private readonly Func<OAuthHttpClientFactoryOptions, System.Net.Http.HttpMessageHandler>[] _handlerCreators;
 		private readonly IEnumerable<OAuthHttpClientFactoryOptions> _options;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IClientAppBuilder _appBuilder;
 
 		public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder)
 		{
-			_options = options;
-			_httpContextAccessor = httpContextAccessor;
-			_appBuilder = appBuilder;
-		}
+			_options = options ?? throw new ArgumentNullException(nameof(options));
+			_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+			_appBuilder = appBuilder ?? throw new ArgumentNullException(nameof(appBuilder));
+            _handlerCreators = new Func<OAuthHttpClientFactoryOptions, HttpMessageHandler>[Enum.GetValues(typeof(OAuthCredentialFlow)).Length];
+            _handlerCreators[(int) OAuthCredentialFlow.UserCredentials] =
+                o => new UserCredentialsHandler(o, _httpContextAccessor, _appBuilder);
+            _handlerCreators[(int) OAuthCredentialFlow.ClientCredentials] = 
+                o => new ClientCredentialsHandler(o, _appBuilder);
+        }
 
-		public System.Net.Http.HttpClient Create(string name)
-		{
-			var config = _options.FirstOrDefault(o => o.Name.Equals(name));
-			if (config == null)
-				throw new MissingClientConfigurationNameException(name);
-			return BuildClient(config);
-		}
+        public System.Net.Http.HttpClient Create(string name, Action<OAuthHttpClientFactoryOptions> configAction = null)
+        {
+            var config = _options.FirstOrDefault(o => o.Name.Equals(name));
+            if (config == null)
+                throw new MissingClientConfigurationNameException(name);
 
-		private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions options)
-		{
-			var handlers = new Dictionary<OAuthCredentialFlow, Func<OAuthHttpClientFactoryOptions, System.Net.Http.HttpMessageHandler>>
-			{
-				{ OAuthCredentialFlow.UserCredentials, o => new UserCredentialsHandler(o, _httpContextAccessor, _appBuilder) },
-				{ OAuthCredentialFlow.ClientCredentials, o => new ClientCredentialsHandler(o, _appBuilder) }
-			};
-			if (handlers.ContainsKey(options.Flow))
-				return new System.Net.Http.HttpClient(handlers[options.Flow](options)) { BaseAddress = new Uri(options.BaseUri) };
-			throw new InvalidCredentialFlowException(options.Flow);
-		}
+            var clone = CloneConfig(config);
+
+            configAction?.Invoke(clone);
+
+            return BuildClient(config);
+        }
+
+        private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
+        {
+            var creator = _handlerCreators.ElementAtOrDefault((int)config.Flow);
+
+            if (creator == null)
+                throw new InvalidCredentialFlowException(config.Flow);
+
+            return new System.Net.Http.HttpClient(creator(config)) { BaseAddress = new Uri(config.BaseUri) };
+        }
+
+        private static OAuthHttpClientFactoryOptions CloneConfig(OAuthHttpClientFactoryOptions config)
+        {
+            return new OAuthHttpClientFactoryOptions
+            {
+                Name = config.Name,
+                Flow = config.Flow,
+                SubscriptionKey = config.SubscriptionKey,
+                BaseUri = config.BaseUri,
+                OAuthClientOptions = new OpenIdConnectOptions
+                {
+                    ClientId = config.OAuthClientOptions.ClientId,
+                    ClientSecret = config.OAuthClientOptions.ClientSecret,
+                    Scopes = (string[])config.OAuthClientOptions.Scopes.Clone(),
+                    Authority = config.OAuthClientOptions.Authority
+                }
+            };
+        }
 	}
 }

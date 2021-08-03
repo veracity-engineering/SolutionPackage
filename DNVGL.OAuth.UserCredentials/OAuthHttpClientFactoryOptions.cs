@@ -13,7 +13,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the credential flow applied to requests by the HTTP client instance.
+        /// Gets or sets the default credential flow applied to requests by the HTTP client instance.
         /// </summary>
         public OAuthCredentialFlow Flow { get; set; }
 
@@ -31,7 +31,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// <summary>
         /// Gets or sets the Open Id Connect options to apply to authentication by the HTTP client instance.
         /// </summary>
-        public OpenIdConnectOptions OpenIdConnectOptions { get; set; }
+        public OpenIdConnectOptions OAuthClientOptions { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

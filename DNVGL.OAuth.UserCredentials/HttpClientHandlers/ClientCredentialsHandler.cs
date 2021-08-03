@@ -26,7 +26,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
             if (_clientApp != null)
                 return _clientApp;
             _clientApp = _appBuilder
-                .WithOpenIdConnectOptions(_options.OpenIdConnectOptions)
+                .WithOpenIdConnectOptions(_options.OAuthClientOptions)
                 .BuildForClientCredentials();
             return _clientApp;
         }
