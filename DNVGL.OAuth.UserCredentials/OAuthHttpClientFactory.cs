@@ -33,7 +33,7 @@ namespace DNVGL.OAuth.Api.HttpClient
             if (configPredict == null)
                 throw new ArgumentNullException(nameof(configPredict));
 
-            var apiConfig = _options.SingleOrDefault(configPredict);
+            var apiConfig = _options.FirstOrDefault(configPredict);
             if (apiConfig == null)
                 throw new ClientConfigurationNotFoundException();
 
@@ -42,6 +42,14 @@ namespace DNVGL.OAuth.Api.HttpClient
             configOverride?.Invoke(clonedConfig);
 
             return BuildClient(clonedConfig);
+        }
+
+        public System.Net.Http.HttpClient Create(string apiName)
+        {
+            if (string.IsNullOrEmpty(apiName))
+                throw new ArgumentNullException(nameof(apiName));
+
+            return Create(c => c.Name == apiName);
         }
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
