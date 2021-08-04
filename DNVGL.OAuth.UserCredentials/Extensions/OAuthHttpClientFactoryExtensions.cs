@@ -13,24 +13,26 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         /// 
         /// </summary>
         /// <param name="factory"></param>
-        /// <param name="name"></param>
+        /// <param name="name">Value to match <see cref="OAuthHttpClientFactoryOptions.Name">Name</see> of configuration options for the created instance.</param>
+        /// <param name="configOverride">an Action which allow to override some configs for the client configuration.</param>
         /// <returns></returns>
-        public static System.Net.Http.HttpClient CreateWithUserCredentialFlow(this IOAuthHttpClientFactory factory, string name)
+        public static System.Net.Http.HttpClient CreateWithUserCredentialFlow(this IOAuthHttpClientFactory factory, string name, Action<OAuthHttpClientFactoryOptions> configOverride = null)
         {
-            return factory.Create(name, config =>
-                config.Flow = OAuthCredentialFlow.UserCredentials);
+            return factory.Create(c => c.Name == name 
+                                       && c.Flow == OAuthCredentialFlow.UserCredentials, configOverride);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="factory"></param>
-        /// <param name="name"></param>
+        /// <param name="name">Value to match <see cref="OAuthHttpClientFactoryOptions.Name">Name</see> of configuration options for the created instance.</param>
+        /// <param name="configOverride">an Action which allow to override some configs for the client configuration.</param>
         /// <returns></returns>
-        public static System.Net.Http.HttpClient CreateWithClientCredentialFlow(this IOAuthHttpClientFactory factory, string name)
+        public static System.Net.Http.HttpClient CreateWithClientCredentialFlow(this IOAuthHttpClientFactory factory, string name, Action<OAuthHttpClientFactoryOptions> configOverride = null)
         {
-            return factory.Create(name, config => 
-                config.Flow = OAuthCredentialFlow.ClientCredentials);
+            return factory.Create(c => c.Name == name
+                                       && c.Flow == OAuthCredentialFlow.ClientCredentials, configOverride);
         }
 
 
