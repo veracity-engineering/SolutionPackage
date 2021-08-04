@@ -214,7 +214,6 @@ namespace DNVGL.OAuth.Web
 				// add memory cache for token cache if no distributed cache set.
 				if (cache == null)
 				{
-					services.AddDistributedMemoryCache();
 					cache = f.GetRequiredService<IDistributedCache>();
 				}
 
