@@ -29,7 +29,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
             if (_clientApp != null)
                 return _clientApp;
             _clientApp = _appBuilder
-                .WithOAuth2Options(_options.OAuth2Options)
+                .WithOAuth2Options(_options.OAuthClientOptions)
                 .BuildForUserCredentials(httpContext);
             return _clientApp;
         }
