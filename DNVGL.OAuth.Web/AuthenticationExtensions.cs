@@ -88,11 +88,6 @@ namespace DNVGL.OAuth.Web
 
 					if (jwtOptions.TokenValidationParameters != null) o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-					if (jwtOptions.Audiences?.Length > 0)
-					{
-						o.TokenValidationParameters.ValidAudiences = jwtOptions.Audiences;
-					}
-
 					if (jwtOptions.Events != null) { o.Events = jwtOptions.Events; }
 
 					o.SecurityTokenValidators.Clear();
