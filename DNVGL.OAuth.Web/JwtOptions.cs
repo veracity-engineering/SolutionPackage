@@ -13,6 +13,8 @@ namespace DNVGL.OAuth.Web
 
 		public JwtBearerEvents Events { get; set; }
 
+		public ISecurityTokenValidator SecurityTokenValidator { get; set; }
+
 		/// <summary>
 		/// Gets or sets the Authority to use when making OpenIdConnect calls.
 		/// </summary>
@@ -27,5 +29,7 @@ namespace DNVGL.OAuth.Web
 		/// path segment 'tfp' is required for MSAL, it is obsoleted and might be removed in the future.
 		/// </remarks>
 		public string Authority { get; set; } = "https://login.veracity.com/tfp/a68572e3-63ce-4bc1-acdc-b64943502e9d/b2c_1a_signinwithadfsidp/v2.0";
+
+		public string[] Audiences { get; set; }
 	}
 }

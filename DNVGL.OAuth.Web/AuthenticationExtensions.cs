@@ -2,11 +2,14 @@
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +39,25 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(schemaOptions);
 		}
 
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, string authenticationSchema, JwtOptions jwtOptions)
+		{
+			return builder.AddJwt(new Dictionary<string, JwtOptions> { { authenticationSchema, jwtOptions } });
+		}
+
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, string authenticationSchema, Action<JwtOptions> setupAction)
+		{
+			if (setupAction == null)
+			{
+				throw new ArgumentNullException(nameof(setupAction));
+			}
+
+			var jwtOptions = new JwtOptions();
+			setupAction(jwtOptions);
+			return builder.AddJwt(authenticationSchema, jwtOptions);
+		}
+
+
+
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
@@ -50,22 +72,39 @@ namespace DNVGL.OAuth.Web
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
-			if (schemaOptions == null || schemaOptions.Any())
+			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
 
 			foreach (var schemaOption in schemaOptions)
 			{
-				var option = schemaOption.Value;
+				var jwtOptions = schemaOption.Value;
 
 				builder.AddJwtBearer(schemaOption.Key, o =>
 				{
-					o.Authority = option.Authority;
+					o.Authority = jwtOptions.Authority;
+					o.Audience = jwtOptions.ClientId;
 
-					if (option.TokenValidationParameters != null) o.TokenValidationParameters = option.TokenValidationParameters;
+					if (jwtOptions.TokenValidationParameters != null) o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-					if (option.Events != null) { o.Events = option.Events; }
+					if (jwtOptions.Audiences?.Length > 0)
+					{
+						o.TokenValidationParameters.ValidAudiences = jwtOptions.Audiences;
+					}
+
+					if (jwtOptions.Events != null) { o.Events = jwtOptions.Events; }
+
+					o.SecurityTokenValidators.Clear();
+
+					if (jwtOptions.SecurityTokenValidator != null)
+					{
+						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator);
+					}
+					else
+					{
+						o.SecurityTokenValidators.Add(new DNVTokenValidator());
+					}
 				});
 			}
 
@@ -147,6 +186,8 @@ namespace DNVGL.OAuth.Web
 
 				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 
+				if (oidcOptions.SecurityTokenValidator != null) { o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator; }
+				else o.SecurityTokenValidator = new DNVTokenValidator();
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
 
 				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
@@ -189,7 +230,7 @@ namespace DNVGL.OAuth.Web
 			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
 			{
 				var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
-					.WithOpenIdConnectOptions(oidcOptions)
+					.WithOAuth2Options(oidcOptions)
 					.BuildForUserCredentials(context);
 				await msalClientApp.AcquireTokenByAuthorizationCode(context);
 			}
@@ -217,7 +258,7 @@ namespace DNVGL.OAuth.Web
 
 			services.AddSingleton(f =>
 			{
-				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOpenIdConnectOptions(oidcOptions);
+				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOAuth2Options(oidcOptions);
 				return appBuilder;
 			});
 		}
