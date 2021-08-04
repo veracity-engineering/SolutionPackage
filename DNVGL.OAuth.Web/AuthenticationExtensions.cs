@@ -162,7 +162,7 @@ namespace DNVGL.OAuth.Web
 			// switch to authorization code flow.
 			if (oidcOptions.ResponseType == OpenIdConnectResponseType.Code)
 			{
-				builder.Services.AddDistributedTokenCache(oidcOptions);
+				builder.Services.AddMSALClientApp(oidcOptions);
 			}
 
 			builder.AddOpenIdConnect(o =>
@@ -202,7 +202,7 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		private static void AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		private static void AddMSALClientApp(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
