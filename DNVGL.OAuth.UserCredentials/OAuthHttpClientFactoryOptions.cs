@@ -13,7 +13,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the credential flow applied to requests by the HTTP client instance.
+        /// Gets or sets the default credential flow applied to requests by the HTTP client instance.
         /// </summary>
         public OAuthCredentialFlow Flow { get; set; }
 

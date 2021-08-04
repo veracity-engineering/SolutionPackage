@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth.Web", "OAuth.Web", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth.APIClient", "OAuth.APIClient", "{275F235F-1574-4E5C-9A2E-066D505B4C9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Api.HttpClient.Test", "DNVGL.OAuth.Api.HttpClient.Test\DNVGL.OAuth.Api.HttpClient.Test.csproj", "{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{36DDB213-9592-423E-B2E6-8C112B7AFE07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36DDB213-9592-423E-B2E6-8C112B7AFE07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36DDB213-9592-423E-B2E6-8C112B7AFE07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +150,7 @@ Global
 		{372198EA-07E4-4F28-AD50-8BAC8B446EF3} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
 		{5FE28FE3-5DDE-4555-BBD2-6EF599220A53} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
 		{36DDB213-9592-423E-B2E6-8C112B7AFE07} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
+		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB} = {275F235F-1574-4E5C-9A2E-066D505B4C9B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}
