@@ -13,6 +13,8 @@ namespace DNVGL.OAuth.Web
 
 		public JwtBearerEvents Events { get; set; }
 
+		public ISecurityTokenValidator SecurityTokenValidator { get; set; }
+
 		/// <summary>
 		/// Gets or sets the Authority to use when making OpenIdConnect calls.
 		/// </summary>

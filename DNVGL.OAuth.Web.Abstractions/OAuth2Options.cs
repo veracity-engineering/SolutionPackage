@@ -1,14 +1,7 @@
-﻿using System;
-
-namespace DNVGL.OAuth.Web.Abstractions
+﻿namespace DNVGL.OAuth.Web.Abstractions
 {
-	public class OpenIdConnectOptions
+	public class OAuth2Options
 	{
-		[Obsolete("Not needed anymore")]
-		public string TenantId { get; set; } = "a68572e3-63ce-4bc1-acdc-b64943502e9d";
-
-		[Obsolete("Not needed anymore")]
-		public string SignInPolicy { get; set; } = "b2c_1a_signinwithadfsidp";
 
 		/// <summary>
 		/// Gets or sets the Authority to use when making OpenIdConnect calls.
@@ -36,18 +29,13 @@ namespace DNVGL.OAuth.Web.Abstractions
 		public string ClientSecret { get; set; }
 
 		/// <summary>
-		/// The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
-		/// </summary>
-		public string CallbackPath { get; set; } = "/signin-oidc";
-
-		/// <summary>
-		/// Gets or sets the 'response_type'.
-		/// </summary>
-		public string ResponseType { get; set; } = "id_token";
-
-		/// <summary>
 		/// Gets or sets the list of permissions for requests.
 		/// </summary>
 		public string[] Scopes { get; set; }
+
+		/// <summary>
+		/// The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
+		/// </summary>
+		public string CallbackPath { get; set; } = "/signin-oidc";
 	}
 }

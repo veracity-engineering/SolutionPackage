@@ -1,12 +1,15 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 
-namespace DNVGL.OAuth.Web.TokenCache
+namespace DNVGL.OAuth.Web
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public static class ClaimsPrincipalExtension
+	public static class ClaimsExtensions
+
 	{
 		/// <summary>
 		/// Generates a MSAL Account Id from user claims and OIDC Options.
@@ -22,7 +25,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return msalAccountId?.ToLower();
 		}
 
-#if !NETCORE3
+#if NETCORE2
 		/// <summary>
 		/// Gets the first match value of the specified claim.
 		/// </summary>
@@ -35,5 +38,11 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return claim?.Value;
 		}
 #endif
+
+		public static string FindFirstValue(this JwtSecurityToken token, string claimType)
+		{
+			var claim = token.Claims.FirstOrDefault(c => c.Type == claimType);
+			return claim?.Value;
+		}
 	}
 }

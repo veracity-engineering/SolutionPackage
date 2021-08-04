@@ -31,7 +31,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// <summary>
         /// Gets or sets the Open Id Connect options to apply to authentication by the HTTP client instance.
         /// </summary>
-        public OpenIdConnectOptions OAuthClientOptions { get; set; }
+        public OAuth2Options OAuthClientOptions { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

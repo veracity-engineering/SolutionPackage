@@ -2,20 +2,21 @@
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public static class AuthenticationExtensions
 	{
 		#region AddJwt for Web Api
@@ -38,6 +39,25 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(schemaOptions);
 		}
 
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, string authenticationSchema, JwtOptions jwtOptions)
+		{
+			return builder.AddJwt(new Dictionary<string, JwtOptions> { { authenticationSchema, jwtOptions } });
+		}
+
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, string authenticationSchema, Action<JwtOptions> setupAction)
+		{
+			if (setupAction == null)
+			{
+				throw new ArgumentNullException(nameof(setupAction));
+			}
+
+			var jwtOptions = new JwtOptions();
+			setupAction(jwtOptions);
+			return builder.AddJwt(authenticationSchema, jwtOptions);
+		}
+
+
+
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
@@ -52,22 +72,34 @@ namespace DNVGL.OAuth.Web
 
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
 		{
-			if (schemaOptions == null || schemaOptions.Any())
+			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
 
 			foreach (var schemaOption in schemaOptions)
 			{
-				var option = schemaOption.Value;
+				var jwtOptions = schemaOption.Value;
 
 				builder.AddJwtBearer(schemaOption.Key, o =>
 				{
-					o.Authority = option.Authority;
+					o.Authority = jwtOptions.Authority;
+					o.Audience = jwtOptions.ClientId;
 
-					if (option.TokenValidationParameters != null) o.TokenValidationParameters = option.TokenValidationParameters;
+					if (jwtOptions.TokenValidationParameters != null) o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-					if (option.Events != null) { o.Events = option.Events; }
+					if (jwtOptions.Events != null) { o.Events = jwtOptions.Events; }
+
+					o.SecurityTokenValidators.Clear();
+
+					if (jwtOptions.SecurityTokenValidator != null)
+					{
+						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator);
+					}
+					else
+					{
+						o.SecurityTokenValidators.Add(new DNVTokenValidator());
+					}
 				});
 			}
 
@@ -112,7 +144,7 @@ namespace DNVGL.OAuth.Web
 		}
 
 		/// <summary>
-		/// 
+		/// Add OpenId Connect authentication
 		/// </summary>
 		/// <param name="builder"></param>
 		/// <param name="oidcOptions"></param>
@@ -126,6 +158,12 @@ namespace DNVGL.OAuth.Web
 			}
 
 			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
+
+			// switch to authorization code flow.
+			if (oidcOptions.ResponseType == OpenIdConnectResponseType.Code)
+			{
+				builder.Services.AddMSALClientApp(oidcOptions);
+			}
 
 			builder.AddOpenIdConnect(o =>
 			{
@@ -143,6 +181,8 @@ namespace DNVGL.OAuth.Web
 
 				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 
+				if (oidcOptions.SecurityTokenValidator != null) { o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator; }
+				else o.SecurityTokenValidator = new DNVTokenValidator();
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
 
 				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
@@ -162,33 +202,59 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		/// <summary>
-		/// Setups distributed cache for MSAL token to OidcOptions.
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="oidcOptions"></param>
-		/// <param name="cacheSetupAction"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		private static void AddMSALClientApp(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			cacheSetupAction?.Invoke(cacheEntryOptions);
 
-			services.AddSingleton<ITokenCacheProvider>(f => new MsalTokenCacheProvider(f.GetRequiredService<IDistributedCache>(), cacheEntryOptions));
-
-			oidcOptions.Events = new OpenIdConnectEvents
+			services.AddSingleton<ITokenCacheProvider>(f =>
 			{
-				OnAuthorizationCodeReceived = async context =>
-				{
-					var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
-						.WithOpenIdConnectOptions(oidcOptions)
-						.BuildForUserCredentials(context);
-					var result = await msalClientApp.AcquireTokenByAuthorizationCode(context);
-				}
-			};
+				var cache = f.GetRequiredService<IDistributedCache>();
 
-			services.AddSingleton(f => new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOpenIdConnectOptions(oidcOptions));
-			return services;
+				// add memory cache for token cache if no distributed cache set.
+				if (cache == null)
+				{
+					cache = f.GetRequiredService<IDistributedCache>();
+				}
+
+				var provider = new MsalTokenCacheProvider(cache, cacheEntryOptions);
+				return provider;
+			});
+
+			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
+			{
+				var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
+					.WithOAuth2Options(oidcOptions)
+					.BuildForUserCredentials(context);
+				await msalClientApp.AcquireTokenByAuthorizationCode(context);
+			}
+
+#if NETCORE2
+			if (oidcOptions.Events == null) oidcOptions.Events = new OpenIdConnectEvents();
+#else
+			oidcOptions.Events ??= new OpenIdConnectEvents();
+#endif
+
+			if (oidcOptions.Events.OnAuthorizationCodeReceived == null)
+			{
+				oidcOptions.Events.OnAuthorizationCodeReceived = onCodeReceived;
+			}
+			else
+			{
+				var onAuthorizationCodeReceived = oidcOptions.Events.OnAuthorizationCodeReceived;
+
+				oidcOptions.Events.OnAuthorizationCodeReceived = async context =>
+				{
+					await onCodeReceived(context);
+					await onAuthorizationCodeReceived(context);
+				};
+			}
+
+			services.AddSingleton(f =>
+			{
+				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOAuth2Options(oidcOptions);
+				return appBuilder;
+			});
 		}
 		#endregion
 	}

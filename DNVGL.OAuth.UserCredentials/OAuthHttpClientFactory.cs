@@ -77,7 +77,7 @@ namespace DNVGL.OAuth.Api.HttpClient
                 Flow = config.Flow,
                 SubscriptionKey = config.SubscriptionKey,
                 BaseUri = config.BaseUri,
-                OAuthClientOptions = new OpenIdConnectOptions
+                OAuthClientOptions = new OAuth2Options
                 {
                     ClientId = config.OAuthClientOptions?.ClientId,
                     ClientSecret = config.OAuthClientOptions?.ClientSecret,

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -26,42 +26,60 @@ namespace DNVGL.OAuth.Web.Swagger
 				{
 					o.SwaggerDoc(option.Version, new OpenApiInfo { Title = option.Name, Version = option.Version });
 
-					var oauth2Schema = new OpenApiSecurityScheme
+					o.CustomOperationIds(d =>
 					{
-						Type = SecuritySchemeType.OAuth2,
-						Flows = new OpenApiOAuthFlows
+						var descr = d.ActionDescriptor as ControllerActionDescriptor;
+						return $"{descr.ControllerName}_{descr.ActionName}";
+					});
+
+					if (option.AuthencitationRequired)
+					{
+						var oAuth2SecurityScheme = new OpenApiSecurityScheme
 						{
-							Implicit = new OpenApiOAuthFlow
+							Type = SecuritySchemeType.OAuth2,
+							Flows = new OpenApiOAuthFlows
 							{
-								AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
-								Scopes = option.Scopes.ToDictionary(s => s.Scope, s => s.Description)
+								Implicit = new OpenApiOAuthFlow
+								{
+									AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
+									Scopes = option.Scopes.ToDictionary(s => s.Scope, s => s.Description)
+								},
+								AuthorizationCode = new OpenApiOAuthFlow
+								{
+									AuthorizationUrl = new Uri(option.AuthorizationEndpoint),
+									TokenUrl = new Uri(option.TokenEndpoint),
+									Scopes = option.Scopes.ToDictionary(s => s.Scope, s => s.Description)
+								}
+							},
+							Reference = new OpenApiReference
+							{
+								Type = ReferenceType.SecurityScheme,
+								Id = "oauth2"
 							}
-						}
-					};
+						};
 
-					var apikeySchema = new OpenApiSecurityScheme
-					{
-						Name = "Authorization",
-						In = ParameterLocation.Header,
-						Type = SecuritySchemeType.ApiKey
-					};
+						o.AddSecurityDefinition("oauth2", oAuth2SecurityScheme);
 
-					o.AddSecurityDefinition("OAuth2", oauth2Schema);
-					o.AddSecurityDefinition("Bearer", apikeySchema);
-
-					var securityRequirement = new OpenApiSecurityRequirement
-					{
+						var httpSecurityScheme = new OpenApiSecurityScheme
 						{
-							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "OAuth2", Type = ReferenceType.SecurityScheme } },
-							new List<string>()
-						},
-						{
-							new OpenApiSecurityScheme{ Reference = new OpenApiReference{ Id = "Bearer", Type = ReferenceType.SecurityScheme } },
-							new List<string>()
-						}
-					};
+							Type = SecuritySchemeType.Http,
+							Scheme = "Bearer",
+							Reference = new OpenApiReference
+							{
+								Type = ReferenceType.SecurityScheme,
+								Id = "http"
+							}
+						};
 
-					o.AddSecurityRequirement(securityRequirement);
+						o.AddSecurityDefinition("http", httpSecurityScheme);
+
+						var securityRequirement = new OpenApiSecurityRequirement { 
+							{ oAuth2SecurityScheme, new List<string>() },
+							{ httpSecurityScheme, new List<string>() }
+						};
+
+						o.AddSecurityRequirement(securityRequirement);
+					}
 				});
 			}
 
@@ -88,6 +106,7 @@ namespace DNVGL.OAuth.Web.Swagger
 					o.DisplayRequestDuration();
 					o.OAuthAppName($"{option.Name} {option.Version}");
 					o.OAuthClientId(option.ClientId);
+					o.OAuthClientSecret(option.ClientSecret);
 				});
 			}
 
