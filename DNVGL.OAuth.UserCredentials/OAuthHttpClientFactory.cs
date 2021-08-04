@@ -12,13 +12,13 @@ namespace DNVGL.OAuth.Api.HttpClient
 	public class OAuthHttpClientFactory : IOAuthHttpClientFactory
     {
         private readonly Func<OAuthHttpClientFactoryOptions, System.Net.Http.HttpMessageHandler>[] _handlerCreators;
-		private readonly IEnumerable<OAuthHttpClientFactoryOptions> _options;
+		private readonly IList<OAuthHttpClientFactoryOptions> _options;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IClientAppBuilder _appBuilder;
 
 		public OAuthHttpClientFactory(IEnumerable<OAuthHttpClientFactoryOptions> options, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder)
 		{
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = (options ?? throw new ArgumentNullException(nameof(options))).ToList();
 			_httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
 			_appBuilder = appBuilder ?? throw new ArgumentNullException(nameof(appBuilder));
             _handlerCreators = new Func<OAuthHttpClientFactoryOptions, HttpMessageHandler>[Enum.GetValues(typeof(OAuthCredentialFlow)).Length];
@@ -28,17 +28,20 @@ namespace DNVGL.OAuth.Api.HttpClient
                 o => new ClientCredentialsHandler(o, _appBuilder);
         }
 
-        public System.Net.Http.HttpClient Create(string name, Action<OAuthHttpClientFactoryOptions> configAction = null)
+        public System.Net.Http.HttpClient Create(Func<OAuthHttpClientFactoryOptions, bool> configPredict, Action<OAuthHttpClientFactoryOptions> configOverride = null)
         {
-            var config = _options.FirstOrDefault(o => o.Name.Equals(name));
-            if (config == null)
-                throw new MissingClientConfigurationNameException(name);
+            if (configPredict == null)
+                throw new ArgumentNullException(nameof(configPredict));
 
-            var clone = CloneConfig(config);
+            var apiConfig = _options.SingleOrDefault(configPredict);
+            if (apiConfig == null)
+                throw new ClientConfigurationNotFoundException();
 
-            configAction?.Invoke(clone);
+            var clonedConfig = CloneConfig(apiConfig);
 
-            return BuildClient(config);
+            configOverride?.Invoke(clonedConfig);
+
+            return BuildClient(clonedConfig);
         }
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
