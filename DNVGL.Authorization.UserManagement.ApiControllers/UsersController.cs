@@ -158,15 +158,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return user;
         }
 
-
-        [HttpGet]
-        [Route("~/api/users/currentUser")]
-        public async Task<UserViewModel> GetUserByIdentityId()
-        {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
-            return await GetUserByIdentityId(varacityId);
-        }
-
         [HttpGet]
         [Route("~/api/mycompany/{companyId}/users/{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
@@ -174,6 +165,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var user = await _userRepository.Read(id);
             return user.RoleList.Where(t => t.CompanyId == companyId).SelectMany(t => t.PermissionKeys);
+        }
+
+        [HttpGet]
+        [Route("~/api/users/currentUser")]
+        public async Task<UserViewModel> GetUserByIdentityId()
+        {
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            return await GetUserByIdentityId(varacityId);
         }
 
         [HttpGet]
@@ -356,7 +355,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private UserViewModel PruneUserInfo(UserViewModel user,string companyId)
         {
-            user.Roles = user.Roles.Where(t => t.CompanyId == companyId).ToList();
+            user.Roles = user.Roles.Where(t => t.Company.Id == companyId).ToList();
             user.Companies = user.Companies.Where(t => t.Id == companyId).ToList();
             return user;
         }
