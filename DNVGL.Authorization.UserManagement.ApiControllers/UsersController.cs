@@ -9,6 +9,7 @@ using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
 
@@ -238,12 +239,21 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("~/api/crosscompany/users")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
-        public async Task<string> CreateCrossCompanyUser([FromBody] UserEditModel model)
+        public async Task<ActionResult> CreateCrossCompanyUser([FromBody] UserEditModel model)
         {
+            var user = await _userRepository.ReadByIdentityId(model.VeracityId);
+            if (user != null)
+            {
+                return BadRequest("User alreay exists.");
+            }
+
             var currentUser = await GetCurrentUser();
             var roleIds = await PruneRoles(model.CompanyIds, model.RoleIds);
-            var user = new User
+            user = new User
             {
                 Description = model.Description,
                 FirstName = model.FirstName,
@@ -257,7 +267,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
             };
             user = await _userRepository.Create(user);
-            return user.Id;
+            return Ok(user.Id);
         }
 
 

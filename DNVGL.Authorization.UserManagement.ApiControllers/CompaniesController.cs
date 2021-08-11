@@ -70,6 +70,24 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
+        [HttpGet]
+        [Route("domain/{url}")]
+        public async Task<Company> GetCompanyByDomain([FromRoute] string url)
+        {
+            var company = await _companyRepository.ReadByDomain(url);
+            if (company == null)
+            {
+                return null;
+            }
+
+            var allPermissions = await _permissionRepository.GetAll();
+            var result = company.ToViewDto<CompanyViewDto>();
+            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+
+            return result;
+        }
+
+
 
         [HttpPost]
         [Route("")]

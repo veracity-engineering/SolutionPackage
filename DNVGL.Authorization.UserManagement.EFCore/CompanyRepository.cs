@@ -54,7 +54,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             return await _context.Companys.SingleOrDefaultAsync(t => t.Id == Id);
         }
 
-
+        public async Task<Company> ReadByDomain(string domain)
+        {
+            return await _context.Companys.SingleOrDefaultAsync(t => t.DomainUrl == domain);
+        }
 
         public async Task Update(Company company)
         {

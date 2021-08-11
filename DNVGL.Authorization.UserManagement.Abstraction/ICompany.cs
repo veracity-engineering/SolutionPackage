@@ -10,6 +10,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
     {
         Task<Company> Create(Company company);
         Task<Company> Read(string Id);
+        Task<Company> ReadByDomain(string domain);
         Task<IEnumerable<Company>> List(IEnumerable<string> Ids);
         Task Update(Company company);
         Task Delete(string Id);
