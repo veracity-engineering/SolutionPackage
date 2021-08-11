@@ -29,9 +29,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
                 var companyRepository = new CompanyRepository(context);
                 var companyAdded = await companyRepository.Create(new Company() { Id = "2" });
+                var companyAdded2 = await companyRepository.Create(new Company() { Id = "3" });
 
                 var userRepository = new UserRepository(context);
-                var userAdded = await userRepository.Create(new User() { Id = "3", Company= companyAdded, RoleIds = "1;2" });
+                var userAdded = await userRepository.Create(new User() { Id = "3", CompanyIds= "2;3", RoleIds = "1;2" });
             }
 
             using (var context = CreateContext(options))
@@ -41,7 +42,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
                 var userRepository = new UserRepository(context);
                 var userAdded = await userRepository.Read("3");
-                Assert.NotNull(userAdded.Company);
+                Assert.NotNull(userAdded.CompanyList);
                 Assert.NotNull(userAdded.RoleList);
                 Assert.Equal(2, userAdded.RoleList.Count());
             }

@@ -27,13 +27,19 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             if (user == null || string.IsNullOrEmpty(user.RoleIds))
                 return null;
 
+            var allPermissions = (await _permissionRepository.GetAll());
+
+            if (user.SuperAdmin)
+            {
+                return allPermissions;
+            }
+
             var role = await _context.Roles.Where(t => user.RoleIds.Contains(t.Id)).ToListAsync();
 
             var allAssignedPermissions =  role.SelectMany(t => t.PermissionKeys);
 
             if (allAssignedPermissions.Any())
             {
-                var allPermissions = (await _permissionRepository.GetAll());
                 return allPermissions.Where(p => allAssignedPermissions.Contains(p.Key) || allAssignedPermissions.Contains(p.Id));
             }
             else

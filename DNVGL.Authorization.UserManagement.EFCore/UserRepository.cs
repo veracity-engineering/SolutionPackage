@@ -56,7 +56,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<IEnumerable<User>> GetUsersOfCompany(string companyId)
         {
-            var users = await _context.Users.Where(t => t.CompanyId == companyId).ToListAsync();
+            var users = await _context.Users.Where(t => t.CompanyIds.Contains(companyId)).ToListAsync();
 
             await FetchRoleForUsers(users);
             return users;
@@ -77,9 +77,9 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             if (user == null)
                 return null;
 
-            var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
+            var companys = await _context.Companys.Where(t => user.CompanyIdList.Contains(t.Id)).ToListAsync();
             var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
-            user.Company = company;
+            user.CompanyList = companys;
             user.RoleList = roles;
 
 
@@ -93,9 +93,9 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             if (user == null)
                 return null;
 
-            var company = await _context.Companys.SingleOrDefaultAsync(p => p.Id == user.CompanyId);
+            var companys = await _context.Companys.Where(t => user.CompanyIdList.Contains(t.Id)).ToListAsync();
             var roles = await _context.Roles.Where(r => user.RoleIdList.Contains(r.Id)).ToListAsync();
-            user.Company = company;
+            user.CompanyList = companys;
             user.RoleList = roles;
 
 

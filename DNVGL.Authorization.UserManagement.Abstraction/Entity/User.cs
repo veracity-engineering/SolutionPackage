@@ -15,12 +15,14 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Description { get; set; }
         public string RoleIds { get; set; }
         public IReadOnlyList<string> RoleIdList => RoleIds.SplitToList(';');
-        public string CompanyId { get; set; }
+        public string CompanyIds { get; set; }
+        public IReadOnlyList<string> CompanyIdList => CompanyIds.SplitToList(';');
         public bool Active { get; set; }
+        public bool SuperAdmin { get; set; }
         public bool Deleted { get; set; }
 
         public IReadOnlyList<Role> RoleList { get; set; }
-        public Company Company { get; set; }
+        public IReadOnlyList<Company> CompanyList { get; set; }
 
         public string CreatedBy { get; set; }
         public DateTime CreatedOnUtc { get; set; }

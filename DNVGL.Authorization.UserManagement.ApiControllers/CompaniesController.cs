@@ -84,6 +84,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Name = model.Name,
                 Active = model.Active,
                 Permissions = string.Join(';', model.PermissionKeys),
+                DomainUrl = model.DomainUrl,
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}"
             };
             company = await _companyRepository.Create(company);
@@ -99,6 +100,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var currentUser = await GetCurrentUser();
             company.Id = id;
             company.Active = model.Active;
+            company.DomainUrl = model.DomainUrl;
             company.Description = model.Description;
             company.Name = model.Name;
             company.Permissions = string.Join(';', model.PermissionKeys);

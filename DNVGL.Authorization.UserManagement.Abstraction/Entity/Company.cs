@@ -10,6 +10,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string DomainUrl { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
         public string CreatedBy { get; set; }

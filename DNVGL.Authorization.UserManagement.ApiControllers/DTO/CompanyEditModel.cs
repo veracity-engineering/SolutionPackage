@@ -11,6 +11,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string DomainUrl { get; set; }
         public bool Active { get; set; }
         public IEnumerable<string> PermissionKeys { get; set; }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
@@ -9,6 +10,7 @@ using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
 
@@ -17,7 +19,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [Authorize]
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    [Route("api/mycompany/roles")]
+    [Route("api/mycompany/{companyId}/roles")]
     public class RolesController : UserManagementBaseController
     {
         private readonly IRole _roleRepository;
@@ -34,19 +36,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
+        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ViewRole)]
-        public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles()
+        public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles([FromRoute] string companyId)
         {
-            var user = await GetCurrentUser();
-            return await GetRolesByCompanyId(user.CompanyId);
+            return await GetRolesByCompanyId(companyId);
         }
 
         [HttpGet]
         [Route("{id}")]
+        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ViewRole)]
-        public async Task<Role> GetRole([FromRoute] string id)
+        public async Task<Role> GetRole([FromRoute] string companyId,[FromRoute] string id)
         {
-            var roles = await GetCompanyRoles();
+            var roles = await GetCompanyRoles(companyId);
 
             if (roles.Any(t => t.Id == id))
             {
@@ -60,18 +63,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
+        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
-        public async Task<string> CreateRole([FromBody] RoleEditModel model)
+        public async Task<string> CreateRole([FromRoute] string companyId,[FromBody] RoleEditModel model)
         {
             var user = await GetCurrentUser();
-            var permissionKeys = await PrunePermissions(user.CompanyId, model.PermissionKeys);
+            var permissionKeys = await PrunePermissions(companyId, model.PermissionKeys);
 
             var role = new Role
             {
                 Description = model.Description,
                 Name = model.Name,
                 Active = model.Active,
-                CompanyId = user.CompanyId,
+                CompanyId = companyId,
                 Permissions = string.Join(';', permissionKeys),
                 CreatedBy = $"{user.FirstName} {user.LastName}"
             };
@@ -82,11 +86,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
+        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
-        public async Task UpdateRole([FromRoute] string id, RoleEditModel model)
+        public async Task UpdateRole([FromRoute] string companyId, [FromRoute] string id, RoleEditModel model)
         {
             var currentUser = await GetCurrentUser();
-            var roles = await GetCompanyRoles();
+            var roles = await GetCompanyRoles(companyId);
 
             if (roles.Any(t => t.Id == id))
             {
@@ -106,10 +111,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
-        public async Task DeleteRole([FromRoute] string id)
+        public async Task DeleteRole([FromRoute] string companyId, [FromRoute] string id)
         {
-            var roles = await GetCompanyRoles();
+            var roles = await GetCompanyRoles(companyId);
 
             if (roles.Any(t => t.Id == id))
             {

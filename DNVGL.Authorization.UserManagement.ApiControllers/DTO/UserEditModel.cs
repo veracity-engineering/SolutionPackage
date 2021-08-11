@@ -14,26 +14,28 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         public string LastName { get; set; }
         public string VeracityId { get; set; }
         public string Description { get; set; }
+        public bool SuperAdmin { get; set; }
         public IList<string> RoleIds { get; set; }
-        public string CompanyId { get; set; }
+        public IList<string> CompanyIds { get; set; }
         public bool Active { get; set; }
     }
 
     public class UserViewModel:User
     {
-        private new string CompanyId { get; set; }
+        private new string CompanyIds { get; set; }
 
         private new string RoleIds { get; set; }
 
         private new IReadOnlyList<string> RoleIdList { get; set; }
+        private new IReadOnlyList<string> CompanyIdList { get; set; }
 
         private new IReadOnlyList<Role> RoleList { get; set; }
 
-        private new Company Company { get; set; }
+        private new IReadOnlyList<Company> CompanyList { get; set; }
 
         public IEnumerable<RoleViewDto> Roles { get; set; }
 
-        public CompanyViewDto company { get; set; }
+        public IEnumerable<CompanyViewDto> Companies { get; set; }
 
     }
 }

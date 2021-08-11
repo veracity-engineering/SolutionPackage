@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
@@ -24,6 +25,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
             return await _userRepository.ReadByIdentityId(varacityId);
+        }
+
+        protected async Task<bool> IsCompanyAccessible(string companyId)
+        {
+            var user = await GetCurrentUser();
+            return user.CompanyIdList.Contains(companyId);
         }
     }
 }

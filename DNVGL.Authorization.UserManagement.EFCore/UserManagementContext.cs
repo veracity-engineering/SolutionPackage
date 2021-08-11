@@ -51,6 +51,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 entity.HasKey(e => e.Id);
                 entity.Ignore(t => t.RoleIdList);
                 entity.Ignore(t => t.RoleList);
+                entity.Ignore(t => t.CompanyIdList);
+                entity.Ignore(t => t.CompanyList);
             });
 
             modelBuilder.Entity<Company>(entity =>

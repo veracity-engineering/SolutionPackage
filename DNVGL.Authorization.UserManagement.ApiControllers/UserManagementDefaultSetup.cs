@@ -37,7 +37,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<IUserSynchronization, DummyUserSynchronization>()
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
-                .AddScoped<ICompany, CompanyRepository>();
+                .AddScoped<ICompany, CompanyRepository>()
+                .AddScoped<AccessibleCompanyFilterAttribute>();
         }
 
 
@@ -49,7 +50,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped(typeof(IUserSynchronization), typeof(T))
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
-                .AddScoped<ICompany, CompanyRepository>();
+                .AddScoped<ICompany, CompanyRepository>()
+                .AddScoped<AccessibleCompanyFilterAttribute>();
         }
 
     }

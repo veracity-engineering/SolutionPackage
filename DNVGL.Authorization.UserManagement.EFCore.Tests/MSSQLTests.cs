@@ -180,7 +180,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 {
                     Id = "ut1",
                     Active = true,
-                    CompanyId = "ut1",
+                    CompanyIds = "ut1",
                     CreatedBy = "system",
                     CreatedOnUtc = DateTime.UtcNow,
                     Deleted = false,

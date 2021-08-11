@@ -44,10 +44,17 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Company>> List(IEnumerable<string> Ids)
+        {
+            return await _context.Companys.Where(t => Ids.Contains(t.Id)).ToListAsync();
+        }
+
         public async Task<Company> Read(string Id)
         {
             return await _context.Companys.SingleOrDefaultAsync(t => t.Id == Id);
         }
+
+
 
         public async Task Update(Company company)
         {
