@@ -34,7 +34,7 @@ namespace DNVGL.Authorization.Web
 
             if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
             {
-                companyId = _premissionOptions.GetUserIdentity(httpContext);
+                companyId = _premissionOptions.GetCompanyIdentity(httpContext);
             }
 
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
