@@ -12,7 +12,13 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
     public class CosmosSqlTests
     {
 #if DEBUG
-        private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options, Action<ModelBuilder> buildModel) => new UserManagementContext(options, buildModel);
+        private static UserManagementContext CreateContext(DbContextOptions<UserManagementContext> options, Action<ModelBuilder> buildModel)
+        {
+
+            var db = new UserManagementContext(options);
+            db.PrebuildModel = buildModel;
+            return db;
+        }
 
 
 

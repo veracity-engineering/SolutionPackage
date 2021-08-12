@@ -25,9 +25,9 @@ namespace DNVGL.Authorization.Web
         /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserPermissionReader
+        public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services, PermissionOptions permissionOptions = null) where T : IUserPermissionReader
         {
-            return services.AddPermissionAuthorization<T, PermissionRepository>(buildPermissionOptions);
+            return services.AddPermissionAuthorization<T, PermissionRepository>(permissionOptions);
         }
 
         /// <summary>
@@ -37,13 +37,16 @@ namespace DNVGL.Authorization.Web
         /// <typeparam name="R">constraints to <see cref="IPermissionRepository"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T, R>(this IServiceCollection services, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserPermissionReader where R : IPermissionRepository
+        public static IServiceCollection AddPermissionAuthorization<T, R>(this IServiceCollection services, PermissionOptions permissionOptions = null) where T : IUserPermissionReader where R : IPermissionRepository
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddScoped<PermissionOptions>(provider =>
             {
-                var permissionOptions = buildPermissionOptions == null ? new PermissionOptions() : buildPermissionOptions();
+                if(permissionOptions == null)
+                {
+                    permissionOptions = new PermissionOptions();
+                }
                 if (permissionOptions.GetUserIdentity == null)
                 {
                     permissionOptions.GetUserIdentity = (httpContext) => httpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
@@ -51,7 +54,7 @@ namespace DNVGL.Authorization.Web
 
                 if (permissionOptions.HandleUnauthorizedAccess == null)
                 {
-                    permissionOptions.HandleUnauthorizedAccess = BuiltinUnauthorizedAccessHandler.ThrowExceptionDirectly;
+                    permissionOptions.HandleUnauthorizedAccess = BuiltinUnauthorizedAccessHandler.Return403ForbiddenCode;
                 }
 
                 return permissionOptions;

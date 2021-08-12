@@ -5,6 +5,7 @@ using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.EFCore;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,11 +30,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <param name="services"></param>
         /// <param name="dbContextOptionBuilder"></param>
         /// <returns></returns>
-        public static IServiceCollection AddUserManagement(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder, Func<PermissionOptions> buildPermissionOptions = null)
+        public static IServiceCollection AddUserManagement(this IServiceCollection services, UserManagementOptions options)
         {
+
             return services
-                .AddDbContext<UserManagementContext>(dbContextOptionBuilder)
-                .AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions)
+                //.AddDbContext<UserManagementContext>(dbContextOptionBuilder)
+                .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
+                .AddScoped<UserManagementContext>(p =>
+                {
+                    var db = p.GetRequiredService<IDbContextFactory<UserManagementContext>>().CreateDbContext();
+                    db.PrebuildModel = options.ModelBuilder;
+                    return db;
+                })
+                .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
                 .AddScoped<IUserSynchronization, DummyUserSynchronization>()
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
@@ -42,17 +51,43 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, Action<DbContextOptionsBuilder> dbContextOptionBuilder, Func<PermissionOptions> buildPermissionOptions = null) where T : IUserSynchronization
+        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization
         {
             return services
-                .AddDbContext<UserManagementContext>(dbContextOptionBuilder)
-                .AddPermissionAuthorization<UserPermissionReader>(buildPermissionOptions)
+                .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
+                .AddScoped<UserManagementContext>(p =>
+                {
+                    var db = p.GetRequiredService<IDbContextFactory<UserManagementContext>>().CreateDbContext();
+                    db.PrebuildModel = options.ModelBuilder;
+                    return db;
+                })
+                .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
                 .AddScoped(typeof(IUserSynchronization), typeof(T))
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
                 .AddScoped<ICompany, CompanyRepository>()
                 .AddScoped<AccessibleCompanyFilterAttribute>();
         }
+
+        //public static IApplicationBuilder UseUserManagementContext(this IApplicationBuilder app, Action<ModelBuilder> buildModel = null)
+        //{
+        //    var userManagementContext = app.ApplicationServices.GetRequiredService<UserManagementContext>();
+        //    UuserManagementContext.PrebuildModel = buildModel;
+        //    return app;
+
+        //    using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        //    {
+        //        using (var context = scope.ServiceProvider.GetRequiredService<UserManagementContext>())
+        //        {
+        //            if (context.Database.EnsureCreated())
+        //            {
+        //                context.SeedAsync().Wait();
+        //            }
+        //        }
+        //    }
+
+
+        //}
 
     }
 }
