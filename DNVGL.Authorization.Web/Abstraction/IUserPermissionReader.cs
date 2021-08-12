@@ -17,5 +17,7 @@ namespace DNVGL.Authorization.Web.Abstraction
         /// <param name="veracityId">user's veracity id</param>
         /// <returns>A List of <see cref="PermissionEntity"/>.</returns>
         Task<IEnumerable<PermissionEntity>> GetPermissions(string identity);
+
+        Task<IEnumerable<PermissionEntity>> GetPermissions(string identity,string companyId);
     }
 }

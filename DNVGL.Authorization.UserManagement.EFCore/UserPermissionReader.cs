@@ -22,6 +22,11 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<IEnumerable<PermissionEntity>> GetPermissions(string identity)
         {
+            return await GetPermissions(identity, null);
+        }
+
+        public async Task<IEnumerable<PermissionEntity>> GetPermissions(string identity, string companyId)
+        {
             var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId == identity || p.Id == identity);
 
             if (user == null || string.IsNullOrEmpty(user.RoleIds))
@@ -36,7 +41,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
             var role = await _context.Roles.Where(t => user.RoleIds.Contains(t.Id)).ToListAsync();
 
-            var allAssignedPermissions =  role.SelectMany(t => t.PermissionKeys);
+            if (!string.IsNullOrEmpty(companyId))
+                role = role.Where(t => t.CompanyId == companyId).ToList();
+
+            var allAssignedPermissions = role.SelectMany(t => t.PermissionKeys);
 
             if (allAssignedPermissions.Any())
             {

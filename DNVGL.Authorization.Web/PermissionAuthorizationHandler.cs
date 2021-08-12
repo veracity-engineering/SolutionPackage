@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace DNVGL.Authorization.Web
 {
@@ -27,9 +28,17 @@ namespace DNVGL.Authorization.Web
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, IEnumerable<PermissionAuthorizeAttribute> attributes)
         {
-            var varacityId = _premissionOptions.GetUserIdentity(_httpContextAccessor.HttpContext);
+            var httpContext = _httpContextAccessor.HttpContext;
+            var varacityId = _premissionOptions.GetUserIdentity(httpContext);
+            var companyId = httpContext.GetRouteData().Values["companyId"] as string;
+
+            if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
+            {
+                companyId = _premissionOptions.GetUserIdentity(httpContext);
+            }
+
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
-            var ownedPermissions = (await _userPermission.GetPermissions(varacityId)) ?? new List<PermissionEntity>();
+            var ownedPermissions = (await _userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
 
             if (!requiredPermissions.Any() || requiredPermissions.All(t => ownedPermissions.Any(x => x.Key == t)) || requiredPermissions.All(t => ownedPermissions.Any(x => x.Id == t)))
             {

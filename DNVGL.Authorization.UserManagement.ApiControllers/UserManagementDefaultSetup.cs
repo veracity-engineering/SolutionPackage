@@ -69,25 +69,5 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<AccessibleCompanyFilterAttribute>();
         }
 
-        //public static IApplicationBuilder UseUserManagementContext(this IApplicationBuilder app, Action<ModelBuilder> buildModel = null)
-        //{
-        //    var userManagementContext = app.ApplicationServices.GetRequiredService<UserManagementContext>();
-        //    UuserManagementContext.PrebuildModel = buildModel;
-        //    return app;
-
-        //    using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-        //    {
-        //        using (var context = scope.ServiceProvider.GetRequiredService<UserManagementContext>())
-        //        {
-        //            if (context.Database.EnsureCreated())
-        //            {
-        //                context.SeedAsync().Wait();
-        //            }
-        //        }
-        //    }
-
-
-        //}
-
     }
 }
