@@ -36,7 +36,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
-        [AccessibleCompanyFilter]
+        [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<UserViewModel>> GetUsers([FromRoute] string companyId)
         {
             return await GetUsersOfCompany(companyId);
@@ -44,7 +44,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<UserViewModel> GetUser([FromRoute] string companyId, [FromRoute] string id)
         {
@@ -59,7 +58,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string companyId, [FromRoute] string id, UserEditModel model)
         {
@@ -90,7 +88,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task<string> CreateUser([FromRoute] string companyId, [FromBody] UserEditModel model)
         {
@@ -126,7 +123,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task DeleteUser([FromRoute] string companyId, [FromRoute] string id)
         {

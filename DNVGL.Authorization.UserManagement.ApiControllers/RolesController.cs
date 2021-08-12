@@ -36,7 +36,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles([FromRoute] string companyId)
         {
@@ -45,7 +44,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<Role> GetRole([FromRoute] string companyId,[FromRoute] string id)
         {
@@ -63,7 +61,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPost]
         [Route("")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task<string> CreateRole([FromRoute] string companyId,[FromBody] RoleEditModel model)
         {
@@ -86,7 +83,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpPut]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task UpdateRole([FromRoute] string companyId, [FromRoute] string id, RoleEditModel model)
         {
@@ -111,7 +107,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpDelete]
         [Route("{id}")]
-        [AccessibleCompanyFilter]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task DeleteRole([FromRoute] string companyId, [FromRoute] string id)
         {

@@ -58,6 +58,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
+        [Route("~/api/mycompany/{companyId}")]
+        [AccessibleCompanyFilter]
+        public async Task<Company> GetMyCompany([FromRoute] string companyId)
+        {
+            var company = await _companyRepository.Read(companyId);
+            var allPermissions = await _permissionRepository.GetAll();
+            var result = company.ToViewDto<CompanyViewDto>();
+            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+
+            return result;
+        }
+
+        [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
         public async Task<Company> GetCompany([FromRoute] string id)
