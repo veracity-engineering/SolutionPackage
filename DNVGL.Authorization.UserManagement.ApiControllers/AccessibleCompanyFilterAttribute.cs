@@ -9,6 +9,7 @@ using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
@@ -17,6 +18,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public AccessibleCompanyFilterAttribute()
                         : base(typeof(AccessibleCompanyFilterImpl))
         {
+          
         }
 
         private class AccessibleCompanyFilterImpl : IAsyncActionFilter
@@ -31,7 +33,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                if (context.ActionArguments.TryGetValue("companyId", out object value) && value is string companyId)
+
+                var companyId = GetCompanyId(context);
+
+                if (!string.IsNullOrEmpty(companyId))
                 {
                     var varacityId = _premissionOptions.GetUserIdentity(context.HttpContext);
                     var user = await _userRepository.ReadByIdentityId(varacityId);
@@ -47,13 +52,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 }
                 else
                 {
-                    context.Result = new ObjectResult("companyId is required")
+                    context.Result = new ObjectResult("Company Id is required")
                     {
                         StatusCode = (int)HttpStatusCode.BadRequest,
                     };
                 }
 
 
+            }
+
+            private string GetCompanyId(ActionExecutingContext context)
+            {
+                string companyId = context.HttpContext.Request.Headers["AUTHORIZATION.COMPANYID"];
+
+                return companyId;
             }
         }
     }

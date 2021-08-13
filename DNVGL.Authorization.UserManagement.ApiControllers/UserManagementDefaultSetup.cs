@@ -47,7 +47,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
                 .AddScoped<ICompany, CompanyRepository>()
-                .AddScoped<AccessibleCompanyFilterAttribute>();
+                .AddScoped<AccessibleCompanyFilterAttribute>()
+                .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
         }
 
 
@@ -66,7 +67,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<IRole, RoleRepository>()
                 .AddScoped<IUser, UserRepository>()
                 .AddScoped<ICompany, CompanyRepository>()
-                .AddScoped<AccessibleCompanyFilterAttribute>();
+                .AddScoped<AccessibleCompanyFilterAttribute>()
+                .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
         }
 
     }

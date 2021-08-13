@@ -59,6 +59,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("~/api/mycompany/{companyId}")]
+        [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
         [AccessibleCompanyFilter]
         public async Task<Company> GetMyCompany([FromRoute] string companyId)
         {
@@ -87,8 +88,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("domain/{url}")]
         public async Task<Company> GetCompanyByDomain([FromRoute] string url)
         {
+            var currentUser = await GetCurrentUser();
+
             var company = await _companyRepository.ReadByDomain(url);
-            if (company == null)
+            if (company == null || currentUser.CompanyList.All(t => t.Id != company.Id))
             {
                 return null;
             }
@@ -99,8 +102,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             return result;
         }
-
-
 
         [HttpPost]
         [Route("")]

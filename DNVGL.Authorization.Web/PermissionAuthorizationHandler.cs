@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 
 namespace DNVGL.Authorization.Web
@@ -30,12 +32,8 @@ namespace DNVGL.Authorization.Web
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var varacityId = _premissionOptions.GetUserIdentity(httpContext);
-            var companyId = httpContext.GetRouteData().Values["companyId"] as string;
 
-            if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
-            {
-                companyId = _premissionOptions.GetCompanyIdentity(httpContext);
-            }
+            var companyId = GetCompanyId(httpContext, context);
 
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
             var ownedPermissions = (await _userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
@@ -50,5 +48,36 @@ namespace DNVGL.Authorization.Web
                 _premissionOptions.HandleUnauthorizedAccess(_httpContextAccessor.HttpContext, string.Join(",", missedPermissions));
             }
         }
+
+        private string GetCompanyId(HttpContext context, AuthorizationHandlerContext authContext)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var endpoint = authContext.Resource as RouteEndpoint;
+            var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
+            CompanyIdentityFieldNameFilterAttribute companyIdentityAttriute = null;
+            if (action != null)
+            {
+                companyIdentityAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute;
+                if (companyIdentityAttriute != null)
+                {
+                    companyIdentityAttriute.GetCompanyId(httpContext);
+                }
+            }
+
+            var companyId = context.Request.Headers["AUTHORIZATION.COMPANYID"];
+
+            if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
+            {
+                companyId = _premissionOptions.GetCompanyIdentity(context);
+            }
+
+            if (string.IsNullOrEmpty(companyId))
+            {
+                companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];
+            }
+
+            return companyId;
+        }
+
     }
 }

@@ -20,6 +20,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/mycompany/{companyId}/roles")]
+    [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
     public class RolesController : UserManagementBaseController
     {
         private readonly IRole _roleRepository;
