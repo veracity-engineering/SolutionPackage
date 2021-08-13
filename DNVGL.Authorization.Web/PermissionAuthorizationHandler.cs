@@ -51,19 +51,6 @@ namespace DNVGL.Authorization.Web
 
         private string GetCompanyId(HttpContext context, AuthorizationHandlerContext authContext)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var endpoint = authContext.Resource as RouteEndpoint;
-            var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
-            CompanyIdentityFieldNameFilterAttribute companyIdentityAttriute = null;
-            if (action != null)
-            {
-                companyIdentityAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute;
-                if (companyIdentityAttriute != null)
-                {
-                    companyIdentityAttriute.GetCompanyId(httpContext);
-                }
-            }
-
             var companyId = context.Request.Headers["AUTHORIZATION.COMPANYID"];
 
             if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
@@ -74,6 +61,22 @@ namespace DNVGL.Authorization.Web
             if (string.IsNullOrEmpty(companyId))
             {
                 companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];
+            }
+
+            if (string.IsNullOrEmpty(companyId))
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+                var endpoint = authContext.Resource as RouteEndpoint;
+                var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
+                CompanyIdentityFieldNameFilterAttribute companyIdentityAttriute = null;
+                if (action != null)
+                {
+                    companyIdentityAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute;
+                    if (companyIdentityAttriute != null)
+                    {
+                        companyIdentityAttriute.GetCompanyId(httpContext);
+                    }
+                }
             }
 
             return companyId;
