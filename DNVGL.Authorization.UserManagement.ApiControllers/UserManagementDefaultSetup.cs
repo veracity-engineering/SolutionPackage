@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.EFCore;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,7 +34,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <returns></returns>
         public static IServiceCollection AddUserManagement(this IServiceCollection services, UserManagementOptions options)
         {
+            services.AddMvcCore()
+                .ConfigureApplicationPartManager(manager =>
+                {
+                    manager.FeatureProviders.Remove(manager.FeatureProviders.OfType<ControllerFeatureProvider>().FirstOrDefault());
 
+                    manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetInvalidControllers(options.Mode)));
+                });
             return services
                 //.AddDbContext<UserManagementContext>(dbContextOptionBuilder)
                 .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
@@ -49,11 +57,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<ICompany, CompanyRepository>()
                 .AddScoped<AccessibleCompanyFilterAttribute>()
                 .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
+                
         }
 
 
         public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization
         {
+            services.AddMvcCore()
+            .ConfigureApplicationPartManager(manager =>
+            {
+                manager.FeatureProviders.Remove(manager.FeatureProviders.OfType<ControllerFeatureProvider>().FirstOrDefault());
+
+                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetInvalidControllers(options.Mode)));
+            });
+
             return services
                 .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
                 .AddScoped<UserManagementContext>(p =>
@@ -69,6 +86,21 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 .AddScoped<ICompany, CompanyRepository>()
                 .AddScoped<AccessibleCompanyFilterAttribute>()
                 .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
+        }
+
+        private static Type[] GetInvalidControllers(UserManagementMode mode)
+        {
+            switch (mode)
+            {
+                case UserManagementMode.Company_CompanyRole_User:
+                    return new Type[] { typeof(GlobalRolesController), typeof(GlobalUsersController) };
+                case UserManagementMode.Company_GlobalRole_User:
+                    return new Type[] { typeof(CompaniesController), typeof(GlobalUsersController) };
+                case UserManagementMode.Role_User:
+                    return new Type[] { typeof(CompaniesController), typeof(RolesController) };
+                default:
+                    return new Type[] { typeof(GlobalRolesController), typeof(GlobalUsersController) };
+            }
         }
 
     }
