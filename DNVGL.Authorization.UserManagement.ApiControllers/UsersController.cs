@@ -176,7 +176,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("~/api/users/{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string id)
+        public async Task<IEnumerable<string>> GetUserCorssCompanyPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
             return user.RoleList.SelectMany(t => t.PermissionKeys);
@@ -347,9 +347,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
-        private async Task<UserViewModel> GetUserByIdentityId(string id)
+        private async Task<UserViewModel> GetUserByIdentityId(string varacityId)
         {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
             var user = await _userRepository.ReadByIdentityId(varacityId);
             return await PopulateUserInfo(user);
         }

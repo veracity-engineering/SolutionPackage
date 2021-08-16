@@ -18,13 +18,6 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         {
         }
 
-       // public UserManagementContext(DbContextOptions<UserManagementContext> options,UserDatabaseOptions aoptions)
-       //: base(options)
-       // {
-       //     _prebuildModel = aoptions.ModelBuilder;
-       // }
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

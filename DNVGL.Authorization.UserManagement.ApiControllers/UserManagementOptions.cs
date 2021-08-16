@@ -8,10 +8,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     public class UserManagementOptions
     {
-        public UserManagementMode Mode = UserManagementMode.Company_CompanyRole_User;
-        public Action<DbContextOptionsBuilder> DbContextOptionsBuilder;
-        public Action<ModelBuilder> ModelBuilder;
-        public PermissionOptions PermissionOptions;
+        private UserManagementMode _mode = UserManagementMode.Company_CompanyRole_User;
+
+        public UserManagementMode Mode
+        {
+            get { return _mode; }
+            set
+            {
+                _mode = value;
+            }
+        }
+
+        public Action<DbContextOptionsBuilder> DbContextOptionsBuilder { get; set; }
+        public Action<ModelBuilder> ModelBuilder { get; set; }
+        public PermissionOptions PermissionOptions { get; set; }
     }
 
     public enum UserManagementMode
