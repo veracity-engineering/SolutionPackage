@@ -71,6 +71,6 @@ namespace DNVGL.Domain.Seedwork
             return matchingItem;
         }
 
-        public int CompareTo(object other) => Id.CompareTo(((Enumeration<T>)other).Id);
+        public int CompareTo(object obj) => Id.CompareTo(((Enumeration<T>)obj).Id);
     }
 }
