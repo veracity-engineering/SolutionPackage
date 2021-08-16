@@ -34,30 +34,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <returns></returns>
         public static IServiceCollection AddUserManagement(this IServiceCollection services, UserManagementOptions options)
         {
-            services.AddMvcCore()
-                .ConfigureApplicationPartManager(manager =>
-                {
-                    manager.FeatureProviders.Remove(manager.FeatureProviders.OfType<ControllerFeatureProvider>().FirstOrDefault());
-
-                    manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetInvalidControllers(options.Mode)));
-                });
-            return services
-                //.AddDbContext<UserManagementContext>(dbContextOptionBuilder)
-                .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
-                .AddScoped<UserManagementContext>(p =>
-                {
-                    var db = p.GetRequiredService<IDbContextFactory<UserManagementContext>>().CreateDbContext();
-                    db.PrebuildModel = options.ModelBuilder;
-                    return db;
-                })
-                .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
-                .AddScoped<IUserSynchronization, DummyUserSynchronization>()
-                .AddScoped<IRole, RoleRepository>()
-                .AddScoped<IUser, UserRepository>()
-                .AddScoped<ICompany, CompanyRepository>()
-                .AddScoped<AccessibleCompanyFilterAttribute>()
-                .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
-                
+            return services.AddUserManagement<DummyUserSynchronization>(options);
         }
 
 
@@ -92,12 +69,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             switch (mode)
             {
-                case UserManagementMode.Company_CompanyRole_User:
-                    return new Type[] { typeof(GlobalRolesController), typeof(GlobalUsersController) };
                 case UserManagementMode.Company_GlobalRole_User:
                     return new Type[] { typeof(CompaniesController), typeof(GlobalUsersController) };
                 case UserManagementMode.Role_User:
                     return new Type[] { typeof(CompaniesController), typeof(RolesController) };
+                case UserManagementMode.Company_CompanyRole_User:
                 default:
                     return new Type[] { typeof(GlobalRolesController), typeof(GlobalUsersController) };
             }
