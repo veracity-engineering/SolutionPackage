@@ -23,13 +23,15 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
 
             using (var context = CreateContext(options))
             {
-                var roleRepository = new RoleRepository(context);
-                var roleAdded = await roleRepository.Create(new Role() { Id = "1", Name = "Admin", Permissions = "ManageUser;ViewUser" });
-                var roleAdded2 = await roleRepository.Create(new Role() { Id = "2", Name = "Admin2", Permissions = "ManageUser;ViewUser" });
 
                 var companyRepository = new CompanyRepository(context);
                 var companyAdded = await companyRepository.Create(new Company() { Id = "2" });
                 var companyAdded2 = await companyRepository.Create(new Company() { Id = "3" });
+
+
+                var roleRepository = new RoleRepository(context);
+                var roleAdded = await roleRepository.Create(new Role() { Id = "1", Name = "Admin",CompanyId="2", Permissions = "ManageUser;ViewUser" });
+                var roleAdded2 = await roleRepository.Create(new Role() { Id = "2", Name = "Admin2", CompanyId = "3", Permissions = "ManageUser;ViewUser" });
 
                 var userRepository = new UserRepository(context);
                 var userAdded = await userRepository.Create(new User() { Id = "3", CompanyIds= "2;3", RoleIds = "1;2" });
