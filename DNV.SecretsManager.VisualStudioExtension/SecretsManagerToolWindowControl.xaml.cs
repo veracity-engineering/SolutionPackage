@@ -20,6 +20,8 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		private SecretsManagerStorage _storage;
 		private DTE Dte;
 
+		private const string AzureSubscriptionId = "d288cb4f-5356-481f-a571-11005977e590";
+
 		private static VariableGroupClientConfiguration _variableGroupClientConfiguration = new VariableGroupClientConfiguration
 		{
 			BaseUrl = "https://dnvgl-one.visualstudio.com",
@@ -43,7 +45,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			};
 			_secretsServices = new Dictionary<int, SecretsService>
 			{
-				{ 0, new KeyVaultSecretsService() },
+				{ 0, new KeyVaultSecretsService(AzureSubscriptionId) },
 				{ 1, new VariableGroupSecretsService(_variableGroupClientConfiguration) }
 			};
 			cmbSourceTypes.Items.Clear();
@@ -158,11 +160,12 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			if (sourceTypeIndex == -1)
 			{
 				cmbSources.Items.Clear();
-				cmbSources.IsEnabled = false;
-				btnDownload.IsEnabled = false;
-				btnUpload.IsEnabled = false;
 				return;
 			}
+			cmbSources.Text = "Working...";
+			cmbSources.IsEnabled = false;
+			btnDownload.IsEnabled = false;
+			btnUpload.IsEnabled = false;
 
 			var sourceType = _storage.SourceTypes[sourceTypeIndex];
 			_sources = (await _secretsServices[sourceTypeIndex].GetSources()).OrderBy(s => s.Key).ToList();
@@ -175,14 +178,15 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				{
 					cmbSources.Items.Add($"{source.Key} ({source.Value})");
 				}
-				//cmbSources.ItemsSource = sources.OrderBy(s => s.Key);
-				//cmbSources.Items = sources.OrderBy(s => s.Key);
-				//cmbSources.ITem
 			}
+			cmbSources.Text = string.Empty;
 			cmbSources.IsEnabled = true;
 			btnDownload.IsEnabled = true;
 			btnUpload.IsEnabled = false;
-			//cmbSources.Text = sourceType.Last;
+
+			var selectedSource = _sources.FirstOrDefault(s => s.Value.Equals(sourceType.Last, StringComparison.InvariantCultureIgnoreCase));
+			if (selectedSource.Key != null)
+				cmbSources.SelectedIndex = cmbSources.Items.IndexOf($"{selectedSource.Key} ({selectedSource.Value})");
 		}
 
 		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source)

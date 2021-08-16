@@ -8,6 +8,8 @@ namespace DNV.SecretsManager.ConsoleApp
 {
 	class Program
 	{
+		private const string AzureSubscriptionId = "d288cb4f-5356-481f-a571-11005977e590";
+
 		private static VariableGroupClientConfiguration _variableGroupClientConfiguration = new VariableGroupClientConfiguration
 		{
 			BaseUrl = "https://dnvgl-one.visualstudio.com",
@@ -18,7 +20,7 @@ namespace DNV.SecretsManager.ConsoleApp
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Select source (Azure KeyVault: k, Azure DevOps Variable Group: v)");
+			Console.WriteLine("Select source (Azure KeyVault: [k], Azure DevOps Variable Group: [v])");
 			var sourceChoice = Console.ReadLine().ToLowerInvariant();
 
 			if (sourceChoice.Equals("k"))
@@ -26,7 +28,7 @@ namespace DNV.SecretsManager.ConsoleApp
 				Console.WriteLine("Please enter the URL for the Azure KeyVault:");
 				var keyVaultBaseUrl = Console.ReadLine();
 
-				Console.WriteLine("What would you like to do? (Upload: u, Download: d)");
+				Console.WriteLine("What would you like to do? (Upload: [u], Download: [d])");
 				var taskChoice = Console.ReadLine().ToLowerInvariant();
 
 				if (taskChoice == "d")
@@ -61,7 +63,7 @@ namespace DNV.SecretsManager.ConsoleApp
 				Console.WriteLine("Please enter the id of the Variable Group in Azure DevOps:");
 				var variableGroupId = Console.ReadLine();
 
-				Console.WriteLine("What would you like to do? (Upload: u, Download: d)");
+				Console.WriteLine("What would you like to do? (Upload: [u], Download: [d])");
 				var taskChoice = Console.ReadLine().ToLowerInvariant();
 
 				if (taskChoice == "d")
@@ -96,7 +98,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		private static CommandResult DownloadKeyVaultSecrets(string keyVaultBaseUrl, string targetFilename)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			var secretsService = new KeyVaultSecretsService();
+			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
 			var secrets = Task.Run(async () => await secretsService.GetSecretsAsDictionary(keyVaultBaseUrl)).GetAwaiter().GetResult();
 			var result = secretsService.ToJson(secrets);
 			File.WriteAllText(targetFilename, result, System.Text.Encoding.UTF8);
@@ -127,7 +129,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		{
 			var stopwatch = Stopwatch.StartNew();
 			var content = File.ReadAllText(sourceFilename);
-			var secretsService = new KeyVaultSecretsService();
+			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
 			var secrets = secretsService.FromJson(content);
 			Task.Run(async () => await secretsService.SetSecretsFromJson(keyVaultBaseUrl, content)).GetAwaiter();
 			stopwatch.Stop();

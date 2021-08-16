@@ -1,23 +1,51 @@
 ﻿using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Management.KeyVault;
+using Microsoft.Azure.Management.ResourceManager;
 using Microsoft.Azure.Services.AppAuthentication;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Rest;
+using System;
 
 namespace DNV.SecretsManager.Services
 {
 	public class KeyVaultSecretsService : SecretsService
 	{
-		public override Task<IEnumerable<KeyValuePair<string, string>>> GetSources()
+		private readonly string _azureSubscriptionId;
+
+		public KeyVaultSecretsService(string azureSubscriptionKey)
 		{
-			var sources = new KeyValuePair<string, string>[]
+			_azureSubscriptionId = azureSubscriptionKey;
+		}
+
+		public override async Task<IEnumerable<KeyValuePair<string, string>>> GetSources()
+		{
+			try
 			{
-				new KeyValuePair<string, string>("StoreWebKVDevTest","https://storewebkvdevtest.vault.azure.net"),
-				new KeyValuePair<string, string>("StoreWebKVTest","https://storewebkvtest.vault.azure.net"),
-				new KeyValuePair<string, string>("StoreWebKVStag","https://storewebkvstag.vault.azure.net")
-			};
-			return Task.FromResult((IEnumerable<KeyValuePair<string, string>>)sources);
+				var azureTokenProvider = new AzureServiceTokenProvider();
+				var credentials = new TokenCredentials(await azureTokenProvider.GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false));
+				var client = new KeyVaultManagementClient(credentials)
+				{
+					SubscriptionId = _azureSubscriptionId
+				};
+				var result = await client.Vaults.ListBySubscriptionAsync();
+				var keyvaults = result.ToDictionary(v => v.Name, v => v.Properties.VaultUri);
+				while (!string.IsNullOrEmpty(result.NextPageLink))
+				{
+					result = await client.Vaults.ListBySubscriptionNextAsync(result.NextPageLink);
+					foreach (var keyvault in result)
+					{
+						keyvaults.Add(keyvault.Name, keyvault.Properties.VaultUri);
+					}
+				}
+				return keyvaults.OrderBy(v => v.Key);
+			}
+			catch (Exception ex)
+			{
+				throw;
+			}
 		}
 
 		public override async Task<string> GetSecretsAsJson(string vaultBaseUrl) =>
@@ -34,7 +62,6 @@ namespace DNV.SecretsManager.Services
 			var secretsDict = new Dictionary<string, string>();
 
 			var secrets = await keyVaultClient.GetSecretsAsync(vaultBaseUrl);
-			var nextPageLink = secrets.NextPageLink;
 			foreach (var secret in secrets)
 			{
 				var key = secret.Identifier.Name;
@@ -43,9 +70,9 @@ namespace DNV.SecretsManager.Services
 			}
 
 			var stopwatch = Stopwatch.StartNew();
-			while (!string.IsNullOrEmpty(nextPageLink))
+			while (!string.IsNullOrEmpty(secrets.NextPageLink))
 			{
-				secrets = await keyVaultClient.GetSecretsNextAsync(nextPageLink);
+				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
 				var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
 				var results = await Task.WhenAll(tasks);
 				foreach (var secretValue in results)
@@ -60,7 +87,6 @@ namespace DNV.SecretsManager.Services
 					secretsDict.Add(key, value);
 				}
 				*/
-				nextPageLink = secrets.NextPageLink;
 			}
 			stopwatch.Stop();
 			var time = stopwatch.Elapsed.TotalSeconds;

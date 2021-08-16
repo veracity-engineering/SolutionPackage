@@ -18,13 +18,6 @@ namespace DNV.SecretsManager
 
 	internal class VariableGroupClient
 	{
-		/*
-		private const string BaseUrl = "https://dnvgl-one.visualstudio.com";
-		private const string Organization = "Veracity";
-		private const string ApiVersion = "6.1-preview.2";
-		private const string PersonalAccessToken = "4gepm6cenmvsc3cox2hzymkddvof4dkx5xpwgi6x34tfcylyl6pa";
-		*/
-
 		private readonly VariableGroupClientConfiguration _configuration;
 
 		public VariableGroupClient(VariableGroupClientConfiguration configuration)
