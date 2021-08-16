@@ -149,7 +149,9 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			cmbSourceTypes.IsEnabled = value;
 			cmbSources.IsEnabled = value;
-			btnDownload.IsEnabled = value;
+			btnDownload.IsEnabled = _sources != null && cmbSources.SelectedIndex != -1 && _sources[cmbSources.SelectedIndex].Key != null
+				? value
+				: false;
 			btnUpload.IsEnabled = value
 				? IsActiveDocumentUploadable()
 				: false;
@@ -184,9 +186,12 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			btnDownload.IsEnabled = true;
 			btnUpload.IsEnabled = false;
 
-			var selectedSource = _sources.FirstOrDefault(s => s.Value.Equals(sourceType.Last, StringComparison.InvariantCultureIgnoreCase));
-			if (selectedSource.Key != null)
-				cmbSources.SelectedIndex = cmbSources.Items.IndexOf($"{selectedSource.Key} ({selectedSource.Value})");
+			if (_sources != null)
+			{
+				var selectedSource = _sources.FirstOrDefault(s => s.Value.Equals(sourceType.Last, StringComparison.InvariantCultureIgnoreCase));
+				if (selectedSource.Key != null)
+					cmbSources.SelectedIndex = cmbSources.Items.IndexOf($"{selectedSource.Key} ({selectedSource.Value})");
+			}
 		}
 
 		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source)
