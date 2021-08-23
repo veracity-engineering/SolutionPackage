@@ -18,7 +18,7 @@ namespace DNV.SecretsManager.ConsoleApp
 			PersonalAccessToken = "4gepm6cenmvsc3cox2hzymkddvof4dkx5xpwgi6x34tfcylyl6pa"
 		};
 
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			Console.WriteLine("Select source (Azure KeyVault: [k], Azure DevOps Variable Group: [v])");
 			var sourceChoice = Console.ReadLine().ToLowerInvariant();
@@ -38,7 +38,7 @@ namespace DNV.SecretsManager.ConsoleApp
 
 					Console.WriteLine($"Downloading secrets from '{keyVaultBaseUrl}'...");
 					Console.WriteLine("Please wait.");
-					var result = DownloadKeyVaultSecrets(keyVaultBaseUrl, targetFilename);
+					var result = await DownloadKeyVaultSecrets(keyVaultBaseUrl, targetFilename);
 					Console.WriteLine($"Downloaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 					Console.WriteLine($"Generated file: '{targetFilename}'.");
 				}
@@ -54,7 +54,7 @@ namespace DNV.SecretsManager.ConsoleApp
 
 					Console.WriteLine($"Uploading secrets form '{sourceFilename}' to '{keyVaultBaseUrl}'...");
 					Console.WriteLine("Please wait.");
-					var result = UploadKeyVaultSecrets(sourceFilename, keyVaultBaseUrl);
+					var result = await UploadKeyVaultSecrets(sourceFilename, keyVaultBaseUrl);
 					Console.WriteLine($"Uploaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 				}
 			}
@@ -95,20 +95,28 @@ namespace DNV.SecretsManager.ConsoleApp
 			}
 		}
 
-		private static CommandResult DownloadKeyVaultSecrets(string keyVaultBaseUrl, string targetFilename)
+		private static async Task<CommandResult> DownloadKeyVaultSecrets(string keyVaultBaseUrl, string targetFilename)
 		{
 			var stopwatch = Stopwatch.StartNew();
 			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
-			var secrets = Task.Run(async () => await secretsService.GetSecretsAsDictionary(keyVaultBaseUrl)).GetAwaiter().GetResult();
-			var result = secretsService.ToJson(secrets);
-			File.WriteAllText(targetFilename, result, System.Text.Encoding.UTF8);
-			stopwatch.Stop();
-			return new CommandResult
-			{
-				Count = secrets.Count,
-				ElapsedTime = stopwatch.Elapsed
-			};
-		}
+            try
+            {
+                var secrets = await secretsService.GetSecretsAsDictionary(keyVaultBaseUrl);
+                var result = secretsService.ToJson(secrets);
+                await File.WriteAllTextAsync(targetFilename, result, System.Text.Encoding.UTF8);
+                stopwatch.Stop();
+                return new CommandResult
+                {
+                    Count = secrets.Count,
+                    ElapsedTime = stopwatch.Elapsed
+                };
+			}
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
 		private static CommandResult DownloadVariableGroup(string variableGroupId, string targetFilename)
 		{
@@ -125,20 +133,28 @@ namespace DNV.SecretsManager.ConsoleApp
 			};
 		}
 
-		private static CommandResult UploadKeyVaultSecrets(string sourceFilename, string keyVaultBaseUrl)
+		private static async Task<CommandResult> UploadKeyVaultSecrets(string sourceFilename, string keyVaultBaseUrl)
 		{
 			var stopwatch = Stopwatch.StartNew();
 			var content = File.ReadAllText(sourceFilename);
 			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
 			var secrets = secretsService.FromJson(content);
-			Task.Run(async () => await secretsService.SetSecretsFromJson(keyVaultBaseUrl, content)).GetAwaiter();
-			stopwatch.Stop();
-			return new CommandResult
-			{
-				Count = secrets.Count,
-				ElapsedTime = stopwatch.Elapsed
-			};
-		}
+            try
+            {
+                await secretsService.SetSecretsFromJson(keyVaultBaseUrl, content);
+                stopwatch.Stop();
+                return new CommandResult
+                {
+                    Count = secrets.Count,
+                    ElapsedTime = stopwatch.Elapsed
+                };
+			}
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
 		private static CommandResult UploadVariableGroup(string sourceFilename, string variableGroupId)
 		{

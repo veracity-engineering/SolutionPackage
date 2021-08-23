@@ -94,13 +94,16 @@ namespace DNV.SecretsManager.Services
 			return secretsDict;
 		}
 
-		public override Task SetSecretsFromDictionary(string vaultBaseUrl, Dictionary<string, string> secrets)
+		public override async Task SetSecretsFromDictionary(string vaultBaseUrl, Dictionary<string, string> secrets)
 		{
 			var azureServiceTokenProvider = new AzureServiceTokenProvider();
 			var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-			var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
-			return Task.WhenAll(tasks);
-		}
+            foreach (var s in secrets)
+            {
+				Console.WriteLine($"Updating secret: '{s.Key}'");
+                await keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain");
+			}
+        }
 
 		/*
 		private static async Task<string> GetToken(string authority, string resource, string scope)
