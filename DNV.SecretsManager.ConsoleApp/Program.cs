@@ -73,7 +73,7 @@ namespace DNV.SecretsManager.ConsoleApp
 
 					Console.WriteLine($"Downloading variables from variable group '{variableGroupId}'...");
 					Console.WriteLine("Please wait.");
-					var result = DownloadVariableGroup(variableGroupId, targetFilename);
+					var result = await DownloadVariableGroup(variableGroupId, targetFilename);
 					Console.WriteLine($"Downloaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
 					Console.WriteLine($"Generated file: '{targetFilename}'.");
 				}
@@ -89,7 +89,7 @@ namespace DNV.SecretsManager.ConsoleApp
 
 					Console.WriteLine($"Uploading variables form '{sourceFilename}' to variable group'{variableGroupId}'...");
 					Console.WriteLine("Please wait.");
-					var result = UploadVariableGroup(sourceFilename, variableGroupId);
+					var result = await UploadVariableGroup(sourceFilename, variableGroupId);
 					Console.WriteLine($"Uploaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 				}
 			}
@@ -118,13 +118,13 @@ namespace DNV.SecretsManager.ConsoleApp
             }
         }
 
-		private static CommandResult DownloadVariableGroup(string variableGroupId, string targetFilename)
+		private static async Task<CommandResult> DownloadVariableGroup(string variableGroupId, string targetFilename)
 		{
 			var stopwatch = Stopwatch.StartNew();
 			var secretsService = new VariableGroupSecretsService(_variableGroupClientConfiguration);
 			var secrets = Task.Run(async () => await secretsService.GetSecretsAsDictionary(variableGroupId)).GetAwaiter().GetResult();
 			var result = secretsService.ToJson(secrets);
-			File.WriteAllText(targetFilename, result, System.Text.Encoding.UTF8);
+			await File.WriteAllTextAsync(targetFilename, result, System.Text.Encoding.UTF8);
 			stopwatch.Stop();
 			return new CommandResult
 			{
@@ -136,7 +136,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		private static async Task<CommandResult> UploadKeyVaultSecrets(string sourceFilename, string keyVaultBaseUrl)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			var content = File.ReadAllText(sourceFilename);
+			var content = await File.ReadAllTextAsync(sourceFilename);
 			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
 			var secrets = secretsService.FromJson(content);
             try
@@ -156,13 +156,13 @@ namespace DNV.SecretsManager.ConsoleApp
             }
         }
 
-		private static CommandResult UploadVariableGroup(string sourceFilename, string variableGroupId)
+		private static async Task<CommandResult> UploadVariableGroup(string sourceFilename, string variableGroupId)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			var content = File.ReadAllText(sourceFilename);
+			var content = await File.ReadAllTextAsync(sourceFilename);
 			var secretsService = new VariableGroupSecretsService(_variableGroupClientConfiguration);
 			var secrets = secretsService.FromJson(content);
-			Task.Run(async () => await secretsService.SetSecretsFromJson(variableGroupId, content)).GetAwaiter();
+			await secretsService.SetSecretsFromJson(variableGroupId, content);
 			stopwatch.Stop();
 			return new CommandResult
 			{

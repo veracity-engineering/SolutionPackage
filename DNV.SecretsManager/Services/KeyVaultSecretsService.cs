@@ -98,12 +98,12 @@ namespace DNV.SecretsManager.Services
 		{
 			var azureServiceTokenProvider = new AzureServiceTokenProvider();
 			var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            foreach (var s in secrets)
-            {
-				Console.WriteLine($"Updating secret: '{s.Key}'");
-                await keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain");
+			foreach (var secret in secrets)
+			{
+				Console.WriteLine($"Updating secret: '{secret.Key}'");
+				await keyVaultClient.SetSecretAsync(vaultBaseUrl, secret.Key, secrets[secret.Key], contentType: "text/plain");
 			}
-        }
+		}
 
 		/*
 		private static async Task<string> GetToken(string authority, string resource, string scope)
