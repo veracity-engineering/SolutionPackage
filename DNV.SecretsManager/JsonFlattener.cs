@@ -20,7 +20,7 @@ namespace DNV.SecretsManager
 			var jTokens = jsonObject.Descendants().Where(p => p.Count() == 0);
 			var results = jTokens.Aggregate(new Dictionary<string, string>(), (properties, jToken) =>
 			{
-				properties.Add(jToken.Path.Replace(".", PathDelimeter), jToken.ToString());
+				properties.Add(jToken.Path.Replace(".", PathDelimeter).Replace("[", PathDelimeter).Replace("]", ""), jToken.ToString());
 				return properties;
 			});
 			return results;
