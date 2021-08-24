@@ -20,16 +20,6 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		private SecretsManagerStorage _storage;
 		private DTE Dte;
 
-		private const string AzureSubscriptionId = "d288cb4f-5356-481f-a571-11005977e590";
-
-		private static VariableGroupClientConfiguration _variableGroupClientConfiguration = new VariableGroupClientConfiguration
-		{
-			BaseUrl = "https://dnvgl-one.visualstudio.com",
-			Organization = "Veracity",
-			ApiVersion = "6.1-preview.2",
-			PersonalAccessToken = "4gepm6cenmvsc3cox2hzymkddvof4dkx5xpwgi6x34tfcylyl6pa"
-		};
-
 		public SecretManagerToolWindowControl()
 		{
 			InitializeComponent();
@@ -43,11 +33,35 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				"Azure Key Vault",
 				"Azure DevOps Variable Group"
 			};
-			_secretsServices = new Dictionary<int, SecretsService>
+
+			var configuration = SecretsManagerConfiguration.Load();
+			if (configuration == null)
 			{
-				{ 0, new KeyVaultSecretsService(AzureSubscriptionId) },
-				{ 1, new VariableGroupSecretsService(_variableGroupClientConfiguration) }
+				pnlSecrets.Visibility = Visibility.Collapsed;
+				pnlConfiguration.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				pnlConfiguration.Visibility = Visibility.Collapsed;
+				pnlSecrets.Visibility = Visibility.Visible;
+				IniailizeSecretsView(configuration);
+			}
+		}
+
+		private void IniailizeSecretsView(SecretsManagerConfiguration configuration)
+		{
+			var variableGroupsConfig = new VariableGroupClientConfiguration
+			{
+				BaseUrl = configuration.VariableGroups.BaseUrl,
+				Organization = configuration.VariableGroups.Organization,
+				PersonalAccessToken = configuration.VariableGroups.PersonalAccessToken,
+				ApiVersion = "6.1-preview.2"
 			};
+			_secretsServices = new Dictionary<int, SecretsService>
+				{
+					{ 0, new KeyVaultSecretsService(configuration.Keyvaults.AzureSubscriptionId) },
+					{ 1, new VariableGroupSecretsService(variableGroupsConfig) }
+				};
 			cmbSourceTypes.Items.Clear();
 			for (var index = 0; index < _sourceTypes.Count; index++)
 			{
@@ -69,10 +83,10 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				Dte = await Microsoft.VisualStudio.Shell.AsyncServiceProvider.GlobalProvider.GetServiceAsync(typeof(DTE)) as DTE;
 			if (Dte == null)
 				throw new ArgumentNullException(nameof(Dte));
-			Dte.Events.WindowEvents.WindowActivated += OnWindowActivaed;
+			Dte.Events.WindowEvents.WindowActivated += OnWindowActivated;
 		}
 
-		private void OnWindowActivaed(EnvDTE.Window GotFocus, EnvDTE.Window LostFocus)
+		private void OnWindowActivated(EnvDTE.Window GotFocus, EnvDTE.Window LostFocus)
 		{
 			btnUpload.IsEnabled = IsActiveDocumentUploadable();
 		}
@@ -231,6 +245,27 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			{
 				MessageBox.Show($"Failed to upload secrets to source '{source}'.\n{ex.Message}");
 			}
+		}
+
+		private void btnConfigApply_Click(object sender, RoutedEventArgs e)
+		{
+			var configuration = new SecretsManagerConfiguration
+			{
+				Keyvaults = new KeyvaultsConfiguration
+				{
+					AzureSubscriptionId = txtAzureSubscriptionId.Text,
+				},
+				VariableGroups = new VariableGroupsConfiguration
+				{
+					BaseUrl = txtBaseUrl.Text,
+					Organization = txtBaseUrl.Text,
+					PersonalAccessToken = txtPersonalAccessToken.Text
+				}
+			};
+			configuration.Save();
+			pnlConfiguration.Visibility = Visibility.Collapsed;
+			pnlSecrets.Visibility = Visibility.Visible;
+			IniailizeSecretsView(configuration);
 		}
 	}
 }
