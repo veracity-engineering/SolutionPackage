@@ -189,5 +189,29 @@ namespace DNVGL.Web.Security.Tests
 
             Assert.False(response.Headers.Contains("Content-Security-Policy"));
         }
+
+        [Fact]
+        public async Task TestWebApiDefaultHeader()
+        {
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(webHost =>
+                {
+                    webHost.UseTestServer();
+                    webHost.Configure(app => app.UseWebApiDefaultHeaders(skipRequest: req => req.Path.Value.Contains("swagger", System.StringComparison.InvariantCultureIgnoreCase))
+                            .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
+                });
+
+            var host = await hostBuilder.StartAsync();
+            var client = host.GetTestClient();
+            
+            var response = await client.GetAsync("/swagger/webapi");
+            response.EnsureSuccessStatusCode();
+            Assert.False(response.Headers.Contains("Content-Security-Policy"));
+
+            response = await client.GetAsync("/api/users");
+            response.EnsureSuccessStatusCode();
+            Assert.True(response.Headers.Contains("Content-Security-Policy"));
+            Assert.Equal("default-src 'none'", response.Headers.GetValues("Content-Security-Policy").FirstOrDefault());
+        }
     }
 }
