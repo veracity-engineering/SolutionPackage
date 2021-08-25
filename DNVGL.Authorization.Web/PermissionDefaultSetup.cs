@@ -75,7 +75,7 @@ namespace DNVGL.Authorization.Web
             });
         }
 
-        public static CookieAuthenticationEvents AddSigningInHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
+        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
         {
             //cookieEvents.OnSigningIn = SigningIn;
             cookieEvents.OnValidatePrincipal = async ctx =>
