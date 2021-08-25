@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Options;
 
 namespace DNVGL.Authorization.Web
 {
@@ -45,7 +46,7 @@ namespace DNVGL.Authorization.Web
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddScoped<PermissionOptions>(provider =>
+            services.AddSingleton<PermissionOptions>(provider =>
             {
                 if(permissionOptions == null)
                 {
@@ -77,12 +78,16 @@ namespace DNVGL.Authorization.Web
 
         public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
         {
-            //cookieEvents.OnSigningIn = SigningIn;
+            var serviceProvider = services.BuildServiceProvider();
+            var userPermission = serviceProvider.GetService<IUserPermissionReader>();
+            var premissionOptions = serviceProvider.GetService<PermissionOptions>();
+            return AddCookieValidateHandler(cookieEvents, userPermission, premissionOptions);
+        }
+
+        internal static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IUserPermissionReader userPermission, PermissionOptions premissionOptions)
+        {
             cookieEvents.OnValidatePrincipal = async ctx =>
             {
-                var serviceProvider = services.BuildServiceProvider();
-                var userPermission = serviceProvider.GetService<IUserPermissionReader>();
-                var premissionOptions = serviceProvider.GetService<PermissionOptions>();
                 var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
                 var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
                 if (!string.IsNullOrEmpty(companyId))
@@ -106,6 +111,7 @@ namespace DNVGL.Authorization.Web
             };
             return cookieEvents;
         }
+
 
     }
 }
