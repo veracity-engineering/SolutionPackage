@@ -23,7 +23,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         protected async Task<User> GetCurrentUser()
         {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
             return await _userRepository.ReadByIdentityId(varacityId);
         }
 

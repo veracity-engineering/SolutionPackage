@@ -18,6 +18,8 @@ namespace DNVGL.Authorization.Web.Abstraction
         /// <returns>A List of <see cref="PermissionEntity"/>.</returns>
         Task<IEnumerable<PermissionEntity>> GetPermissions(string identity);
 
+        Task<IEnumerable<PermissionEntity>> GetPermissions(IEnumerable<string> permissions);
+
         Task<IEnumerable<PermissionEntity>> GetPermissions(string identity,string companyId);
     }
 }

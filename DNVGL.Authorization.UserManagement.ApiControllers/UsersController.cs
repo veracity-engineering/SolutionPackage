@@ -150,7 +150,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("~/api/mycompany/{companyId}/users/currentUser")]
         public async Task<UserViewModel> GetCompanyUserByIdentityId([FromRoute] string companyId)
         {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
             var user = await GetUserByIdentityId(varacityId);
             user = PruneUserInfo(user, companyId);
             return user;
@@ -169,7 +169,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("~/api/users/currentUser")]
         public async Task<UserViewModel> GetUserByIdentityId()
         {
-            var varacityId = _premissionOptions.GetUserIdentity(HttpContext);
+            var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
             return await GetUserByIdentityId(varacityId);
         }
 

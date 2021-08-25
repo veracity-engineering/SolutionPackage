@@ -31,12 +31,21 @@ namespace DNVGL.Authorization.Web
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, IEnumerable<PermissionAuthorizeAttribute> attributes)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var varacityId = _premissionOptions.GetUserIdentity(httpContext);
+            var varacityId = _premissionOptions.GetUserIdentity(httpContext.User);
 
-            var companyId = GetCompanyId(httpContext, context);
+            var companyId = Helper.GetCompanyId(httpContext, _premissionOptions,context.Resource as RouteEndpoint);
 
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
-            var ownedPermissions = (await _userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+            var ownedPermissionsInClaim = httpContext.User.Claims.FirstOrDefault(t => t.Type == "AuthorizationPermissions")?.Value;
+            IEnumerable<PermissionEntity> ownedPermissions = new List<PermissionEntity>();
+            if (!string.IsNullOrEmpty(ownedPermissionsInClaim))
+            {
+                ownedPermissions = await _userPermission.GetPermissions(ownedPermissionsInClaim.Split(',').ToList());
+            }
+            else
+            {
+                ownedPermissions = (await _userPermission.GetPermissions(varacityId, companyId)) ?? ownedPermissions;
+            }
 
             if (!requiredPermissions.Any() || requiredPermissions.All(t => ownedPermissions.Any(x => x.Key == t)) || requiredPermissions.All(t => ownedPermissions.Any(x => x.Id == t)))
             {
@@ -49,38 +58,38 @@ namespace DNVGL.Authorization.Web
             }
         }
 
-        private string GetCompanyId(HttpContext context, AuthorizationHandlerContext authContext)
-        {
-            var companyId = context.Request.Headers["AUTHORIZATION.COMPANYID"];
+        //private string GetCompanyId(HttpContext context, AuthorizationHandlerContext authContext)
+        //{
+        //    var companyId = context.Request.Headers["AUTHORIZATION.COMPANYID"];
 
-            if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
-            {
-                companyId = _premissionOptions.GetCompanyIdentity(context);
-            }
+        //    if (string.IsNullOrEmpty(companyId) && _premissionOptions.GetCompanyIdentity != null)
+        //    {
+        //        companyId = _premissionOptions.GetCompanyIdentity(context);
+        //    }
 
-            if (string.IsNullOrEmpty(companyId))
-            {
-                companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];
-            }
+        //    if (string.IsNullOrEmpty(companyId))
+        //    {
+        //        companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];
+        //    }
 
-            if (string.IsNullOrEmpty(companyId))
-            {
-                var httpContext = _httpContextAccessor.HttpContext;
-                var endpoint = authContext.Resource as RouteEndpoint;
-                var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
-                CompanyIdentityFieldNameFilterAttribute companyIdentityAttriute = null;
-                if (action != null)
-                {
-                    companyIdentityAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute;
-                    if (companyIdentityAttriute != null)
-                    {
-                        companyIdentityAttriute.GetCompanyId(httpContext);
-                    }
-                }
-            }
+        //    if (string.IsNullOrEmpty(companyId))
+        //    {
+        //        var httpContext = _httpContextAccessor.HttpContext;
+        //        var endpoint = authContext.Resource as RouteEndpoint;
+        //        var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
+        //        CompanyIdentityFieldNameFilterAttribute companyIdentityAttriute = null;
+        //        if (action != null)
+        //        {
+        //            companyIdentityAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyIdentityFieldNameFilterAttribute), true) as CompanyIdentityFieldNameFilterAttribute;
+        //            if (companyIdentityAttriute != null)
+        //            {
+        //                companyIdentityAttriute.GetCompanyId(httpContext);
+        //            }
+        //        }
+        //    }
 
-            return companyId;
-        }
+        //    return companyId;
+        //}
 
     }
 }

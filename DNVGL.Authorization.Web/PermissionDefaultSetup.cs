@@ -7,6 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace DNVGL.Authorization.Web
 {
@@ -49,7 +53,7 @@ namespace DNVGL.Authorization.Web
                 }
                 if (permissionOptions.GetUserIdentity == null)
                 {
-                    permissionOptions.GetUserIdentity = (httpContext) => httpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
+                    permissionOptions.GetUserIdentity = (user) => user.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
                 }
 
                 if (permissionOptions.HandleUnauthorizedAccess == null)
@@ -69,6 +73,38 @@ namespace DNVGL.Authorization.Web
             {
                 config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
             });
+        }
+
+        public static CookieAuthenticationEvents AddSigningInHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
+        {
+            //cookieEvents.OnSigningIn = SigningIn;
+            cookieEvents.OnValidatePrincipal = async ctx =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var userPermission = serviceProvider.GetService<IUserPermissionReader>();
+                var premissionOptions = serviceProvider.GetService<PermissionOptions>();
+                var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
+                var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
+                if (!string.IsNullOrEmpty(companyId))
+                {
+                    var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");
+                    if (companyIdClaim == null || companyIdClaim.Value != companyId)
+                    {
+                        var varacityId = premissionOptions.GetUserIdentity(ctx.Principal);
+                        var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+                        ctx.Principal.AddIdentity(
+                        new ClaimsIdentity(new List<Claim>() {
+                            new Claim("AuthorizationTenantRoute", companyId),
+                            new Claim("AuthorizationCompanyId", companyId),
+                            new Claim(ClaimTypes.Role, string.Join(',',ownedPermissions.Select(t=>t.Key))),
+                            new Claim("AuthorizationPermissions", string.Join(',',ownedPermissions.Select(t=>t.Key)))}));
+                        ctx.ReplacePrincipal(ctx.Principal);
+                        ctx.ShouldRenew = true;
+                    }
+                }
+                return;
+            };
+            return cookieEvents;
         }
 
     }

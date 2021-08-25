@@ -55,5 +55,19 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 return null;
             }
         }
+
+        public async Task<IEnumerable<PermissionEntity>> GetPermissions(IEnumerable<string> permissions)
+        {
+            var allPermissions = (await _permissionRepository.GetAll());
+
+            if (permissions.Any())
+            {
+                return allPermissions.Where(p => permissions.Contains(p.Key) || permissions.Contains(p.Id));
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
