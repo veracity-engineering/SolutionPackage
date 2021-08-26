@@ -71,12 +71,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             switch (mode)
             {
                 case UserManagementMode.Company_GlobalRole_User:
-                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
+                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(GlobalRolesController<TRole, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
                 case UserManagementMode.Role_User:
-                    return new Type[] { typeof(RolesController<TCompany, TRole, TUser>) };
+                    return new Type[] { typeof(GlobalRolesController<TRole, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
                 case UserManagementMode.Company_CompanyRole_User:
                 default:
-                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(RolesController<TCompany, TRole, TUser>) };
+                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(RolesController<TCompany, TRole, TUser>), typeof(UsersController<TRole, TUser>) };
             }
         }
 
