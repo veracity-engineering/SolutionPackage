@@ -7,6 +7,7 @@ using System.Text;
 
 namespace DNVGL.Authorization.Web
 {
+    [ObsoleteAttribute("This function is not ready for use. do not use.", true)]
     public class CookieAuthenticationOptionsSetup : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly IUserPermissionReader _userPermissionReader;

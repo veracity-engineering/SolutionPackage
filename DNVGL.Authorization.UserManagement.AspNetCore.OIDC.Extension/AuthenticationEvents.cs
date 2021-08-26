@@ -18,6 +18,7 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
 {
     public static class AuthenticationEvents
     {
+        [ObsoleteAttribute("This function is obsolete. do not use.", true)]
         public static readonly Func<CookieSigningInContext, Task> SigningIn = (ctx) =>
         {
             var identity = ctx.Principal.Identity as ClaimsIdentity;
@@ -28,6 +29,7 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
             return Task.CompletedTask;
         };
 
+        [ObsoleteAttribute("This function is obsolete. do not use.", true)]
         public static readonly Func<TokenValidatedContext, IServiceCollection, Task> TokenValidated = async (ctx, services) =>
         {
             var serviceProvider = services.BuildServiceProvider();
@@ -59,6 +61,8 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
             return;
         };
 
+
+        [ObsoleteAttribute("This function is obsolete. do not use.", true)]
         public static OpenIdConnectEvents AddTokenValidatedHandler(this OpenIdConnectEvents openIdConnectEvents, IServiceCollection services)
         {
             openIdConnectEvents.OnTokenValidated = async ctx =>
@@ -69,6 +73,8 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
 
         }
 
+
+        [ObsoleteAttribute("This function is obsolete. do not use.", true)]
         public static CookieAuthenticationEvents AddSigningInHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
         {
             cookieEvents.OnSigningIn = SigningIn;
