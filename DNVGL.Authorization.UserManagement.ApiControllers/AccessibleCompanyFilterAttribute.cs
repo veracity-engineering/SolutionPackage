@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
+using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +17,16 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     public class AccessibleCompanyFilterAttribute : TypeFilterAttribute
     {
         public AccessibleCompanyFilterAttribute()
-                        : base(typeof(AccessibleCompanyFilterImpl))
+                        : base(typeof(AccessibleCompanyFilterImpl<User>))
         {
           
         }
 
-        private class AccessibleCompanyFilterImpl : IAsyncActionFilter
+        private class AccessibleCompanyFilterImpl<TUser> : IAsyncActionFilter where TUser:User,new()
         {
             private readonly PermissionOptions _premissionOptions;
-            private readonly IUser _userRepository;
-            public AccessibleCompanyFilterImpl(IUser userRepository, PermissionOptions premissionOptions)
+            private readonly IUser<TUser> _userRepository;
+            public AccessibleCompanyFilterImpl(IUser<TUser> userRepository, PermissionOptions premissionOptions)
             {
                 _userRepository = userRepository;
                 _premissionOptions = premissionOptions;

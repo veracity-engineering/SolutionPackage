@@ -21,12 +21,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiController]
     [Route("api/companies")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    public class CompaniesController : UserManagementBaseController
+    [ApiExplorerSettings(GroupName = "UserManagement's Company APIs")]
+    public class CompaniesController<TCompany, TUser> : UserManagementBaseController<TUser> where TCompany : Company, new() where TUser : User, new()
     {
-        private readonly ICompany _companyRepository;
+        private readonly ICompany<TCompany> _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
 
-        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
+        public CompaniesController(ICompany<TCompany> companyRepository, IPermissionRepository permissionRepository, IUser<TUser> userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _companyRepository = companyRepository;
             _permissionRepository = permissionRepository;
@@ -61,7 +62,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("~/api/mycompany/{companyId}")]
         [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
         [AccessibleCompanyFilter]
-        public async Task<Company> GetMyCompany([FromRoute] string companyId)
+        public async Task<CompanyViewDto> GetMyCompany([FromRoute] string companyId)
         {
             var company = await _companyRepository.Read(companyId);
             var allPermissions = await _permissionRepository.GetAll();
@@ -74,7 +75,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
-        public async Task<Company> GetCompany([FromRoute] string id)
+        public async Task<CompanyViewDto> GetCompany([FromRoute] string id)
         {
             var company = await _companyRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();
@@ -86,7 +87,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("domain/{url}")]
-        public async Task<Company> GetCompanyByDomain([FromRoute] string url)
+        public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
         {
             var currentUser = await GetCurrentUser();
 
@@ -110,7 +111,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var currentUser = await GetCurrentUser();
 
-            var company = new Company
+
+            var company = new TCompany
             {
                 Description = model.Description,
                 Name = model.Name,

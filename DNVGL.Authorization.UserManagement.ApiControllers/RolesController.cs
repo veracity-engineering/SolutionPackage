@@ -21,13 +21,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/mycompany/{companyId}/roles")]
     [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
-    public class RolesController : UserManagementBaseController
+    [ApiExplorerSettings(GroupName = "UserManagement's Role APIs")]
+    public class RolesController<TCompany,TRole,TUser> : UserManagementBaseController<TUser> where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
     {
-        private readonly IRole _roleRepository;
-        private readonly ICompany _companyRepository;
+        private readonly IRole<TRole> _roleRepository;
+        private readonly ICompany<TCompany> _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
 
-        public RolesController(IUser userRepository, IRole roleRepository, ICompany companyRepository, IPermissionRepository permissionRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
+        public RolesController(IUser<TUser> userRepository, IRole<TRole> roleRepository, ICompany<TCompany> companyRepository, IPermissionRepository permissionRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _roleRepository = roleRepository;
             _companyRepository = companyRepository;
@@ -47,7 +48,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewRole)]
-        public async Task<Role> GetRole([FromRoute] string companyId,[FromRoute] string id)
+        public async Task<RoleViewDto> GetRole([FromRoute] string companyId,[FromRoute] string id)
         {
             var roles = await GetCompanyRoles(companyId);
 
@@ -69,7 +70,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var user = await GetCurrentUser();
             var permissionKeys = await PrunePermissions(companyId, model.PermissionKeys);
 
-            var role = new Role
+            var role = new TRole
             {
                 Description = model.Description,
                 Name = model.Name,
@@ -156,7 +157,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("~/api/crosscompany/roles/{id}")]
         [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
-        public async Task<Role> GetCrosscompanyRole([FromRoute] string id)
+        public async Task<RoleViewDto> GetCrosscompanyRole([FromRoute] string id)
         {
             return await FetchRole(id);
         }
@@ -170,7 +171,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
             var currentUser = await GetCurrentUser();
 
-            var role = new Role
+            var role = new TRole
             {
                 Description = model.Description,
                 Name = model.Name,
@@ -237,7 +238,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
-        private async Task<Role> FetchRole(string id)
+        private async Task<RoleViewDto> FetchRole(string id)
         {
             var role = await _roleRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();

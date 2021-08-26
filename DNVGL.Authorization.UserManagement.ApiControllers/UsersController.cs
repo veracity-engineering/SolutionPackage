@@ -20,14 +20,15 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/mycompany/{companyId}/users")]
     [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
-    public class UsersController : UserManagementBaseController
+    [ApiExplorerSettings(GroupName = "UserManagement's User APIs")]
+    public class UsersController<TRole, TUser> : UserManagementBaseController<TUser> where TRole : Role, new() where TUser : User, new()
     {
-        private readonly IRole _roleRepository;
-        private readonly IUser _userRepository;
+        private readonly IRole<TRole> _roleRepository;
+        private readonly IUser<TUser> _userRepository;
         private readonly PermissionOptions _premissionOptions;
         private readonly IPermissionRepository _permissionRepository;
 
-        public UsersController(IUser userRepository, IRole roleRepository, IUserSynchronization userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
+        public UsersController(IUser<TUser> userRepository, IRole<TRole> roleRepository, IUserSynchronization<TUser> userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
@@ -97,7 +98,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var roleIds = await PruneRoles(companyId, model.RoleIds);
             if (user == null)
             {
-                user = new User
+                user = new TUser
                 {
                     Description = model.Description,
                     FirstName = model.FirstName,
@@ -250,7 +251,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             var currentUser = await GetCurrentUser();
             var roleIds = await PruneRoles(model.CompanyIds, model.RoleIds);
-            user = new User
+            user = new TUser
             {
                 Description = model.Description,
                 FirstName = model.FirstName,
@@ -308,7 +309,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<IList<string>> PruneRoles(IList<string> companyIds, IList<string> sourceRoleIds)
         {
-            var roles = new List<Role>();
+            var roles = new List<TRole>();
             foreach (var companyId in companyIds)
             {
                 roles.AddRange(await _roleRepository.GetRolesOfCompany(companyId));
@@ -366,7 +367,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return user;
         }
 
-        private async Task<UserViewModel> PopulateUserInfo(User user)
+        private async Task<UserViewModel> PopulateUserInfo(TUser user)
         {
             var allPermissions = await _permissionRepository.GetAll();
             var result = user.ToViewDto<UserViewModel>();

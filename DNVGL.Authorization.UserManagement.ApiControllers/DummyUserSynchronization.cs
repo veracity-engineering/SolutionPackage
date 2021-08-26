@@ -7,7 +7,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    public class DummyUserSynchronization : IUserSynchronization
+    public class DummyUserSynchronization : IUserSynchronization<User>
     {
         public void LaunchMonitoring()
         {

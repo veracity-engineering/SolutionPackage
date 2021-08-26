@@ -10,18 +10,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    public class UserManagementBaseController : ControllerBase
+    public class UserManagementBaseController<TUser> : ControllerBase where TUser : User, new()
     {
         private readonly PermissionOptions _premissionOptions;
-        private readonly IUser _userRepository;
+        private readonly IUser<TUser> _userRepository;
 
-        protected UserManagementBaseController(IUser userRepository, PermissionOptions premissionOptions)
+        protected UserManagementBaseController(IUser<TUser> userRepository, PermissionOptions premissionOptions)
         {
             _userRepository = userRepository;
             _premissionOptions = premissionOptions;
         }
 
-        protected async Task<User> GetCurrentUser()
+        protected async Task<TUser> GetCurrentUser()
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
             return await _userRepository.ReadByIdentityId(varacityId);
