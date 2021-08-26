@@ -42,23 +42,15 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
             if (string.IsNullOrEmpty(companyId))
                 return;
 
-            try
-            {
-                var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+            var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
 
-                ctx.Principal.AddIdentity(
-                        new ClaimsIdentity(new List<Claim>() {
+            ctx.Principal.AddIdentity(
+                    new ClaimsIdentity(new List<Claim>() {
                             new Claim("AuthorizationTenantRoute", companyId),
                             new Claim("AuthorizationCompanyId", companyId),
                             new Claim(ClaimTypes.Role, string.Join(',',ownedPermissions.Select(t=>t.Key))),
                             new Claim("AuthorizationPermissions", string.Join(',',ownedPermissions.Select(t=>t.Key)))}));
-            }
-            catch (Exception)
-            {
-                throw new ApplicationException("Failed to load user permissions.");
-            }
 
-            return;
         };
 
 
@@ -101,7 +93,6 @@ namespace DNVGL.Authorization.UserManagement.AspNetCore.OIDC.Extension
                         ctx.ShouldRenew = true;
                     }
                 }
-                return;
             };
             return cookieEvents;
         }

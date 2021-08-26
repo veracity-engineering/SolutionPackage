@@ -125,7 +125,6 @@ namespace DNVGL.Authorization.Web
                         ctx.ShouldRenew = true;
                     }
                 }
-                return;
             };
             return cookieEvents;
         }
