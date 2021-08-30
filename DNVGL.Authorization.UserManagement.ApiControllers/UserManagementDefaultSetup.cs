@@ -38,15 +38,35 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return services.AddUserManagement<DummyUserSynchronization>(options);
         }
 
+        public static IServiceCollection AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser>(this IServiceCollection services, UserManagementOptions options)
+            where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
+        {
+            return services.AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser, DummyUserSynchronization>(options);
+        }
+
+        public static IServiceCollection AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser, TUserSynchronization>(this IServiceCollection services, UserManagementOptions options)
+            where TCompany : Company, new() where TRole : Role, new() where TUser : User, new() where TUserSynchronization : IUserSynchronization<User>
+        {
+            services.AddMvcCore()
+              .ConfigureApplicationPartManager(manager =>
+              {
+                  manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<TCompany, TRole, TUser>(options.Mode)));
+              });
+
+            return services
+              .AddPermissionAuthorizationWithoutUserPermissionReader(options.PermissionOptions)
+              .AddScoped(typeof(IUserSynchronization<TUser>), typeof(TUserSynchronization))
+              .AddScoped<AccessibleCompanyFilterAttribute>()
+              .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
+        }
+
 
         public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization<User>
         {
             services.AddMvcCore()
             .ConfigureApplicationPartManager(manager =>
             {
-                //manager.FeatureProviders.Remove(manager.FeatureProviders.OfType<ControllerFeatureProvider>().FirstOrDefault());
-
-                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company,Role,User>(options.Mode)));
+                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company, Role, User>(options.Mode)));
             });
 
             return services
