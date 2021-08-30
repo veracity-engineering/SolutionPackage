@@ -105,6 +105,18 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPost]
+        [Route("custommodel")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
+        public async Task<string> CreateCompanyFromCustomModel([FromBody] TCompany model)
+        {
+            var currentUser = await GetCurrentUser();
+            model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            model = await _companyRepository.Create(model);
+            return model.Id;
+        }
+
+        [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
@@ -124,6 +136,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             company = await _companyRepository.Create(company);
             return company.Id;
         }
+
+        [HttpPut]
+        [Route("custommodel/{id}")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
+        public async Task UpdateCompanyFromCustomModel([FromRoute] string id, TCompany model)
+        {
+            var company = await _companyRepository.Read(id);
+            var currentUser = await GetCurrentUser();
+            model.Id = company.Id;
+            model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            await _companyRepository.Update(model);
+        }
+
 
         [HttpPut]
         [Route("{id}")]

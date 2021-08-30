@@ -59,6 +59,32 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpPut]
+        [Route("custommodel/{id}")]
+        [PermissionAuthorize(Premissions.ManageUser)]
+        [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
+        public async Task UpdateUserFromCustomModel([FromRoute] string companyId, [FromRoute] string id, TUser model)
+        {
+            var currentUser = await GetCurrentUser();
+            var user = await _userRepository.Read(id);
+
+            model.Id = user.Id;
+            model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+
+            var roleIds = await PruneRoles(companyId, model.RoleIds.SplitToList(';'));
+            roleIds = roleIds.Concat(user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id)).ToList();
+            model.RoleIds = string.Join(';', roleIds);
+
+            if (!model.CompanyIdList.Contains(companyId))
+            {
+                model.CompanyIds = model.CompanyIds + ";" + companyId;
+            }
+
+            await _userRepository.Update(model);
+
+        }
+
+
+        [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
         public async Task UpdateUser([FromRoute] string companyId, [FromRoute] string id, UserEditModel model)
@@ -85,7 +111,29 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             }
 
             await _userRepository.Update(user);
+        }
 
+        [HttpPost]
+        [Route("custommodel")]
+        [PermissionAuthorize(Premissions.ManageUser)]
+        [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
+        public async Task<string> CreateUserFromCustommodel([FromRoute] string companyId, [FromBody] TUser model)
+        {
+            var currentUser = await GetCurrentUser();
+            var user = await _userRepository.ReadByIdentityId(model.VeracityId);
+            var roleIds = await PruneRoles(companyId, model.RoleIds.SplitToList(';'));
+            if (user == null)
+            {
+                model.CompanyIds = companyId;
+                model.RoleIds = string.Join(';', roleIds);
+                model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+                model = await _userRepository.Create(model);
+            }
+            else
+            {
+                await UpdateUserFromCustomModel(companyId, user.Id, model);
+            }
+            return model.Id;
         }
 
         [HttpPost]
@@ -118,9 +166,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             {
                 await UpdateUser(companyId,user.Id,model);
             }
-
             return user.Id;
-
         }
 
         [HttpDelete]
@@ -236,6 +282,30 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPost]
+        [Route("~/api/crosscompany/users/custommodel")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
+        public async Task<ActionResult> CreateCrossCompanyUserFromCustomModel([FromBody] TUser model)
+        {
+            var user = await _userRepository.ReadByIdentityId(model.VeracityId);
+            if (user != null)
+            {
+                return BadRequest("User alreay exists.");
+            }
+
+            var currentUser = await GetCurrentUser();
+            var roleIds = await PruneRoles(model.CompanyIds, model.RoleIds.SplitToList(';'));
+            model.RoleIds = string.Join(';', roleIds);
+            model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            model = await _userRepository.Create(model);
+            return Ok(model.Id);
+        }
+
+
+        [HttpPost]
         [Route("~/api/crosscompany/users")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
@@ -267,6 +337,22 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user = await _userRepository.Create(user);
             return Ok(user.Id);
         }
+
+        [HttpPut]
+        [Route("~/api/crosscompany/users/custommodel{id}")]
+        [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
+        public async Task UpdateCrossCompanyUserFromCustomModel([FromRoute] string id, TUser model)
+        {
+            var currentUser = await GetCurrentUser();
+            var roleIds = await PruneRoles(model.CompanyIds, model.RoleIds.SplitToList(';'));
+            var user = await _userRepository.Read(id);
+            model.Id = user.Id;
+            model.RoleIds = string.Join(';', roleIds);
+            model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            await _userRepository.Update(model);
+        }
+
 
 
         [HttpPut]

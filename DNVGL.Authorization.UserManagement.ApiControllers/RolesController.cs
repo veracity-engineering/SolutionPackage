@@ -63,6 +63,21 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPost]
+        [Route("custommodel")]
+        [PermissionAuthorize(Premissions.ManageRole)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        public async Task<string> CreateRoleFromCustomModel([FromRoute] string companyId, [FromBody] TRole model)
+        {
+            var user = await GetCurrentUser();
+            var permissionKeys = await PrunePermissions(companyId, model.Permissions.SplitToList(';'));
+            model.Permissions = string.Join(';', permissionKeys);
+            model.CreatedBy = $"{user.FirstName} {user.LastName}";
+            model.CompanyId = companyId;
+            model = await _roleRepository.Create(model);
+            return model.Id;
+        }
+
+        [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageRole)]
         public async Task<string> CreateRole([FromRoute] string companyId,[FromBody] RoleEditModel model)
@@ -81,6 +96,28 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             };
             role = await _roleRepository.Create(role);
             return role.Id;
+        }
+
+
+        [HttpPut]
+        [Route("custommodel/{id}")]
+        [PermissionAuthorize(Premissions.ManageRole)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        public async Task UpdateRoleFromCustomModel([FromRoute] string companyId, [FromRoute] string id, TRole model)
+        {
+            var currentUser = await GetCurrentUser();
+            var roles = await GetCompanyRoles(companyId);
+
+            if (roles.Any(t => t.Id == id))
+            {
+                var role = await _roleRepository.Read(id);
+                var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
+                model.Id = role.Id;
+                model.CompanyId = model.CompanyId;
+                model.Permissions = string.Join(';', permissionKeys);
+                model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+                await _roleRepository.Update(model);
+            }
         }
 
 
@@ -105,7 +142,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(role);
             }
-
         }
 
         [HttpDelete]
@@ -164,6 +200,22 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpPost]
+        [Route("~/api/crosscompany/roles/custommodel")]
+        [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        public async Task<string> CreateCrosscompanyRoleFromCustomModel([FromBody] TRole model)
+        {
+            var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
+            var currentUser = await GetCurrentUser();
+            model.Permissions = string.Join(';', permissionKeys);
+            model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+
+            model = await _roleRepository.Create(model);
+            return model.Id;
+        }
+
+
+        [HttpPost]
         [Route("~/api/crosscompany/roles")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         public async Task<string> CreateCrosscompanyRole([FromBody] RoleEditModel model)
@@ -184,6 +236,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return role.Id;
         }
 
+        [HttpPut]
+        [Route("~/api/crosscompany/roles/custommodel/{id}")]
+        [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        public async Task UpdateCrosscompanyRoleFromCustomModel([FromRoute] string id, TRole model)
+        {
+            var currentUser = await GetCurrentUser();
+            var role = await _roleRepository.Read(id);
+            var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
+            model.Id = role.Id;
+            model.Permissions = string.Join(';', permissionKeys);
+            model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            await _roleRepository.Update(model);
+        }
 
         [HttpPut]
         [Route("~/api/crosscompany/roles/{id}")]
