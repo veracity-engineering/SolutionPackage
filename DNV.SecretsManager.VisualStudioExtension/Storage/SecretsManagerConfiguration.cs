@@ -6,9 +6,6 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 {
 	public class SecretsManagerConfiguration
 	{
-		[JsonProperty("keyvaults")]
-		public KeyvaultsConfiguration Keyvaults { get; set; }
-
 		[JsonProperty("variableGroups")]
 		public VariableGroupsConfiguration VariableGroups { get; set; }
 
@@ -31,12 +28,6 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 				Directory.CreateDirectory(Path);
 			File.WriteAllText(Filename, JsonConvert.SerializeObject(this));
 		}
-	}
-
-	public class KeyvaultsConfiguration
-	{
-		[JsonProperty("azureSubscriptionId")]
-		public string AzureSubscriptionId { get; set; }
 	}
 
 	public class VariableGroupsConfiguration

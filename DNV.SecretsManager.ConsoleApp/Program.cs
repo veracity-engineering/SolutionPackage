@@ -98,7 +98,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		private static async Task<CommandResult> DownloadKeyVaultSecrets(string keyVaultBaseUrl, string targetFilename)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
+			var secretsService = new KeyVaultSecretsService();
             try
             {
                 var secrets = await secretsService.GetSecretsAsDictionary(keyVaultBaseUrl);
@@ -137,7 +137,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		{
 			var stopwatch = Stopwatch.StartNew();
 			var content = await File.ReadAllTextAsync(sourceFilename);
-			var secretsService = new KeyVaultSecretsService(AzureSubscriptionId);
+			var secretsService = new KeyVaultSecretsService();
 			var secrets = secretsService.FromJson(content);
             try
             {

@@ -13,19 +13,31 @@ namespace DNV.SecretsManager.Services
 {
 	public class KeyVaultSecretsService : SecretsService
 	{
-		private readonly string _azureSubscriptionId;
+		private string _azureSubscriptionId;
+		private ServiceClientCredentials _credentials;
 
-		public KeyVaultSecretsService(string azureSubscriptionKey)
+		public KeyVaultSecretsService()
 		{
-			_azureSubscriptionId = azureSubscriptionKey;
+		}
+
+		public async Task<IEnumerable<KeyValuePair<string, string>>> GetSubscriptions()
+		{
+			var credentials = await GetCredentials();
+			var subscriptionClient = new SubscriptionClient(credentials);
+			var subscriptions = await subscriptionClient.Subscriptions.ListAsync();
+			return subscriptions.Select(s => new KeyValuePair<string, string>(s.DisplayName, s.SubscriptionId));
+		}
+
+		public void SetSubscriptionId(string value)
+		{
+			_azureSubscriptionId = value;
 		}
 
 		public override async Task<IEnumerable<KeyValuePair<string, string>>> GetSources()
 		{
 			try
 			{
-				var azureTokenProvider = new AzureServiceTokenProvider();
-				var credentials = new TokenCredentials(await azureTokenProvider.GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false));
+				var credentials = await GetCredentials();
 				var client = new KeyVaultManagementClient(credentials)
 				{
 					SubscriptionId = _azureSubscriptionId
@@ -103,6 +115,13 @@ namespace DNV.SecretsManager.Services
 				Console.WriteLine($"Updating secret: '{secret.Key}'");
 				await keyVaultClient.SetSecretAsync(vaultBaseUrl, secret.Key, secrets[secret.Key], contentType: "text/plain");
 			}
+		}
+
+		private async Task<ServiceClientCredentials> GetCredentials()
+		{
+			if (_credentials == null)
+				_credentials = new TokenCredentials(await new AzureServiceTokenProvider().GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false));
+			return _credentials;
 		}
 
 		/*

@@ -16,6 +16,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 	{
 		private List<string> _sourceTypes;
 		private List<KeyValuePair<string, string>> _sources;
+		private List<KeyValuePair<string, string>> _subscriptions;
 		private Dictionary<int, SecretsService> _secretsServices;
 		private SecretsManagerStorage _storage;
 		private DTE Dte;
@@ -58,17 +59,18 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				ApiVersion = "6.1-preview.2"
 			};
 			_secretsServices = new Dictionary<int, SecretsService>
-				{
-					{ 0, new KeyVaultSecretsService(configuration.Keyvaults.AzureSubscriptionId) },
-					{ 1, new VariableGroupSecretsService(variableGroupsConfig) }
-				};
+			{
+				{ 0, new KeyVaultSecretsService() },
+				{ 1, new VariableGroupSecretsService(variableGroupsConfig) }
+			};
 			cmbSourceTypes.Items.Clear();
+
 			for (var index = 0; index < _sourceTypes.Count; index++)
 			{
 				cmbSourceTypes.Items.Add(_sourceTypes[index]);
 			}
 			_storage = SecretsManagerStorage.LoadOrCreate(_sourceTypes.ToArray());
-			PopulateSources(_storage.LastSourceTypeIndex);
+			SetSourceTypeAsync(_storage.LastSourceTypeIndex);
 
 			AssignDteAsync().GetAwaiter().OnCompleted(() =>
 			{
@@ -124,14 +126,14 @@ namespace DNV.SecretsManager.VisualStudioExtension
 
 		private void cmbSourceTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			PopulateSources(cmbSourceTypes.SelectedIndex);
+			SetSourceTypeAsync(cmbSourceTypes.SelectedIndex);
 		}
 
 		private void btnDownload_Click(object sender, RoutedEventArgs e)
 		{
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 			SetFormBusy(true);
-			var convertSecretsTask = DownloadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value /*cmbSources.Text*/);
+			var convertSecretsTask = DownloadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value);
 			convertSecretsTask.GetAwaiter()
 				.OnCompleted(() =>
 				{
@@ -143,7 +145,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 			SetFormBusy(true);
-			var convertSecretsTask = UploadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value /*cmbSources.Text*/, GetActiveDocumentText());
+			var convertSecretsTask = UploadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value, GetActiveDocumentText());
 			convertSecretsTask.GetAwaiter()
 				.OnCompleted(() =>
 				{
@@ -162,7 +164,13 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		private void SetFormAvailable(bool value)
 		{
 			cmbSourceTypes.IsEnabled = value;
+			cmbSourceSubscriptions.IsEnabled = value;
 			cmbSources.IsEnabled = value;
+			SetButtonAvailability(value);
+		}
+
+		private void SetButtonAvailability(bool value)
+		{
 			btnDownload.IsEnabled = _sources != null && cmbSources.SelectedIndex != -1 && _sources[cmbSources.SelectedIndex].Key != null
 				? value
 				: false;
@@ -171,22 +179,58 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				: false;
 		}
 
-		private async Task PopulateSources(int sourceTypeIndex)
+		private async Task SetSourceTypeAsync(int sourceTypeIndex)
 		{
 			if (sourceTypeIndex == -1)
 			{
+				cmbSourceSubscriptions.Items.Clear();
 				cmbSources.Items.Clear();
+
+				cmbSourceSubscriptions.Visibility = Visibility.Collapsed;
+				cmbSources.Visibility = Visibility.Collapsed;
 				return;
 			}
-			cmbSources.Text = "Working...";
-			cmbSources.IsEnabled = false;
+
 			btnDownload.IsEnabled = false;
 			btnUpload.IsEnabled = false;
 
 			var sourceType = _storage.SourceTypes[sourceTypeIndex];
-			_sources = (await _secretsServices[sourceTypeIndex].GetSources()).OrderBy(s => s.Key).ToList();
+
+			if (sourceTypeIndex == 0)
+			{
+				cmbSources.Visibility = Visibility.Collapsed;
+
+				cmbSourceSubscriptions.Text = "Working...";
+				cmbSourceSubscriptions.IsEnabled = false;
+				cmbSourceSubscriptions.Visibility = Visibility.Visible;
+
+				var keyVaultSecretService = _secretsServices[0] as KeyVaultSecretsService;
+				_subscriptions = (await keyVaultSecretService.GetSubscriptions()).ToList();
+				cmbSourceSubscriptions.Items.Clear();
+				foreach (var subscription in _subscriptions)
+				{
+					cmbSourceSubscriptions.Items.Add($"{subscription.Key}");
+				}
+				cmbSources.Items.Clear();
+				cmbSourceSubscriptions.IsEnabled = true;
+			}
+			else
+			{
+				cmbSourceSubscriptions.Visibility = Visibility.Collapsed;
+
+				cmbSources.Text = "Working...";
+				cmbSources.IsEnabled = false;
+				cmbSources.Visibility = Visibility.Visible;
+
+				PopulateSources((await _secretsServices[sourceTypeIndex].GetSources()).OrderBy(s => s.Key).ToList());
+			}
 
 			cmbSourceTypes.SelectedIndex = sourceTypeIndex;
+		}
+
+		private void PopulateSources(List<KeyValuePair<string, string>> sources)
+		{
+			_sources = sources;
 			cmbSources.Items.Clear();
 			if (_sources != null)
 			{
@@ -197,15 +241,19 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			}
 			cmbSources.Text = string.Empty;
 			cmbSources.IsEnabled = true;
-			btnDownload.IsEnabled = true;
+			btnDownload.IsEnabled = false;
 			btnUpload.IsEnabled = false;
 
+			cmbSources.Visibility = Visibility.Visible;
+
+			/*
 			if (_sources != null)
 			{
 				var selectedSource = _sources.FirstOrDefault(s => s.Value.Equals(sourceType.Last, StringComparison.InvariantCultureIgnoreCase));
 				if (selectedSource.Key != null)
 					cmbSources.SelectedIndex = cmbSources.Items.IndexOf($"{selectedSource.Key} ({selectedSource.Value})");
 			}
+			*/
 		}
 
 		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source)
@@ -251,10 +299,6 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			var configuration = new SecretsManagerConfiguration
 			{
-				Keyvaults = new KeyvaultsConfiguration
-				{
-					AzureSubscriptionId = txtAzureSubscriptionId.Text,
-				},
 				VariableGroups = new VariableGroupsConfiguration
 				{
 					BaseUrl = txtBaseUrl.Text,
@@ -266,6 +310,31 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			pnlConfiguration.Visibility = Visibility.Collapsed;
 			pnlSecrets.Visibility = Visibility.Visible;
 			IniailizeSecretsView(configuration);
+		}
+
+		private void cmbSourceSubscriptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			cmbSources.Items.Clear();
+			cmbSources.Text = "Working...";
+			cmbSources.IsEnabled = false;
+			btnDownload.IsEnabled = false;
+			btnUpload.IsEnabled = false;
+			cmbSources.Visibility = Visibility.Visible;
+
+			PopulateKeyVaultSourcesAsync(cmbSourceSubscriptions.SelectedIndex);
+		}
+
+		private async Task PopulateKeyVaultSourcesAsync(int subscriptionIndex)
+		{
+			var keyVaultSecretService = _secretsServices[0] as KeyVaultSecretsService;
+			keyVaultSecretService.SetSubscriptionId(_subscriptions[subscriptionIndex].Value);
+			var sources = await keyVaultSecretService.GetSources();
+			PopulateSources(sources.OrderBy(s => s.Key).ToList());
+		}
+
+		private void cmbSources_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			SetButtonAvailability(cmbSources.SelectedIndex != -1);
 		}
 	}
 }
