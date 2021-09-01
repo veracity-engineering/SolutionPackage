@@ -2,17 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace DNV.SecretsManager.VisualStudioExtension.Storage
 {
 	internal class SecretsManagerStorage
 	{
-		[JsonProperty("sourceTypes")]
-		public SecretsSources[] SourceTypes { get; set; }
-
 		[JsonProperty("lastSourceType")]
 		public int LastSourceTypeIndex { get; set; }
+
+		[JsonProperty("last")]
+		public Dictionary<string, string>[] LastSources { get; set; }
 
 		[JsonIgnore]
 		public static string StoragePath => $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.dnv.secretsmanager";
@@ -31,28 +30,14 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 			{
 				storage = new SecretsManagerStorage
 				{
-					SourceTypes = sourceTypes.Select(t => new SecretsSources()).ToArray(),
-					LastSourceTypeIndex = -1
+					LastSources = new Dictionary<string, string>[]
+					{
+						new Dictionary<string, string>(),
+						new Dictionary<string, string>()
+					}
 				};
 			}
 			return storage;
-		}
-
-		public void AppendSource(int sourceTypeIndex, string source)
-		{
-			var sourceType = SourceTypes[sourceTypeIndex];
-			if (sourceType.Sources == null)
-			{
-				sourceType.Sources = new[] { source };
-			}
-			else if (!sourceType.Sources.Any(s => s.Equals(source, StringComparison.InvariantCultureIgnoreCase)))
-			{
-				var sources = sourceType.Sources.ToList();
-				sources.Add(source);
-				sourceType.Sources = sources;
-			}
-			LastSourceTypeIndex = sourceTypeIndex;
-			sourceType.Last = source;
 		}
 
 		public void Save()
@@ -61,14 +46,11 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 				Directory.CreateDirectory(StoragePath);
 			File.WriteAllText(StorageFilename, JsonConvert.SerializeObject(this));
 		}
-	}
 
-	internal class SecretsSources
-	{
-		[JsonProperty("sources")]
-		public IEnumerable<string> Sources;
-
-		[JsonProperty("last")]
-		public string Last { get; set; }
+		public void SetLast(int typeIndex, Dictionary<string, string> source)
+		{
+			LastSourceTypeIndex = typeIndex;
+			LastSources[LastSourceTypeIndex] = source;
+		}
 	}
 }

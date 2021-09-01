@@ -28,7 +28,8 @@ namespace DNV.SecretsManager.VisualStudioExtension
 
 		private void SecretsManagerToolWindow_Loaded(object sender, RoutedEventArgs e)
 		{
-			SetFormAvailable(false);
+			pnlSecrets.Visibility = Visibility.Collapsed;
+			pnlConfiguration.Visibility = Visibility.Collapsed;
 			_sourceTypes = new List<string>
 			{
 				"Azure Key Vault",
@@ -51,6 +52,14 @@ namespace DNV.SecretsManager.VisualStudioExtension
 
 		private void IniailizeSecretsView(SecretsManagerConfiguration configuration)
 		{
+			SetFormState(new FormState
+			{
+				SourceTypes = FormComboState.Available,
+				SubscriptionSources = FormComboState.Hidden,
+				Sources = FormComboState.Hidden,
+				ButtonsAvailable = false
+			});
+
 			var variableGroupsConfig = new VariableGroupClientConfiguration
 			{
 				BaseUrl = configuration.VariableGroups.BaseUrl,
@@ -70,11 +79,11 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				cmbSourceTypes.Items.Add(_sourceTypes[index]);
 			}
 			_storage = SecretsManagerStorage.LoadOrCreate(_sourceTypes.ToArray());
-			SetSourceTypeAsync(_storage.LastSourceTypeIndex);
 
 			AssignDteAsync().GetAwaiter().OnCompleted(() =>
 			{
-				SetFormAvailable(true);
+				cmbSourceTypes.SelectedIndex = _storage.LastSourceTypeIndex;
+				//SetFormAvailable(true);
 			});
 		}
 
@@ -122,11 +131,6 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				return editPoint.GetText(activeDocument.EndPoint);
 			}
 			return string.Empty;
-		}
-
-		private void cmbSourceTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			SetSourceTypeAsync(cmbSourceTypes.SelectedIndex);
 		}
 
 		private void btnDownload_Click(object sender, RoutedEventArgs e)
@@ -183,26 +187,25 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			if (sourceTypeIndex == -1)
 			{
-				cmbSourceSubscriptions.Items.Clear();
-				cmbSources.Items.Clear();
-
-				cmbSourceSubscriptions.Visibility = Visibility.Collapsed;
-				cmbSources.Visibility = Visibility.Collapsed;
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Hidden,
+					Sources = FormComboState.Hidden,
+					ButtonsAvailable = false
+				});
 				return;
 			}
 
-			btnDownload.IsEnabled = false;
-			btnUpload.IsEnabled = false;
-
-			var sourceType = _storage.SourceTypes[sourceTypeIndex];
-
 			if (sourceTypeIndex == 0)
 			{
-				cmbSources.Visibility = Visibility.Collapsed;
-
-				cmbSourceSubscriptions.Text = "Working...";
-				cmbSourceSubscriptions.IsEnabled = false;
-				cmbSourceSubscriptions.Visibility = Visibility.Visible;
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Busy,
+					Sources = FormComboState.Hidden,
+					ButtonsAvailable = false
+				});
 
 				var keyVaultSecretService = _secretsServices[0] as KeyVaultSecretsService;
 				_subscriptions = (await keyVaultSecretService.GetSubscriptions()).ToList();
@@ -211,21 +214,32 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				{
 					cmbSourceSubscriptions.Items.Add($"{subscription.Key}");
 				}
-				cmbSources.Items.Clear();
-				cmbSourceSubscriptions.IsEnabled = true;
+
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Available,
+					Sources = FormComboState.Busy,
+					ButtonsAvailable = false
+				});
+
+				var lastSource = _storage.LastSources[0];
+				if (lastSource != null)
+					cmbSourceSubscriptions.SelectedIndex = _subscriptions.FindIndex(s => s.Value.Equals(lastSource[lastSource.First().Key]));
 			}
 			else
 			{
-				cmbSourceSubscriptions.Visibility = Visibility.Collapsed;
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Hidden,
+					Sources = FormComboState.Busy,
+					ButtonsAvailable = false
+				});
 
-				cmbSources.Text = "Working...";
-				cmbSources.IsEnabled = false;
-				cmbSources.Visibility = Visibility.Visible;
-
-				PopulateSources((await _secretsServices[sourceTypeIndex].GetSources()).OrderBy(s => s.Key).ToList());
+				var sources = await _secretsServices[sourceTypeIndex].GetSources();
+				PopulateSources(sources.OrderBy(s => s.Key).ToList());
 			}
-
-			cmbSourceTypes.SelectedIndex = sourceTypeIndex;
 		}
 
 		private void PopulateSources(List<KeyValuePair<string, string>> sources)
@@ -236,24 +250,24 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			{
 				foreach (var source in _sources)
 				{
-					cmbSources.Items.Add($"{source.Key} ({source.Value})");
+					cmbSources.Items.Add($"{source.Key}");
 				}
 			}
-			cmbSources.Text = string.Empty;
-			cmbSources.IsEnabled = true;
-			btnDownload.IsEnabled = false;
-			btnUpload.IsEnabled = false;
 
-			cmbSources.Visibility = Visibility.Visible;
-
-			/*
 			if (_sources != null)
 			{
-				var selectedSource = _sources.FirstOrDefault(s => s.Value.Equals(sourceType.Last, StringComparison.InvariantCultureIgnoreCase));
-				if (selectedSource.Key != null)
-					cmbSources.SelectedIndex = cmbSources.Items.IndexOf($"{selectedSource.Key} ({selectedSource.Value})");
+				var lastSource = _storage.LastSources[cmbSourceTypes.SelectedIndex];
+				if (lastSource != null)
+					cmbSources.SelectedIndex = _sources.FindIndex(s => s.Value.Equals(lastSource[lastSource.Last().Key]));
 			}
-			*/
+
+			SetFormState(new FormState
+			{
+				SourceTypes = FormComboState.Available,
+				SubscriptionSources = cmbSourceTypes.SelectedIndex == 0 ? FormComboState.Available : FormComboState.Hidden,
+				Sources = FormComboState.Available,
+				ButtonsAvailable = true
+			});
 		}
 
 		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source)
@@ -263,7 +277,24 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 				var result = await _secretsServices[sourceTypeIndex].GetSecretsAsJson(source);
 
-				_storage.AppendSource(sourceTypeIndex, source);
+				//_storage.AppendSource(sourceTypeIndex, source);
+				if (sourceTypeIndex == 0)
+				{
+					var lastSource = new Dictionary<string, string>
+					{
+						{ _subscriptions[cmbSourceSubscriptions.SelectedIndex].Key, _subscriptions[cmbSourceSubscriptions.SelectedIndex].Value },
+						{ _sources[cmbSources.SelectedIndex].Key, _sources[cmbSources.SelectedIndex].Value }
+					};
+					_storage.SetLast(sourceTypeIndex, lastSource);
+				}
+				if (sourceTypeIndex == 1)
+				{
+					var lastSource = new Dictionary<string, string>
+					{
+						{ _sources[cmbSources.SelectedIndex].Key, _sources[cmbSources.SelectedIndex].Value }
+					};
+					_storage.SetLast(sourceTypeIndex, lastSource);
+				}
 				_storage.Save();
 
 				var secretsFilename = $"{SecretsManagerStorage.StoragePath}/secrets-{Guid.NewGuid():N}.json";
@@ -284,7 +315,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 				await _secretsServices[sourceTypeIndex].SetSecretsFromJson(source, content);
 
-				_storage.AppendSource(sourceTypeIndex, source);
+				//_storage.AppendSource(sourceTypeIndex, source);
 				_storage.Save();
 
 				MessageBox.Show($"Secrets uploaded successully to source '{source}'.");
@@ -302,7 +333,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				VariableGroups = new VariableGroupsConfiguration
 				{
 					BaseUrl = txtBaseUrl.Text,
-					Organization = txtBaseUrl.Text,
+					Organization = txtOrganization.Text,
 					PersonalAccessToken = txtPersonalAccessToken.Text
 				}
 			};
@@ -312,16 +343,63 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			IniailizeSecretsView(configuration);
 		}
 
+		private void cmbSourceTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var sourceTypeIndex = cmbSourceTypes.SelectedIndex;
+			if (sourceTypeIndex == -1)
+			{
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Hidden,
+					Sources = FormComboState.Hidden,
+					ButtonsAvailable = false
+				});
+			}
+			if (sourceTypeIndex == 0)
+			{
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Busy,
+					Sources = FormComboState.Hidden,
+					ButtonsAvailable = false
+				});
+			}
+			if (sourceTypeIndex == 1)
+			{
+				SetFormState(new FormState
+				{
+					SourceTypes = FormComboState.Available,
+					SubscriptionSources = FormComboState.Hidden,
+					Sources = FormComboState.Busy,
+					ButtonsAvailable = false
+				});
+			}
+			SetSourceTypeAsync(cmbSourceTypes.SelectedIndex);
+		}
+
 		private void cmbSourceSubscriptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			cmbSources.Items.Clear();
-			cmbSources.Text = "Working...";
-			cmbSources.IsEnabled = false;
-			btnDownload.IsEnabled = false;
-			btnUpload.IsEnabled = false;
-			cmbSources.Visibility = Visibility.Visible;
-
+			SetFormState(new FormState
+			{
+				SourceTypes = FormComboState.Available,
+				SubscriptionSources = FormComboState.Available,
+				Sources = FormComboState.Busy,
+				ButtonsAvailable = false
+			});
 			PopulateKeyVaultSourcesAsync(cmbSourceSubscriptions.SelectedIndex);
+		}
+
+		private void cmbSources_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			SetFormState(new FormState
+			{
+				SourceTypes = FormComboState.Available,
+				SubscriptionSources = FormComboState.Available,
+				Sources = FormComboState.Available,
+				ButtonsAvailable = cmbSources.SelectedIndex != -1
+			});
 		}
 
 		private async Task PopulateKeyVaultSourcesAsync(int subscriptionIndex)
@@ -332,9 +410,47 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			PopulateSources(sources.OrderBy(s => s.Key).ToList());
 		}
 
-		private void cmbSources_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void SetFormState(FormState state)
 		{
-			SetButtonAvailability(cmbSources.SelectedIndex != -1);
+			ApplyFormComboState(cmbSourceTypes, state.SourceTypes);
+			ApplyFormComboState(cmbSourceSubscriptions, state.SubscriptionSources);
+			ApplyFormComboState(cmbSources, state.Sources);
+			SetButtonAvailability(state.ButtonsAvailable);
 		}
+
+		private void ApplyFormComboState(ComboBox comboBox, FormComboState state)
+		{
+			if (state == FormComboState.Hidden)
+			{
+				comboBox.Visibility = Visibility.Collapsed;
+				comboBox.IsEnabled = false;
+			}
+			if (state == FormComboState.Busy)
+			{
+				comboBox.Text = "Working...";
+				comboBox.Visibility = Visibility.Visible;
+				comboBox.IsEnabled = false;
+			}
+			if (state == FormComboState.Available)
+			{
+				comboBox.Visibility = Visibility.Visible;
+				comboBox.IsEnabled = true;
+			}
+		}
+	}
+
+	internal struct FormState
+	{
+		public FormComboState SourceTypes { get; set; }
+		public FormComboState SubscriptionSources { get; set; }
+		public FormComboState Sources { get; set; }
+		public bool ButtonsAvailable { get; set; }
+	}
+
+	internal enum FormComboState
+	{
+		Hidden,
+		Available,
+		Busy
 	}
 }
