@@ -12,7 +12,7 @@ namespace DNV.SecretsManager
 	{
 		public string BaseUrl { get; set; }
 		public string Organization { get; set; }
-		public string ApiVersion { get; set; }
+		public string ApiVersion { get; set; } = "6.1-preview.2";
 		public string PersonalAccessToken { get; set; }
 	}
 

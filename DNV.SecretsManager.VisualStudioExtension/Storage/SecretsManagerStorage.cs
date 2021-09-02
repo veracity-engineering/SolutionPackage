@@ -13,6 +13,9 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 		[JsonProperty("last")]
 		public Dictionary<string, string>[] LastSources { get; set; }
 
+		[JsonProperty("sources")]
+		public SourceCache[] Sources { get; set; }
+
 		[JsonIgnore]
 		public static string StoragePath => $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.dnv.secretsmanager";
 
@@ -30,10 +33,16 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 			{
 				storage = new SecretsManagerStorage
 				{
+					LastSourceTypeIndex = -1,
 					LastSources = new Dictionary<string, string>[]
 					{
 						new Dictionary<string, string>(),
 						new Dictionary<string, string>()
+					},
+					Sources = new SourceCache[]
+					{
+						new SourceCache(),
+						new SourceCache()
 					}
 				};
 			}
@@ -44,7 +53,7 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 		{
 			if (!Directory.Exists(StoragePath))
 				Directory.CreateDirectory(StoragePath);
-			File.WriteAllText(StorageFilename, JsonConvert.SerializeObject(this));
+			File.WriteAllText(StorageFilename, JsonConvert.SerializeObject(this, Formatting.Indented));
 		}
 
 		public void SetLast(int typeIndex, Dictionary<string, string> source)
@@ -52,5 +61,19 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 			LastSourceTypeIndex = typeIndex;
 			LastSources[LastSourceTypeIndex] = source;
 		}
+
+		public void SetSources(int typeIndex, SourceCache sourceCache)
+		{
+			Sources[typeIndex] = sourceCache;
+		}
 	}
+}
+
+internal class SourceCache
+{
+	[JsonProperty("parent")]
+	public Dictionary<string, string> Parent { get; set; }
+
+	[JsonProperty("sources")]
+	public Dictionary<string, string> Sources { get; set; }
 }
