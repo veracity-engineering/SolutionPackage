@@ -56,6 +56,10 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 			File.WriteAllText(StorageFilename, JsonConvert.SerializeObject(this, Formatting.Indented));
 		}
 
+		public bool Exists() => File.Exists(StorageFilename);
+
+		public void Delete() => File.Delete(StorageFilename);
+
 		public void SetLast(int typeIndex, Dictionary<string, string> source)
 		{
 			LastSourceTypeIndex = typeIndex;

@@ -9,6 +9,9 @@ namespace DNV.SecretsManager.VisualStudioExtension.Storage
 		[JsonProperty("variableGroups")]
 		public VariableGroupsConfiguration VariableGroups { get; set; }
 
+		[JsonProperty("allowUpload")]
+		public bool IsAllowUpload { get; set; }
+
 		[JsonIgnore]
 		public static string Path => $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.dnv.secretsmanager";
 

@@ -21,6 +21,8 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		private SecretsManagerStorage _storage;
 		private DTE Dte;
 
+		private bool _isAllowUpload;
+
 		private const int KeyVaultIndex = 0;
 		private const int VariableGroupIndex = 1;
 
@@ -42,6 +44,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			var configuration = SecretsManagerConfiguration.Load();
 			if (configuration == null)
 			{
+				btnClearCache.IsEnabled = _storage.Exists();
 				pnlSecrets.Visibility = Visibility.Collapsed;
 				pnlConfiguration.Visibility = Visibility.Visible;
 			}
@@ -69,6 +72,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				Organization = configuration.VariableGroups.Organization,
 				PersonalAccessToken = configuration.VariableGroups.PersonalAccessToken,
 			};
+			_isAllowUpload = configuration.IsAllowUpload;
 			_secretsServices = new Dictionary<int, SecretsService>
 			{
 				{ KeyVaultIndex, new KeyVaultSecretsService() },
@@ -117,6 +121,12 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			return string.Empty;
 		}
 
+		private void btnClearCache_Click(object sender, RoutedEventArgs e)
+		{
+			_storage.Delete();
+			btnClearCache.IsEnabled = false;
+		}
+
 		private void btnConfigApply_Click(object sender, RoutedEventArgs e)
 		{
 			var configuration = new SecretsManagerConfiguration
@@ -126,12 +136,19 @@ namespace DNV.SecretsManager.VisualStudioExtension
 					BaseUrl = txtBaseUrl.Text,
 					Organization = txtOrganization.Text,
 					PersonalAccessToken = txtPersonalAccessToken.Text
-				}
+				},
+				IsAllowUpload = chkAllowUpload.IsChecked.HasValue ? chkAllowUpload.IsChecked.Value : false
 			};
 			configuration.Save();
 			pnlConfiguration.Visibility = Visibility.Collapsed;
 			pnlSecrets.Visibility = Visibility.Visible;
 			IniailizeSecretsView(configuration);
+		}
+
+		private void btnConfigCancel_Click(object sender, RoutedEventArgs e)
+		{
+			pnlConfiguration.Visibility = Visibility.Collapsed;
+			pnlSecrets.Visibility = Visibility.Visible;
 		}
 
 		private void cmbSourceTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -171,6 +188,18 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				{
 					SetFormBusy(false);
 				});
+		}
+
+		private void btnSettings_Click(object sender, RoutedEventArgs e)
+		{
+			var configuration = SecretsManagerConfiguration.Load();
+			txtBaseUrl.Text = configuration.VariableGroups.BaseUrl;
+			txtOrganization.Text = configuration.VariableGroups.Organization;
+			txtPersonalAccessToken.Text = configuration.VariableGroups.PersonalAccessToken;
+			chkAllowUpload.IsChecked = configuration.IsAllowUpload;
+			btnClearCache.IsEnabled = _storage.Exists();
+			pnlSecrets.Visibility = Visibility.Collapsed;
+			pnlConfiguration.Visibility = Visibility.Visible;
 		}
 
 		private async Task PopulateSubscriptionsAsync()
@@ -340,7 +369,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				? value
 				: false;
 			btnUpload.IsEnabled = value
-				? IsActiveDocumentUploadable()
+				? _isAllowUpload && IsActiveDocumentUploadable()
 				: false;
 		}
 
