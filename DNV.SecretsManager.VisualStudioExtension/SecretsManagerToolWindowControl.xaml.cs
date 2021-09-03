@@ -44,7 +44,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			var configuration = SecretsManagerConfiguration.Load();
 			if (configuration == null)
 			{
-				btnClearCache.IsEnabled = _storage.Exists();
+				btnClearCache.IsEnabled = _storage != null;
 				pnlSecrets.Visibility = Visibility.Collapsed;
 				pnlConfiguration.Visibility = Visibility.Visible;
 			}
@@ -125,6 +125,10 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			_storage.Delete();
 			btnClearCache.IsEnabled = false;
+			if (_subscriptions != null)
+				_subscriptions.Clear();
+			if (_sources != null)
+				_sourceTypes.Clear();
 		}
 
 		private void btnConfigApply_Click(object sender, RoutedEventArgs e)
@@ -197,7 +201,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			txtOrganization.Text = configuration.VariableGroups.Organization;
 			txtPersonalAccessToken.Text = configuration.VariableGroups.PersonalAccessToken;
 			chkAllowUpload.IsChecked = configuration.IsAllowUpload;
-			btnClearCache.IsEnabled = _storage.Exists();
+			btnClearCache.IsEnabled = _storage != null;
 			pnlSecrets.Visibility = Visibility.Collapsed;
 			pnlConfiguration.Visibility = Visibility.Visible;
 		}
@@ -222,6 +226,9 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			{
 				var keyVaultSecretService = _secretsServices[KeyVaultIndex] as KeyVaultSecretsService;
 				_subscriptions = (await keyVaultSecretService.GetSubscriptions()).ToList();
+
+				_storage.Sources.AddRange(_subscriptions.Select(s => new SourceCache { Parent = new Dictionary<string, string> { { s.Key, s.Value } } }));
+				_storage.Save();
 			}
 			cmbSourceSubscriptions.Items.Clear();
 			foreach (var subscription in _subscriptions)
@@ -229,26 +236,28 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				cmbSourceSubscriptions.Items.Add(subscription.Key);
 			}
 
-			var lastSource = _storage.LastSources[KeyVaultIndex];
+			var lastSource = _storage.GetLast(GetSourceCacheParent(KeyVaultIndex));
 			cmbSourceSubscriptions.SelectedIndex = lastSource != null && lastSource.Any()
 				? _subscriptions.FindIndex(s => s.Value.Equals(lastSource[lastSource.First().Key]))
 				: -1;
 			SetSourceSubscription();
 		}
 
+		private KeyValuePair<string, string>? GetSourceCacheParent(int sourceTypeIndex)
+		{
+			if (sourceTypeIndex == KeyVaultIndex)
+				return _subscriptions[sourceTypeIndex];
+			return null;
+		}
+
 		private async Task PopulateSourcesAsync()
 		{
+			var sourceTypeParent = GetSourceCacheParent(cmbSourceTypes.SelectedIndex);
 			var fetchedFromCache = false;
-			if (_storage != null && _storage.Sources != null && _storage.Sources.Any())
+			if (_storage != null && _storage.HasSourceCache(sourceTypeParent))
 			{
-				var sourceCache = cmbSourceTypes.SelectedIndex == KeyVaultIndex
-					? _storage.Sources.Where(s => s.Parent != null).FirstOrDefault(s => s.Parent.Values.Contains(_subscriptions[cmbSourceSubscriptions.SelectedIndex].Value))
-					: _storage.Sources.FirstOrDefault(s => s.Parent == null);
-				if (sourceCache != null && sourceCache.Sources != null)
-				{
-					_sources = sourceCache.Sources.ToList();
-					fetchedFromCache = true;
-				}
+				_sources = _storage.GetCachedSource(sourceTypeParent).ToList();
+				fetchedFromCache = true;
 			}
 			if (!fetchedFromCache)
 			{
@@ -258,6 +267,8 @@ namespace DNV.SecretsManager.VisualStudioExtension
 					keyVaultSecretService.SetSubscriptionId(_subscriptions[cmbSourceSubscriptions.SelectedIndex].Value);
 				}
 				_sources = (await _secretsServices[cmbSourceTypes.SelectedIndex].GetSources()).ToList();
+				_storage.AppendSourceCache(sourceTypeParent, _sources);
+				_storage.Save();
 			}
 
 			cmbSources.Items.Clear();
@@ -269,7 +280,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				}
 			}
 
-			var lastSource = _storage.LastSources[cmbSourceTypes.SelectedIndex];
+			var lastSource = _storage.GetLast(GetSourceCacheParent(cmbSourceTypes.SelectedIndex));
 			cmbSources.SelectedIndex = lastSource != null && lastSource.Any()
 				? _sources.FindIndex(s => s.Value.Equals(lastSource[lastSource.Last().Key]))
 				: -1;
@@ -405,18 +416,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 					{ _subscriptions[cmbSourceSubscriptions.SelectedIndex].Key, _subscriptions[cmbSourceSubscriptions.SelectedIndex].Value },
 					{ _sources[cmbSources.SelectedIndex].Key, _sources[cmbSources.SelectedIndex].Value }
 				};
-				_storage.SetLast(cmbSourceTypes.SelectedIndex, lastSource);
-
-				var sources = new SourceCache
-				{
-					Parent = new Dictionary<string, string>
-					{
-						{  _subscriptions[cmbSourceSubscriptions.SelectedIndex].Key, _subscriptions[cmbSourceSubscriptions.SelectedIndex].Value }
-					},
-					Sources = _sources.ToDictionary(s => s.Key, s => s.Value)
-				};
-
-				_storage.SetSources(cmbSourceTypes.SelectedIndex, sources);
+				_storage.SetLast(cmbSourceTypes.SelectedIndex, GetSourceCacheParent(cmbSourceTypes.SelectedIndex), lastSource);
 				_storage.Save();
 			}
 			if (cmbSourceTypes.SelectedIndex == VariableGroupIndex)
@@ -425,14 +425,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				{
 					{ _sources[cmbSources.SelectedIndex].Key, _sources[cmbSources.SelectedIndex].Value }
 				};
-				_storage.SetLast(cmbSourceTypes.SelectedIndex, lastSource);
-
-				var sources = new SourceCache
-				{
-					Sources = _sources.ToDictionary(s => s.Key, s => s.Value)
-				};
-
-				_storage.SetSources(cmbSourceTypes.SelectedIndex, sources);
+				_storage.SetLast(cmbSourceTypes.SelectedIndex, GetSourceCacheParent(cmbSourceTypes.SelectedIndex), lastSource);
 				_storage.Save();
 			}
 		}
