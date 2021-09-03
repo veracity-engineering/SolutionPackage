@@ -27,13 +27,16 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         private readonly IUser<TUser> _userRepository;
         private readonly PermissionOptions _premissionOptions;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly UserManagementSettings _userManagementSettings;
 
-        public UsersController(IUser<TUser> userRepository, IRole<TRole> roleRepository, IUserSynchronization<TUser> userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
+        public UsersController(IUser<TUser> userRepository, IRole<TRole> roleRepository, IUserSynchronization<TUser> userSynchronization
+            , PermissionOptions premissionOptions, IPermissionRepository permissionRepository, UserManagementSettings userManagementSettings) : base(userRepository, premissionOptions)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
+            _userManagementSettings = userManagementSettings;
         }
 
         [HttpGet]
@@ -50,7 +53,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<UserViewModel> GetUser([FromRoute] string companyId, [FromRoute] string id)
         {
             var user = await GetUserById(id);
-            user = PruneUserInfo(user, companyId);
+
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+                user = PruneUserInfo(user, companyId);
+            else
+                user = PruneUserCompanyInfo(user, companyId);
+
             if (user.CompanyIdList.Contains(companyId))
                 return user;
 
@@ -71,7 +79,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
 
             var roleIds = await PruneRoles(companyId, model.RoleIds.SplitToList(';'));
-            roleIds = roleIds.Concat(user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id)).ToList();
+
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+            {
+                roleIds = roleIds.Concat(user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id)).ToList();
+            }
+
             model.RoleIds = string.Join(';', roleIds);
 
             if (!model.CompanyIdList.Contains(companyId))
@@ -102,7 +115,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             user.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
 
             var roleIds = await PruneRoles(companyId, model.RoleIds);
-            roleIds = roleIds.Concat(user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id)).ToList();
+
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+            {
+                roleIds = roleIds.Concat(user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id)).ToList();
+            }
+
             user.RoleIds = string.Join(';', roleIds);
 
             if (!user.CompanyIdList.Contains(companyId))
@@ -186,7 +204,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 var companyIds = user.CompanyIdList.Where(t => t != companyId).ToList();
                 var roleIds = user.RoleList.Where(t => t.CompanyId != companyId).Select(t => t.Id).ToList();
                 user.CompanyIds = string.Join(';', companyIds);
-                user.RoleIds = string.Join(';', roleIds);
+
+                if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+                    user.RoleIds = string.Join(';', roleIds);
+
                 user.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _userRepository.Update(user);
             }
@@ -199,7 +220,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
             var user = await GetUserByIdentityId(varacityId);
-            user = PruneUserInfo(user, companyId);
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+                user = PruneUserInfo(user, companyId);
+            else
+                user = PruneUserCompanyInfo(user, companyId);
             return user;
         }
 
@@ -389,8 +413,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<IList<string>> PruneRoles(string companyId, IList<string> sourceRoleIds)
         {
-            var roles = await _roleRepository.GetRolesOfCompany(companyId);
-            return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+            {
+                var roles = await _roleRepository.GetRolesOfCompany(companyId);
+                return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
+            }
+            else
+                return sourceRoleIds;
         }
 
         private async Task<IList<string>> PruneRoles(IList<string> companyIds, IList<string> sourceRoleIds)
@@ -414,17 +443,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (t.RoleList != null)
                 {
-                    dto.Roles = t.RoleList.Where(r => r.CompanyId == companyId).Select(r =>
-                        {
-                            var RoleViewDto = r.ToViewDto<RoleViewDto>();
+                    dto.Roles = t.RoleList.Where(r => r.CompanyId == companyId || _userManagementSettings.Mode == UserManagementMode.Company_GlobalRole_User).Select(r =>
+                          {
+                              var RoleViewDto = r.ToViewDto<RoleViewDto>();
 
-                            if (r.PermissionKeys != null)
-                            {
-                                RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
-                            }
+                              if (r.PermissionKeys != null)
+                              {
+                                  RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                              }
 
-                            return RoleViewDto;
-                        });
+                              return RoleViewDto;
+                          });
                 }
 
                 return dto;
@@ -444,13 +473,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var user = await _userRepository.Read(userId);
             return await PopulateUserInfo(user);
-        }
-
-        private UserViewModel PruneUserInfo(UserViewModel user,string companyId)
-        {
-            user.Roles = user.Roles.Where(t => t.Company.Id == companyId).ToList();
-            user.Companies = user.Companies.Where(t => t.Id == companyId).ToList();
-            return user;
         }
 
         private async Task<UserViewModel> PopulateUserInfo(TUser user)

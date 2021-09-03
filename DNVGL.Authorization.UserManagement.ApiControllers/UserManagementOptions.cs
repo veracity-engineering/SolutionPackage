@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +23,5 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public Action<DbContextOptionsBuilder> DbContextOptionsBuilder { get; set; }
         public Action<ModelBuilder> ModelBuilder { get; set; }
         public PermissionOptions PermissionOptions { get; set; }
-    }
-
-    public enum UserManagementMode
-    {
-        Company_CompanyRole_User,
-        Company_GlobalRole_User,
-        Role_User,
     }
 }

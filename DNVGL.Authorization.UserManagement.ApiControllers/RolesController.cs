@@ -28,7 +28,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         private readonly ICompany<TCompany> _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
 
-        public RolesController(IUser<TUser> userRepository, IRole<TRole> roleRepository, ICompany<TCompany> companyRepository, IPermissionRepository permissionRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
+        public RolesController(IUser<TUser> userRepository, IRole<TRole> roleRepository, ICompany<TCompany> companyRepository, IPermissionRepository permissionRepository
+            , PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _roleRepository = roleRepository;
             _companyRepository = companyRepository;
@@ -54,7 +55,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             if (roles.Any(t => t.Id == id))
             {
-                return await FetchRole(id);
+                return await FetchRole(id, _permissionRepository, _roleRepository);
             }
             else
             {
@@ -195,7 +196,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
         public async Task<RoleViewDto> GetCrosscompanyRole([FromRoute] string id)
         {
-            return await FetchRole(id);
+            return await FetchRole(id, _permissionRepository, _roleRepository);
         }
 
 
@@ -300,16 +301,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 return dto;
             });
-
-            return result;
-        }
-
-        private async Task<RoleViewDto> FetchRole(string id)
-        {
-            var role = await _roleRepository.Read(id);
-            var allPermissions = await _permissionRepository.GetAll();
-            var result = role.ToViewDto<RoleViewDto>();
-            result.permissions = allPermissions.Where(p => role.PermissionKeys.Contains(p.Key));
 
             return result;
         }

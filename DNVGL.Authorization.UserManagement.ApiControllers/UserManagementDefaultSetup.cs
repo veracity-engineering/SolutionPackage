@@ -53,6 +53,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                   manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<TCompany, TRole, TUser>(options.Mode)));
               });
 
+            services.AddSingleton(provider =>
+            {
+                return new UserManagementSettings
+                {
+                    Mode = options.Mode
+                };
+            });
+
             return services
               .AddPermissionAuthorizationWithoutUserPermissionReader(options.PermissionOptions)
               .AddScoped(typeof(IUserSynchronization<TUser>), typeof(TUserSynchronization))
@@ -67,6 +75,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             .ConfigureApplicationPartManager(manager =>
             {
                 manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company, Role, User>(options.Mode)));
+            });
+
+            services.AddSingleton(provider =>
+            {
+                return new UserManagementSettings {
+                    Mode = options.Mode
+                };
             });
 
             return services
@@ -91,7 +106,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             switch (mode)
             {
                 case UserManagementMode.Company_GlobalRole_User:
-                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(GlobalRolesController<TRole, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
+                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(GlobalRolesController<TRole, TUser>), typeof(UsersController<TRole, TUser>) };
                 case UserManagementMode.Role_User:
                     return new Type[] { typeof(GlobalRolesController<TRole, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
                 case UserManagementMode.Company_CompanyRole_User:
