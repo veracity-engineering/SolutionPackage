@@ -6,6 +6,6 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 	{
 		public int Count { get; set; }
 
-		public TimeSpan ElapsedTime;
+		public TimeSpan ElapsedTime { get; set; }
 	}
 }

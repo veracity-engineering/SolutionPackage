@@ -2,12 +2,12 @@
 
 namespace DNV.SecretsManager.ConsoleApp.Commands
 {
-	public abstract class Command
+	internal abstract class Command
 	{
 		public CommandType Type { get; set; }
 
 		public string TargetFilename { get; set; }
 
-		public abstract Task Execute();
+		public abstract Task<CommandResult> Execute();
 	}
 }

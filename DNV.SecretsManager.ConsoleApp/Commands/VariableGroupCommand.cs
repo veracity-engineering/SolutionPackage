@@ -1,12 +1,11 @@
 ﻿using DNV.SecretsManager.Services;
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace DNV.SecretsManager.ConsoleApp.Commands
 {
-	public class VariableGroupCommand : Command
+	internal class VariableGroupCommand : Command
 	{
 		public string BaseUrl { get; set; }
 
@@ -16,22 +15,13 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public string VariableGroupId { get; set; }
 
-		public override async Task Execute()
+		public override Task<CommandResult> Execute()
 		{
 			if (Type == CommandType.Download)
-			{
-				Console.WriteLine($"Downloading variables from Variable Group '{VariableGroupId}' to file '{TargetFilename}'...");
-				Console.WriteLine("Please wait.");
-				var result = await DownloadVariableGroup(VariableGroupId, TargetFilename);
-				Console.WriteLine($"Download complete. Downloaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
-			}
+				return DownloadVariableGroup(VariableGroupId, TargetFilename);
 			if (Type == CommandType.Upload)
-			{
-				Console.WriteLine($"Uploading variables from file '{TargetFilename}' to Variable Group'{VariableGroupId}'...");
-				Console.WriteLine("Please wait.");
-				var result = await UploadVariableGroup(TargetFilename, VariableGroupId);
-				Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
-			}
+				return UploadVariableGroup(TargetFilename, VariableGroupId);
+			return Task.FromResult<CommandResult>(null);
 		}
 
 		private async Task<CommandResult> DownloadVariableGroup(string variableGroupId, string targetFilename)

@@ -30,6 +30,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		static async Task Main(string[] args)
 		{
 			Command command = null;
+
 			if (args.Any())
 			{
 				if (args[0].Equals(HelpKey, StringComparison.InvariantCultureIgnoreCase))
@@ -45,16 +46,14 @@ namespace DNV.SecretsManager.ConsoleApp
 			while (command == null)
 			{
 				var sourceChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				Console.WriteLine();
 				if (_commands.ContainsKey(sourceChoice))
 				{
 					command = _commands[sourceChoice]();
-					Console.WriteLine();
 				}
 				else
 				{
-					Console.WriteLine();
-					Console.WriteLine($"Invalid option '{sourceChoice}'.");
-					Console.WriteLine($"Please enter a valid option (Azure KeyVault: [{KeyVaultKey}], Azure DevOps Variable Group: [{VariableGroupKey}])");
+					Console.WriteLine($"Invalid option '{sourceChoice}'. Please enter a valid option (Azure KeyVault: [{KeyVaultKey}], Azure DevOps Variable Group: [{VariableGroupKey}])");
 				}
 			}
 
@@ -63,16 +62,14 @@ namespace DNV.SecretsManager.ConsoleApp
 			while (command.Type == CommandType.None)
 			{
 				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				Console.WriteLine();
 				if (_commandTypes.ContainsKey(commandTypeChoice))
 				{
 					command.Type = _commandTypes[commandTypeChoice];
-					Console.WriteLine();
 				}
 				else
 				{
-					Console.WriteLine();
-					Console.WriteLine($"Invalid option '{commandTypeChoice}'.");
-					Console.WriteLine($"Please enter a valid option (Download: [{DownloadKey}], Upload: [{UploadKey}])");
+					Console.WriteLine($"Invalid option '{commandTypeChoice}'. Please enter a valid option (Download: [{DownloadKey}], Upload: [{UploadKey}])");
 				}
 			}
 
@@ -196,9 +193,40 @@ namespace DNV.SecretsManager.ConsoleApp
 					}
 				}
 			}
+
+			if (command.Type == CommandType.Download)
+			{
+				if (command is KeyVaultCommand kvc)
+					Console.WriteLine($"Downloading secrets from Azure KeyVault '{kvc.Url}' to file '{command.TargetFilename}'...");
+				if (command is VariableGroupCommand vgc)
+					Console.WriteLine($"Downloading variables from Variable Group '{vgc.VariableGroupId}' to file '{command.TargetFilename}'...");
+			}
+			else if (command.Type == CommandType.Upload)
+			{
+				if (command is KeyVaultCommand kvc)
+					Console.WriteLine($"Uploading secrets from file '{command.TargetFilename}' to Azure KeyVault '{kvc.Url}'...");
+				if (command is VariableGroupCommand vgc)
+					Console.WriteLine($"Uploading variables from file '{command.TargetFilename}' to Variable Group'{vgc.VariableGroupId}'...");
+			}
+			Console.WriteLine("Please wait.");
+
 			try
 			{
-				await command.Execute();
+				var result = await command.Execute();
+				if (command.Type == CommandType.Download)
+				{
+					if (command is KeyVaultCommand resultKvc)
+						Console.WriteLine($"Download complete. Downloaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
+					if (command is VariableGroupCommand resultVgc)
+						Console.WriteLine($"Download complete. Downloaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
+				}
+				if (command.Type == CommandType.Upload)
+				{
+					if (command is KeyVaultCommand resultKvc)
+						Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
+					if (command is VariableGroupCommand resultVgc)
+						Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
+				}
 			}
 			catch (Exception ex)
 			{
