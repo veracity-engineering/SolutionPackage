@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DNV.SecretsManager.ConsoleApp
+namespace DNV.SecretsManager.ConsoleApp.Commands
 {
 	internal class CommandResult
 	{
