@@ -9,6 +9,7 @@ namespace DNV.SecretsManager.ConsoleApp
 {
 	class Program
 	{
+		private const string HelpKey = "?";
 		private const string KeyVaultKey = "k";
 		private const string VariableGroupKey = "v";
 		private const string DownloadKey = "d";
@@ -29,113 +30,169 @@ namespace DNV.SecretsManager.ConsoleApp
 		static async Task Main(string[] args)
 		{
 			Command command = null;
-			var commandTypes = new Dictionary<string, CommandType>
-			{
-				{ DownloadKey, CommandType.Download },
-				{ UploadKey, CommandType.Upload }
-			};
-
 			if (args.Any())
+			{
+				if (args[0].Equals(HelpKey, StringComparison.InvariantCultureIgnoreCase))
+				{
+					DisplayHelp();
+					return;
+				}
 				command = FromArgs(args, _commands, _commandTypes);
+			}
 
 			if (command == null)
-			{
 				Console.WriteLine($"Select source (Azure KeyVault: [{KeyVaultKey}], Azure DevOps Variable Group: [{VariableGroupKey}])");
-				var sourceChoice = Console.ReadLine().ToLowerInvariant();
-				command = _commands[sourceChoice]();
+			while (command == null)
+			{
+				var sourceChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				if (_commands.ContainsKey(sourceChoice))
+				{
+					command = _commands[sourceChoice]();
+					Console.WriteLine();
+				}
+				else
+				{
+					Console.WriteLine();
+					Console.WriteLine($"Invalid option '{sourceChoice}'.");
+					Console.WriteLine($"Please enter a valid option (Azure KeyVault: [{KeyVaultKey}], Azure DevOps Variable Group: [{VariableGroupKey}])");
+				}
 			}
 
 			if (command.Type == CommandType.None)
-			{
 				Console.WriteLine($"What would you like to do? (Download: [{DownloadKey}], Upload: [{UploadKey}])");
-				var commandTypeChoice = Console.ReadLine().ToLowerInvariant();
-				command.Type = commandTypes[commandTypeChoice];
+			while (command.Type == CommandType.None)
+			{
+				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				if (_commandTypes.ContainsKey(commandTypeChoice))
+				{
+					command.Type = _commandTypes[commandTypeChoice];
+					Console.WriteLine();
+				}
+				else
+				{
+					Console.WriteLine();
+					Console.WriteLine($"Invalid option '{commandTypeChoice}'.");
+					Console.WriteLine($"Please enter a valid option (Download: [{DownloadKey}], Upload: [{UploadKey}])");
+				}
 			}
 
 			if (command is KeyVaultCommand keyVaultCommand)
 			{
 				if (string.IsNullOrEmpty(keyVaultCommand.Url))
-				{
 					Console.WriteLine("Please enter the URL for the Azure KeyVault:");
+				while (string.IsNullOrEmpty(keyVaultCommand.Url))
+				{
 					var keyVaultBaseUrl = Console.ReadLine();
-					keyVaultCommand.Url = keyVaultBaseUrl;
-				}
-
-				if (keyVaultCommand.Type == CommandType.Download)
-				{
-					if (string.IsNullOrEmpty(keyVaultCommand.TargetFilename))
+					if (ValidationUtility.IsUriValid(keyVaultBaseUrl))
 					{
-						Console.WriteLine("Specify the target filename you would like to download to:");
-						var targetFilename = Console.ReadLine();
-						keyVaultCommand.TargetFilename = targetFilename;
+						keyVaultCommand.Url = keyVaultBaseUrl;
 					}
-				}
-				else if (keyVaultCommand.Type == CommandType.Upload)
-				{
-					if (string.IsNullOrEmpty(keyVaultCommand.TargetFilename))
+					else
 					{
-						Console.WriteLine("Specify the source file you would like to upload:");
-						var sourceFilename = Console.ReadLine();
-						keyVaultCommand.TargetFilename = sourceFilename;
-					}
-					if (!File.Exists(keyVaultCommand.TargetFilename))
-					{
-						Console.WriteLine($"Error: could not find source file '{keyVaultCommand.TargetFilename}'.");
-						return;
+						Console.WriteLine("Invalid url format. Please enter a fully qualified URL for the Azure KeyVault (for e.g: https://dnv.com):");
 					}
 				}
 			}
 			else if (command is VariableGroupCommand variableGroupCommand)
 			{
 				if (string.IsNullOrEmpty(variableGroupCommand.BaseUrl))
-				{
 					Console.WriteLine("Please enter the base URL for Azure DevOps instance:");
+				while (string.IsNullOrEmpty(variableGroupCommand.BaseUrl))
+				{
 					var baseUrl = Console.ReadLine();
-					variableGroupCommand.BaseUrl = baseUrl;
+					if (ValidationUtility.IsUriValid(baseUrl))
+					{
+						variableGroupCommand.BaseUrl = baseUrl;
+					}
+					else
+					{
+						Console.WriteLine("Invalid url format. Please enter a fully qualified URL for the Azure DevOps instance (for e.g: https://dnv.com):");
+					}
 				}
 
 				if (string.IsNullOrEmpty(variableGroupCommand.Organization))
-				{
 					Console.WriteLine("Please enter Organization or Poject name:");
+				while (string.IsNullOrEmpty(variableGroupCommand.Organization))
+				{
 					var organization = Console.ReadLine();
-					variableGroupCommand.Organization = organization;
+					if (!string.IsNullOrWhiteSpace(organization))
+					{
+						variableGroupCommand.Organization = organization;
+					}
+					else
+					{
+						Console.WriteLine($"Invalid value '{organization}'.  Please enter an Organization or Project name that is not empty and not whitespace:");
+					}
 				}
 
 				if (string.IsNullOrEmpty(variableGroupCommand.PersonalAccessToken))
-				{
 					Console.WriteLine("Please enter Personal Access Token (PAT):");
+				while (string.IsNullOrEmpty(variableGroupCommand.PersonalAccessToken))
+				{
 					var pat = Console.ReadLine();
-					variableGroupCommand.PersonalAccessToken = pat;
+					if (string.IsNullOrWhiteSpace(pat))
+					{
+						variableGroupCommand.PersonalAccessToken = pat;
+					}
+					else
+					{
+						Console.WriteLine($"Invalid value '{pat}'.  Please enter an Personal Access Token that is not empty and not whitespace:");
+					}
 				}
 
 				if (string.IsNullOrEmpty(variableGroupCommand.VariableGroupId))
-				{
 					Console.WriteLine("Please enter the id of the Variable Group in Azure DevOps:");
+				while (string.IsNullOrEmpty(variableGroupCommand.VariableGroupId))
+				{
 					var variableGroupId = Console.ReadLine();
-					variableGroupCommand.VariableGroupId = variableGroupId;
-				}
-
-				if (variableGroupCommand.Type == CommandType.Download)
-				{
-					if (string.IsNullOrEmpty(variableGroupCommand.TargetFilename))
+					if (int.TryParse(variableGroupId, out int _))
 					{
-						Console.WriteLine("Specify the target filename you would like to download to:");
-						var targetFilename = Console.ReadLine();
-						variableGroupCommand.TargetFilename = targetFilename;
+						variableGroupCommand.VariableGroupId = variableGroupId;
+					}
+					else
+					{
+						Console.WriteLine($"Invalid value '{variableGroupId}'.  Please enter a numeric value for the Variable Group id:");
 					}
 				}
-				else if (variableGroupCommand.Type == CommandType.Upload)
+			}
+			if (command.Type == CommandType.Download)
+			{
+				if (string.IsNullOrEmpty(command.TargetFilename))
+					Console.WriteLine("Specify the target filename you would like to download to:");
+				while (string.IsNullOrEmpty(command.TargetFilename))
 				{
-					if (string.IsNullOrEmpty(variableGroupCommand.TargetFilename))
+					var targetFilename = Console.ReadLine();
+					if (ValidationUtility.IsFilenameValid(targetFilename))
 					{
-						Console.WriteLine("Specify the source file you would like to upload:");
-						var sourceFilename = Console.ReadLine();
-						variableGroupCommand.TargetFilename = sourceFilename;
+						command.TargetFilename = targetFilename;
 					}
-					if (!File.Exists(variableGroupCommand.TargetFilename))
+					else
 					{
-						Console.WriteLine($"Error: could not find source file '{variableGroupCommand.TargetFilename}'.");
-						return;
+						Console.WriteLine($"Invaild filename '{targetFilename}'. Please specify a valid filename to download to:");
+					}
+				}
+			}
+			else if (command.Type == CommandType.Upload)
+			{
+				if (string.IsNullOrEmpty(command.TargetFilename))
+					Console.WriteLine("Specify the source file you would like to upload:");
+				while (string.IsNullOrEmpty(command.TargetFilename))
+				{
+					var sourceFilename = Console.ReadLine();
+					if (ValidationUtility.IsFilenameValid(sourceFilename))
+					{
+						if (File.Exists(command.TargetFilename))
+						{
+							command.TargetFilename = sourceFilename;
+						}
+						else
+						{
+							Console.WriteLine($"Could not find source file '{command.TargetFilename}'.  Please specify an existing file to upload:");
+						}
+					}
+					else
+					{
+						Console.WriteLine($"Invalid filename '{command.TargetFilename}'. Please specify a valid filename to upload:");
 					}
 				}
 			}
@@ -143,11 +200,22 @@ namespace DNV.SecretsManager.ConsoleApp
 			{
 				await command.Execute();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Console.WriteLine(ex);
 				throw;
 			}
+		}
+
+		private static void DisplayHelp()
+		{
+			Console.WriteLine("Downloads or upload secrets from an Azure KeyVault or an Azure DevOps Variable Group.");
+			Console.WriteLine();
+			Console.WriteLine("For Azure KayVault:");
+			Console.WriteLine($"\t{KeyVaultKey} {DownloadKey}|{UploadKey} [url] [filename]");
+			Console.WriteLine();
+			Console.WriteLine("For Azure DevOps Variable Group:");
+			Console.WriteLine($"\t{VariableGroupKey} {DownloadKey}|{UploadKey} [url] [organization] [personal access token] [variable group id] [filename]");
 		}
 
 		private static Command FromArgs(string[] args, Dictionary<string, Func<Command>> commands, Dictionary<string, CommandType> commandTypes)

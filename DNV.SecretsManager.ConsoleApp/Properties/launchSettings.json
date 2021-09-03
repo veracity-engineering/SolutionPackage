@@ -1,8 +1,7 @@
 {
   "profiles": {
     "DNV.SecretsManager.ConsoleApp": {
-      "commandName": "Project",
-      "commandLineArgs": "k d https://storewebkvtest.vault.azure.net C:/temp/test-1.json"
+      "commandName": "Project"
     }
   }
 }
