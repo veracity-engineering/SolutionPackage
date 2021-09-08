@@ -93,5 +93,21 @@ namespace DNVGL.Web.Security
                 await next();
             });
         }
+
+        public static IApplicationBuilder UseWebApiDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary> makeHeaders = null, Func<HttpRequest, bool> skipRequest = null)
+        {
+
+            return builder.Use(async (context, next) =>
+            {
+                makeHeaders?.Invoke(context.Response.Headers);
+                context.Response.Headers.SetupDefaultHeaders();
+                if (skipRequest == null || !skipRequest.Invoke(context.Request))
+                {
+                    context.Response.Headers.Add("Content-Security-Policy", "default-src 'none'");
+                }
+                
+                await next();
+            });
+        }
     }
 }
