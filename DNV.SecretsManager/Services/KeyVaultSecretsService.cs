@@ -67,7 +67,7 @@ namespace DNV.SecretsManager.Services
 
 		public override async Task<Dictionary<string, string>> GetSecretsAsDictionary(string vaultBaseUrl)
 		{
-			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());// GetSecretsClient();
+			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
 			var secretsDict = new Dictionary<string, string>();
 			var secrets = await keyVaultClient.GetSecretsAsync(vaultBaseUrl);
 			foreach (var secret in secrets)
@@ -125,21 +125,5 @@ namespace DNV.SecretsManager.Services
 			var credentials = new KeyVaultCredential(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
 			return Task.FromResult<ServiceClientCredentials>(credentials);
 		}
-
-		/*
-		private static async Task<string> GetToken(string authority, string resource, string scope)
-		{
-			const string CLIENTID = "";
-			const string CLIENTSECRET = "";
-			var authContext = new AuthenticationContext(authority);
-			ClientCredential clientCred = new ClientCredential(CLIENTID, CLIENTSECRET);
-			AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCred);
-
-			if (result == null)
-				throw new InvalidOperationException("Failed to obtain the JWT token");
-
-			return result.AccessToken;
-		}
-		*/
 	}
 }
