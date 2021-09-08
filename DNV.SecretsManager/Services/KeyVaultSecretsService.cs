@@ -14,7 +14,6 @@ namespace DNV.SecretsManager.Services
 	public class KeyVaultSecretsService : SecretsService
 	{
 		private string _azureSubscriptionId;
-		private ServiceClientCredentials _credentials;
 
 		public KeyVaultSecretsService()
 		{
@@ -22,7 +21,7 @@ namespace DNV.SecretsManager.Services
 
 		public async Task<IEnumerable<KeyValuePair<string, string>>> GetSubscriptions()
 		{
-			var credentials = await GetCredentials();
+			var credentials = await GetManagementCredentials();
 			var subscriptionClient = new SubscriptionClient(credentials);
 			var subscriptions = await subscriptionClient.Subscriptions.ListAsync();
 			return subscriptions.Select(s => new KeyValuePair<string, string>(s.DisplayName, s.SubscriptionId));
@@ -37,7 +36,7 @@ namespace DNV.SecretsManager.Services
 		{
 			try
 			{
-				var credentials = await GetCredentials();
+				var credentials = await GetManagementCredentials();
 				var client = new KeyVaultManagementClient(credentials)
 				{
 					SubscriptionId = _azureSubscriptionId
@@ -68,11 +67,8 @@ namespace DNV.SecretsManager.Services
 
 		public override async Task<Dictionary<string, string>> GetSecretsAsDictionary(string vaultBaseUrl)
 		{
-			var azureServiceTokenProvider = new AzureServiceTokenProvider();
-			var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
+			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());// GetSecretsClient();
 			var secretsDict = new Dictionary<string, string>();
-
 			var secrets = await keyVaultClient.GetSecretsAsync(vaultBaseUrl);
 			foreach (var secret in secrets)
 			{
@@ -108,8 +104,9 @@ namespace DNV.SecretsManager.Services
 
 		public override async Task SetSecretsFromDictionary(string vaultBaseUrl, Dictionary<string, string> secrets)
 		{
-			var azureServiceTokenProvider = new AzureServiceTokenProvider();
-			var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
+			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
+			//await Task.WhenAll(tasks);
 			foreach (var secret in secrets)
 			{
 				Console.WriteLine($"Updating secret: '{secret.Key}'");
@@ -117,11 +114,16 @@ namespace DNV.SecretsManager.Services
 			}
 		}
 
-		private async Task<ServiceClientCredentials> GetCredentials()
+		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
 		{
-			if (_credentials == null)
-				_credentials = new TokenCredentials(await new AzureServiceTokenProvider().GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false));
-			return _credentials;
+			var token = await new AzureServiceTokenProvider().GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false);
+			return new TokenCredentials(token);
+		}
+
+		public virtual Task<ServiceClientCredentials> GetKeyVaultCredentials()
+		{
+			var credentials = new KeyVaultCredential(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
+			return Task.FromResult<ServiceClientCredentials>(credentials);
 		}
 
 		/*
