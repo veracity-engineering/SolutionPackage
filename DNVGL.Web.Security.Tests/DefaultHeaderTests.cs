@@ -176,18 +176,22 @@ namespace DNVGL.Web.Security.Tests
                 {
                     webHost.UseTestServer();
                     webHost.Configure(app => app.UseDefaultHeaders(h=> {
-                        h.SkipContentSecurityPolicyOnRequests(t => t.Headers.ContainsKey("skipcsp"));
+                        h.ReplaceDefaultContentSecurityPolicy();
+                        h.SkipContentSecurityPolicyOnRequests(t => t.Path.HasValue && t.Path.Value.Contains("skip"));
+         
                     })
                     .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
                 });
 
             var host = await hostBuilder.StartAsync();
             var client = host.GetTestClient();
-            client.DefaultRequestHeaders.Add("skipcsp", "1");
-            var response = await client.GetAsync("/");
+            var response = await client.GetAsync("/test/skip");
             response.EnsureSuccessStatusCode();
-
             Assert.False(response.Headers.Contains("Content-Security-Policy"));
+
+            response = await client.GetAsync("/hello");
+            response.EnsureSuccessStatusCode();
+            Assert.True(response.Headers.Contains("Content-Security-Policy"));
         }
 
         [Fact]
@@ -213,5 +217,7 @@ namespace DNVGL.Web.Security.Tests
             Assert.True(response.Headers.Contains("Content-Security-Policy"));
             Assert.Equal("default-src 'none'", response.Headers.GetValues("Content-Security-Policy").FirstOrDefault());
         }
+
+        
     }
 }
