@@ -19,7 +19,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [Authorize]
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    [Route("api/mycompany/{companyId}/roles")]
+    [Route("api/company/{companyId}/roles")]
     [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
     [ApiExplorerSettings(GroupName = "UserManagement's Role APIs")]
     public class RolesController<TCompany,TRole,TUser> : UserManagementBaseController<TUser> where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
@@ -41,6 +41,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("")]
         //[Authorize(Roles = "ViewRole")]
         [PermissionAuthorize(Premissions.ViewRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles([FromRoute] string companyId)
         {
             return await GetRolesByCompanyId(companyId);
@@ -49,6 +51,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<RoleViewDto> GetRole([FromRoute] string companyId,[FromRoute] string id)
         {
             var roles = await GetCompanyRoles(companyId);
@@ -66,6 +70,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
         public async Task<string> CreateRoleFromCustomModel([FromRoute] string companyId, [FromBody] TRole model)
         {
@@ -81,6 +87,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<string> CreateRole([FromRoute] string companyId,[FromBody] RoleEditModel model)
         {
             var user = await GetCurrentUser();
@@ -104,6 +112,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
         [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task UpdateRoleFromCustomModel([FromRoute] string companyId, [FromRoute] string id, TRole model)
         {
             var currentUser = await GetCurrentUser();
@@ -125,6 +135,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task UpdateRole([FromRoute] string companyId, [FromRoute] string id, RoleEditModel model)
         {
             var currentUser = await GetCurrentUser();
@@ -148,6 +160,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpDelete]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task DeleteRole([FromRoute] string companyId, [FromRoute] string id)
         {
             var roles = await GetCompanyRoles(companyId);
@@ -160,7 +174,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/crosscompany/roles")]
+        [Route("~/api/roles")]
         [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
         public async Task<IEnumerable<RoleViewDto>> GetRoles()
         {
@@ -186,6 +200,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("~/api/crosscompany/roles/{companyid}")]
         [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task<IEnumerable<RoleViewDto>> GetCrossCompanyRoles([FromRoute] string companyid)
         {
             return await GetRolesByCompanyId(companyid);
@@ -194,6 +209,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("~/api/crosscompany/roles/{id}")]
         [PermissionAuthorize(Premissions.ViewRole, Premissions.ViewCompany)]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task<RoleViewDto> GetCrosscompanyRole([FromRoute] string id)
         {
             return await FetchRole(id, _permissionRepository, _roleRepository);
@@ -204,6 +220,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("~/api/crosscompany/roles/custommodel")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task<string> CreateCrosscompanyRoleFromCustomModel([FromBody] TRole model)
         {
             var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
@@ -219,6 +236,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("~/api/crosscompany/roles")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task<string> CreateCrosscompanyRole([FromBody] RoleEditModel model)
         {
             var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
@@ -241,6 +259,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("~/api/crosscompany/roles/custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         [ApiExplorerSettings(GroupName = "UserManagement's Role APIs - Custom Model")]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task UpdateCrosscompanyRoleFromCustomModel([FromRoute] string id, TRole model)
         {
             var currentUser = await GetCurrentUser();
@@ -255,6 +274,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("~/api/crosscompany/roles/{id}")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task UpdateCrosscompanyRole([FromRoute] string id, RoleEditModel model)
         {
             var currentUser = await GetCurrentUser();
@@ -273,6 +293,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpDelete]
         [Route("~/api/crosscompany/roles/{id}")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task DeleteCrosscompanyRole([FromRoute] string id)
         {
             await _roleRepository.Delete(id);

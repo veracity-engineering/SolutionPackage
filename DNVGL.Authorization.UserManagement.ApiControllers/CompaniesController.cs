@@ -59,10 +59,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/mycompany/{companyId}")]
+        [Route("{companyId}")]
         [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
         [AccessibleCompanyFilter]
-        public async Task<CompanyViewDto> GetMyCompany([FromRoute] string companyId)
+        public async Task<CompanyViewDto> GetCompany([FromRoute] string companyId)
         {
             var company = await _companyRepository.Read(companyId);
             var allPermissions = await _permissionRepository.GetAll();
@@ -75,7 +76,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
-        public async Task<CompanyViewDto> GetCompany([FromRoute] string id)
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
+        public async Task<CompanyViewDto> GetCompanyAdmin([FromRoute] string id)
         {
             var company = await _companyRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();

@@ -42,5 +42,27 @@ namespace DNVGL.Authorization.Web
 
             return companyId;
         }
+
+        internal static string GetCompanyMemberIgnorePermission(HttpContext context, RouteEndpoint endpoint)
+        {
+            var premissions = context.Request.Headers["AUTHORIZATION.COMPANY.IGNORE.PERMISSIONS"];
+
+            if (string.IsNullOrEmpty(premissions))
+            {
+                var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
+                CompanyMemberIgnorePermissionFilterAttribute crossCompanyPermissionAttriute = null;
+                if (action != null)
+                {
+                    crossCompanyPermissionAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyMemberIgnorePermissionFilterAttribute), true) as CompanyMemberIgnorePermissionFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyMemberIgnorePermissionFilterAttribute), true) as CompanyMemberIgnorePermissionFilterAttribute;
+                    if (crossCompanyPermissionAttriute != null && crossCompanyPermissionAttriute.PermissionsToCheck != null)
+                    {
+                        premissions = string.Join(',', crossCompanyPermissionAttriute.PermissionsToCheck);
+                    }
+                }
+            }
+
+            return premissions;
+        }
+
     }
 }

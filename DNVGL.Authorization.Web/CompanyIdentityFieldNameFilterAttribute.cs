@@ -22,6 +22,7 @@ namespace DNVGL.Authorization.Web
                 : base(typeof(CompanyIdentityFieldNameFilterImpl))
         {
             Arguments = new object[] { companyIdInRoute, companyIdInQuery, companyIdInActionArguments };
+            Order = 1;
 
             _companyIdInRoute = companyIdInRoute;
             _companyIdInQuery = companyIdInQuery;

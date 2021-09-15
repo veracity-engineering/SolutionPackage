@@ -18,7 +18,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [Authorize]
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    [Route("api/mycompany/{companyId}/users")]
+    [Route("api/company/{companyId}/users")]
     [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
     [ApiExplorerSettings(GroupName = "UserManagement's User APIs")]
     public class UsersController<TRole, TUser> : UserManagementBaseController<TUser> where TRole : Role, new() where TUser : User, new()
@@ -42,6 +42,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<IEnumerable<UserViewModel>> GetUsers([FromRoute] string companyId)
         {
             return await GetUsersOfCompany(companyId);
@@ -50,6 +52,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<UserViewModel> GetUser([FromRoute] string companyId, [FromRoute] string id)
         {
             var user = await GetUserById(id);
@@ -69,6 +73,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
         public async Task UpdateUserFromCustomModel([FromRoute] string companyId, [FromRoute] string id, TUser model)
         {
@@ -100,6 +106,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task UpdateUser([FromRoute] string companyId, [FromRoute] string id, UserEditModel model)
         {
             var currentUser = await GetCurrentUser();
@@ -135,6 +143,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageUser)]
         [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<string> CreateUserFromCustommodel([FromRoute] string companyId, [FromBody] TUser model)
         {
             var currentUser = await GetCurrentUser();
@@ -157,6 +167,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task<string> CreateUser([FromRoute] string companyId, [FromBody] UserEditModel model)
         {
             var currentUser = await GetCurrentUser();
@@ -190,6 +202,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpDelete]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
         public async Task DeleteUser([FromRoute] string companyId, [FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
@@ -215,7 +229,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpGet]
-        [Route("~/api/mycompany/{companyId}/users/currentUser")]
+        [Route("~/api/company/{companyId}/users/currentUser")]
         public async Task<UserViewModel> GetCompanyUserByIdentityId([FromRoute] string companyId)
         {
             var varacityId = _premissionOptions.GetUserIdentity(HttpContext.User);
@@ -228,7 +242,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/mycompany/{companyId}/users/{id}/permissions")]
+        [Route("~/api/company/{companyId}/users/{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string companyId, [FromRoute] string id)
         {
@@ -254,7 +268,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/crosscompany/users")]
+        [Route("~/api/admin/users")]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
         public async Task<IEnumerable<UserViewModel>> GetCrossCompanyUsers()
         {
@@ -288,17 +302,16 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/crosscompany/{companyid}/users")]
+        [Route("~/api/admin/{companyid}/users")]
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
         public async Task<IEnumerable<UserViewModel>> GetCompanyUsers([FromRoute] string companyid)
         {
             return await GetUsersOfCompany(companyid);
         }
 
-
-
         [HttpGet]
-        [Route("~/api/crosscompany/users/{id}")]
+        [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
         public async Task<UserViewModel> GetCrossCompanyUser([FromRoute] string id)
         {
@@ -306,7 +319,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPost]
-        [Route("~/api/crosscompany/users/custommodel")]
+        [Route("~/api/admin/users/custommodel")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -330,7 +343,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpPost]
-        [Route("~/api/crosscompany/users")]
+        [Route("~/api/admin/users")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -363,7 +376,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPut]
-        [Route("~/api/crosscompany/users/custommodel{id}")]
+        [Route("~/api/admin/users/custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         [ApiExplorerSettings(GroupName = "UserManagement's User APIs - Custom Model")]
         public async Task UpdateCrossCompanyUserFromCustomModel([FromRoute] string id, TUser model)
@@ -380,7 +393,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpPut]
-        [Route("~/api/crosscompany/users/{id}")]
+        [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task UpdateCrossCompanyUser([FromRoute] string id, UserEditModel model)
         {
@@ -404,7 +417,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpDelete]
-        [Route("~/api/crosscompany/users/{id}")]
+        [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
         public async Task DeleteCrossCompanyUser([FromRoute] string id)
         {
