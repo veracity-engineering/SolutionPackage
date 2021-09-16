@@ -198,7 +198,17 @@ namespace DNVGL.Web.Security
         internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest)
         {
             if (!SkipRequest(httpRequest))
+            {
                 headerDictionary.PutDefaultContentSecurityPolicy();
+            }
+            else 
+            {
+                var cspKey = "Content-Security-Policy";
+                if (headerDictionary.ContainsKey(cspKey))
+                {
+                    headerDictionary.Remove(cspKey);
+                }
+            }
         }
 
         /// <summary>
