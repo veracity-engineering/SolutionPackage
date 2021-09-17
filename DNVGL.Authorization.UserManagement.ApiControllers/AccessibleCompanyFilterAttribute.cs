@@ -38,7 +38,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (!string.IsNullOrEmpty(companyId))
                 {
-                    var varacityId = _premissionOptions.GetUserIdentity(context.HttpContext);
+                    var varacityId = _premissionOptions.GetUserIdentity(context.HttpContext.User);
                     var user = await _userRepository.ReadByIdentityId(varacityId);
                     if (user.CompanyIdList.Contains(companyId))
                     {

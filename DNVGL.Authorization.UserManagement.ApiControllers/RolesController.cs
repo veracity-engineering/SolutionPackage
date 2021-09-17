@@ -37,6 +37,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         [HttpGet]
         [Route("")]
+        //[Authorize(Roles = "ViewRole")]
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<IEnumerable<RoleViewDto>> GetCompanyRoles([FromRoute] string companyId)
         {

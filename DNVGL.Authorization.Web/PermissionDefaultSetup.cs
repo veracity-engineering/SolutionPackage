@@ -7,6 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Options;
 
 namespace DNVGL.Authorization.Web
 {
@@ -41,15 +46,15 @@ namespace DNVGL.Authorization.Web
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddScoped<PermissionOptions>(provider =>
+            services.AddSingleton<PermissionOptions>(provider =>
             {
-                if(permissionOptions == null)
+                if (permissionOptions == null)
                 {
                     permissionOptions = new PermissionOptions();
                 }
                 if (permissionOptions.GetUserIdentity == null)
                 {
-                    permissionOptions.GetUserIdentity = (httpContext) => httpContext.User.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
+                    permissionOptions.GetUserIdentity = (user) => user.Claims.FirstOrDefault(t => t.Type == "userId")?.Value;
                 }
 
                 if (permissionOptions.HandleUnauthorizedAccess == null)
@@ -70,6 +75,60 @@ namespace DNVGL.Authorization.Web
                 config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
             });
         }
+
+        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var userPermission = serviceProvider.GetService<IUserPermissionReader>();
+            var premissionOptions = serviceProvider.GetService<PermissionOptions>();
+            return AddCookieValidateHandler(cookieEvents, userPermission, premissionOptions);
+        }
+
+        internal static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IUserPermissionReader userPermission, PermissionOptions premissionOptions)
+        {
+            var previousValidatePrincipal = cookieEvents.OnValidatePrincipal;
+
+            cookieEvents.OnValidatePrincipal = async ctx =>
+            {
+
+                if (previousValidatePrincipal != null)
+                {
+                    _ = previousValidatePrincipal.Invoke(ctx);
+                }
+
+                var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
+                var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
+                if (!string.IsNullOrEmpty(companyId))
+                {
+                    var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");
+                    if (companyIdClaim == null || companyIdClaim.Value != companyId)
+                    {
+                        var varacityId = premissionOptions.GetUserIdentity(ctx.Principal);
+                        var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+
+                        var identity = ctx.Principal.Identity as ClaimsIdentity;
+                        if (companyIdClaim != null)
+                        {
+                            ctx.Principal.Claims.Where(t => t.Type == "AuthorizationTenantRoute" 
+                            || t.Type == "AuthorizationCompanyId" 
+                            || t.Type == "AuthorizationPermissions" 
+                            || t.Type== ClaimTypes.Role).ToList().ForEach(t => identity.RemoveClaim(t));
+                        }
+
+                        var claims = new List<Claim>() {
+                            new Claim("AuthorizationTenantRoute", companyId),
+                            new Claim("AuthorizationCompanyId", companyId),
+                            new Claim("AuthorizationPermissions", string.Join(',',ownedPermissions.Select(t=>t.Key)))};
+                        ownedPermissions.Select(t => t.Key).ToList().ForEach(t => claims.Add(new Claim(ClaimTypes.Role, t)));
+
+                        identity.AddClaims(claims);
+                        ctx.ShouldRenew = true;
+                    }
+                }
+            };
+            return cookieEvents;
+        }
+
 
     }
 }

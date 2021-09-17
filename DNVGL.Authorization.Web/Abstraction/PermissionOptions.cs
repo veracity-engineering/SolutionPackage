@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 
@@ -7,7 +8,7 @@ namespace DNVGL.Authorization.Web.Abstraction
 {
     public class PermissionOptions
     {
-        public Func<HttpContext, string> GetUserIdentity { get; set; }
+        public Func<ClaimsPrincipal, string> GetUserIdentity { get; set; }
         public Func<HttpContext, string> GetCompanyIdentity { get; set; }
         public Action<HttpContext, string> HandleUnauthorizedAccess { get; set; }
     }
