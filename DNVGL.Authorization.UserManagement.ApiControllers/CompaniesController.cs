@@ -88,12 +88,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("domain/{url}")]
+        [Route("domain/{*url}")]
         public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
         {
             var currentUser = await GetCurrentUser();
+            var decodedUrl = WebUtility.UrlDecode(url);
+            var urlParts = decodedUrl.ToLowerInvariant().Replace("https://","").Replace("http://", "").Split("/");
 
-            var company = await _companyRepository.ReadByDomain(url);
+
+            var company = await _companyRepository.ReadByDomain(urlParts[0]);
+            if(company == null && urlParts.Length > 1)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[1]);
+            }
             if (company == null || currentUser.CompanyList.All(t => t.Id != company.Id))
             {
                 return null;
