@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class RoleRepository : IRole
+    public class RoleRepository : IRole<Role>
     {
         private readonly UserManagementContext _context;
 

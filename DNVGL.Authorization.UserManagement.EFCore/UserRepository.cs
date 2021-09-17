@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class UserRepository : IUser
+    public class UserRepository : IUser<User>
     {
         private readonly UserManagementContext _context;
 

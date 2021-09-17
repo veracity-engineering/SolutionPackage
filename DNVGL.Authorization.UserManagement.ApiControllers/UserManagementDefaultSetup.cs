@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DNVGL.Authorization.UserManagement.Abstraction;
+using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.EFCore;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
@@ -37,15 +38,50 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return services.AddUserManagement<DummyUserSynchronization>(options);
         }
 
+        public static IServiceCollection AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser>(this IServiceCollection services, UserManagementOptions options)
+            where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
+        {
+            return services.AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser, DummyUserSynchronization>(options);
+        }
 
-        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization
+        public static IServiceCollection AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser, TUserSynchronization>(this IServiceCollection services, UserManagementOptions options)
+            where TCompany : Company, new() where TRole : Role, new() where TUser : User, new() where TUserSynchronization : IUserSynchronization<User>
+        {
+            services.AddMvcCore()
+              .ConfigureApplicationPartManager(manager =>
+              {
+                  manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<TCompany, TRole, TUser>(options.Mode)));
+              });
+
+            services.AddSingleton(provider =>
+            {
+                return new UserManagementSettings
+                {
+                    Mode = options.Mode
+                };
+            });
+
+            return services
+              .AddPermissionAuthorizationWithoutUserPermissionReader(options.PermissionOptions)
+              .AddScoped(typeof(IUserSynchronization<TUser>), typeof(TUserSynchronization))
+              .AddScoped<AccessibleCompanyFilterAttribute>()
+              .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
+        }
+
+
+        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization<User>
         {
             services.AddMvcCore()
             .ConfigureApplicationPartManager(manager =>
             {
-                manager.FeatureProviders.Remove(manager.FeatureProviders.OfType<ControllerFeatureProvider>().FirstOrDefault());
+                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company, Role, User>(options.Mode)));
+            });
 
-                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetInvalidControllers(options.Mode)));
+            services.AddSingleton(provider =>
+            {
+                return new UserManagementSettings {
+                    Mode = options.Mode
+                };
             });
 
             return services
@@ -57,25 +93,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                     return db;
                 })
                 .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
-                .AddScoped(typeof(IUserSynchronization), typeof(T))
-                .AddScoped<IRole, RoleRepository>()
-                .AddScoped<IUser, UserRepository>()
-                .AddScoped<ICompany, CompanyRepository>()
+                .AddScoped(typeof(IUserSynchronization<User>), typeof(T))
+                .AddScoped<IRole<Role>, RoleRepository>()
+                .AddScoped<IUser<User>, UserRepository>()
+                .AddScoped<ICompany<Company>, CompanyRepository>()
                 .AddScoped<AccessibleCompanyFilterAttribute>()
                 .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
         }
 
-        private static Type[] GetInvalidControllers(UserManagementMode mode)
+        private static Type[] GetValidControllers<TCompany, TRole, TUser>(UserManagementMode mode) where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
         {
             switch (mode)
             {
                 case UserManagementMode.Company_GlobalRole_User:
-                    return new Type[] { typeof(CompaniesController), typeof(GlobalUsersController) };
+                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(GlobalRolesController<TRole, TUser>), typeof(UsersController<TRole, TUser>) };
                 case UserManagementMode.Role_User:
-                    return new Type[] { typeof(CompaniesController), typeof(RolesController) };
+                    return new Type[] { typeof(GlobalRolesController<TRole, TUser>), typeof(GlobalUsersController<TRole, TUser>) };
                 case UserManagementMode.Company_CompanyRole_User:
                 default:
-                    return new Type[] { typeof(GlobalRolesController), typeof(GlobalUsersController) };
+                    return new Type[] { typeof(CompaniesController<TCompany, TUser>), typeof(RolesController<TCompany, TRole, TUser>), typeof(UsersController<TRole, TUser>) };
             }
         }
 

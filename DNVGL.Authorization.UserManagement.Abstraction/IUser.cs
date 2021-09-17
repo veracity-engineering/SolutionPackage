@@ -6,15 +6,15 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction
 {
-    public interface IUser
+    public interface IUser<T> where T : User
     {
-        Task<User> Create(User user);
-        Task<User> Read(string Id);
-        Task<User> ReadByIdentityId(string IdentityId);
-        Task Update(User user);
+        Task<T> Create(T user);
+        Task<T> Read(string Id);
+        Task<T> ReadByIdentityId(string IdentityId);
+        Task Update(T user);
         Task Delete(string Id);
-        Task<IEnumerable<User>> All();
-        Task<IEnumerable<User>> GetUsersOfRole(string roleId);
-        Task<IEnumerable<User>> GetUsersOfCompany(string companyId);
+        Task<IEnumerable<T>> All();
+        Task<IEnumerable<T>> GetUsersOfRole(string roleId);
+        Task<IEnumerable<T>> GetUsersOfCompany(string companyId);
     }
 }

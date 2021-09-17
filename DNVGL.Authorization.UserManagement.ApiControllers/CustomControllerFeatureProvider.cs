@@ -3,30 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    public class CustomControllerFeatureProvider : ControllerFeatureProvider
+    public class CustomControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
     {
-        private readonly Type[] _hidenControllers;
-        public CustomControllerFeatureProvider(Type[] hidenControllers)
+        private readonly Type[] _visibleControllers;
+        public CustomControllerFeatureProvider(Type[] visibleControllers)
         {
-            _hidenControllers = hidenControllers;
+            _visibleControllers = visibleControllers;
         }
 
-
-        protected override bool IsController(TypeInfo typeInfo)
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
         {
-            var isController = base.IsController(typeInfo);
-
-            if (isController)
-            {
-                isController = !_hidenControllers.Any(t => t.FullName == typeInfo.FullName);
-            }
-
-            return isController;
+            _visibleControllers.ToList().ForEach(t => { feature.Controllers.Add(t.GetTypeInfo()); });
         }
     }
 }
