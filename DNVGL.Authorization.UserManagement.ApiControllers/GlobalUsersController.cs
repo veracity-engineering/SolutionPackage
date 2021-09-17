@@ -19,7 +19,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [Route("api/users")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [ApiExplorerSettings(GroupName = "UserManagement's User APIs")]
-    public class GlobalUsersController<TRole, TUser> : UserManagementBaseController<TUser> where TRole : Role, new() where TUser : User, new()
+    public class GlobalUsersController<TUser> : UserManagementBaseController<TUser> where TUser : User, new()
     {
         private readonly IUser<TUser> _userRepository;
         private readonly PermissionOptions _premissionOptions;
