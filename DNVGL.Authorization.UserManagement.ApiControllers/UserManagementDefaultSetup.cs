@@ -38,6 +38,40 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return services.AddUserManagement<DummyUserSynchronization>(options);
         }
 
+        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization<User>
+        {
+            services.AddMvcCore()
+            .ConfigureApplicationPartManager(manager =>
+            {
+                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company, Role, User>(options.Mode)));
+            });
+
+            services.AddSingleton(provider =>
+            {
+                return new UserManagementSettings
+                {
+                    Mode = options.Mode
+                };
+            });
+
+            return services
+                .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
+                .AddScoped<UserManagementContext>(p =>
+                {
+                    var db = p.GetRequiredService<IDbContextFactory<UserManagementContext>>().CreateDbContext();
+                    db.PrebuildModel = options.ModelBuilder;
+                    return db;
+                })
+                .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
+                .AddScoped(typeof(IUserSynchronization<User>), typeof(T))
+                .AddScoped<IRole<Role>, RoleRepository>()
+                .AddScoped<IUser<User>, UserRepository>()
+                .AddScoped<ICompany<Company>, CompanyRepository>()
+                .AddScoped<AccessibleCompanyFilterAttribute>()
+                .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
+        }
+
+
         public static IServiceCollection AddUserManagementWithCustomModelOrCRUD<TCompany, TRole, TUser>(this IServiceCollection services, UserManagementOptions options)
             where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
         {
@@ -69,37 +103,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-        public static IServiceCollection AddUserManagement<T>(this IServiceCollection services, UserManagementOptions options) where T : IUserSynchronization<User>
-        {
-            services.AddMvcCore()
-            .ConfigureApplicationPartManager(manager =>
-            {
-                manager.FeatureProviders.Add(new CustomControllerFeatureProvider(GetValidControllers<Company, Role, User>(options.Mode)));
-            });
 
-            services.AddSingleton(provider =>
-            {
-                return new UserManagementSettings {
-                    Mode = options.Mode
-                };
-            });
-
-            return services
-                .AddDbContextFactory<UserManagementContext>(options.DbContextOptionsBuilder)
-                .AddScoped<UserManagementContext>(p =>
-                {
-                    var db = p.GetRequiredService<IDbContextFactory<UserManagementContext>>().CreateDbContext();
-                    db.PrebuildModel = options.ModelBuilder;
-                    return db;
-                })
-                .AddPermissionAuthorization<UserPermissionReader>(options.PermissionOptions)
-                .AddScoped(typeof(IUserSynchronization<User>), typeof(T))
-                .AddScoped<IRole<Role>, RoleRepository>()
-                .AddScoped<IUser<User>, UserRepository>()
-                .AddScoped<ICompany<Company>, CompanyRepository>()
-                .AddScoped<AccessibleCompanyFilterAttribute>()
-                .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
-        }
 
         private static Type[] GetValidControllers<TCompany, TRole, TUser>(UserManagementMode mode) where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
         {

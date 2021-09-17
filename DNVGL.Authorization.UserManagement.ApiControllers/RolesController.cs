@@ -124,7 +124,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 var role = await _roleRepository.Read(id);
                 var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
                 model.Id = role.Id;
-                model.CompanyId = model.CompanyId;
+                model.CompanyId = companyId;
                 model.Permissions = string.Join(';', permissionKeys);
                 model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(model);

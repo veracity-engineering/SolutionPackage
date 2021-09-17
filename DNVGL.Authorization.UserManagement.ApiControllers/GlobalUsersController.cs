@@ -21,15 +21,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiExplorerSettings(GroupName = "UserManagement's User APIs")]
     public class GlobalUsersController<TRole, TUser> : UserManagementBaseController<TUser> where TRole : Role, new() where TUser : User, new()
     {
-        private readonly IRole<TRole> _roleRepository;
         private readonly IUser<TUser> _userRepository;
         private readonly PermissionOptions _premissionOptions;
         private readonly IPermissionRepository _permissionRepository;
 
-        public GlobalUsersController(IUser<TUser> userRepository, IRole<TRole> roleRepository, IUserSynchronization<TUser> userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
+        public GlobalUsersController(IUser<TUser> userRepository, IUserSynchronization<TUser> userSynchronization, PermissionOptions premissionOptions, IPermissionRepository permissionRepository) : base(userRepository, premissionOptions)
         {
             _userRepository = userRepository;
-            _roleRepository = roleRepository;
             _premissionOptions = premissionOptions;
             _permissionRepository = permissionRepository;
         }
@@ -74,7 +72,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<UserViewModel> GetUser([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return await PopulateUserInfo(user); ;
+            return await PopulateUserInfo(user);
         }
 
         [HttpPut]

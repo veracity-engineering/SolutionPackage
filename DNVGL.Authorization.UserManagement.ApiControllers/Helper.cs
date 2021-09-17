@@ -16,20 +16,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var premissions = context.Request.Headers["AUTHORIZATION.CORSS.COMPANY.PERMISSIONS"];
 
-            //if (string.IsNullOrEmpty(premissions))
-            //{
-            //    var action = endpoint?.Metadata?.SingleOrDefault(md => md is ControllerActionDescriptor) as ControllerActionDescriptor;
-            //    AccessCrossCompanyPermissionFilterAttribute crossCompanyPermissionAttriute = null;
-            //    if (action != null)
-            //    {
-            //        crossCompanyPermissionAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(AccessCrossCompanyPermissionFilterAttribute), true) as AccessCrossCompanyPermissionFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(AccessCrossCompanyPermissionFilterAttribute), true) as AccessCrossCompanyPermissionFilterAttribute;
-            //        if (crossCompanyPermissionAttriute != null && crossCompanyPermissionAttriute.PermissionsToCheck!= null)
-            //        {
-            //            premissions = string.Join(',', crossCompanyPermissionAttriute.PermissionsToCheck);
-            //        }
-            //    }
-            //}
-
             return premissions;
         }
     }
