@@ -35,22 +35,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewRole)]
         public async Task<IEnumerable<RoleViewDto>> GetRoles()
         {
-            var roles = await _roleRepository.All();
-            var allPermissions = await _permissionRepository.GetAll();
-
-            var result = roles.Select(t =>
-            {
-                var dto = t.ToViewDto<RoleViewDto>();
-
-                if (t.PermissionKeys != null)
-                {
-                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
-                }
-
-                return dto;
-            });
-
-            return result;
+            return await GetAllRoles(_roleRepository, _permissionRepository);
         }
 
 

@@ -37,33 +37,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<UserViewModel>> GetUsers()
         {
-            var users = await _userRepository.All();
-            var allPermissions = await _permissionRepository.GetAll();
-
-            var result = users.Select(t =>
-            {
-                var dto = t.ToViewDto<UserViewModel>();
-
-                if (t.RoleList != null)
-                {
-                    dto.Roles = t.RoleList.Select(r =>
-                    {
-                        var RoleViewDto = r.ToViewDto<RoleViewDto>();
-
-                        if (r.PermissionKeys != null)
-                        {
-                            RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
-                        }
-
-                        return RoleViewDto;
-                    });
-                }
-
-                return dto;
-            });
-
-
-            return result;
+            return await GetAllUsers(_userRepository, _permissionRepository);
         }
 
         [HttpGet]
@@ -174,22 +148,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var allPermissions = await _permissionRepository.GetAll();
             var result = user.ToViewDto<UserViewModel>();
-
-            if (user.RoleList != null)
-            {
-                result.Roles = user.RoleList.Select(r =>
-                {
-                    var RoleViewDto = r.ToViewDto<RoleViewDto>();
-
-                    if (r.PermissionKeys != null)
-                    {
-                        RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
-                    }
-
-                    return RoleViewDto;
-                });
-            }
-
+            result = PopulateUserRoleInfo(user, result, allPermissions);
             return result;
         }
 
