@@ -29,6 +29,11 @@
 		public string ClientSecret { get; set; }
 
 		/// <summary>
+		/// Gets or sets the resourceId for v1 only.
+		/// </summary>
+		public string ResourceId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the list of permissions for requests.
 		/// </summary>
 		public string[] Scopes { get; set; }

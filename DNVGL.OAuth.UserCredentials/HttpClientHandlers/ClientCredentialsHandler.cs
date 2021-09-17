@@ -10,6 +10,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 	{
 		private readonly IClientAppBuilder _appBuilder;
 		private IClientApp _clientApp;
+		private TokenCache _tokenCache;
 
 		public ClientCredentialsHandler(OAuthHttpClientFactoryOptions options, IClientAppBuilder appBuilder) : base(options)
 		{
@@ -38,15 +39,13 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 
 		private async Task<string> GetVersion1AccessToken()
 		{
-			var authContext = new AuthenticationContext(_options.OAuthClientOptions.Authority);
-			var resourceId = ResourceIdFromScopes(_options.OAuthClientOptions.Scopes);
-			var authResult = await authContext.AcquireTokenSilentAsync(resourceId,  _options.OAuthClientOptions.ClientId);
+			var authContext = new AuthenticationContext(_options.OAuthClientOptions.Authority, GetTokenCache());
+			var authResult = await authContext.AcquireTokenSilentAsync(_options.OAuthClientOptions.ResourceId, _options.OAuthClientOptions.ClientId);
 			return authResult.AccessToken;
 		}
 
 		private IClientApp GetOrCreateClientApp()
 		{
-
 			if (_clientApp != null)
 				return _clientApp;
 			_clientApp = _appBuilder
@@ -55,16 +54,11 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 			return _clientApp;
 		}
 
-		private string ResourceIdFromScopes(string[] scopes)
+		private TokenCache GetTokenCache()
 		{
-			try
-			{
-				return scopes.First(s => Uri.IsWellFormedUriString(s, UriKind.Absolute) && new Uri(s).Segments.Last().Equals("/user_impersonation"));
-			}
-			catch(Exception ex)
-			{
-				throw new ArgumentException($"Could not retrieve ResourceId from provided Scopes in OAuth configuration '{_options.Name}'.", ex);
-			}
+			if (_tokenCache == null)
+				_tokenCache = new TokenCache();
+			return _tokenCache;
 		}
 	}
 }
