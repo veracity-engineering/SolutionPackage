@@ -54,11 +54,11 @@ namespace DNVGL.OAuth.Api.HttpClient
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
         {
-            if (!(config.OAuthClientOptions?.Scopes?.Any() ?? false))
-                throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.Scopes)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
-
             if (config.Flow == OAuthCredentialFlow.ClientCredentials)
             {
+                if (!((config.OAuthClientOptions?.Scopes?.Any() ?? false) || !string.IsNullOrEmpty(config.OAuthClientOptions?.ResourceId)))
+                    throw new ArgumentException($"API:({config.Name}) is missing either {nameof(config.OAuthClientOptions.Scopes)} or {nameof(config.OAuthClientOptions.ResourceId)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
+                
                 if (string.IsNullOrEmpty(config.OAuthClientOptions?.ClientId))
                     throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.ClientId)} value.",
                         $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.ClientId)}");
@@ -70,8 +70,10 @@ namespace DNVGL.OAuth.Api.HttpClient
                 if (string.IsNullOrEmpty(config.OAuthClientOptions?.Authority))
                     throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.Authority)} value.",
                         $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Authority)}");
-            }
-
+            } 
+            else if (!(config.OAuthClientOptions?.Scopes?.Any() ?? false))
+                throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.Scopes)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
+            
             var creator = _handlerCreators.ElementAtOrDefault((int)config.Flow);
 
             if (creator == null)
@@ -92,7 +94,8 @@ namespace DNVGL.OAuth.Api.HttpClient
                 {
                     ClientId = config.OAuthClientOptions?.ClientId,
                     ClientSecret = config.OAuthClientOptions?.ClientSecret,
-                    Scopes = (string[])config.OAuthClientOptions?.Scopes.Clone(),
+                    Scopes = (string[])config.OAuthClientOptions?.Scopes?.Clone(),
+                    ResourceId = config.OAuthClientOptions?.ResourceId,
                     Authority = config.OAuthClientOptions?.Authority
                 }
             };
