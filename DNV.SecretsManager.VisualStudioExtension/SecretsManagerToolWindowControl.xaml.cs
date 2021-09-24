@@ -17,7 +17,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		private List<string> _sourceTypes;
 		private List<KeyValuePair<string, string>> _sources;
 		private List<KeyValuePair<string, string>> _subscriptions;
-		private Dictionary<int, SecretsService> _secretsServices;
+		private Dictionary<int, Func<SecretsService>> _secretsServices;
 		private SecretsManagerStorage _storage;
 		private DTE Dte;
 
@@ -73,10 +73,10 @@ namespace DNV.SecretsManager.VisualStudioExtension
 				PersonalAccessToken = configuration.VariableGroups.PersonalAccessToken,
 			};
 			_isAllowUpload = configuration.IsAllowUpload;
-			_secretsServices = new Dictionary<int, SecretsService>
+			_secretsServices = new Dictionary<int, Func<SecretsService>>
 			{
-				{ KeyVaultIndex, new KeyVaultSecretsService() },
-				{ VariableGroupIndex, new VariableGroupSecretsService(variableGroupsConfig) }
+				{ KeyVaultIndex, () => new KeyVaultSecretsService() },
+				{ VariableGroupIndex, () => new VariableGroupSecretsService(variableGroupsConfig) }
 			};
 			cmbSourceTypes.Items.Clear();
 
@@ -224,7 +224,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			}
 			if (!fetchedFromCache)
 			{
-				var keyVaultSecretService = _secretsServices[KeyVaultIndex] as KeyVaultSecretsService;
+				var keyVaultSecretService = _secretsServices[KeyVaultIndex]() as KeyVaultSecretsService;
 				_subscriptions = (await keyVaultSecretService.GetSubscriptions()).ToList();
 
 				_storage.Sources.AddRange(_subscriptions.Select(s => new SourceCache { Parent = new Dictionary<string, string> { { s.Key, s.Value } } }));
@@ -261,12 +261,13 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			}
 			if (!fetchedFromCache)
 			{
+				var secretService = _secretsServices[KeyVaultIndex]();
 				if (cmbSourceTypes.SelectedIndex == KeyVaultIndex)
 				{
-					var keyVaultSecretService = _secretsServices[KeyVaultIndex] as KeyVaultSecretsService;
+					var keyVaultSecretService = secretService as KeyVaultSecretsService;
 					keyVaultSecretService.SetSubscriptionId(_subscriptions[cmbSourceSubscriptions.SelectedIndex].Value);
 				}
-				_sources = (await _secretsServices[cmbSourceTypes.SelectedIndex].GetSources()).ToList();
+				_sources = (await secretService.GetSources()).ToList();
 				_storage.AppendSourceCache(sourceTypeParent, _sources);
 				_storage.Save();
 			}
@@ -454,7 +455,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			try
 			{
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				var result = await _secretsServices[sourceTypeIndex].GetSecretsAsJson(source);
+				var result = await _secretsServices[sourceTypeIndex]().GetSecretsAsJson(source);
 
 				SaveLastSource();
 
@@ -474,7 +475,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			try
 			{
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				await _secretsServices[sourceTypeIndex].SetSecretsFromJson(source, content);
+				await _secretsServices[sourceTypeIndex]().SetSecretsFromJson(source, content);
 
 				SaveLastSource();
 
