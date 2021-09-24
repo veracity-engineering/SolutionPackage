@@ -178,7 +178,7 @@ namespace DNV.SecretsManager.ConsoleApp
 					var sourceFilename = Console.ReadLine();
 					if (ValidationUtility.IsFilenameValid(sourceFilename))
 					{
-						if (File.Exists(command.TargetFilename))
+						if (File.Exists(sourceFilename))
 						{
 							command.TargetFilename = sourceFilename;
 						}
