@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
     {
         private readonly UserManagementContext _context;
         private readonly IPermissionRepository _permissionRepository;
-
-        public UserPermissionReader(UserManagementContext context, IPermissionRepository permissionRepository)
+        private readonly UserManagementSettings _userManagementSettings;
+        public UserPermissionReader(UserManagementContext context, IPermissionRepository permissionRepository, UserManagementSettings userManagementSettings)
         {
             _context = context;
             _permissionRepository = permissionRepository;
+            _userManagementSettings = userManagementSettings;
         }
 
         public async Task<IEnumerable<PermissionEntity>> GetPermissions(string identity)
@@ -41,7 +43,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
             var role = await _context.Roles.Where(t => user.RoleIds.Contains(t.Id)).ToListAsync();
 
-            if (!string.IsNullOrEmpty(companyId))
+            if (!string.IsNullOrEmpty(companyId) && _userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
                 role = role.Where(t => t.CompanyId == companyId).ToList();
 
             var allAssignedPermissions = role.SelectMany(t => t.PermissionKeys);
