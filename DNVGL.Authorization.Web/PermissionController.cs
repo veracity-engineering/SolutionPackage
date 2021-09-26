@@ -11,6 +11,7 @@ namespace DNVGL.Authorization.Web
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "UserManagement's Permission APIs")]
     public class PermissionController : ControllerBase
     {
         private readonly IPermissionRepository _permissionRepository;

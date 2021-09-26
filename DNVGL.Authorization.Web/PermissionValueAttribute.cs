@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿// Copyright (c) DNV. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.;
+using System;
 
 namespace DNVGL.Authorization.Web
 {
     /// <summary>
-    /// This attribute is attached to an enum filed to define a permission entity.
+    /// Represents permission information for a permission record.
     /// </summary>
+    /// <remarks>
+    /// This attribute is attached to an enum filed to define a permission entity.
+    ///</remarks>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class PermissionValueAttribute : Attribute
     {
@@ -15,11 +17,10 @@ namespace DNVGL.Authorization.Web
         /// <summary>
         /// Construct a permission entity
         /// </summary>
-        /// <param name="id">Permission's Id should be unique at global level. 1-4 are reserved Id.</param>
+        /// <param name="id">Permission's Id should be unique at the global level.</param>
         /// <param name="key">
-        /// <para>Permission's Key should be unique at global level. It represents a permission. </para> 
-        /// <para>The best practice is to assign an understandable value to a key</para>
-        /// <para>Be careful to change the key of a permission which is in use in any live environment. </para> 
+        /// <para>Permission's Key should be unique at the global level. </para> 
+        /// <para>It's better to have a human readable key.</para>
         /// </param>
         /// <param name="name">        
         /// <para>Permission's name.</para>
@@ -41,14 +42,13 @@ namespace DNVGL.Authorization.Web
             Group = group;
         }
         /// <summary>
-        /// Permission's Id should be unique at global level. 1-6 are reserved Id.
+        /// Permission's Id should be unique at global level.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// <para>Permission's Key should be unique at global level. It represents a permission. </para> 
-        /// <para>The best practice is to assign an understandable value to a key</para>
-        /// <para>Be careful to change the key of a permission which is in use in any live environment. </para> 
+        /// <para>Permission's Key should be unique at the global level. </para> 
+        /// <para>It's better to have a human readable key.</para>
         /// </summary>
         public string Key { get; set; }
 

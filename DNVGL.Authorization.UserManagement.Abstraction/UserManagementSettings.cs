@@ -4,7 +4,7 @@
 namespace DNVGL.Authorization.UserManagement.Abstraction
 {
     /// <summary>
-    /// Provides a setting to configure the user management business flow.
+    /// Provides a class to configure the user management business flow.
     /// </summary>
     public class UserManagementSettings
     {

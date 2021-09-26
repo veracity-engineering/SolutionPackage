@@ -1,22 +1,20 @@
-﻿using System;
+﻿// Copyright (c) DNV. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using System.Collections.Generic;
-using System.Text;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Options;
 
 namespace DNVGL.Authorization.Web
 {
     /// <summary>
-    /// Extension methods to register permission related service to <see cref="IServiceCollection"/>
+    /// Extension methods to register permission related services to <see cref="IServiceCollection"/>
     /// </summary>
     public static class PermissionDefaultSetup
     {
@@ -25,35 +23,50 @@ namespace DNVGL.Authorization.Web
         /// <summary>
         /// Setup permission authorization with default <see cref="PermissionRepository"/> and customized implementation of <see cref="IUserPermissionReader"/>.
         /// <para>Register <see cref="IPermissionRepository"/>'s default implementation <see cref="PermissionRepository"/> which fetch all permissions defined in source code.</para>
-        /// <para>The implementation of <see cref="IUserPermissionReader"/> must be specified to replace generic type T</para>
+        /// <para>The implementation of <see cref="IUserPermissionReader"/> must be specified to replace generic type TUserPermissionReader</para>
         /// </summary>
-        /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
+        /// <typeparam name="TUserPermissionReader">The implemenation of <see cref="IUserPermissionReader"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="permissionOptions">An optional parameter.<see cref="PermissionOptions"/> controls the permission check behavior.</param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T>(this IServiceCollection services, PermissionOptions permissionOptions = null) where T : IUserPermissionReader
+        public static IServiceCollection AddPermissionAuthorization<TUserPermissionReader>(this IServiceCollection services, PermissionOptions permissionOptions = null) where TUserPermissionReader : IUserPermissionReader
         {
-            return services.AddPermissionAuthorization<T, PermissionRepository>(permissionOptions);
+            return services.AddPermissionAuthorization<TUserPermissionReader, PermissionRepository>(permissionOptions);
         }
 
         /// <summary>
-        /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/> and  <see cref="IUserPermissionReader"/>.
+        /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/> and <see cref="IUserPermissionReader"/>.
         /// </summary>
-        /// <typeparam name="T">constraints to <see cref="IUserPermissionReader"/></typeparam>
-        /// <typeparam name="R">constraints to <see cref="IPermissionRepository"/></typeparam>
+        /// <typeparam name="TUserPermissionReader">The implemenation of <see cref="IUserPermissionReader"/></typeparam>
+        /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="permissionOptions">An optional parameter.<see cref="PermissionOptions"/> controls the permission check behavior.</param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddPermissionAuthorization<T, R>(this IServiceCollection services, PermissionOptions permissionOptions = null) where T : IUserPermissionReader where R : IPermissionRepository
+        public static IServiceCollection AddPermissionAuthorization<TUserPermissionReader, TPermissionRepository>(this IServiceCollection services, PermissionOptions permissionOptions = null) where TUserPermissionReader : IUserPermissionReader where TPermissionRepository : IPermissionRepository
         {
-            services.AddPermissionAuthorizationWithoutUserPermissionReader<R>(permissionOptions);
-            return services.AddScoped(typeof(IUserPermissionReader), typeof(T));
+            services.AddPermissionAuthorizationWithoutUserPermissionReader<TPermissionRepository>(permissionOptions);
+            return services.AddScoped(typeof(IUserPermissionReader), typeof(TUserPermissionReader));
         }
 
+        /// <summary>
+        /// Setup permission authorization with default <see cref="PermissionRepository"/>. <b>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </b>
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="permissionOptions">An optional parameter.<see cref="PermissionOptions"/> controls the permission check behavior.</param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddPermissionAuthorizationWithoutUserPermissionReader(this IServiceCollection services, PermissionOptions permissionOptions = null)
         {
             return services.AddPermissionAuthorizationWithoutUserPermissionReader<PermissionRepository>(permissionOptions);
         }
 
-        public static IServiceCollection AddPermissionAuthorizationWithoutUserPermissionReader<R>(this IServiceCollection services, PermissionOptions permissionOptions = null) where R : IPermissionRepository
+        /// <summary>
+        /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/>. <b>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </b>
+        /// </summary>
+        /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="permissionOptions">An optional parameter.<see cref="PermissionOptions"/> controls the permission check behavior.</param>
+        /// <returns><see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddPermissionAuthorizationWithoutUserPermissionReader<TPermissionRepository>(this IServiceCollection services, PermissionOptions permissionOptions = null) where TPermissionRepository : IPermissionRepository
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -77,7 +90,7 @@ namespace DNVGL.Authorization.Web
             });
 
 
-            services.AddSingleton(typeof(IPermissionRepository), typeof(R));
+            services.AddSingleton(typeof(IPermissionRepository), typeof(TPermissionRepository));
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
             return services.AddAuthorizationCore(config =>
@@ -86,7 +99,15 @@ namespace DNVGL.Authorization.Web
             });
         }
 
-
+        /// <summary>
+        /// Add customized CookieValidateHandler to the <see cref="CookieAuthenticationEvents.OnValidatePrincipal"/>.
+        /// </summary>
+        /// <remarks>
+        /// Claim based authorization is enabled only if this customized CookieValidateHandler are added.
+        /// </remarks>
+        /// <param name="cookieEvents"><see cref="CookieAuthenticationEvents"/></param>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="CookieAuthenticationEvents"/></returns>
         public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
@@ -139,7 +160,5 @@ namespace DNVGL.Authorization.Web
             };
             return cookieEvents;
         }
-
-
     }
 }
