@@ -88,7 +88,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 return null;
 
             var companys = await _context.Companys.Where(t => user.CompanyIdList.Contains(t.Id)).ToListAsync();
-            var roles = await _context.Roles.Where(r => user.CompanyIdList.Contains(r.CompanyId)).ToListAsync();
+            var roles = await _context.Roles.Where(r => user.CompanyIdList.Contains(r.CompanyId) && user.RoleIdList.Contains(r.Id)).ToListAsync();
             user.CompanyList = companys;
             user.RoleList = roles;
 
@@ -104,7 +104,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 return null;
 
             var companys = await _context.Companys.Where(t => user.CompanyIdList.Contains(t.Id)).ToListAsync();
-            var roles = await _context.Roles.Where(r => user.CompanyIdList.Contains(r.CompanyId)).ToListAsync();
+            var roles = await _context.Roles.Where(r => user.CompanyIdList.Contains(r.CompanyId) && user.RoleIdList.Contains(r.Id)).ToListAsync();
             user.CompanyList = companys;
             user.RoleList = roles;
 

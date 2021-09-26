@@ -63,7 +63,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             else
                 user = PruneUserCompanyInfo(user, companyId);
 
-            if (user.CompanyIdList.Contains(companyId))
+            if (user.Companies.Any(t => t.Id == companyId))
                 return user;
 
             return null;
