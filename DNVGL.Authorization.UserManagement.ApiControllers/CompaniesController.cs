@@ -101,7 +101,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             {
                 company = await _companyRepository.ReadByDomain(urlParts[1]);
             }
-            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && currentUser.SuperAdmin == false))
+            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && currentUser.SuperAdmin))
             {
                 return null;
             }
