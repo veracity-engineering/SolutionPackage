@@ -4,18 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
+using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class UserPermissionReader : IUserPermissionReader
+    public class UserPermissionReader : UserPermissionReader<Company, Role, User>
     {
-        private readonly UserManagementContext _context;
+        public UserPermissionReader(UserManagementContext<Company, Role, User> context, IPermissionRepository permissionRepository, UserManagementSettings userManagementSettings) : base(context, permissionRepository, userManagementSettings)
+        {
+
+        }
+
+    }
+
+    public class UserPermissionReader<TCompany, TRole, TUser> : IUserPermissionReader where TRole : Role, new() where TCompany : Company, new() where TUser : User, new()
+    {
+        private readonly UserManagementContext<TCompany, TRole, TUser> _context;
         private readonly IPermissionRepository _permissionRepository;
         private readonly UserManagementSettings _userManagementSettings;
-        public UserPermissionReader(UserManagementContext context, IPermissionRepository permissionRepository, UserManagementSettings userManagementSettings)
+        public UserPermissionReader(UserManagementContext<TCompany, TRole, TUser> context, IPermissionRepository permissionRepository, UserManagementSettings userManagementSettings)
         {
             _context = context;
             _permissionRepository = permissionRepository;

@@ -6,15 +6,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class UserManagementContext : DbContext
+    public class UserManagementContext : UserManagementContext<Company, Role, User>
     {
-
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Company> Companys { get; set; }
-        public DbSet<User> Users { get; set; }
-        public Action<ModelBuilder> PrebuildModel { get; set; }
-        public UserManagementContext(DbContextOptions<UserManagementContext> options)
+        public UserManagementContext(DbContextOptions options)
             : base(options)
+        {
+        }
+
+    }
+
+    public class UserManagementContext<TUser> : UserManagementContext<Company, Role, TUser> where TUser : User
+    {
+        public UserManagementContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+    }
+
+    public class UserManagementContext<TCompany,TUser> : UserManagementContext<TCompany, Role, TUser> where TCompany : Company where TUser : User
+    {
+        public UserManagementContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+    }
+
+    public class UserManagementContext<TCompany, TRole, TUser> : DbContext where TCompany : Company where TRole : Role where TUser : User
+    {
+        public DbSet<TRole> Roles { get; set; }
+        public DbSet<TCompany> Companys { get; set; }
+        public DbSet<TUser> Users { get; set; }
+
+        public Action<ModelBuilder> PrebuildModel { get; set; }
+
+        public UserManagementContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -27,30 +54,25 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 PrebuildModel(modelBuilder);
             }
 
-            modelBuilder.Entity<Company>(entity =>
+            modelBuilder.Entity<TCompany>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Ignore(t => t.PermissionKeys);
             });
 
-            modelBuilder.Entity<Role>(entity =>
+            modelBuilder.Entity<TRole>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Ignore(t => t.PermissionKeys);
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<TUser>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Ignore(t => t.RoleIdList);
                 entity.Ignore(t => t.RoleList);
                 entity.Ignore(t => t.CompanyIdList);
                 entity.Ignore(t => t.CompanyList);
-            });
-
-            modelBuilder.Entity<Company>(entity =>
-            {
-                entity.HasKey(e => e.Id);
             });
         }
     }
