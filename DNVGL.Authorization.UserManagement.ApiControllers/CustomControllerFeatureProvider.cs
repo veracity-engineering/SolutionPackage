@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
-    public class CustomControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+    internal class CustomControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
     {
         private readonly Type[] _visibleControllers;
         public CustomControllerFeatureProvider(Type[] visibleControllers)
