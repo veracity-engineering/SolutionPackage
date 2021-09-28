@@ -174,7 +174,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 		{
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
 			SetFormBusy(true);
-			var convertSecretsTask = DownloadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value);
+			var convertSecretsTask = DownloadSecretsAsync(cmbSourceTypes.SelectedIndex, _sources[cmbSources.SelectedIndex].Value, _sources[cmbSources.SelectedIndex].Key);
 			convertSecretsTask.GetAwaiter()
 				.OnCompleted(() =>
 				{
@@ -450,7 +450,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			return false;
 		}
 
-		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source)
+		private async Task DownloadSecretsAsync(int sourceTypeIndex, string source, string sourceName)
 		{
 			try
 			{
@@ -459,7 +459,11 @@ namespace DNV.SecretsManager.VisualStudioExtension
 
 				SaveLastSource();
 
-				var secretsFilename = $"{SecretsManagerStorage.StoragePath}/secrets-{Guid.NewGuid():N}.json";
+				var path = $"{SecretsManagerStorage.StoragePath}/{sourceName}";
+				var secretsFilename = $"{path}/{Guid.NewGuid():N}.json";
+
+				if (!Directory.Exists(path))
+					Directory.CreateDirectory(path);
 				File.WriteAllText(secretsFilename, result);
 
 				Dte.ExecuteCommand("File.OpenFile", secretsFilename);
