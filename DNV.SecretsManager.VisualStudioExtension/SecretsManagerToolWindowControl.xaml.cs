@@ -261,7 +261,7 @@ namespace DNV.SecretsManager.VisualStudioExtension
 			}
 			if (!fetchedFromCache)
 			{
-				var secretService = _secretsServices[KeyVaultIndex]();
+				var secretService = _secretsServices[cmbSourceTypes.SelectedIndex]();
 				if (cmbSourceTypes.SelectedIndex == KeyVaultIndex)
 				{
 					var keyVaultSecretService = secretService as KeyVaultSecretsService;
