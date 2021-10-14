@@ -6,13 +6,13 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction
 {
-    public interface IRole
+    public interface IRole<T> where T : Role
     {
-        Task<Role> Create(Role role);
-        Task<Role> Read(string Id);
-        Task Update(Role role);
+        Task<T> Create(T role);
+        Task<T> Read(string Id);
+        Task Update(T role);
         Task Delete(string Id);
-        Task<IEnumerable<Role>> GetRolesOfCompany(string companyId);
-        Task<IEnumerable<Role>> All();
+        Task<IEnumerable<T>> GetRolesOfCompany(string companyId);
+        Task<IEnumerable<T>> All();
     }
 }

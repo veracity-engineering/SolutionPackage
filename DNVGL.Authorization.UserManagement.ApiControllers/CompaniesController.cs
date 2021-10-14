@@ -21,12 +21,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     [ApiController]
     [Route("api/companies")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
-    public class CompaniesController : UserManagementBaseController
+    [ApiExplorerSettings(GroupName = "UserManagement's Company APIs")]
+    public class CompaniesController<TCompany, TUser> : UserManagementBaseController<TUser> where TCompany : Company, new() where TUser : User, new()
     {
-        private readonly ICompany _companyRepository;
+        private readonly ICompany<TCompany> _companyRepository;
         private readonly IPermissionRepository _permissionRepository;
 
-        public CompaniesController(ICompany companyRepository, IPermissionRepository permissionRepository, IUser userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
+        public CompaniesController(ICompany<TCompany> companyRepository, IPermissionRepository permissionRepository, IUser<TUser> userRepository, PermissionOptions premissionOptions) : base(userRepository, premissionOptions)
         {
             _companyRepository = companyRepository;
             _permissionRepository = permissionRepository;
@@ -58,10 +59,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("~/api/mycompany/{companyId}")]
+        [Route("{companyId}")]
         [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
         [AccessibleCompanyFilter]
-        public async Task<Company> GetMyCompany([FromRoute] string companyId)
+        public async Task<CompanyViewDto> GetCompany([FromRoute] string companyId)
         {
             var company = await _companyRepository.Read(companyId);
             var allPermissions = await _permissionRepository.GetAll();
@@ -74,7 +76,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
-        public async Task<Company> GetCompany([FromRoute] string id)
+        [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
+        public async Task<CompanyViewDto> GetCompanyAdmin([FromRoute] string id)
         {
             var company = await _companyRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();
@@ -85,12 +88,19 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("domain/{url}")]
-        public async Task<Company> GetCompanyByDomain([FromRoute] string url)
+        [Route("domain/{*url}")]
+        public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
         {
             var currentUser = await GetCurrentUser();
+            var decodedUrl = WebUtility.UrlDecode(url);
+            var urlParts = decodedUrl.ToLowerInvariant().Replace("https://","").Replace("http://", "").Split("/");
 
-            var company = await _companyRepository.ReadByDomain(url);
+
+            var company = await _companyRepository.ReadByDomain(urlParts[0]);
+            if(company == null && urlParts.Length > 1)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[1]);
+            }
             if (company == null || currentUser.CompanyList.All(t => t.Id != company.Id))
             {
                 return null;
@@ -104,13 +114,26 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPost]
+        [Route("custommodel")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
+        public async Task<string> CreateCompanyFromCustomModel([FromBody] TCompany model)
+        {
+            var currentUser = await GetCurrentUser();
+            model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            model = await _companyRepository.Create(model);
+            return model.Id;
+        }
+
+        [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
         public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
         {
             var currentUser = await GetCurrentUser();
 
-            var company = new Company
+
+            var company = new TCompany
             {
                 Description = model.Description,
                 Name = model.Name,
@@ -122,6 +145,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             company = await _companyRepository.Create(company);
             return company.Id;
         }
+
+        [HttpPut]
+        [Route("custommodel/{id}")]
+        [PermissionAuthorize(Premissions.ManageCompany)]
+        [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
+        public async Task UpdateCompanyFromCustomModel([FromRoute] string id, TCompany model)
+        {
+            var company = await _companyRepository.Read(id);
+            var currentUser = await GetCurrentUser();
+            model.Id = company.Id;
+            model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
+            await _companyRepository.Update(model);
+        }
+
 
         [HttpPut]
         [Route("{id}")]

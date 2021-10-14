@@ -6,9 +6,9 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction
 {
-    public interface IUserSynchronization
+    public interface IUserSynchronization<T> where T : User
     {
-        Task<User> SyncUser(User user);
+        Task<T> SyncUser(T user);
         void LaunchMonitoring();
         Task StopMonitoring();
     }

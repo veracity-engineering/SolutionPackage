@@ -44,6 +44,17 @@ namespace DNVGL.Authorization.Web
         /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddPermissionAuthorization<T, R>(this IServiceCollection services, PermissionOptions permissionOptions = null) where T : IUserPermissionReader where R : IPermissionRepository
         {
+            services.AddPermissionAuthorizationWithoutUserPermissionReader<R>(permissionOptions);
+            return services.AddScoped(typeof(IUserPermissionReader), typeof(T));
+        }
+
+        public static IServiceCollection AddPermissionAuthorizationWithoutUserPermissionReader(this IServiceCollection services, PermissionOptions permissionOptions = null)
+        {
+            return services.AddPermissionAuthorizationWithoutUserPermissionReader<PermissionRepository>(permissionOptions);
+        }
+
+        public static IServiceCollection AddPermissionAuthorizationWithoutUserPermissionReader<R>(this IServiceCollection services, PermissionOptions permissionOptions = null) where R : IPermissionRepository
+        {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddSingleton<PermissionOptions>(provider =>
@@ -67,7 +78,6 @@ namespace DNVGL.Authorization.Web
 
 
             services.AddSingleton(typeof(IPermissionRepository), typeof(R));
-            services.AddScoped(typeof(IUserPermissionReader), typeof(T));
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
             return services.AddAuthorizationCore(config =>
@@ -75,6 +85,7 @@ namespace DNVGL.Authorization.Web
                 config.AddPolicy("PermissionAuthorize", policy => policy.AddRequirements(new PermissionRequirement()));
             });
         }
+
 
         public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
         {
