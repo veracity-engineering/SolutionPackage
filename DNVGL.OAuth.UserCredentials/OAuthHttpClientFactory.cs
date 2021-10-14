@@ -56,8 +56,8 @@ namespace DNVGL.OAuth.Api.HttpClient
         {
             if (config.Flow == OAuthCredentialFlow.ClientCredentials)
             {
-                if (!((config.OAuthClientOptions?.Scopes?.Any() ?? false) || !string.IsNullOrEmpty(config.OAuthClientOptions?.ResourceId)))
-                    throw new ArgumentException($"API:({config.Name}) is missing either {nameof(config.OAuthClientOptions.Scopes)} or {nameof(config.OAuthClientOptions.ResourceId)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
+                if (!((config.OAuthClientOptions?.Scopes?.Any() ?? false) || !string.IsNullOrEmpty(config.OAuthClientOptions?.Resource)))
+                    throw new ArgumentException($"API:({config.Name}) is missing either {nameof(config.OAuthClientOptions.Scopes)} or {nameof(config.OAuthClientOptions.Resource)} value.", $"{nameof(config.OAuthClientOptions)}.{nameof(config.OAuthClientOptions.Scopes)}");
                 
                 if (string.IsNullOrEmpty(config.OAuthClientOptions?.ClientId))
                     throw new ArgumentException($"API:({config.Name}) is missing {nameof(config.OAuthClientOptions.ClientId)} value.",
@@ -95,7 +95,7 @@ namespace DNVGL.OAuth.Api.HttpClient
                     ClientId = config.OAuthClientOptions?.ClientId,
                     ClientSecret = config.OAuthClientOptions?.ClientSecret,
                     Scopes = (string[])config.OAuthClientOptions?.Scopes?.Clone(),
-                    ResourceId = config.OAuthClientOptions?.ResourceId,
+                    Resource = config.OAuthClientOptions?.Resource,
                     Authority = config.OAuthClientOptions?.Authority
                 }
             };
