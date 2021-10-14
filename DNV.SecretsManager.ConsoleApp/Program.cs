@@ -9,43 +9,101 @@ namespace DNV.SecretsManager.ConsoleApp
 {
 	class Program
 	{
-		private const string HelpKey = "?";
-		private const string KeyVaultKey = "k";
-		private const string VariableGroupKey = "v";
-		private const string DownloadKey = "d";
-		private const string UploadKey = "u";
+		private const char HelpKey = '?';
+		private const char KeyVaultKey = 'k';
+		private const char VariableGroupKey = 'v';
+		private const char DownloadKey = 'd';
+		private const char UploadKey = 'u';
 
-		private static readonly Dictionary<string, Func<Command>> _commands = new Dictionary<string, Func<Command>>
+		private static readonly Dictionary<char, Func<Command>> _commands = new Dictionary<char, Func<Command>>
 		{
 			{ KeyVaultKey, () => new KeyVaultCommand() },
 			{ VariableGroupKey, () => new VariableGroupCommand() }
 		};
 
-		private static readonly Dictionary<string, CommandType> _commandTypes = new Dictionary<string, CommandType>
+		private static readonly Dictionary<char, CommandType> _commandTypes = new Dictionary<char, CommandType>
 		{
 			{ DownloadKey, CommandType.Download },
 			{ UploadKey, CommandType.Upload }
 		};
 
-		static async Task Main(string[] args)
+		private static readonly List<ConsoleOption> _optionDefinitions = new List<ConsoleOption>
+		{
+			new ConsoleOption { Name = "download", Abbreviation = DownloadKey, IsFlag = true },
+			new ConsoleOption { Name = "upload", Abbreviation = UploadKey, IsFlag = true },
+
+			new ConsoleOption { Name = "help", Abbreviation = 'h', IsFlag = true },
+			new ConsoleOption { Name = "help", Abbreviation = HelpKey, IsFlag = true},
+
+			new ConsoleOption { Name = "keyvault", Abbreviation = KeyVaultKey, IsFlag = true },
+			new ConsoleOption { Name = "keyvault-url", Abbreviation = 's' },
+
+			new ConsoleOption { Name = "variablegroup", Abbreviation = VariableGroupKey, IsFlag = true },
+			new ConsoleOption { Name = "variablegroup-base-url", Abbreviation = 's' },
+			new ConsoleOption { Name = "variablegroup-organization", Abbreviation  ='o' },
+			new ConsoleOption { Name = "variablegroup-pat", Abbreviation = 'p' },
+
+			new ConsoleOption { Name = "filename", Abbreviation = 'f' }
+		};
+
+		private static Command FromOptions(Dictionary<string, object> options)
 		{
 			Command command = null;
+			
+			if (options.ContainsKey("keyvault") && options.ContainsKey("variablegroup"))
+				throw new ArgumentException("Both instructions for keyvault and variable group were provided.");
+			if (options.ContainsKey("keyvault"))
+				command = new KeyVaultCommand();
+			if (options.ContainsKey("variablegroup"))
+				command = new VariableGroupCommand();
 
-			if (args.Any())
+			if (options.ContainsKey("download") && options.ContainsKey("upload"))
+				throw new ArgumentException("Both instructions for download and upload were provided.");
+			if (options.ContainsKey("download"))
+				command.Type = CommandType.Download;
+			if (options.ContainsKey("upload"))
+				command.Type = CommandType.Upload;
+
+			if (command is KeyVaultCommand kvc)
 			{
-				if (args[0].Equals(HelpKey, StringComparison.InvariantCultureIgnoreCase))
+				if (options.ContainsKey("keyvault-url"))
+					kvc.Url = options["keyvault-url"].ToString();
+			}
+			if (command is VariableGroupCommand vgc)
+			{
+				if (options.ContainsKey("variablegroup-base-url"))
+					vgc.BaseUrl = options["variablegroup-base-url"].ToString();
+				if (options.ContainsKey("variablegroup-organization"))
+					vgc.Organization = options["variablegroup-organization"].ToString();
+				if (options.ContainsKey("variablegroup-pat"))
+					vgc.PersonalAccessToken = options["variablegroup-pat"].ToString();
+			}
+
+			if (options.ContainsKey("filename"))
+				command.TargetFilename = options["filename"].ToString();
+
+			return command;
+		}
+
+		static async Task Main(string[] args)
+		{
+			var options = CollectOptions(args);
+			Command command = null;
+			if (options!= null && options.Any())
+			{
+				if (options.ContainsKey("help"))
 				{
 					DisplayHelp();
 					return;
-				}
-				command = FromArgs(args, _commands, _commandTypes);
+				}	
+				command = FromOptions(options);
 			}
 
 			if (command == null)
 				Console.WriteLine($"Select source (Azure KeyVault: [{KeyVaultKey}], Azure DevOps Variable Group: [{VariableGroupKey}])");
 			while (command == null)
 			{
-				var sourceChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				var sourceChoice = $"{Console.ReadKey().Key}".ToLowerInvariant()[0];
 				Console.WriteLine();
 				if (_commands.ContainsKey(sourceChoice))
 				{
@@ -61,7 +119,7 @@ namespace DNV.SecretsManager.ConsoleApp
 				Console.WriteLine($"What would you like to do? (Download: [{DownloadKey}], Upload: [{UploadKey}])");
 			while (command.Type == CommandType.None)
 			{
-				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant();
+				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant()[0];
 				Console.WriteLine();
 				if (_commandTypes.ContainsKey(commandTypeChoice))
 				{
@@ -108,7 +166,7 @@ namespace DNV.SecretsManager.ConsoleApp
 				}
 
 				if (string.IsNullOrEmpty(variableGroupCommand.Organization))
-					Console.WriteLine("Please enter Organization or Poject name:");
+					Console.WriteLine("Please enter Organization or Project name:");
 				while (string.IsNullOrEmpty(variableGroupCommand.Organization))
 				{
 					var organization = Console.ReadLine();
@@ -235,6 +293,44 @@ namespace DNV.SecretsManager.ConsoleApp
 			}
 		}
 
+		private static Dictionary<string, object> CollectOptions(string[] args)
+		{
+			var options = new Dictionary<string, object>();
+			var argumentIndex = 0;
+			//for (var i = 0; i < args.Length; i++)
+			while (argumentIndex < args.Length)
+			{
+				var arg = args[argumentIndex];
+
+				// Long option
+				ConsoleOption optionDefinition = null;
+				if (arg.StartsWith("--"))
+				{
+					optionDefinition = _optionDefinitions.FirstOrDefault(o => o.Name.Equals(arg.Substring(2, arg.Length - 2)));
+				}
+				// Short option
+				else if (arg.StartsWith('-'))
+				{
+					optionDefinition = _optionDefinitions.FirstOrDefault(o => o.Abbreviation.Equals(arg[1]));
+				}
+
+				if (optionDefinition == null)
+					throw new ArgumentException($"Unrecognized argument '{arg}'.");
+
+				if (optionDefinition.IsFlag)
+				{
+					options.Add(optionDefinition.Name, true);
+				}
+				else
+				{
+					options.Add(optionDefinition.Name, args[++argumentIndex]);
+				}
+				argumentIndex++;
+			}
+
+			return options;
+		}
+
 		private static void DisplayHelp()
 		{
 			Console.WriteLine("Downloads or upload secrets from an Azure KeyVault or an Azure DevOps Variable Group.");
@@ -244,37 +340,6 @@ namespace DNV.SecretsManager.ConsoleApp
 			Console.WriteLine();
 			Console.WriteLine("For Azure DevOps Variable Group:");
 			Console.WriteLine($"\t{VariableGroupKey} {DownloadKey}|{UploadKey} [url] [organization] [personal access token] [variable group id] [filename]");
-		}
-
-		private static Command FromArgs(string[] args, Dictionary<string, Func<Command>> commands, Dictionary<string, CommandType> commandTypes)
-		{
-			Command command = null;
-			command = commands[args[0].ToLowerInvariant()]();
-
-			if (args.Length > 1)
-				command.Type = commandTypes[args[1].ToLowerInvariant()];
-
-			if (args.Length > 2)
-			{
-				if (command is KeyVaultCommand keyVaultCommand)
-				{
-					keyVaultCommand.Url = args[2];
-					if (args.Length > 3)
-						keyVaultCommand.TargetFilename = args[3];
-				}
-
-				if (command is VariableGroupCommand variableGroupCommand)
-				{
-					variableGroupCommand.BaseUrl = args[2];
-					if (args.Length > 3)
-						variableGroupCommand.Organization = args[3];
-					if (args.Length > 4)
-						variableGroupCommand.PersonalAccessToken = args[4];
-					if (args.Length > 5)
-						variableGroupCommand.TargetFilename = args[5];
-				}
-			}
-			return command;
 		}
 	}
 }
