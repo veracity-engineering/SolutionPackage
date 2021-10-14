@@ -40,7 +40,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 		private async Task<string> GetVersion1AccessToken()
 		{
 			var authContext = new AuthenticationContext(_options.OAuthClientOptions.Authority, GetTokenCache());
-			var authResult = await authContext.AcquireTokenSilentAsync(_options.OAuthClientOptions.ResourceId, _options.OAuthClientOptions.ClientId);
+			var authResult = await authContext.AcquireTokenSilentAsync(_options.OAuthClientOptions.Resource, _options.OAuthClientOptions.ClientId);
 			return authResult.AccessToken;
 		}
 
