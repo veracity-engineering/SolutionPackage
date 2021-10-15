@@ -29,9 +29,9 @@
 		public string ClientSecret { get; set; }
 
 		/// <summary>
-		/// Gets or sets the resourceId for v1 only.
+		/// Gets or sets the resource for v1 only.
 		/// </summary>
-		public string ResourceId { get; set; }
+		public string Resource { get; set; }
 
 		/// <summary>
 		/// Gets or sets the list of permissions for requests.
