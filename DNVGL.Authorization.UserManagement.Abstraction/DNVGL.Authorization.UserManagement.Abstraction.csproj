@@ -5,6 +5,9 @@
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Provides an abstraction for user management's entities and database operations.</Description>
+		<PackageTags>aspnetcore;identity;membership</PackageTags>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 </Project>

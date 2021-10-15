@@ -145,12 +145,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             if (roles.Any(t => t.Id == id))
             {
                 var role = await _roleRepository.Read(id);
-                var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
+                var permissionKeys = await PrunePermissions(companyId, model.PermissionKeys);
                 role.Id = id;
                 role.Active = model.Active;
                 role.Description = model.Description;
                 role.Name = model.Name;
-                role.CompanyId = model.CompanyId;
+                role.CompanyId = companyId;
                 role.Permissions = string.Join(';', permissionKeys);
                 role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(role);
@@ -218,12 +218,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
 
         [HttpPost]
-        [Route("~/api/crosscompany/roles")]
+        [Route("~/api/crosscompany/{companyId}/roles")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
-        public async Task<string> CreateCrosscompanyRole([FromBody] RoleEditModel model)
+        public async Task<string> CreateCrosscompanyRole([FromRoute] string companyId, [FromBody] RoleEditModel model)
         {
-            var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
+            var permissionKeys = await PrunePermissions(companyId, model.PermissionKeys);
             var currentUser = await GetCurrentUser();
 
             var role = new TRole
@@ -231,7 +231,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Description = model.Description,
                 Name = model.Name,
                 Active = model.Active,
-                CompanyId = model.CompanyId,
+                CompanyId = companyId,
                 Permissions = string.Join(';', permissionKeys),
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
             };
@@ -256,20 +256,20 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpPut]
-        [Route("~/api/crosscompany/roles/{id}")]
+        [Route("~/api/crosscompany/{companyId}/roles/{id}")]
         [PermissionAuthorize(Premissions.ManageRole, Premissions.ViewCompany)]
         [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
-        public async Task UpdateCrosscompanyRole([FromRoute] string id, RoleEditModel model)
+        public async Task UpdateCrosscompanyRole([FromRoute] string id, [FromRoute] string companyId, RoleEditModel model)
         {
             var currentUser = await GetCurrentUser();
             var role = await _roleRepository.Read(id);
-            var permissionKeys = await PrunePermissions(model.CompanyId, model.PermissionKeys);
+            var permissionKeys = await PrunePermissions(companyId, model.PermissionKeys);
             role.Id = id;
             role.Description = model.Description;
             role.Active = model.Active;
             role.Name = model.Name;
             role.Permissions = string.Join(';', permissionKeys);
-            role.CompanyId = model.CompanyId;
+            role.CompanyId = companyId;
             role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _roleRepository.Update(role);
         }

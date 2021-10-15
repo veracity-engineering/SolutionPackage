@@ -1,22 +1,30 @@
-﻿using System;
+﻿// Copyright (c) DNV. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
+    /// <summary>
+    ///  Provides a api controller filter to check if user has access on a specific company resource.
+    /// </summary>
+    /// <remarks>
+    /// The specific Company Id is specified in attribute <see cref="CompanyIdentityFieldNameFilterAttribute"/>
+    /// </remarks>
     public class AccessibleCompanyFilterAttribute : TypeFilterAttribute
     {
+        /// <summary>
+        /// Constructs a new instance of <see cref="AccessibleCompanyFilterAttribute"/>.
+        /// </summary>
         public AccessibleCompanyFilterAttribute()
                         : base(typeof(AccessibleCompanyFilterImpl<User>))
         {

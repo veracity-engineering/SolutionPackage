@@ -74,7 +74,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("obsoletedapi/{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
         [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
         public async Task<CompanyViewDto> GetCompanyAdmin([FromRoute] string id)
@@ -93,15 +93,15 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var currentUser = await GetCurrentUser();
             var decodedUrl = WebUtility.UrlDecode(url);
-            var urlParts = decodedUrl.ToLowerInvariant().Replace("https://","").Replace("http://", "").Split("/");
+            var urlParts = decodedUrl.ToLowerInvariant().Replace("https://", "").Replace("http://", "").Split("/");
 
 
             var company = await _companyRepository.ReadByDomain(urlParts[0]);
-            if(company == null && urlParts.Length > 1)
+            if (company == null && urlParts.Length > 1)
             {
                 company = await _companyRepository.ReadByDomain(urlParts[1]);
             }
-            if (company == null || currentUser.CompanyList.All(t => t.Id != company.Id))
+            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && currentUser.SuperAdmin))
             {
                 return null;
             }

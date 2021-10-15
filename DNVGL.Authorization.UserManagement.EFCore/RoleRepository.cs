@@ -9,32 +9,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class RoleRepository : IRole<Role>
-    {
-        private readonly UserManagementContext _context;
 
-        public RoleRepository(UserManagementContext context)
+    public class RoleRepository : RoleRepository<Company, Role, User>
+    {
+        public RoleRepository(UserManagementContext<Company, Role, User> context) : base(context)
+        {
+
+        }
+
+    }
+
+    public class RoleRepository<TCompany, TRole, TUser> : IRole<TRole> where TRole : Role, new() where TCompany : Company, new() where TUser : User, new()
+    {
+        private readonly UserManagementContext<TCompany, TRole, TUser> _context;
+
+        public RoleRepository(UserManagementContext<TCompany, TRole, TUser> context)
         {
             _context = context;
         }
 
 
-        private async Task FetchCompanyForRoles(List<Role> roles)
+        private async Task FetchCompanyForRoles(List<TRole> roles)
         {
             var companys = await _context.Set<Company>().ToListAsync();
-            roles.ForEach(t => t.Company = companys.Find(f=>f.Id==t.CompanyId));
+            roles.ForEach(t => t.Company = companys.Find(f => f.Id == t.CompanyId));
         }
 
 
 
-        public async Task<IEnumerable<Role>> All()
+        public async Task<IEnumerable<TRole>> All()
         {
-            var roles = await _context.Set<Role>().OrderBy(t => t.Name).ToListAsync();
+            var roles = await _context.Set<TRole>().OrderBy(t => t.Name).ToListAsync();
             await FetchCompanyForRoles(roles);
             return roles;
         }
 
-        public async Task<Role> Create(Role role)
+        public async Task<TRole> Create(TRole role)
         {
             if (string.IsNullOrEmpty(role.Id))
             {
@@ -56,14 +66,14 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Role>> GetRolesOfCompany(string companyId)
+        public async Task<IEnumerable<TRole>> GetRolesOfCompany(string companyId)
         {
             var roles = await _context.Roles.Where(t => t.CompanyId == companyId).ToListAsync();
             await FetchCompanyForRoles(roles);
             return roles;
         }
 
-        public async Task<Role> Read(string Id)
+        public async Task<TRole> Read(string Id)
         {
             var role = await _context.Roles.SingleOrDefaultAsync(t => t.Id == Id);
 
@@ -72,7 +82,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             return role;
         }
 
-        public async Task Update(Role role)
+        public async Task Update(TRole role)
         {
             role.UpdatedOnUtc = DateTime.UtcNow;
             _context.Roles.Update(role);

@@ -1,12 +1,21 @@
-﻿using System;
+﻿// Copyright (c) DNV. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace DNVGL.Authorization.Web
 {
+    /// <summary>
+    /// Provides extension methods to enum.
+    /// </summary>
     public static class EnumExtensions
     {
+        /// <summary>
+        /// Get the key of permission from an enum.<b>the enum should be decorated with <see cref="PermissionValueAttribute"/</b>
+        /// </summary>
+        /// <param name="enumValue">An enum has be decorated with <see cref="PermissionValueAttribute"/></param>
+        /// <returns>the permission key.</returns>
         public static string GetPermissionKey(this Enum enumValue)
         {
             FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
@@ -16,14 +25,11 @@ namespace DNVGL.Authorization.Web
             return attrs.Length > 0 ? attrs[0].Key : string.Empty;
         }
 
-        public static T GetAttributeOfType<T>(this Enum enumValue) where T : Attribute
-        {
-            Type type = enumValue.GetType();
-            MemberInfo[] memInfo = type.GetMember(enumValue.ToString());
-            object[] attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
-            return (attributes.Length > 0) ? (T)attributes[0] : null;
-        }
-
+        /// <summary>
+        /// Get all refered type of a <see cref="Type"/>
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <returns>The collection of types. <see cref="IEnumerable{Type}"/></returns>
         public static IEnumerable<Type> EnumerateNestedTypes(this Type type)
         {
             const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public;
@@ -41,6 +47,12 @@ namespace DNVGL.Authorization.Web
             } while (toBeVisited.Count != 0);
         }
 
+        /// <summary>
+        /// Get a refered type of a <see cref="Type"/> with a predicate function.
+        /// </summary>
+        /// <param name="type">The target <see cref="Type"/>.</param>
+        /// <param name="filter">A predicate to filter type</param>
+        /// <returns>The <see cref="Type"/></returns>
         public static Type FindNestedType(this Type type, Predicate<Type> filter)
         {
             const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.Public;

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿// Copyright (c) DNV. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using System;
 using System.Threading.Tasks;
 using DNVGL.Authorization.Web.Abstraction;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +10,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace DNVGL.Authorization.Web
 {
+    /// <summary>
+    /// Provides a api controller filter to get a company id.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
     public class CompanyIdentityFieldNameFilterAttribute : TypeFilterAttribute
     {
@@ -18,6 +20,12 @@ namespace DNVGL.Authorization.Web
         private readonly string _companyIdInQuery;
         private readonly string _companyIdInActionArguments;
 
+        /// <summary>
+        /// Constructs a new instance of <see cref="CompanyIdentityFieldNameFilterAttribute"/>.
+        /// </summary>
+        /// <param name="companyIdInRoute">compnay id specification in route.</param>
+        /// <param name="companyIdInQuery">compnay id specification in query.</param>
+        /// <param name="companyIdInActionArguments">compnay id specification in action arguments.</param>
         public CompanyIdentityFieldNameFilterAttribute(string companyIdInRoute = "", string companyIdInQuery = "", string companyIdInActionArguments = "")
                 : base(typeof(CompanyIdentityFieldNameFilterImpl))
         {
@@ -34,6 +42,10 @@ namespace DNVGL.Authorization.Web
             }
         }
 
+        /// <summary>
+        /// Get company from httpcontext.
+        /// </summary>
+        /// <param name="context"><see cref="HttpContext"/></param>
         public void GetCompanyId(HttpContext context)
         {
             var companyId = context.GetRouteData().Values[_companyIdInRoute] as string ?? context.Request.Query[_companyIdInQuery];

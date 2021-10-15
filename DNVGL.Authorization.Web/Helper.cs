@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace DNVGL.Authorization.Web
 {
@@ -54,9 +51,9 @@ namespace DNVGL.Authorization.Web
                 if (action != null)
                 {
                     crossCompanyPermissionAttriute = action.ControllerTypeInfo.UnderlyingSystemType.GetCustomAttribute(typeof(CompanyMemberIgnorePermissionFilterAttribute), true) as CompanyMemberIgnorePermissionFilterAttribute ?? action.MethodInfo.GetCustomAttribute(typeof(CompanyMemberIgnorePermissionFilterAttribute), true) as CompanyMemberIgnorePermissionFilterAttribute;
-                    if (crossCompanyPermissionAttriute != null && crossCompanyPermissionAttriute.PermissionsToCheck != null)
+                    if (crossCompanyPermissionAttriute != null && crossCompanyPermissionAttriute.PermissionsToIgore != null)
                     {
-                        premissions = string.Join(',', crossCompanyPermissionAttriute.PermissionsToCheck);
+                        premissions = string.Join(',', crossCompanyPermissionAttriute.PermissionsToIgore);
                     }
                 }
             }

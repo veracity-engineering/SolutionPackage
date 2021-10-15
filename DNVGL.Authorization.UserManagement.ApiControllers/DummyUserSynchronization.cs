@@ -9,19 +9,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     public class DummyUserSynchronization : IUserSynchronization<User>
     {
-        public void LaunchMonitoring()
+        public Task<User> PullUserFromSource(User user)
         {
-            throw new NotImplementedException();
+            return (Task<User>)Task.CompletedTask;
         }
 
-        public Task StopMonitoring()
+        public Task<User> PushUserToSource(User user)
         {
-            return Task.CompletedTask;
+            return (Task<User>)Task.CompletedTask;
         }
 
-        public Task<User> SyncUser(User user)
+        public Task<User> RemoveUserAtSource(User user)
         {
-            return Task.FromResult(user);
+            return (Task<User>)Task.CompletedTask;
         }
+
+        public Task<User> RemoveUserAtLocal(User user)
+        {
+            return (Task<User>)Task.CompletedTask;
+        }
+
     }
 }

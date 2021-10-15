@@ -9,21 +9,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.EFCore
 {
-    public class CompanyRepository : ICompany<Company>
-    {
-        private readonly UserManagementContext _context;
 
-        public CompanyRepository(UserManagementContext context)
+    public class CompanyRepository : CompanyRepository<Company, Role, User>
+    {
+        public CompanyRepository(UserManagementContext<Company, Role, User> context) : base(context)
+        {
+
+        }
+
+    }
+
+
+    public class CompanyRepository<TCompany, TRole, TUser> : ICompany<TCompany> where TRole : Role, new() where TCompany : Company, new() where TUser : User, new()
+    {
+        private readonly UserManagementContext<TCompany, TRole, TUser> _context;
+
+        public CompanyRepository(UserManagementContext<TCompany, TRole, TUser> context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Company>> All()
+        public async Task<IEnumerable<TCompany>> All()
         {
-            return await _context.Set<Company>().OrderBy(t => t.Name).ToListAsync();
+            return await _context.Set<TCompany>().OrderBy(t => t.Name).ToListAsync();
         }
 
-        public async Task<Company> Create(Company company)
+        public async Task<TCompany> Create(TCompany company)
         {
             if (string.IsNullOrEmpty(company.Id))
             {
@@ -44,22 +55,22 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Company>> List(IEnumerable<string> Ids)
+        public async Task<IEnumerable<TCompany>> List(IEnumerable<string> Ids)
         {
             return await _context.Companys.Where(t => Ids.Contains(t.Id)).ToListAsync();
         }
 
-        public async Task<Company> Read(string Id)
+        public async Task<TCompany> Read(string Id)
         {
             return await _context.Companys.SingleOrDefaultAsync(t => t.Id == Id);
         }
 
-        public async Task<Company> ReadByDomain(string domain)
+        public async Task<TCompany> ReadByDomain(string domain)
         {
             return await _context.Companys.SingleOrDefaultAsync(t => t.DomainUrl == domain);
         }
 
-        public async Task Update(Company company)
+        public async Task Update(TCompany company)
         {
             company.UpdatedOnUtc = DateTime.UtcNow;
             _context.Companys.Update(company);
