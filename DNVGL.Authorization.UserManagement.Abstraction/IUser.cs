@@ -9,7 +9,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
     /// <summary>
     /// Provides an abstraction for a storage and management of roles.
     /// </summary>
-    /// <typeparam name="TRole">The type that represents a role.</typeparam>
+    /// <typeparam name="TUser">The type that represents a user.</typeparam>
     public interface IUser<TUser> where TUser : User
     {
         /// <summary>
