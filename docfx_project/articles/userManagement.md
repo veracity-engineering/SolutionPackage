@@ -141,10 +141,13 @@ Decorates API actions with permission.
 [Overview of User Management](/userManagement/overview)
 >  Detail design behind the user management and authorization.
 
+[Integration with ASP.NET Core's Role-based authorization](/userManagement/authorize)
+>  Integrate user management module with Role-based authorization in ASP.NET Core. In this way, you are allowed to authorize API with asp.net core's `[Authorize(Roles = "****")]`.
+
 ## Guidance for different databases
 [Use Azure CosmosDB as database](/userManagement/cosmos)
 
-[Use Azure SQL Server as database](/userManagement/sqlserver)
+[Use SQL Server as database](/userManagement/sqlserver)
 
 User other databases.
 > The package can use all database engines supported by EF Core 5.0+. Here is a list -  [EF Core 5.0 Database providers](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli)
@@ -156,3 +159,6 @@ User other databases.
 [Extend Data model - Company, Role, User](/userManagement/customModel)
 
 [Replace EF Core with your own data access](/userManagement/dataAccess)
+
+## Guidance for defining premissions outside souce code
+[Define permissions in json, database or other places](/userManagement/permissionStore)
