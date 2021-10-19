@@ -105,3 +105,7 @@ The following is sample.
 #### Open swagger in Browser
 
 ![image.png](../images/userManagement/swagger01.png)
+
+### 6. Define permissions
+
+### 7. Authorize API with permissions

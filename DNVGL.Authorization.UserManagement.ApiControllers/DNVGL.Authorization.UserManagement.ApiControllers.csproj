@@ -9,7 +9,7 @@
 
 
 	<ItemGroup Label="Packaging">
-		<Content Include="content\NewTableScript.sql">
+		<Content Include="Content\NewTableScript.sql">
 		</Content>
 	</ItemGroup>
 
