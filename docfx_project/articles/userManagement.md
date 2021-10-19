@@ -139,7 +139,7 @@ Decorates API actions with permission.
 
 ## Recommended content
 [Overview of User Management](/userManagement/overview)
->  Detail design behind the user management and authorization.
+>  Something you need to know before using this package to handle user management and authorization.
 
 [Integration with ASP.NET Core's Role-based authorization](/userManagement/authorize)
 >  Integrate user management module with Role-based authorization in ASP.NET Core. In this way, you are allowed to authorize API with asp.net core's `[Authorize(Roles = "****")]`.
