@@ -26,8 +26,7 @@ This simple example will show you the minimum steps to setup user management and
 ### 2. Create tables in database
 Find and execute `NewTableScript.sql` which is located at the content directory once you imported the package in your project.
 
-### 3. Create master data in database manually. 
-#### Setup a super admin in Table - `Users`. 
+### 3. Create a super admin in Table - `Users`. 
 The following is sample.
 | Id | Email | FirstName | LastName | VeracityId | SuperAdmin | Active | Deleted |
 |--|--|--|--|--|--|--|--|
