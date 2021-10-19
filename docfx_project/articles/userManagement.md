@@ -27,8 +27,82 @@ This simple example will show you the minimum steps to setup user management and
 Find and execute `NewTableScript.sql` which is located at the content directory once you imported the package in your project.
 
 ### 3. Create master data in database manually. 
-#### Setup a company
+#### Setup a super admin in Table - `Users`. 
+The following is sample.
+| Id | Email | FirstName | LastName | VeracityId | SuperAdmin | Active | Deleted |
+|--|--|--|--|--|--|--|--|
+| *1* | *email* | *first name* | *last name* | *veracity id* | 1 | 1 | 0
 
-#### Setup a role
+### 4. Generate Swagger api documentation (Optional)
+> **_NOTE:_**  This step is optional. You can generate API docs in your own way. The following code has dependency on Nuget package - `Swashbuckle.AspNetCore`.
 
-#### Setup a super admin
+```cs
+    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddSwaggerGen(c =>
+            {
+                // swagger documentaion group for User Management.
+                c.SwaggerDoc("UserManagement", new OpenApiInfo
+                {
+                    Title = "User Management",
+                    Version = "v1"
+                });
+
+                // swagger documentaion group for your system.
+                c.SwaggerDoc("WebAPI", new OpenApiInfo
+                {
+                    Title = "Web API",
+                    Version = "v1"
+                });
+
+                c.TagActionsBy(api =>
+                {
+                    if (api.GroupName != null)
+                    {
+                        return new[] { api.GroupName };
+                    }
+
+                    var controllerActionDescriptor = api.ActionDescriptor as ControllerActionDescriptor;
+                    if (controllerActionDescriptor != null)
+                    {
+                        return new[] { controllerActionDescriptor.ControllerName };
+                    }
+
+                    throw new InvalidOperationException("Unable to determine tag for endpoint.");
+                });
+
+                c.DocInclusionPredicate((name, api) =>
+                {
+                    if (name == "UserManagement")
+                        return api.GroupName != null && api.GroupName.StartsWith("UserManagement");
+                    else
+                        return api.GroupName == null;
+                });
+            });
+            //...
+        }
+
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/UserManagement/swagger.json", "User Management API v1");
+                c.SwaggerEndpoint("/swagger/WebAPI/swagger.json", "Web API v1");
+            });
+            //...
+        }
+    }
+```
+
+### 5. Explore user management APIs
+#### Build and Run your project.
+#### Open swagger in Browser
+
+![image.png](../images/userManagement/swagger01.png)
