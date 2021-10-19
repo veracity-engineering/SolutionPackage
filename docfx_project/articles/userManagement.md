@@ -6,7 +6,8 @@ PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
 
 ## Basic Usage
 This simple example will show you the minimum steps to setup user management and authorization in a ASP.NET Core project. The example uses SQL Server as database and Veracity authentication (Azure AD B2C).
-### 1. register user management module in ASP.NET core.
+### 1. register user management module in ASP.NET core project.
+PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
 ```cs
     public class Startup
     {
@@ -107,5 +108,39 @@ The following is sample.
 ![image.png](../images/userManagement/swagger01.png)
 
 ### 6. Define permissions
+Define permissions by implementing interface - `IPermissionMatrix`. The following code defined two permissions.
+```cs
+    public class PermissionBook : IPermissionMatrix
+    {
+        public enum WeatherPermission
+        {
+            //...
 
+            [PermissionValue(id: "8", key: "ReadWeather", name: "Read Weather", group: "Weather", description: "ReadWeather")]
+            ReadWeather,
+
+            [PermissionValue(id: "8", key: "WriteWeather", name: "Write Weather", group: "Weather", description: "WriteWeather")]
+            WriteWeather,
+
+            //... other permissions
+        }
+    }
+```
 ### 7. Authorize API with permissions
+Decorates API actions with permission.
+```cs
+        [HttpGet]
+        [PermissionAuthorize(WeatherPermission.ReadWeather)]
+        public IEnumerable<WeatherForecast> Get()
+        {
+            //... api logic
+        }
+```
+
+## Next Steps
+[Use Azure CosmosDB as database](/userManagement/cosmos)
+
+[Use Azure SQL Server as database](/userManagement/sqlserver)
+
+User other databases.
+> **_NOTE:_**  The package can use all database engines supported by EF Core 5.0+. Here is a list -  [EF Core 5.0 Database providers](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli)
