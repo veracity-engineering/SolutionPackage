@@ -1,5 +1,5 @@
 # User Management and Authorization
-DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints.
+DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/userManagement/overview) to understand the logic behind the package.
 
 ## Prerequisites
 PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
@@ -137,10 +137,22 @@ Decorates API actions with permission.
         }
 ```
 
-## Next Steps
+## Recommended content
+[Overview of User Management](/userManagement/overview)
+>  Detail design behind the user management and authorization.
+
+## Guidance for different databases
 [Use Azure CosmosDB as database](/userManagement/cosmos)
 
 [Use Azure SQL Server as database](/userManagement/sqlserver)
 
 User other databases.
-> **_NOTE:_**  The package can use all database engines supported by EF Core 5.0+. Here is a list -  [EF Core 5.0 Database providers](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli)
+> The package can use all database engines supported by EF Core 5.0+. Here is a list -  [EF Core 5.0 Database providers](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli)
+
+## Guidance for configuration
+[User Management Configuration](/userManagement/configuration)
+
+## Guidance for customization
+[Extend Data model - Company, Role, User](/userManagement/customModel)
+
+[Replace EF Core with your own data access](/userManagement/dataAccess)

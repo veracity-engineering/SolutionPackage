@@ -14,8 +14,7 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
             services.AddUserManagement(
                 new UserManagementOptions
                 {
-                    DbContextOptionsBuilder = options => options.UseCosmos("***Connection string***", "UserManagement"),
-                    ModelBuilder = (modelBuilder) => modelBuilder.HasDefaultContainer("User"),
+                    DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;")
                 });
             //...
         }
