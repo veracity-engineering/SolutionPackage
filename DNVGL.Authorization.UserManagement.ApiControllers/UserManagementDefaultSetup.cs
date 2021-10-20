@@ -15,31 +15,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
 
         /// <summary>
-        /// <para>Configure database connection string for user management module.</para>
         /// <para>Thie extension methods will setup user management module with built in services and data models:<see cref="Company"/>,<see cref="Role"/> and <see cref="User"/>.</para>
-        /// <example>
-        /// <list type="number">
-        /// <item>
-        /// Use SQLServer as backend database to store user data.
-        /// <code>
-        /// services.AddUserManagement(
-        ///     new UserManagementOptions{
-        ///         DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;"),
-        /// });
-        /// </code>
-        /// </item>
-        /// <item>
-        /// Use Cosmos DB as backend database to store user data.
-        /// <code>
-        /// services.AddUserManagement(
-        ///     new UserManagementOptions{
-        ///         DbContextOptionsBuilder = options => options.UseCosmos("https://localhost:8081", "*****", databaseName: "UserManagement"),
-        ///         ModelBuilder = (modelBuilder) => modelBuilder.HasDefaultContainer("User"),
-        /// });
-        /// </code>
-        /// </item>
-        /// </list>
-        /// </example>
         /// </summary>
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <param name="options">A instance of <see cref="UserManagementOptions"/> to configure the user management module.</param>
@@ -55,7 +31,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
-        /// <para>Configure database connection string for user management module.</para>
         /// <para>Thie extension methods will setup user management module with built in services and data models:<see cref="Company"/> and <see cref="Role"/>.</para>
         /// <para>A customized user model should be specified to replace generic type: <c>TUser</c></para>
         /// </summary>
@@ -78,7 +53,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
-        /// <para>Configure database connection string for user management module.</para>
         /// <para>Thie extension methods will setup user management module with built in services and data models:<see cref="Role"/>.</para>
         /// <para>customized company and user model should be specified to replace generic type: <c>TCompany</c>, <c>TUser</c></para>
         /// </summary>
@@ -102,7 +76,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
-        /// <para>Configure database connection string for user management module.</para>
         /// <para>Thie extension methods will setup user management module with built in services.</para>
         /// <para>customized company, role and user model should be specified to replace generic type: <c>TCompany</c>, <c>TRole</c>, <c>TUser</c></para>
         /// </summary>
@@ -149,7 +122,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
-        /// <para>Configure database connection string for user management module.</para>
         /// <para>customized data access service to be registered into <see cref="IServiceCollection"/> at other place.</para>
         /// <para>customized company, role and user model should be specified to replace generic type: <c>TCompany</c>, <c>TRole</c>, <c>TUser</c>.</para>
         /// </summary>
