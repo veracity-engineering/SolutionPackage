@@ -7,15 +7,8 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-
-	<ItemGroup Label="Packaging">
-		<Content Include="Content\NewTableScript.sql">
-		</Content>
-	</ItemGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
-		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
 	</ItemGroup>
 

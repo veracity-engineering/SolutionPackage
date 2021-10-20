@@ -3,9 +3,7 @@
 using System;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
-using DNVGL.Authorization.UserManagement.EFCore;
 using DNVGL.Authorization.Web;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
@@ -15,6 +13,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     /// </summary>
     public static class UserManagementDefaultSetup
     {
+
         /// <summary>
         /// <para>Configure database connection string for user management module.</para>
         /// <para>Thie extension methods will setup user management module with built in services and data models:<see cref="Company"/>,<see cref="Role"/> and <see cref="User"/>.</para>
@@ -45,9 +44,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <param name="options">A instance of <see cref="UserManagementOptions"/> to configure the user management module.</param>
         /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddUserManagement(this IServiceCollection services, UserManagementOptions options)
+        public static IServiceCollection AddUserManagement(this IServiceCollection services, UserManagementOptions options = null)
         {
-            return services.AddUserManagement<DummyUserSynchronization>(options);
+            return services.AddUserManagement<DummyUserSynchronization>(options ?? new UserManagementOptions());
         }
 
         private static IServiceCollection AddUserManagement<TUserSynchronization>(this IServiceCollection services, UserManagementOptions options) where TUserSynchronization : IUserSynchronization<User>
@@ -143,19 +142,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 };
             });
 
-            return services
-                           .AddDbContextFactory<UserManagementContext<TCompany, TRole, TUser>>(options.DbContextOptionsBuilder)
-                           .AddScoped<UserManagementContext<TCompany, TRole, TUser>>(p =>
-                           {
-                               var db = p.GetRequiredService<IDbContextFactory<UserManagementContext<TCompany, TRole, TUser>>>().CreateDbContext();
-                               db.PrebuildModel = options.ModelBuilder;
-                               return db;
-                           })
-                           .AddPermissionAuthorization<UserPermissionReader<TCompany, TRole, TUser>>(options.PermissionOptions)
-                           .AddScoped(typeof(IUserSynchronization<TUser>), typeof(TUserSynchronization))
-                           .AddScoped<IRole<TRole>, RoleRepository<TCompany, TRole, TUser>>()
-                           .AddScoped<IUser<TUser>, UserRepository<TCompany, TRole, TUser>>()
-                           .AddScoped<ICompany<TCompany>, CompanyRepository<TCompany, TRole, TUser>>()
+            return services.AddScoped(typeof(IUserSynchronization<TUser>), typeof(TUserSynchronization))
+                           .AddPermissionAuthorizationWithoutUserPermissionReader(options.PermissionOptions)
                            .AddScoped<AccessibleCompanyFilterAttribute>()
                            .AddScoped<CompanyIdentityFieldNameFilterAttribute>();
         }
