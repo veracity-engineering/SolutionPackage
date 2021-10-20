@@ -13,8 +13,8 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.Cosmos`
         public void ConfigureServices(IServiceCollection services)
         {
             //...
-            services.AddUserManagement(
-                new UserManagementOptions
+            services.AddUserManagement().UseEFCore(
+                new EFCoreOptions
                 {
                     DbContextOptionsBuilder = options => options.UseCosmos("***Connection string***", "UserManagement"),
                     ModelBuilder = (modelBuilder) => modelBuilder.HasDefaultContainer("User"),

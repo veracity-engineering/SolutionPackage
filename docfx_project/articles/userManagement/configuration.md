@@ -31,7 +31,7 @@ Change the default heavior to throw a exception directly.
                       {
                           //...
                           HandleUnauthorizedAccess = BuiltinUnauthorizedAccessHandler.ThrowExceptionDirectly
-                      }
+                      })
             //...
         }
     }

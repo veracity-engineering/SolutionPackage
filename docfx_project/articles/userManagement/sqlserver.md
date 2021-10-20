@@ -11,7 +11,7 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
         public void ConfigureServices(IServiceCollection services)
         {
             //...
-            services.AddUserManagement(
+            services.AddUserManagement().UseEFCore(
                 new UserManagementOptions
                 {
                     DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;")

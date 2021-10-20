@@ -4,6 +4,8 @@ DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage us
 ## Prerequisites
 PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
 
+PM> `Install-Package DNVGL.Authorization.UserManagement.EFCore`
+
 ## Basic Usage
 This simple example will show you the minimum steps to setup user management and authorization in a ASP.NET Core project. The example uses SQL Server as database and Veracity authentication (Azure AD B2C).
 ### 1. register user management module in ASP.NET core project.
@@ -15,8 +17,7 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
         public void ConfigureServices(IServiceCollection services)
         {
             //...
-            services.AddUserManagement(
-                new UserManagementOptions
+            services.AddUserManagement().UseEFCore(new EFCoreOptions
                 {
                     DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;")
                 });
