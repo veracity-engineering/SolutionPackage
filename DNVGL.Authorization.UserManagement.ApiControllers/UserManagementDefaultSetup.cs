@@ -47,9 +47,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// </code>
         /// </example>
         /// </remarks>
-        public static IServiceCollection AddUserManagementWithCustomModel<TUser>(this IServiceCollection services, UserManagementOptions options) where TUser : User, new()
+        public static IServiceCollection AddUserManagementWithCustomModel<TUser>(this IServiceCollection services, UserManagementOptions options = null) where TUser : User, new()
         {
-            return services.AddUserManagementWithCustomModel<Company, Role, TUser, DummyUserSynchronization>(options);
+            return services.AddUserManagementWithCustomModel<Company, Role, TUser, DummyUserSynchronization>(options ?? new UserManagementOptions());
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// </code>
         /// </example>
         /// </remarks>
-        public static IServiceCollection AddUserManagementWithCustomModel<TCompany, TUser>(this IServiceCollection services, UserManagementOptions options) where TCompany : Company, new() where TUser : User, new()
+        public static IServiceCollection AddUserManagementWithCustomModel<TCompany, TUser>(this IServiceCollection services, UserManagementOptions options = null) where TCompany : Company, new() where TUser : User, new()
         {
-            return services.AddUserManagementWithCustomModel<TCompany, Role, TUser, DummyUserSynchronization>(options);
+            return services.AddUserManagementWithCustomModel<TCompany, Role, TUser, DummyUserSynchronization>(options ?? new UserManagementOptions());
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// </code>
         /// </example>
         /// </remarks>
-        public static IServiceCollection AddUserManagementWithCustomModel<TCompany, TRole, TUser>(this IServiceCollection services, UserManagementOptions options) where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
+        public static IServiceCollection AddUserManagementWithCustomModel<TCompany, TRole, TUser>(this IServiceCollection services, UserManagementOptions options = null) where TCompany : Company, new() where TRole : Role, new() where TUser : User, new()
         {
-            return services.AddUserManagementWithCustomModel<TCompany, TRole, TUser, DummyUserSynchronization>(options);
+            return services.AddUserManagementWithCustomModel<TCompany, TRole, TUser, DummyUserSynchronization>(options ?? new UserManagementOptions());
         }
 
         private static IServiceCollection AddUserManagementWithCustomModel<TCompany, TRole, TUser, TUserSynchronization>(this IServiceCollection services, UserManagementOptions options) where TCompany : Company, new() where TRole : Role, new() where TUser : User, new() where TUserSynchronization : IUserSynchronization<User>
