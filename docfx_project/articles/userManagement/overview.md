@@ -41,7 +41,7 @@ The following are serveral built-in permissions used to authorize user managemen
 | `Premissions.ManageRole` | permission to make change on role. |
 | `Premissions.ViewRole` | permission to read role. |
 | `Premissions.ManageCompany` | permission to make change on company. |
-| `Premissions.ViewCompany` | permission to read role. |
+| `Premissions.ViewCompany` | permission to read company. |
 
 ### Create your own premissions
 Define permissions by implementing interface - `IPermissionMatrix`. The following code defined two permissions.
@@ -56,7 +56,7 @@ Define permissions by implementing interface - `IPermissionMatrix`. The followin
             [PermissionValue(id: "8", key: "ReadWeather", name: "Read Weather", group: "Weather", description: "ReadWeather")]
             ReadWeather,
 
-            [PermissionValue(id: "8", key: "WriteWeather", name: "Write Weather", group: "Weather", description: "WriteWeather")]
+            [PermissionValue(id: "9", key: "WriteWeather", name: "Write Weather", group: "Weather", description: "WriteWeather")]
             WriteWeather,
 
             //... other permissions
@@ -76,10 +76,30 @@ Decorates API actions with permission.
         }
 ```
 
-## 3. Company/ Role/ User deletion
-So far, the soft deletion is not yet implemented, however we have reserved the `Deleted` in the data model for this purpose. In another word, record will be **HARD DELETED** once you call delete api. 
+## 3. Data Model
+The predefeind data models of `Company`, `Role` and `User` may not fully meet your needs. Please check the [built-in model definition](/dataModel), and follow this [instruction](/customModel) to extend the data model.
 
-To implement **SOFT DELETE**, you can utilize `Active` field in the data model with update APIs as of now.
+## 4. Company/ Role/ User deletion
+So far, the soft deletion is not yet implemented, however we have reserved the `Deleted` in the data model for this purpose. In another word, record will be **HARD DELETED** once you call delete APIs. 
 
-## 4. Data Access Implementation
-The package has dependency on EF Core 5.0+. If you don't want to 
+A work-aroud to implement **SOFT DELETE**, you can utilize `Active` field in the data model with update APIs as of now.
+
+## 5. Data Access Implementation
+We provide data access implementation in package - `DNVGL.Authorization.UserManagement.EFCore`. It has dependency on EF Core 5.0+. 
+
+If you don't want to introduce EF Core in your project. then this package is not required to be installed. Here is an instruction to [Replace EF Core with your own data access](/dataAccess)
+
+## 6. Performance &check;
+By default, The package reads and check user's permission from database for every http request. You can change this behavior to load user's permission in to claim (in cookie), and then read, check user's premission from claim. The following is to setup such behavior.
+```cs
+    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));
+            //...
+        }
+    }
+```

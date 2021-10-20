@@ -101,6 +101,11 @@ namespace DNVGL.Authorization.Web
 
         /// <summary>
         /// Add customized CookieValidateHandler to the <see cref="CookieAuthenticationEvents.OnValidatePrincipal"/>.
+        /// <example>
+        /// <code>
+        /// services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));
+        /// </code>
+        /// </example>
         /// </summary>
         /// <remarks>
         /// Claim based authorization is enabled only if this customized CookieValidateHandler are added.
