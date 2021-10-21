@@ -103,3 +103,6 @@ By default, The package reads and check user's permission from database for ever
         }
     }
 ```
+
+## 7. Swagger UI
+ By default, Swagger UI probably do not show *User Management APIs*. Then you could follow the [instructuon](/swagger) to get it displayed.

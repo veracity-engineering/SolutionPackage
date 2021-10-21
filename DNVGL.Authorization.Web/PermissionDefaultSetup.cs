@@ -60,6 +60,20 @@ namespace DNVGL.Authorization.Web
         }
 
         /// <summary>
+        /// Use you own IPermissionRepository implementation to replace default built-in implementation.
+        /// </summary>
+        /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns></returns>
+        public static IServiceCollection UsePermissionRepository<TPermissionRepository>(this IServiceCollection services) where TPermissionRepository : IPermissionRepository
+        {
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IPermissionRepository));
+            services.Remove(descriptor);
+            services.AddSingleton(typeof(IPermissionRepository), typeof(TPermissionRepository));
+            return services;
+        }
+
+        /// <summary>
         /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/>. <b>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </b>
         /// </summary>
         /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
