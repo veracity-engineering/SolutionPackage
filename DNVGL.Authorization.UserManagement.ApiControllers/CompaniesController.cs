@@ -18,6 +18,7 @@ using static DNVGL.Authorization.Web.PermissionMatrix;
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     [Authorize]
+    [Produces("application/json")]
     [ApiController]
     [Route("api/companies")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
@@ -34,7 +35,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-
+        /// <summary>
+        /// Get all companies.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewCompany
+        /// </remarks>
+        /// <returns>An array of company</returns>
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewCompany)]
@@ -58,6 +65,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         }
 
+        /// <summary>
+        /// Get a company by companyId
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{companyId}")]
         [CompanyIdentityFieldNameFilter(companyIdInRoute: "companyId")]
@@ -73,6 +88,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
+
         [HttpGet]
         [Route("obsoletedapi/{id}")]
         [PermissionAuthorize(Premissions.ViewCompany)]
@@ -87,6 +103,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
+        /// <summary>
+        /// Get a company from its dedicated domain url.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: None
+        /// </remarks>
+        /// <param name="url">Company Domain URL</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("domain/{*url}")]
         public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
@@ -113,6 +137,26 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return result;
         }
 
+        /// <summary>
+        /// Create a company using custom model. Only if custom company model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permissions: ManageCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "domainUrl": "",
+        ///        "active":true,
+        ///        "customProperty":"",
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageCompany)]
@@ -125,6 +169,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return model.Id;
         }
 
+        /// <summary>
+        /// Create a company.
+        /// </summary>
+        /// <remarks>
+        /// Required Permissions: ManageCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "domainUrl": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
@@ -146,6 +209,26 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return company.Id;
         }
 
+        /// <summary>
+        /// Update a company using custom model. Only if custom company model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permissions: ManageCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "domainUrl": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]
@@ -159,7 +242,26 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _companyRepository.Update(model);
         }
 
-
+        /// <summary>
+        /// Update a company
+        /// </summary>
+        /// <remarks>
+        /// Required Permissions: ManageCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "domainUrl": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]
@@ -177,6 +279,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _companyRepository.Update(company);
         }
 
+        /// <summary>
+        /// Delete a company. It is hard delete.
+        /// </summary>
+        /// <remarks>
+        /// Required Permissions: ManageCompany
+        /// </remarks>
+        /// <param name="id">Company Id</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]

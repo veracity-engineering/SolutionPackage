@@ -8,8 +8,15 @@
 		<Description>Provide Rest API of DNVGL.UserManagement package.</Description>
 		<PackageTags>aspnetcore;identity;membership</PackageTags>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>apidocs\$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
+	<ItemGroup Label="Packaging">
+		<Content Include="apidocs\$(AssemblyName).xml">
+		</Content>
+	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />

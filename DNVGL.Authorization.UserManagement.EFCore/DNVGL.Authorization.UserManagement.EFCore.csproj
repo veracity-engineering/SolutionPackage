@@ -8,6 +8,7 @@
 		<Description>Provide an implementation of DNVGL.Authorization.UserManagement.Abstraction with Entity Framework Core 5.0</Description>
 		<PackageTags>aspnetcore;identity;membership</PackageTags>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup Label="Packaging">

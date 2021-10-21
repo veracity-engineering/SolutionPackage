@@ -35,7 +35,7 @@ The following is sample.
 | *1* | *email* | *first name* | *last name* | *veracity id* | 1 | 1 | 0
 
 ### 4. Generate Swagger api documentation (Optional)
-> **_NOTE:_**  This step is optional. You can generate API docs in your own way. The following code has dependency on Nuget package - `Swashbuckle.AspNetCore`.
+> **_NOTE:_**  This step is optional. You can generate API docs in your own way. The following code has dependency on Nuget package - `Swashbuckle.AspNetCore`. Additionaly, you will get more explanation if you set `apidocs/DNVGL.Authorization.UserManagement.ApiControllers.xml`'s *Copy to Output Directory* as **Copy Always**.
 
 ```cs
     public class Startup
@@ -83,6 +83,11 @@ The following is sample.
                     else
                         return api.GroupName == null;
                 });
+
+                var xmlFile = $"DNVGL.Authorization.UserManagement.ApiControllers.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, "apidocs", xmlFile);
+                if (File.Exists(xmlPath))
+                    c.IncludeXmlComments(xmlPath);
             });
             //...
         }

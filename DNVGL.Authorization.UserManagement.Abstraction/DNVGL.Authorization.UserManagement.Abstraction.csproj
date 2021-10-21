@@ -8,6 +8,7 @@
 		<Description>Provides an abstraction for user management's entities and database operations.</Description>
 		<PackageTags>aspnetcore;identity;membership</PackageTags>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
 </Project>

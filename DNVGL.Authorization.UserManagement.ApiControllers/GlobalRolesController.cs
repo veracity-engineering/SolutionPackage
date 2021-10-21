@@ -15,6 +15,7 @@ using static DNVGL.Authorization.Web.PermissionMatrix;
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     [Authorize]
+    [Produces("application/json")]
     [ApiController]
     [Route("api/roles")]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
@@ -30,6 +31,13 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             _permissionRepository = permissionRepository;
         }
 
+        /// <summary>
+        /// Get all roles.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewRole
+        /// </remarks>
+        /// <returns></returns>
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewRole)]
@@ -38,7 +46,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetAllRoles(_roleRepository, _permissionRepository);
         }
 
-
+        /// <summary>
+        /// Get role by role id
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewRole
+        /// </remarks>
+        /// <param name="id">Role id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewRole)]
@@ -47,6 +62,24 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await FetchRole(id, _permissionRepository, _roleRepository);
         }
 
+        /// <summary>
+        /// Create a role using custom model. Only if custom role model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageRole
+        ///  
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageRole)]
@@ -59,6 +92,24 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return model.Id;
         }
 
+        /// <summary>
+        /// Create a role
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageRole
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageRole)]
@@ -78,6 +129,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return role.Id;
         }
 
+        /// <summary>
+        /// Update a role using custom model. Only if custom role model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageRole
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
@@ -90,7 +160,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _roleRepository.Update(model);
         }
 
-
+        /// <summary>
+        /// Update a role.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageRole
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "name": "Item1",
+        ///        "description": "",
+        ///        "active":true,
+        ///        "permissionKeys":["ReadWeather","ManageWeather"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id">Role Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]
@@ -107,6 +195,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _roleRepository.Update(role);
         }
 
+        /// <summary>
+        /// Delete a role.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageRole
+        /// </remarks>
+        /// <param name="id">Role Id</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageRole)]

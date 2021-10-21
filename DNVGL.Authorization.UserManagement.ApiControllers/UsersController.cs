@@ -16,6 +16,7 @@ using static DNVGL.Authorization.Web.PermissionMatrix;
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
     [Authorize]
+    [Produces("application/json")]
     [ApiController]
     [TypeFilter(typeof(ErrorCodeExceptionFilter))]
     [Route("api/company/{companyId}/users")]
@@ -39,6 +40,16 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             _userManagementSettings = userManagementSettings;
         }
 
+        /// <summary>
+        /// Get all user of a company
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("")]
         [PermissionAuthorize(Premissions.ViewUser)]
@@ -49,6 +60,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetUsersOfCompany(companyId);
         }
 
+        /// <summary>
+        /// Get user info by user id
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ViewUser)]
@@ -69,7 +91,33 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return null;
         }
 
-
+        /// <summary>
+        /// Update a user using custom model. Only if custom user model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ManageUser 
+        /// 
+        /// Required Permission for user not in this company: ManageUser,ViewCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="id">User Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
@@ -102,7 +150,33 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         }
 
-
+        /// <summary>
+        /// Update a user
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ManageUser 
+        /// 
+        /// Required Permission for user not in this company: ManageUser,ViewCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="id">User Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
@@ -139,6 +213,32 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             await _userRepository.Update(user);
         }
 
+        /// <summary>
+        /// Create a user using custom model. Only if custom user model is used.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ManageUser 
+        /// 
+        /// Required Permission for user not in this company: ManageUser,ViewCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageUser)]
@@ -164,6 +264,32 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return model.Id;
         }
 
+        /// <summary>
+        /// Create a user.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ManageUser 
+        /// 
+        /// Required Permission for user not in this company: ManageUser,ViewCompany
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageUser)]
@@ -199,6 +325,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return user.Id;
         }
 
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ManageUser 
+        /// 
+        /// Required Permission for user not in this company: ManageUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageUser)]
@@ -227,7 +364,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             }
         }
 
-
+        /// <summary>
+        /// Get Current user info with user's permission in this company.
+        /// </summary>
+        /// <remarks>
+        /// No permission is required
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/company/{companyId}/users/currentUser")]
         public async Task<UserViewModel> GetCompanyUserByIdentityId([FromRoute] string companyId)
@@ -241,15 +385,34 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return user;
         }
 
+        /// <summary>
+        /// Ger a user's permission in this company.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/company/{companyId}/users/{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string companyId, [FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
             return user.RoleList.Where(t => t.CompanyId == companyId).SelectMany(t => t.PermissionKeys);
         }
 
+        /// <summary>
+        /// Get Current user info with user's all permission 
+        /// </summary>
+        /// <remarks>
+        /// No permission is required
+        /// </remarks>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/users/currentUser")]
         public async Task<UserViewModel> GetUserByIdentityId()
@@ -258,15 +421,33 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetUserByIdentityId(varacityId);
         }
 
+        /// <summary>
+        /// Get a user's all permissions.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/users/{id}/permissions")]
         [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
         public async Task<IEnumerable<string>> GetUserCorssCompanyPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
             return user.RoleList.SelectMany(t => t.PermissionKeys);
         }
 
+        /// <summary>
+        /// Get all users. 
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser,ViewCompany
+        /// </remarks>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/admin/users")]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
@@ -284,6 +465,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetUsersOfCompany(companyid);
         }
 
+        /// <summary>
+        /// Get a user's info. Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
@@ -292,6 +481,30 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetUserById(id);
         }
 
+
+        /// <summary>
+        /// Create a user using custom model. Only if custom user model is used. Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageUser, ViewCompany 
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("~/api/admin/users/custommodel")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
@@ -315,7 +528,29 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return Ok(model.Id);
         }
 
-
+        /// <summary>
+        /// Create a user. Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageUser, ViewCompany 
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("~/api/admin/users")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
@@ -349,6 +584,30 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return Ok(user.Id);
         }
 
+        /// <summary>
+        /// Update a user using custom model. Only if custom user model is used. Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageUser, ViewCompany 
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("~/api/admin/users/custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
@@ -365,7 +624,30 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-
+        /// <summary>
+        /// Update a user.Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageUser, ViewCompany 
+        /// 
+        /// Sample request:
+        ///
+        ///     {
+        ///        "email": "",
+        ///        "firstName": "",
+        ///        "lastName": "",
+        ///        "veracityId": "user identity id in Identity Provider",
+        ///        "description": "",
+        ///        "superAdmin": false,
+        ///        "active":true,
+        ///        "roleIds":["1","2"],
+        ///        "companyIds":["1","2"]
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
@@ -389,7 +671,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
 
-
+        /// <summary>
+        /// Delete a user.Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ManageUser, ViewCompany 
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("~/api/admin/users/{id}")]
         [PermissionAuthorize(Premissions.ManageUser, Premissions.ViewCompany)]
