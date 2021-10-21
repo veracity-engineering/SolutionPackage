@@ -69,7 +69,7 @@ namespace DNVGL.Authorization.Web
         {
             var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IPermissionRepository));
             services.Remove(descriptor);
-            services.AddSingleton(typeof(IPermissionRepository), typeof(TPermissionRepository));
+            services.AddScoped(typeof(IPermissionRepository), typeof(TPermissionRepository));
             return services;
         }
 
