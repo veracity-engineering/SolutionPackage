@@ -166,5 +166,8 @@ User other databases.
 
 [Replace EF Core with your own data access](/userManagement/dataAccess)
 
+## Guidance for access control &check;
+[Resource access control](/userManagement/accessControl) guide you to control access on resource of company.
+
 ## Guidance for defining premissions outside souce code
 [Define permissions in json, database or other places](/userManagement/permissionStore)
