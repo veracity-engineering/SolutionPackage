@@ -64,7 +64,7 @@ namespace DNVGL.Authorization.Web
         /// </summary>
         /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
         /// <param name="services"><see cref="IServiceCollection"/></param>
-        /// <returns></returns>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection UsePermissionRepository<TPermissionRepository>(this IServiceCollection services) where TPermissionRepository : IPermissionRepository
         {
             var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IPermissionRepository));
