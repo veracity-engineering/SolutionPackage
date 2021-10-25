@@ -85,7 +85,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             else
                 user = PruneUserCompanyInfo(user, companyId);
 
-            if (user.Companies.Any(t => t.Id == companyId))
+            if (user != null && user.Companies.Any(t => t.Id == companyId))
                 return user;
 
             return null;
@@ -753,6 +753,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<UserViewModel> PopulateUserInfo(TUser user)
         {
+            if (user == null) return default;
+
             var allPermissions = await _permissionRepository.GetAll();
             var result = user.ToViewDto<UserViewModel>();
             result = PopulateUserRoleInfo(user, result, allPermissions);

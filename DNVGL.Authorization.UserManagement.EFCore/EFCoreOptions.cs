@@ -29,5 +29,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         /// </example>
         /// </summary>
         public Action<ModelBuilder> ModelBuilder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the behavior of entity deletion. set true if soft delete is desired.
+        /// </summary>
+        public bool SoftDelete { get; set; }
     }
 }

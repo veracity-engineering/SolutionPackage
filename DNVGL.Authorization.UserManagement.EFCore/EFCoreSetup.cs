@@ -87,6 +87,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                            .AddScoped<UserManagementContext<TCompany, TRole, TUser>>(p =>
                            {
                                var db = p.GetRequiredService<IDbContextFactory<UserManagementContext<TCompany, TRole, TUser>>>().CreateDbContext();
+                               db.SoftDelete = options.SoftDelete;
                                db.PrebuildModel = options.ModelBuilder;
                                return db;
                            })

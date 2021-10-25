@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +43,8 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public Action<ModelBuilder> PrebuildModel { get; set; }
 
+        public bool SoftDelete { get; set; }
+
         public UserManagementContext(DbContextOptions options) : base(options)
         {
         }
@@ -74,6 +78,43 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 entity.Ignore(t => t.CompanyIdList);
                 entity.Ignore(t => t.CompanyList);
             });
+
+            if (SoftDelete)
+            {
+                modelBuilder.Entity<TCompany>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
+                modelBuilder.Entity<TRole>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
+                modelBuilder.Entity<TUser>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
+            }
         }
+
+        public override int SaveChanges()
+        {
+            UpdateSoftDeleteStatuses();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateSoftDeleteStatuses();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateSoftDeleteStatuses()
+        {
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.CurrentValues["Deleted"] = false;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entry.CurrentValues["Deleted"] = true;
+                        break;
+                }
+            }
+        }
+
     }
 }

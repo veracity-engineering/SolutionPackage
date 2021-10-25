@@ -12,6 +12,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
     {
         internal static R ToViewDto<R>(this object obj) where R : new()
         {
+            if (obj == null)
+                return default;
+
             Type type = typeof(R);
             Type declaringType = obj.GetType();
             PropertyInfo[] PropertyInfo = type.GetProperties();
