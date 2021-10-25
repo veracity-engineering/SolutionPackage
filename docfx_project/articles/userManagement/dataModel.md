@@ -11,7 +11,7 @@ In this section, you learn the built-in data model in User Management Package. T
 | DomainUrl | `string` | It is domain url like *dnv.com*. or the secondary directory in url like *oilgas* in dnv.com/oilgas/phonebook. |
 | Permissions | `string` | Permissions are combined as a string which use *semicolon(;)* as a delimiter. |
 | Active | `bool` | |
-| Deleted | `bool` | It is a reseved filed. To be used in the future sofe delete implementation.|
+| Deleted | `bool` | `true` if the company is soft deleted, otherwise `false`. |
 | CreatedBy | `string` | |
 | CreatedOnUtc | `DateTime` | |
 | UpdatedBy | `string` | |
@@ -24,7 +24,7 @@ In this section, you learn the built-in data model in User Management Package. T
 | Name | `string` | |
 | Description | `string` | |
 | Active | `bool` | |
-| Deleted | `bool` | It is a reseved filed. To be used in the future sofe delete implementation. |
+| Deleted | `bool` | `true` if the role is soft deleted, otherwise `false`. |
 | Permissions | `string` | Permissions are combined as a string which use *semicolon(;)* as a delimiter. |
 | CompanyId | `string` | The id of the company to which this role belongs. It is null if it is a global role.|
 | CreatedBy | `string` | |
@@ -45,7 +45,7 @@ In this section, you learn the built-in data model in User Management Package. T
 | CompanyIds | `string` | Company's ids are combined as a string which use *semicolon(;)* as a delimiter. |
 | Active | `bool` | |
 | SuperAdmin | `bool` | `true` if the user is a super admin, otherwise `false`. |
-| Deleted | `bool` | It is a reseved filed. To be used in the future sofe delete implementation. |
+| Deleted | `bool` | `true` if the user is soft deleted, otherwise `false`. |
 | CreatedBy | `string` | |
 | CreatedOnUtc | `DateTime` | |
 | UpdatedBy | `string` | |

@@ -80,7 +80,23 @@ Decorates API actions with permission.
 The predefeind data models of `Company`, `Role` and `User` may not fully meet your needs. Please check the [built-in model definition](/dataModel), and follow this [instruction](/customModel) to extend the data model.
 
 ## 4. Company/ Role/ User deletion
-So far, the soft deletion is not yet implemented, however we have reserved the `Deleted` in the data model for this purpose. In another word, record will be **HARD DELETED** once you call delete APIs. 
+By default, the soft deletion is enabled. Change the default behavior to hard delete record.
+```cs
+    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddUserManagement().UseEFCore(new EFCoreOptions
+                {
+                    DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;"),
+                    HardDelete = true
+                });
+            //...
+        }
+    }
+```
 
 A work-aroud to implement **SOFT DELETE**, you can utilize `Active` field in the data model with update APIs as of now.
 
