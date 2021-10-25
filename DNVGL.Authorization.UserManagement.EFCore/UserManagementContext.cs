@@ -43,7 +43,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public Action<ModelBuilder> PrebuildModel { get; set; }
 
-        public bool SoftDelete { get; set; }
+        public bool HardDelete { get; set; }
 
         public UserManagementContext(DbContextOptions options) : base(options)
         {
@@ -79,7 +79,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 entity.Ignore(t => t.CompanyList);
             });
 
-            if (SoftDelete)
+            if (HardDelete == false)
             {
                 modelBuilder.Entity<TCompany>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
                 modelBuilder.Entity<TRole>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
@@ -101,17 +101,20 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         private void UpdateSoftDeleteStatuses()
         {
-            foreach (var entry in ChangeTracker.Entries())
+            if (HardDelete == false)
             {
-                switch (entry.State)
+                foreach (var entry in ChangeTracker.Entries())
                 {
-                    case EntityState.Added:
-                        entry.CurrentValues["Deleted"] = false;
-                        break;
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.CurrentValues["Deleted"] = true;
-                        break;
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            entry.CurrentValues["Deleted"] = false;
+                            break;
+                        case EntityState.Deleted:
+                            entry.State = EntityState.Modified;
+                            entry.CurrentValues["Deleted"] = true;
+                            break;
+                    }
                 }
             }
         }
