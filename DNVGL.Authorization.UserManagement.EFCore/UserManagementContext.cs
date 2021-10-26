@@ -79,11 +79,11 @@ namespace DNVGL.Authorization.UserManagement.EFCore
                 entity.Ignore(t => t.CompanyList);
             });
 
-            if (HardDelete == false)
+            if (!HardDelete)
             {
-                modelBuilder.Entity<TCompany>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
-                modelBuilder.Entity<TRole>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
-                modelBuilder.Entity<TUser>().HasQueryFilter(m => EF.Property<bool>(m, "Deleted") == false);
+                modelBuilder.Entity<TCompany>().HasQueryFilter(m => !EF.Property<bool>(m, "Deleted"));
+                modelBuilder.Entity<TRole>().HasQueryFilter(m => !EF.Property<bool>(m, "Deleted"));
+                modelBuilder.Entity<TUser>().HasQueryFilter(m => !EF.Property<bool>(m, "Deleted"));
             }
         }
 
@@ -101,7 +101,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         private void UpdateSoftDeleteStatuses()
         {
-            if (HardDelete == false)
+            if (!HardDelete)
             {
                 foreach (var entry in ChangeTracker.Entries())
                 {
