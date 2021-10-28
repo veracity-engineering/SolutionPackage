@@ -241,7 +241,11 @@ namespace DNVGL.OAuth.Web
 		private static void AddMSALClientApp(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-			cacheSetupAction?.Invoke(cacheEntryOptions);
+			var isCacheReconfigured = cacheSetupAction != null;
+			if (isCacheReconfigured)
+			{
+				cacheSetupAction.Invoke(cacheEntryOptions);
+			}
 
 			services.AddSingleton<ITokenCacheProvider>(f =>
 			{
@@ -254,7 +258,7 @@ namespace DNVGL.OAuth.Web
 				}
 
 				var dataProtectionProvider = f.GetService<IDataProtectionProvider>();
-				if (cacheSetupAction != null && dataProtectionProvider == null)
+				if (isCacheReconfigured && dataProtectionProvider == null)
 				{
 					throw new InvalidOperationException(
 						"Cannot reconfigure cache when IDataProtectionProvider is not registered.");
