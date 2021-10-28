@@ -2,14 +2,12 @@
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +106,11 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddOidc for Web App
-		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		public static AuthenticationBuilder AddOidc(
+			this IServiceCollection services,
+			Action<OidcOptions> oidcSetupAction,
+			Action<CookieAuthenticationOptions> cookieSetupAction = null,
+			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			if (oidcSetupAction == null)
 			{
@@ -117,9 +119,13 @@ namespace DNVGL.OAuth.Web
 
 			var oidcOptions = new OidcOptions();
 			oidcSetupAction(oidcOptions);
-			return services.AddOidc(oidcOptions, cookieSetupAction);
+			return services.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
 		}
-		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		public static AuthenticationBuilder AddOidc(
+			this IServiceCollection services,
+			OidcOptions oidcOptions,
+			Action<CookieAuthenticationOptions> cookieSetupAction = null,
+			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			var builder = services.AddAuthentication(o =>
 			{
@@ -127,11 +133,15 @@ namespace DNVGL.OAuth.Web
 				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 			});
 
-			builder.AddOidc(oidcOptions, cookieSetupAction);
+			builder.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
 			return builder;
 		}
 
-		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		public static AuthenticationBuilder AddOidc(
+			this AuthenticationBuilder builder,
+			Action<OidcOptions> oidcSetupAction,
+			Action<CookieAuthenticationOptions> cookieSetupAction = null,
+			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			if (oidcSetupAction == null)
 			{
@@ -140,7 +150,7 @@ namespace DNVGL.OAuth.Web
 
 			var oidcOptions = new OidcOptions();
 			oidcSetupAction(oidcOptions);
-			return builder.AddOidc(oidcOptions, cookieSetupAction);
+			return builder.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
 		}
 
 		/// <summary>
@@ -149,20 +159,25 @@ namespace DNVGL.OAuth.Web
 		/// <param name="builder"></param>
 		/// <param name="oidcOptions"></param>
 		/// <param name="cookieSetupAction"></param>
+		/// <param name="cacheSetupAction">Will be applied when <c>IDataProtectionProvider</c> is registered to allow to reconfigure expiration.</param>
 		/// <returns></returns>
-		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
+		public static AuthenticationBuilder AddOidc(
+			this AuthenticationBuilder builder,
+			OidcOptions oidcOptions,
+			Action<CookieAuthenticationOptions> cookieSetupAction = null,
+			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			if (oidcOptions == null)
 			{
 				throw new ArgumentNullException(nameof(oidcOptions));
 			}
 
-			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
+			builder = cookieSetupAction != null ? builder.AddCookie(cookieSetupAction) : builder.AddCookie();
 
 			// switch to authorization code flow.
 			if (oidcOptions.ResponseType == OpenIdConnectResponseType.Code)
 			{
-				builder.Services.AddMSALClientApp(oidcOptions);
+				builder.Services.AddMSALClientApp(oidcOptions, cacheSetupAction);
 			}
 
 			builder.AddOpenIdConnect(o =>
@@ -176,29 +191,50 @@ namespace DNVGL.OAuth.Web
 #if NETCORE3
 				o.UsePkce = true;
 #endif
-
-				if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any()) oidcOptions.Scopes = new string[] { oidcOptions.ClientId };
-
-				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
-
-				if (oidcOptions.SecurityTokenValidator != null) { o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator; }
-				else o.SecurityTokenValidator = new DNVTokenValidator();
-				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
-
-				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
-				{
-					var onRedirectToIdentityProvider = o.Events.OnRedirectToIdentityProvider;
-
-					o.Events.OnRedirectToIdentityProvider = context =>
-					{
-						context.Response.Headers.Remove("content-security-policy");
-						return onRedirectToIdentityProvider(context);
-					};
-				}
+				ConfigureScopes(oidcOptions, o);
+				ConfigureSecurityTokenValidator(oidcOptions, o);
+				ConfigureEvents(oidcOptions, o);
 			});
 
 			return builder;
 		}
+
+		private static void ConfigureScopes(OidcOptions oidcOptions, OpenIdConnectOptions o)
+		{
+			if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any())
+				oidcOptions.Scopes = new [] { oidcOptions.ClientId };
+
+			foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
+		}
+
+		private static void ConfigureSecurityTokenValidator(OidcOptions oidcOptions, OpenIdConnectOptions o)
+		{
+			if (oidcOptions.SecurityTokenValidator != null)
+			{
+				o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator;
+			}
+			else o.SecurityTokenValidator = new DNVTokenValidator();
+		}
+
+		private static void ConfigureEvents(OidcOptions oidcOptions, OpenIdConnectOptions o)
+		{
+			if (oidcOptions.Events != null)
+			{
+				o.Events = oidcOptions.Events;
+			}
+
+			if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
+			{
+				var onRedirectToIdentityProvider = o.Events.OnRedirectToIdentityProvider;
+
+				o.Events.OnRedirectToIdentityProvider = context =>
+				{
+					context.Response.Headers.Remove("content-security-policy");
+					return onRedirectToIdentityProvider(context);
+				};
+			}
+		}
+
 		#endregion
 
 		#region AddDistributedTokenCache
@@ -217,7 +253,16 @@ namespace DNVGL.OAuth.Web
 					cache = f.GetRequiredService<IDistributedCache>();
 				}
 
-				var provider = new MsalTokenCacheProvider(cache, cacheEntryOptions);
+				var dataProtectionProvider = f.GetService<IDataProtectionProvider>();
+				if (cacheSetupAction != null && dataProtectionProvider == null)
+				{
+					throw new InvalidOperationException(
+						"Cannot reconfigure cache when IDataProtectionProvider is not registered.");
+				}
+
+				ITokenCacheProvider provider = dataProtectionProvider != null
+					? new MsalProtectedTokenCacheProvider(cache, cacheEntryOptions, dataProtectionProvider)
+					: new MsalTokenCacheProvider(cache, cacheEntryOptions);
 				return provider;
 			});
 

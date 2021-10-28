@@ -7,9 +7,9 @@ namespace DNVGL.OAuth.Web.TokenCache
 {
 	public class MsalTokenCacheProvider : MsalAbstractTokenCacheProvider
 	{
-		private readonly IDistributedCache _cache;
+		protected readonly IDistributedCache Cache;
 
-		private readonly DistributedCacheEntryOptions _cacheOptions;
+		protected readonly DistributedCacheEntryOptions CacheOptions;
 
 		public MsalTokenCacheProvider(IDistributedCache memoryCache, IOptions<DistributedCacheEntryOptions> cacheOptions) : this(memoryCache, cacheOptions.Value) { }
 
@@ -20,25 +20,25 @@ namespace DNVGL.OAuth.Web.TokenCache
 				cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			}
 
-			_cache = memoryCache;
-			_cacheOptions = cacheOptions;
+			Cache = memoryCache;
+			CacheOptions = cacheOptions;
 		}
 
 		protected override Task RemoveKeyAsync(string cacheKey)
 		{
-			_cache.Remove(cacheKey);
+			Cache.Remove(cacheKey);
 			return Task.CompletedTask;
 		}
 
 		protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
 		{
-			var tokenCacheBytes = _cache.Get(cacheKey);
+			var tokenCacheBytes = Cache.Get(cacheKey);
 			return Task.FromResult(tokenCacheBytes);
 		}
 
 		protected override Task WriteCacheBytesAsync(string cacheKey, byte[] bytes)
 		{
-			_cache.Set(cacheKey, bytes, _cacheOptions);
+			Cache.Set(cacheKey, bytes, CacheOptions);
 			return Task.CompletedTask;
 		}
 	}
