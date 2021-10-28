@@ -1,6 +1,6 @@
 # Data Model
 In this section, you learn the built-in data model in User Management Package. These model is defined in package - `DNVGL.Authorization.UserManagement.Abstraction`.
-> You are allowed to extend data models with extra fields. [Extend Data model - Company, Role, User](/userManagement/customModel)
+> You are allowed to extend data models with extra fields. [Extend Data model - Company, Role, User](/articles/userManagement/customModel)
 
 ## Company
 | Field | Type | Description |

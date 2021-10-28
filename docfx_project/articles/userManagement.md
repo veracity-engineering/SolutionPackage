@@ -1,5 +1,5 @@
 # User Management and Authorization
-DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/userManagement/overview) to understand the logic behind the package.
+DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/articles/userManagement/overview) to understand the logic behind the package.
 
 ## Prerequisites
 PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
@@ -144,30 +144,30 @@ Decorates API actions with permission.
 ```
 
 ## Recommended content
-[**Read First &check; &check; &check;**](/userManagement/overview)
+[**Read First &check; &check; &check;**](/articles/userManagement/overview)
 >  Something you need to know before using the package to handle user management and authorization.
 
-[Integration with ASP.NET Core's Role-based authorization &check;](/userManagement/authorize)
+[Integration with ASP.NET Core's Role-based authorization &check;](/articles/userManagement/authorize)
 >  Integrate user management module with Role-based authorization in ASP.NET Core. In this way, you are allowed to authorize API with asp.net core's `[Authorize(Roles = "****")]`.
 
 ## Guidance for different databases
-[Use Azure CosmosDB as database](/userManagement/cosmos)
+[Use Azure CosmosDB as database](/articles/userManagement/cosmos)
 
-[Use SQL Server as database](/userManagement/sqlserver)
+[Use SQL Server as database](/articles/userManagement/sqlserver)
 
 User other databases.
 > The package can use all database engines supported by EF Core 5.0+. Here is a list -  [EF Core 5.0 Database providers](https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli)
 
 ## Guidance for configuration
-[User Management Configuration](/userManagement/configuration)
+[User Management Configuration](/articles/userManagement/configuration)
 
 ## Guidance for customization
-[Extend Data model - Company, Role, User](/userManagement/customModel)
+[Extend Data model - Company, Role, User](/articles/userManagement/customModel)
 
-[Replace EF Core with your own data access](/userManagement/dataAccess)
+[Replace EF Core with your own data access](/articles/userManagement/dataAccess)
 
 ## Guidance for access control &check;
-[Resource access control](/userManagement/accessControl) guide you to control access on resource of company.
+[Resource access control](/articles/userManagement/accessControl) guide you to control access on resource of company.
 
 ## Guidance for defining premissions outside souce code
-[Define permissions in json, database or other places](/userManagement/permissionStore)
+[Define permissions in json, database or other places](/articles/userManagement/permissionStore)
