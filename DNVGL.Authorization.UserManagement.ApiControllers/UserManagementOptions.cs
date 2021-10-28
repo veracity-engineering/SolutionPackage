@@ -3,7 +3,6 @@
 using System;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.Web.Abstraction;
-using Microsoft.EntityFrameworkCore;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
 {
@@ -29,25 +28,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             }
         }
 
-        /// <summary>
-        /// Gets or sets the action to build Database Context Options.
-        /// <example>For example:
-        /// <code>
-        ///    DbContextOptionsBuilder = options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;"),
-        /// </code>
-        /// </example>
-        /// </summary>
-        public Action<DbContextOptionsBuilder> DbContextOptionsBuilder { get; set; }
 
-        /// <summary>
-        /// Gets or sets the action to apply customized module builder logic.
-        /// <example>For example, specify the container name in Azure Cosmos DB:
-        /// <code>
-        ///    ModelBuilder = (modelBuilder) => modelBuilder.HasDefaultContainer("User"),
-        /// </code>
-        /// </example>
-        /// </summary>
-        public Action<ModelBuilder> ModelBuilder { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="PermissionOptions"/>.

@@ -5,8 +5,17 @@
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Provide an implementation of DNVGL.Authorization.UserManagement.Abstraction with Entity Framework Core 5.0</Description>
+		<PackageTags>aspnetcore;identity;membership</PackageTags>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
+	<ItemGroup Label="Packaging">
+		<Content Include="content\NewTableScript.sql">
+		</Content>
+	</ItemGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
 	</ItemGroup>

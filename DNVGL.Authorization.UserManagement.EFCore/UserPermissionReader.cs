@@ -41,7 +41,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
         {
             var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId == identity || p.Id == identity);
 
-            if (user == null || string.IsNullOrEmpty(user.RoleIds))
+            if (user == null)
                 return null;
 
             var allPermissions = (await _permissionRepository.GetAll());
@@ -50,6 +50,9 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             {
                 return allPermissions;
             }
+
+            if (string.IsNullOrEmpty(user.RoleIds))
+                return null;
 
             var role = await _context.Roles.Where(t => user.RoleIds.Contains(t.Id)).ToListAsync();
 

@@ -5,6 +5,10 @@
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Provide implementaion of permission authorization.</Description>
+		<PackageTags>aspnetcore;identity;membership</PackageTags>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

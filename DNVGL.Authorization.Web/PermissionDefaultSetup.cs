@@ -60,6 +60,20 @@ namespace DNVGL.Authorization.Web
         }
 
         /// <summary>
+        /// Use you own IPermissionRepository implementation to replace default built-in implementation.
+        /// </summary>
+        /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
+        public static IServiceCollection UsePermissionRepository<TPermissionRepository>(this IServiceCollection services) where TPermissionRepository : IPermissionRepository
+        {
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IPermissionRepository));
+            services.Remove(descriptor);
+            services.AddScoped(typeof(IPermissionRepository), typeof(TPermissionRepository));
+            return services;
+        }
+
+        /// <summary>
         /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/>. <b>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </b>
         /// </summary>
         /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
@@ -101,6 +115,11 @@ namespace DNVGL.Authorization.Web
 
         /// <summary>
         /// Add customized CookieValidateHandler to the <see cref="CookieAuthenticationEvents.OnValidatePrincipal"/>.
+        /// <example>
+        /// <code>
+        /// services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));
+        /// </code>
+        /// </example>
         /// </summary>
         /// <remarks>
         /// Claim based authorization is enabled only if this customized CookieValidateHandler are added.

@@ -47,6 +47,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         protected UserViewModel PruneUserInfo(UserViewModel user, string companyId)
         {
+            if (user == null) return user;
             user.Roles = user.Roles.Where(t => t.Company.Id == companyId).ToList();
             user.Companies = user.Companies.Where(t => t.Id == companyId).ToList();
             return user;
@@ -54,13 +55,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         protected UserViewModel PruneUserCompanyInfo(UserViewModel user, string companyId)
         {
+            if (user == null) return user;
             user.Companies = user.Companies.Where(t => t.Id == companyId).ToList();
             return user;
         }
 
         protected UserViewModel PopulateUserRoleInfo(TUser user, UserViewModel userViewModel,IEnumerable<PermissionEntity> allPermissions)
         {
-            if (user.RoleList != null)
+            if (user?.RoleList != null)
             {
                 userViewModel.Roles = user.RoleList.Select(r =>
                 {

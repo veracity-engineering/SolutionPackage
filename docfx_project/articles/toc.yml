@@ -9,3 +9,6 @@
   
 - name: HTTP Response Security Header
   href: securityHeader.md
+
+- name: User Management and Authorization
+  href: userManagement.md
