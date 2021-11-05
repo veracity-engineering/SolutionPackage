@@ -10,10 +10,10 @@ namespace DNV.SecretsManager.ConsoleApp
 {
 	class Program
 	{
-		private static readonly Dictionary<string, IConsoleCommand> _commands = new Dictionary<string, IConsoleCommand>
+		private static readonly IEnumerable<IConsoleCommand> _commands = new IConsoleCommand[]
 		{
-			{ "keyvault", new KeyVaultCommand(GettApplicationName()) },
-			{ "variablegroup", new VariableGroupCommand(GettApplicationName()) }
+			new KeyVaultCommand(GettApplicationName()),
+			new VariableGroupCommand(GettApplicationName())
 		};
 
 		static async Task Main(string[] args)
@@ -24,10 +24,9 @@ namespace DNV.SecretsManager.ConsoleApp
 				if (args != null && args.Any())
 				{
 					var commandName = args[0];
-
-					if (_commands.ContainsKey(commandName))
+					var command = _commands.FirstOrDefault(c => c.Name.Equals(commandName));
+					if (command != null)
 					{
-						var command = _commands[commandName];
 						var options = ConsoleCommand.CollectOptions(command.Options, args.Skip(1).ToArray());
 						command = command.Build(options);
 						await command.Execute();
@@ -56,7 +55,7 @@ namespace DNV.SecretsManager.ConsoleApp
 			Console.WriteLine("Commands:");
 			foreach (var command in _commands)
 			{
-				Console.WriteLine($"\t{command.Key}\t{command.Value.Description}");
+				Console.WriteLine($"\t{command.Name}\t{command.Description}");
 			}
 		}
 

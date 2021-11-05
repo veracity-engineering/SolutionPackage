@@ -10,8 +10,13 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 {
 	internal class VariableGroupCommand : IConsoleCommand
 	{
+		public string Name { get; } = "variablegroup";
+
+		public string Description { get; } = "Download or upload secrets from/to Azure Keyvault";
+
 		public IEnumerable<ConsoleOption> Options { get; } = new[]
 		{
+			new ConsoleOption { Name = "help", Abbreviation = 'h', IsFlag = true, IsOptional = true },
 			new ConsoleOption { Name = "download", Abbreviation = 'd', IsFlag = true },
 			new ConsoleOption { Name = "upload", Abbreviation = 'u', IsFlag = true },
 			new ConsoleOption { Name = "base-url", Abbreviation = 's' },
@@ -21,14 +26,6 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			new ConsoleOption { Name = "filename", Abbreviation = 'f' }
 		};
 
-		private static readonly Dictionary<char, CommandType> _commandTypes = new Dictionary<char, CommandType>
-		{
-			{ 'd', CommandType.Download },
-			{ 'u', CommandType.Upload }
-		};
-
-		public string Description { get; } = "Download or upload secrets to/from Azure Keyvault";
-
 		public CommandType Type { get; set; }
 
 		public string BaseUrl { get; set; }
@@ -37,7 +34,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public string PersonalAccessToken { get; set; }
 
-		public string VariableGroupId { get; set; }
+		public string GroupId { get; set; }
 
 		public string Filename { get; set; }
 
@@ -50,6 +47,10 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public IConsoleCommand Build(Dictionary<string, object> options)
 		{
+			if (options.ContainsKey("help"))
+				return this;
+
+			// Assign from options
 			if (options.ContainsKey("download") && options.ContainsKey("upload"))
 				throw new ArgumentException("Both instructions for download and upload were provided.");
 			if (options.ContainsKey("download"))
@@ -67,134 +68,44 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				PersonalAccessToken = options["pat"].ToString();
 
 			if (options.ContainsKey("group-id"))
-				VariableGroupId = options["group-id"].ToString();
+				GroupId = options["group-id"].ToString();
 
 			// Collect args not provided in initial call.
 			// Type
 			var downloadOption = Options.First(o => o.Name.Equals("download"));
 			var uploadOption = Options.First(o => o.Name.Equals("upload"));
-			if (Type == CommandType.None)
-				Console.WriteLine($"What would you like to do? (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
-			while (Type == CommandType.None)
-			{
-				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant()[0];
-				Console.WriteLine();
-				if (_commandTypes.ContainsKey(commandTypeChoice))
-				{
-					Type = _commandTypes[commandTypeChoice];
-				}
-				else
-				{
-					Console.WriteLine($"Invalid option '{commandTypeChoice}'. Please enter a valid option (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
-				}
-			}
+			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption);
 
 			// Base url
-			if (string.IsNullOrEmpty(BaseUrl))
-				Console.WriteLine("Please enter the base URL for Azure DevOps instance:");
-			while (string.IsNullOrEmpty(BaseUrl))
-			{
-				var baseUrl = Console.ReadLine();
-				if (ValidationUtility.IsUriValid(baseUrl))
-				{
-					BaseUrl = baseUrl;
-				}
-				else
-				{
-					Console.WriteLine("Invalid url format. Please enter a fully qualified URL for the Azure DevOps instance (for e.g: https://dnv.com):");
-				}
-			}
+			BaseUrl = ConsoleCommand.GetStringOrInvalid(BaseUrl,
+				"Please enter the base URL for Azure DevOps instance:",
+				ValidationUtility.IsUriValid,
+				i => "Invalid url format. Please enter a fully qualified URL for the Azure DevOps instance (for e.g: https://dnv.com):"
+			);
 
 			// Organization
-			if (string.IsNullOrEmpty(Organization))
-				Console.WriteLine("Please enter Organization or Project name:");
-			while (string.IsNullOrEmpty(Organization))
-			{
-				var organization = Console.ReadLine();
-				if (!string.IsNullOrWhiteSpace(organization))
-				{
-					Organization = organization;
-				}
-				else
-				{
-					Console.WriteLine($"Invalid value '{organization}'.  Please enter an Organization or Project name that is not empty and not whitespace:");
-				}
-			}
+			Organization = ConsoleCommand.GetStringOrInvalid(Organization,
+				"Please enter Organization or Project name:",
+				i => !string.IsNullOrWhiteSpace(i),
+				i => $"Invalid value '{i}'.  Please enter an Organization or Project name that is not empty and not whitespace:"
+			);
 
 			// PAT
-			if (string.IsNullOrEmpty(PersonalAccessToken))
-				Console.WriteLine("Please enter Personal Access Token (PAT):");
-			while (string.IsNullOrEmpty(PersonalAccessToken))
-			{
-				var pat = Console.ReadLine();
-				if (string.IsNullOrWhiteSpace(pat))
-				{
-					PersonalAccessToken = pat;
-				}
-				else
-				{
-					Console.WriteLine($"Invalid value '{pat}'.  Please enter an Personal Access Token that is not empty and not whitespace:");
-				}
-			}
+			PersonalAccessToken = ConsoleCommand.GetStringOrInvalid(PersonalAccessToken,
+				"Please enter Personal Access Token (PAT):",
+				i => !string.IsNullOrWhiteSpace(i),
+				i => $"Invalid value '{i}'.  Please enter an Personal Access Token that is not empty and not whitespace:"
+			);
 
 			// Variable group id
-			if (string.IsNullOrEmpty(VariableGroupId))
-				Console.WriteLine("Please enter the id of the Variable Group in Azure DevOps:");
-			while (string.IsNullOrEmpty(VariableGroupId))
-			{
-				var variableGroupId = Console.ReadLine();
-				if (int.TryParse(variableGroupId, out int _))
-				{
-					VariableGroupId = variableGroupId;
-				}
-				else
-				{
-					Console.WriteLine($"Invalid value '{variableGroupId}'.  Please enter a numeric value for the Variable Group id:");
-				}
-			}
+			GroupId = ConsoleCommand.GetStringOrInvalid(GroupId,
+				"Please enter the id of the Variable Group in Azure DevOps:",
+				i => int.TryParse(i, out int _),
+				i => $"Invalid value '{i}'.  Please enter a numeric value for the Variable Group id:"
+			);
 
 			// Filename
-			if (Type == CommandType.Download)
-			{
-				if (string.IsNullOrEmpty(Filename))
-					Console.WriteLine("Specify the target filename you would like to download to:");
-				while (string.IsNullOrEmpty(Filename))
-				{
-					var targetFilename = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(targetFilename))
-					{
-						Filename = targetFilename;
-					}
-					else
-					{
-						Console.WriteLine($"Invaild filename '{targetFilename}'. Please specify a valid filename to download to:");
-					}
-				}
-			}
-			else if (Type == CommandType.Upload)
-			{
-				if (string.IsNullOrEmpty(Filename))
-					Console.WriteLine("Specify the source file you would like to upload:");
-				while (string.IsNullOrEmpty(Filename))
-				{
-					var sourceFilename = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(sourceFilename))
-					{
-						if (File.Exists(sourceFilename))
-						{
-							Filename = sourceFilename;
-						}
-						else
-						{
-							Console.WriteLine($"Could not find source file '{Filename}'.  Please specify an existing file to upload:");
-						}
-					}
-					else
-					{
-						Console.WriteLine($"Invalid filename '{Filename}'. Please specify a valid filename to upload:");
-					}
-				}
-			}
+			Filename = ConsoleCommand.GetFilenameOrInvalid(Filename, Type);
 
 			return this;
 		}
@@ -203,15 +114,15 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 		{
 			if (Type == CommandType.Download)
 			{
-				Console.WriteLine($"Downloading variables from Variable Group '{VariableGroupId}' to file '{Filename}'...");
-				var result = await DownloadVariableGroup(VariableGroupId, Filename);
+				Console.WriteLine($"Downloading variables from Variable Group '{GroupId}' to file '{Filename}'...");
+				var result = await DownloadVariableGroup(GroupId, Filename);
 				Console.WriteLine($"Download complete. Downloaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
 			}
 			if (Type == CommandType.Upload)
 			{
-				Console.WriteLine($"Uploading variables from file '{Filename}' to Variable Group'{VariableGroupId}'...");
-				var result = await UploadVariableGroup(Filename, VariableGroupId);
+				Console.WriteLine($"Uploading variables from file '{Filename}' to Variable Group'{GroupId}'...");
+				var result = await UploadVariableGroup(Filename, GroupId);
 				Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
 			}
@@ -258,7 +169,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		private void DisplayHelp()
 		{
-			Console.WriteLine($"usage: {_applicationName} variablegroup\t--download | -d | --upload | -u <url> -o | --organization <organization> -p | --pat <personal access token> -g | --group-id <variable group id> -f | --filename <filename>");
+			Console.WriteLine($"usage: {_applicationName} {Name}\t[-h | --help] -d | --download | -u | --upload -s | --url <url> -o | --organization <organization> -p | --pat <personal access token> -g | --group-id <variable group id> -f | --filename <filename>");
 		}
 	}
 }

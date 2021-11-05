@@ -5,9 +5,11 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 {
 	internal interface IConsoleCommand
 	{
-		public IEnumerable<ConsoleOption> Options { get; }
+		public string Name { get; }
 
 		public string Description { get; }
+
+		public IEnumerable<ConsoleOption> Options { get; }
 
 		public IConsoleCommand Build(Dictionary<string, object> options);
 

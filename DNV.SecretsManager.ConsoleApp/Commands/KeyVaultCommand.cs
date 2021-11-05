@@ -10,21 +10,18 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 {
 	internal class KeyVaultCommand : IConsoleCommand
 	{
+		public string Name { get; } = "keyvault";
+
+		public string Description { get; } = "Download or upload secrets from/to Azure Keyvault";
+
 		public IEnumerable<ConsoleOption> Options { get; } = new[]
 		{
+			new ConsoleOption { Name = "help", Abbreviation = 'h', IsFlag = true, IsOptional = true },
 			new ConsoleOption { Name = "download", Abbreviation = 'd', IsFlag = true },
 			new ConsoleOption { Name = "upload", Abbreviation = 'u', IsFlag = true },
 			new ConsoleOption { Name = "url", Abbreviation = 's' },
 			new ConsoleOption { Name = "filename", Abbreviation = 'f' }
 		};
-
-		private static readonly Dictionary<char, CommandType> _commandTypes = new Dictionary<char, CommandType>
-		{
-			{ 'd', CommandType.Download },
-			{ 'u', CommandType.Upload }
-		};
-
-		public string Description { get; } = "Download or upload secrets to/from Azure Keyvault";
 
 		public CommandType Type { get; set; }
 
@@ -41,6 +38,10 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public IConsoleCommand Build(Dictionary<string, object> options)
 		{
+			if (options.ContainsKey("help"))
+				return this;
+
+			// Assign from options
 			if (options.ContainsKey("download") && options.ContainsKey("upload"))
 				throw new ArgumentException("Both instructions for download and upload were provided.");
 			if (options.ContainsKey("download"))
@@ -58,80 +59,17 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			// Type
 			var downloadOption = Options.First(o => o.Name.Equals("download"));
 			var uploadOption = Options.First(o => o.Name.Equals("upload"));
-			if (Type == CommandType.None)
-				Console.WriteLine($"What would you like to do? (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
-			while (Type == CommandType.None)
-			{
-				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant()[0];
-				Console.WriteLine();
-				if (_commandTypes.ContainsKey(commandTypeChoice))
-				{
-					Type = _commandTypes[commandTypeChoice];
-				}
-				else
-				{
-					Console.WriteLine($"Invalid option '{commandTypeChoice}'. Please enter a valid option (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
-				}
-			}
+			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption);
 
 			// Url
-			if (string.IsNullOrEmpty(Url))
-				Console.WriteLine("Please enter the URL for the Azure KeyVault:");
-			while (string.IsNullOrEmpty(Url))
-			{
-				var keyVaultBaseUrl = Console.ReadLine();
-				if (ValidationUtility.IsUriValid(keyVaultBaseUrl))
-				{
-					Url = keyVaultBaseUrl;
-				}
-				else
-				{
-					Console.WriteLine("Invalid url format. Please enter a fully qualified URL for the Azure KeyVault (for e.g: https://dnv.com):");
-				}
-			}
+			Url = ConsoleCommand.GetStringOrInvalid(Url,
+				"Please enter the URL for the Azure KeyVault:",
+				ValidationUtility.IsUriValid,
+				i => "Invalid url format. Please enter a fully qualified URL for the Azure KeyVault (for e.g: https://dnv.com):"
+			);
 
 			// Filename
-			if (Type == CommandType.Download)
-			{
-				if (string.IsNullOrEmpty(Filename))
-					Console.WriteLine("Specify the target filename you would like to download to:");
-				while (string.IsNullOrEmpty(Filename))
-				{
-					var targetFilename = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(targetFilename))
-					{
-						Filename = targetFilename;
-					}
-					else
-					{
-						Console.WriteLine($"Invaild filename '{targetFilename}'. Please specify a valid filename to download to:");
-					}
-				}
-			}
-			else if (Type == CommandType.Upload)
-			{
-				if (string.IsNullOrEmpty(Filename))
-					Console.WriteLine("Specify the source file you would like to upload:");
-				while (string.IsNullOrEmpty(Filename))
-				{
-					var sourceFilename = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(sourceFilename))
-					{
-						if (File.Exists(sourceFilename))
-						{
-							Filename = sourceFilename;
-						}
-						else
-						{
-							Console.WriteLine($"Could not find source file '{Filename}'.  Please specify an existing file to upload:");
-						}
-					}
-					else
-					{
-						Console.WriteLine($"Invalid filename '{Filename}'. Please specify a valid filename to upload:");
-					}
-				}
-			}
+			Filename = ConsoleCommand.GetFilenameOrInvalid(Filename, Type);
 
 			return this;
 		}
@@ -187,7 +125,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		private void DisplayHelp()
 		{
-			Console.WriteLine($"usage: {_applicationName} keyvault\t--download | -d | --upload | -u <url> -f <filename>");
+			Console.WriteLine($"usage: {_applicationName} {Name}\t[-h | --help] -d | -download | -u | -upload  -s | --url <url> -f | --filename <filename>");
 		}
 	}
 }

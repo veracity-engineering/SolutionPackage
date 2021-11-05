@@ -9,5 +9,7 @@ namespace DNV.SecretsManager.ConsoleApp
 		public char Abbreviation { get; set; }
 
 		public bool IsFlag { get; set; }
+
+		public bool IsOptional { get; set; }
 	}
 }
