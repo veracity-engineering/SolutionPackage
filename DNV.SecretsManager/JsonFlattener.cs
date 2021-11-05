@@ -54,41 +54,51 @@ namespace DNV.SecretsManager
 			var pathSegments = SplitPath(path);
 
 			JContainer lastItem = null;
+
 			//build from leaf to root
 			foreach (var pathSegment in pathSegments.Reverse())
 			{
-				var type = GetJsonType(pathSegment);
-				switch (type)
+				switch (GetJsonType(pathSegment))
 				{
 					case JsonType.OBJECT:
-						var obj = new JObject();
-						if (null == lastItem)
-						{
-							obj.Add(pathSegment, value);
-						}
-						else
-						{
-							obj.Add(pathSegment, lastItem);
-						}
-						lastItem = obj;
+						lastItem = UnflattenObject(lastItem, pathSegment, value);
 						break;
 					case JsonType.ARRAY:
-						var array = new JArray();
-						int index = GetArrayIndex(pathSegment);
-						array = FillEmpty(array, index);
-						if (lastItem == null)
-						{
-							array[index] = value;
-						}
-						else
-						{
-							array[index] = lastItem;
-						}
-						lastItem = array;
+						lastItem = UnflattenArray(lastItem, pathSegment, value);
 						break;
 				}
 			}
 			return lastItem;
+		}
+
+		private static JObject UnflattenObject(JContainer lastItem, string pathSegment, string value)
+		{
+			var obj = new JObject();
+			if (lastItem == null)
+			{
+				obj.Add(pathSegment, value);
+			}
+			else
+			{
+				obj.Add(pathSegment, lastItem);
+			}
+			return obj;
+		}
+
+		private static JArray UnflattenArray(JContainer lastItem, string pathSegment, string value)
+		{
+			var array = new JArray();
+			int index = GetArrayIndex(pathSegment);
+			array = FillEmpty(array, index);
+			if (lastItem == null)
+			{
+				array[index] = value;
+			}
+			else
+			{
+				array[index] = lastItem;
+			}
+			return array;
 		}
 
 		public static string[] SplitPath(string path) =>
