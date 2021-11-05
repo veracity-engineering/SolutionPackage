@@ -41,6 +41,13 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public string Filename { get; set; }
 
+		private string _applicationName;
+
+		public VariableGroupCommand(string applicationName)
+		{
+			_applicationName = applicationName;
+		}
+
 		public IConsoleCommand Build(Dictionary<string, object> options)
 		{
 			if (options.ContainsKey("download") && options.ContainsKey("upload"))
@@ -251,7 +258,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		private void DisplayHelp()
 		{
-			Console.WriteLine($"usage: secretsmanager variablegroup\t--download | -d | --upload | -u <url> -o | --organization <organization> -p | --pat <personal access token> -g | --group-id <variable group id> -f | --filename <filename>");
+			Console.WriteLine($"usage: {_applicationName} variablegroup\t--download | -d | --upload | -u <url> -o | --organization <organization> -p | --pat <personal access token> -g | --group-id <variable group id> -f | --filename <filename>");
 		}
 	}
 }

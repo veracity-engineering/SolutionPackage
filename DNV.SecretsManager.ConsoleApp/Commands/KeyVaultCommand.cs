@@ -32,6 +32,13 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public string Filename { get; set; }
 
+		private string _applicationName;
+
+		public KeyVaultCommand(string applicationName)
+		{
+			_applicationName = applicationName;
+		}
+
 		public IConsoleCommand Build(Dictionary<string, object> options)
 		{
 			if (options.ContainsKey("download") && options.ContainsKey("upload"))
@@ -180,7 +187,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		private void DisplayHelp()
 		{
-			Console.WriteLine($"usage: secretsmanager keyvault\t--download | -d | --upload | -u <url> -f <filename>");
+			Console.WriteLine($"usage: {_applicationName} keyvault\t--download | -d | --upload | -u <url> -f <filename>");
 		}
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using DNV.SecretsManager.ConsoleApp.Commands;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DNV.SecretsManager.ConsoleApp
@@ -10,8 +12,8 @@ namespace DNV.SecretsManager.ConsoleApp
 	{
 		private static readonly Dictionary<string, IConsoleCommand> _commands = new Dictionary<string, IConsoleCommand>
 		{
-			{ "keyvault", new KeyVaultCommand() },
-			{ "variablegroup", new VariableGroupCommand() }
+			{ "keyvault", new KeyVaultCommand(GettApplicationName()) },
+			{ "variablegroup", new VariableGroupCommand(GettApplicationName()) }
 		};
 
 		static async Task Main(string[] args)
@@ -49,13 +51,20 @@ namespace DNV.SecretsManager.ConsoleApp
 
 		private static void DisplayHelp()
 		{
-			Console.WriteLine($"usage: secretsmanager\t<command> [<args>]");
+			Console.WriteLine($"usage: {GettApplicationName()}\t<command> [<args>]");
 			Console.WriteLine();
 			Console.WriteLine("Commands:");
 			foreach (var command in _commands)
 			{
 				Console.WriteLine($"\t{command.Key}\t{command.Value.Description}");
 			}
+		}
+
+		private static string GettApplicationName()
+		{
+			var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+			var filename = Path.GetFileName(codeBase);
+			return filename.Substring(0, filename.Length - ".exe".Length);
 		}
 	}
 }
