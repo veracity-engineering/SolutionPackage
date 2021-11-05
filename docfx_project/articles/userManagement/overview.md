@@ -45,7 +45,7 @@ The following are serveral built-in permissions used to authorize user managemen
 
 ### Create your own premissions
 Define permissions by implementing interface - `IPermissionMatrix`. The following code defined two permissions.
-> You are also allowed to manage permissions outside of the source code. [Here is the instruction](/permissionStore).
+> You are also allowed to manage permissions outside of the source code. [Here is the instruction](/articles/userManagement/permissionStore).
 ```cs
     public class PermissionBook : IPermissionMatrix
     {
@@ -66,7 +66,7 @@ Define permissions by implementing interface - `IPermissionMatrix`. The followin
 
 ### Authorize API with permissions
 Decorates API actions with permission.
->  You are also allowed to use Role-based authorization like `[Authorize(Roles = "****")]`. [Here is the instruction](/authorize).
+>  You are also allowed to use Role-based authorization like `[Authorize(Roles = "****")]`. [Here is the instruction](/articles/userManagement/authorize).
 ```cs
         [HttpGet]
         [PermissionAuthorize(WeatherPermission.ReadWeather)]
@@ -77,7 +77,7 @@ Decorates API actions with permission.
 ```
 
 ## 3. Data Model
-The predefeind data models of `Company`, `Role` and `User` may not fully meet your needs. Please check the [built-in model definition](/dataModel), and follow this [instruction](/customModel) to extend the data model.
+The predefeind data models of `Company`, `Role` and `User` may not fully meet your needs. Please check the [built-in model definition](/articles/userManagement/dataModel), and follow this [instruction](/articles/userManagement/customModel) to extend the data model.
 
 ## 4. Company/ Role/ User deletion
 By default, the soft deletion is enabled. Change the default behavior to hard delete record.
@@ -103,7 +103,7 @@ A work-aroud to implement **SOFT DELETE**, you can utilize `Active` field in the
 ## 5. Data Access Implementation
 We provide data access implementation in package - `DNVGL.Authorization.UserManagement.EFCore`. It has dependency on EF Core 5.0+. 
 
-If you don't want to introduce EF Core in your project. then this package is not required to be installed. Here is an instruction to [Replace EF Core with your own data access](/dataAccess)
+If you don't want to introduce EF Core in your project. then this package is not required to be installed. Here is an instruction to [Replace EF Core with your own data access](/articles/userManagement/dataAccess)
 
 ## 6. Performance &check;
 By default, The package reads and check user's permission from database for every http request. You can change this behavior to load user's permission in to claim (in cookie), and then read, check user's premission from claim. The following is to setup such behavior.
@@ -121,4 +121,4 @@ By default, The package reads and check user's permission from database for ever
 ```
 
 ## 7. Swagger UI
- By default, Swagger UI probably do not show *User Management APIs*. Then you could follow the [instructuon](/swagger) to get it displayed.
+ By default, Swagger UI probably do not show *User Management APIs*. Then you could follow the [instructuon](/articles/userManagement/swagger) to get it displayed.
