@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DNV.SecretsManager.ConsoleApp.Commands
 {
-	internal interface IConsoleCommand
+	public interface IConsoleCommand
 	{
 		public string Name { get; }
 

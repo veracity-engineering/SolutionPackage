@@ -133,5 +133,29 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			}
 			return value;
 		}
+
+		public static string BuildCommandUseage(IConsoleCommand command, string applicationName)
+		{
+			var useage = $"useage: {applicationName} {command.Name}";
+			if (command.Options != null && command.Options.Any())
+			{
+				useage += "\t";
+				foreach (var option in command.Options)
+				{
+					useage += BuildOptionUseage(option) + " ";
+				}
+			}
+			return useage.TrimEnd(' ');
+		}
+
+		private static string BuildOptionUseage(ConsoleOption option)
+		{
+			var value = option.IsFlag
+				? string.Empty
+				: $" <{option.Name}>";
+			if (option.IsOptional)
+				return $"[-{option.Abbreviation} | --{option.Name}{value}]";
+			return $"-{option.Abbreviation} | --{option.Name}{value}";
+		}
 	}
 }

@@ -125,7 +125,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		private void DisplayHelp()
 		{
-			Console.WriteLine($"usage: {_applicationName} {Name}\t[-h | --help] -d | -download | -u | -upload  -s | --url <url> -f | --filename <filename>");
+			Console.WriteLine(ConsoleCommand.BuildCommandUseage(this, _applicationName));
 		}
 	}
 }
