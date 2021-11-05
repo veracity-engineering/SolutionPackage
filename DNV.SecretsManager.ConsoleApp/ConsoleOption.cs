@@ -1,4 +1,6 @@
-﻿namespace DNV.SecretsManager.ConsoleApp
+﻿using System;
+
+namespace DNV.SecretsManager.ConsoleApp
 {
 	public class ConsoleOption
 	{

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "DNV.SecretsManager.ConsoleApp": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "keyvault"
     }
   }
 }
