@@ -7,9 +7,9 @@ namespace DNVGL.OAuth.Web.TokenCache
 {
 	public class MsalTokenCacheProvider : MsalAbstractTokenCacheProvider
 	{
-		protected readonly IDistributedCache Cache;
+		private readonly IDistributedCache _cache;
 
-		protected readonly DistributedCacheEntryOptions CacheOptions;
+		private readonly DistributedCacheEntryOptions _cacheOptions;
 
 		public MsalTokenCacheProvider(IDistributedCache memoryCache, IOptions<DistributedCacheEntryOptions> cacheOptions) : this(memoryCache, cacheOptions.Value) { }
 
@@ -20,26 +20,30 @@ namespace DNVGL.OAuth.Web.TokenCache
 				cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
 			}
 
-			Cache = memoryCache;
-			CacheOptions = cacheOptions;
+			_cache = memoryCache;
+			_cacheOptions = cacheOptions;
 		}
 
 		protected override Task RemoveKeyAsync(string cacheKey)
 		{
-			Cache.Remove(cacheKey);
+			_cache.Remove(cacheKey);
 			return Task.CompletedTask;
 		}
 
 		protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
 		{
-			var tokenCacheBytes = Cache.Get(cacheKey);
-			return Task.FromResult(tokenCacheBytes);
+			var tokenCacheBytes = _cache.Get(cacheKey);
+			return Task.FromResult(Unprotect(tokenCacheBytes));
 		}
 
 		protected override Task WriteCacheBytesAsync(string cacheKey, byte[] bytes)
 		{
-			Cache.Set(cacheKey, bytes, CacheOptions);
+			_cache.Set(cacheKey, Protect(bytes), _cacheOptions);
 			return Task.CompletedTask;
 		}
+
+		protected virtual byte[] Protect(byte[] bytes) => bytes;
+
+		protected virtual byte[] Unprotect(byte[] bytes) => bytes;
 	}
 }

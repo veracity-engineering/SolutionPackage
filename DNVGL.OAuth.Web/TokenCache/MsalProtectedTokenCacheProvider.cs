@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace DNVGL.OAuth.Web.TokenCache
@@ -17,16 +16,10 @@ namespace DNVGL.OAuth.Web.TokenCache
 			_dataProtector = dataProtectionProvider.CreateProtector(nameof(MsalProtectedTokenCacheProvider));
 		}
 
-		protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
-		{
-			var tokenCacheBytes = Cache.Get(cacheKey);
-			return Task.FromResult(tokenCacheBytes != null ? _dataProtector.Unprotect(tokenCacheBytes) : null);
-		}
+		protected override byte[] Protect(byte[] bytes) =>
+			bytes != null ? _dataProtector.Protect(bytes) : null;
 
-		protected override Task WriteCacheBytesAsync(string cacheKey, byte[] bytes)
-		{
-			Cache.Set(cacheKey, bytes != null ? _dataProtector.Protect(bytes) : null, CacheOptions);
-			return Task.CompletedTask;
-		}
+		protected override byte[] Unprotect(byte[] bytes) =>
+			bytes != null ? _dataProtector.Unprotect(bytes) : null;
 	}
 }
