@@ -10,10 +10,14 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>apidocs\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<Version>3.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup Label="Packaging">
 		<Content Include="apidocs\$(AssemblyName).xml">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>true</PackageFlatten>
 		</Content>
 	</ItemGroup>
 	
