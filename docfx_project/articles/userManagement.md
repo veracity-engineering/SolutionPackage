@@ -44,6 +44,7 @@ The following is sample.
         public void ConfigureServices(IServiceCollection services)
         {
             //...
+            services.AddMvc();
             services.AddSwaggerGen(c =>
             {
                 // swagger documentaion group for User Management.
