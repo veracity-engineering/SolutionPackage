@@ -1,5 +1,5 @@
 # User Management and Authorization
-DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/articles/userManagement/overview) to understand the logic behind the package.
+DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/articles/userManagement/overview) to understand the logic behind the package. Check out [Demo Projects](https://github.com/HK-Zhang/DNV_UserManagement_Demo).
 
 ## Prerequisites
 PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
