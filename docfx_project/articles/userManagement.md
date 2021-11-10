@@ -23,6 +23,18 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
                 });
             //...
         }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseEndpoints(endpoints =>
+            {
+                //...
+                endpoints.MapDefaultControllerRoute();
+            });
+
+            //...
+        }
     }
 ```
 ### 2. Create tables in database
