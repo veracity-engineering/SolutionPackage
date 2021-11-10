@@ -27,6 +27,13 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //...
+            //Put UseRouting before UseAuthentication and UseAuthorization
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            //...
+
+            //...
             app.UseEndpoints(endpoints =>
             {
                 //...
@@ -56,7 +63,7 @@ The following is sample.
         public void ConfigureServices(IServiceCollection services)
         {
             //...
-            services.AddMvc();
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 // swagger documentaion group for User Management.
