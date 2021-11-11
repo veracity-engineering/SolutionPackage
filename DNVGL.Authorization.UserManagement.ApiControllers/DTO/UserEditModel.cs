@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using System.Collections.Generic;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
+using System.Text.Json.Serialization;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {
@@ -68,12 +69,23 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     /// </summary>
     public class UserViewModel:User
     {
-        private new string CompanyIds { get; set; }
-        private new string RoleIds { get; set; }
-        private new IReadOnlyList<string> RoleIdList { get; set; }
-        private new IReadOnlyList<string> CompanyIdList { get; set; }
-        private new IReadOnlyList<Role> RoleList { get; set; }
-        private new IReadOnlyList<Company> CompanyList { get; set; }
+        [JsonIgnore]
+        public override string CompanyIds { get; set; }
+
+        [JsonIgnore]
+        public override string RoleIds { get; set; }
+
+        [JsonIgnore]
+        public override IReadOnlyList<string> RoleIdList { get;  }
+
+        [JsonIgnore]
+        public override IReadOnlyList<string> CompanyIdList { get;}
+
+        [JsonIgnore]
+        public override IReadOnlyList<Role> RoleList { get; set; }
+
+        [JsonIgnore]
+        public override IReadOnlyList<Company> CompanyList { get; set; }
 
         /// <summary>
         /// Get the list of roles which this user has.

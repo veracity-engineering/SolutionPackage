@@ -43,7 +43,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// Gets or sets the role permissions for this role.
         /// </summary>
         /// <value>Permissions are combined as a string which use semicolon(;) as a delimiter.</value>
-        public string Permissions { get; set; }
+        public virtual string Permissions { get; set; }
 
         /// <summary>
         /// Gets or sets id of the company to which this role belongs.
@@ -51,7 +51,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// <remarks>
         /// It is null if it is a global role.
         /// </remarks>
-        public string CompanyId { get; set; }
+        public virtual string CompanyId { get; set; }
 
         /// <summary>
         /// Gets the company to which this role belongs.
@@ -65,7 +65,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// <summary>
         /// Gets the company permission list for this role.
         /// </summary>
-        public IReadOnlyList<string> PermissionKeys => Permissions.SplitToList(';');
+        public virtual IReadOnlyList<string> PermissionKeys => Permissions.SplitToList(';');
 
         /// <summary>
         /// Gets or sets the name of user who created this role.

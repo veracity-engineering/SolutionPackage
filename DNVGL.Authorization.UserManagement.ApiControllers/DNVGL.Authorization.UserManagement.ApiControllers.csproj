@@ -19,6 +19,10 @@
 			<PackageFlatten>true</PackageFlatten>
 		</Content>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Text.Json" Version="6.0.0" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />

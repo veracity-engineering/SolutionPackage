@@ -34,12 +34,12 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// Gets or sets the company permissions for this company.
         /// </summary>
         /// <value>Permissions are combined as a string which use semicolon(;) as a delimiter.</value>
-        public string Permissions { get; set; }
+        public virtual string Permissions { get; set; }
 
         /// <summary>
         /// Gets the company permission list for this company.
         /// </summary>
-        public IReadOnlyList<string> PermissionKeys => (Permissions ?? string.Empty).SplitToList(';');
+        public virtual IReadOnlyList<string> PermissionKeys => (Permissions ?? string.Empty).SplitToList(';');
 
         /// <summary>
         /// Gets or sets a flag indicating if this company is active or not.
