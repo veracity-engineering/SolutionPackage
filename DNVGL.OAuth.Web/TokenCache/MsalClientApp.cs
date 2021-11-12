@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,15 +25,21 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			var authContext = context as AuthorizationCodeReceivedContext;
 			authContext.HandleCodeRedemption();
-			_clientApp.AppConfig.ExtraQueryParameters["code_verifier"] = authContext.TokenEndpointRequest.GetParameter("code_verifier");
-			var result = await _clientApp.AcquireTokenByAuthorizationCode(_scopes, authContext.ProtocolMessage.Code).ExecuteAsync();
+			
+			var builder = _clientApp.AcquireTokenByAuthorizationCode(_scopes, authContext.ProtocolMessage.Code);
+			var codeVerifier = authContext.TokenEndpointRequest.GetParameter("code_verifier");
+
+			if (string.IsNullOrWhiteSpace(codeVerifier)) builder.WithPkceCodeVerifier(codeVerifier);
+
+			var result = await builder.ExecuteAsync();
 			authContext.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			return result;
 		}
 
 		public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext)
 		{
-			var account = await this.GetAccount(httpContext);
+			var identifier = httpContext.User.GetMsalAccountId();
+			var account = await _clientApp.GetAccountAsync(identifier);
 			return await AcquireTokenSilent(account);
 		}
 
@@ -40,7 +47,8 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			try
 			{
-				return await _clientApp.AcquireTokenSilent(_scopes, account).ExecuteAsync();
+				var builder = _clientApp.AcquireTokenSilent(_scopes, account);
+				return await builder.ExecuteAsync();
 			}
 			catch (MsalUiRequiredException)
 			{
@@ -50,12 +58,8 @@ namespace DNVGL.OAuth.Web.TokenCache
 
 		public async Task<AuthenticationResult> AcquireTokenForClient()
 		{
-			return await _clientApp.AcquireTokenForClient(_scopes).ExecuteAsync();
-		}
-
-		public Task<IAccount> GetAccount(HttpContext httpContext)
-		{
-			return _clientApp.GetAccountAsync(httpContext.User.GetMsalAccountId());
+			var builder = _clientApp.AcquireTokenForClient(_scopes);
+			return await builder.ExecuteAsync();
 		}
 
 		public async Task ClearUserTokenCache(HttpContext httpContext)

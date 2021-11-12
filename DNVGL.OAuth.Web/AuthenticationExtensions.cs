@@ -2,14 +2,11 @@
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -179,10 +176,12 @@ namespace DNVGL.OAuth.Web
 
 				if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any()) oidcOptions.Scopes = new string[] { oidcOptions.ClientId };
 
+				o.Scope.Clear();
+
 				foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 
-				if (oidcOptions.SecurityTokenValidator != null) { o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator; }
-				else o.SecurityTokenValidator = new DNVTokenValidator();
+				o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new DNVTokenValidator();
+
 				if (oidcOptions.Events != null) { o.Events = oidcOptions.Events; }
 
 				if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
@@ -204,30 +203,12 @@ namespace DNVGL.OAuth.Web
 		#region AddDistributedTokenCache
 		private static void AddMSALClientApp(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
-			var cacheEntryOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-			cacheSetupAction?.Invoke(cacheEntryOptions);
-
-			services.AddSingleton<ITokenCacheProvider>(f =>
+			services.AddSingleton<ITokenCacheProvider>(p =>
 			{
-				var cache = f.GetRequiredService<IDistributedCache>();
-
-				// add memory cache for token cache if no distributed cache set.
-				if (cache == null)
-				{
-					cache = f.GetRequiredService<IDistributedCache>();
-				}
-
-				var provider = new MsalTokenCacheProvider(cache, cacheEntryOptions);
+				var cache = p.GetRequiredService<IDistributedCache>();
+				var provider = new MsalTokenCacheProvider(cache, p);
 				return provider;
 			});
-
-			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
-			{
-				var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
-					.WithOAuth2Options(oidcOptions)
-					.BuildForUserCredentials(context);
-				await msalClientApp.AcquireTokenByAuthorizationCode(context);
-			}
 
 #if NETCORE2
 			if (oidcOptions.Events == null) oidcOptions.Events = new OpenIdConnectEvents();
@@ -252,9 +233,18 @@ namespace DNVGL.OAuth.Web
 
 			services.AddSingleton(f =>
 			{
-				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>()).WithOAuth2Options(oidcOptions);
+				var appBuilder = new MsalClientAppBuilder(f.GetRequiredService<ITokenCacheProvider>())
+					.WithOAuth2Options(oidcOptions);
 				return appBuilder;
 			});
+
+			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
+			{
+				var msalClientApp = context.HttpContext.RequestServices.GetService<IClientAppBuilder>()
+					.WithOAuth2Options(oidcOptions)
+					.BuildForUserCredentials(context);
+				await msalClientApp.AcquireTokenByAuthorizationCode(context);
+			}
 		}
 		#endregion
 	}

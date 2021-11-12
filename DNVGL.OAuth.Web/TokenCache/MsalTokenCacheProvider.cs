@@ -1,45 +1,83 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using DNVGL.OAuth.Web.Abstractions;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using System;
 using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
-	public class MsalTokenCacheProvider : MsalAbstractTokenCacheProvider
+	public class MsalTokenCacheProvider : ITokenCacheProvider
 	{
 		private readonly IDistributedCache _cache;
-
 		private readonly DistributedCacheEntryOptions _cacheOptions;
+		private readonly IDataProtector _dataProtector;
 
-		public MsalTokenCacheProvider(IDistributedCache memoryCache, IOptions<DistributedCacheEntryOptions> cacheOptions) : this(memoryCache, cacheOptions.Value) { }
-
-		public MsalTokenCacheProvider(IDistributedCache memoryCache, DistributedCacheEntryOptions cacheOptions = null)
+		public MsalTokenCacheProvider(IDistributedCache cache, IServiceProvider serviceProvider, DistributedCacheEntryOptions cacheOptions = null)
 		{
-			if (cacheOptions == null)
+			_cache = cache;
+			_cacheOptions = cacheOptions ?? new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
+			_dataProtector = serviceProvider.GetService<IDataProtector>();
+		}
+
+		public Task InitializeAsync(ITokenCache tokenCache)
+		{
+			if (tokenCache == null) throw new ArgumentNullException(nameof(tokenCache));
+
+			tokenCache.SetBeforeAccessAsync(this.OnBeforeAccessAsync);
+			tokenCache.SetAfterAccessAsync(this.OnAfterAccessAsync);
+			tokenCache.SetBeforeWriteAsync(this.OnBeforeWriteAsync);
+			return Task.CompletedTask;
+		}
+
+		public async Task ClearAsync(string identifier)
+		{
+			// This is a user token cache
+			await this.RemoveKeyAsync(identifier).ConfigureAwait(false);
+
+			// TODO: Clear the cookie session if any. Get inspiration from
+			// https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/240
+		}
+
+		private async Task OnBeforeAccessAsync(TokenCacheNotificationArgs args)
+		{
+			if (!string.IsNullOrEmpty(args.SuggestedCacheKey))
 			{
-				cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
+				var bytes = await this.ReadCacheBytesAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+
+				if (bytes != null && _dataProtector != null) bytes = _dataProtector.Unprotect(bytes);
+
+				args.TokenCache.DeserializeMsalV3(bytes, true);
 			}
-
-			_cache = memoryCache;
-			_cacheOptions = cacheOptions;
 		}
 
-		protected override Task RemoveKeyAsync(string cacheKey)
+		private async Task OnAfterAccessAsync(TokenCacheNotificationArgs args)
 		{
-			_cache.Remove(cacheKey);
-			return Task.CompletedTask;
+			if (args.HasStateChanged)
+			{
+				if (args.HasTokens)
+				{
+					var bytes = args.TokenCache.SerializeMsalV3();
+
+					if (bytes != null && _dataProtector != null) bytes = _dataProtector.Protect(bytes);
+
+					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, bytes).ConfigureAwait(false);
+				}
+				else
+				{
+					await this.RemoveKeyAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+				}
+			}
 		}
 
-		protected override Task<byte[]> ReadCacheBytesAsync(string cacheKey)
-		{
-			var tokenCacheBytes = _cache.Get(cacheKey);
-			return Task.FromResult(tokenCacheBytes);
-		}
+		private Task OnBeforeWriteAsync(TokenCacheNotificationArgs args) => Task.CompletedTask;
 
-		protected override Task WriteCacheBytesAsync(string cacheKey, byte[] bytes)
-		{
-			_cache.Set(cacheKey, bytes, _cacheOptions);
-			return Task.CompletedTask;
-		}
+		private Task RemoveKeyAsync(string cacheKey) => _cache.RemoveAsync(cacheKey);
+
+		private Task<byte[]> ReadCacheBytesAsync(string cacheKey) => _cache.GetAsync(cacheKey);
+
+		private Task WriteCacheBytesAsync(string cacheKey, byte[] bytes) => _cache.SetAsync(cacheKey, bytes, _cacheOptions);
 	}
 }

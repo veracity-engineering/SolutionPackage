@@ -36,12 +36,6 @@ namespace DNVGL.OAuth.Web.Abstractions
 		Task<AuthenticationResult> AcquireTokenForClient();
 
 		/// <summary>
-		/// Gets the authenticated account from the specified <see cref="HttpContext"/>.
-		/// </summary>
-		/// <param name="httpContext"></param>
-		Task<IAccount> GetAccount(HttpContext httpContext);
-
-		/// <summary>
 		/// Removes all tokens in the cache for the account retrieved from the specified <see cref="HttpContext"/>.
 		/// </summary>
 		/// <param name="httpContext"></param>
