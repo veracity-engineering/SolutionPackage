@@ -18,7 +18,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 			_tokenCacheProvider = tokenCacheProvider;
 		}
 
-		public IClientAppBuilder WithOAuth2Options(Abstractions.OAuth2Options options)
+		public IClientAppBuilder WithOAuth2Options(OAuth2Options options)
 		{
 			_options = options;
 			return this;

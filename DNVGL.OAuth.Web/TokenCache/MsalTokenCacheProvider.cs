@@ -1,8 +1,6 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using System;
 using System.Threading.Tasks;
@@ -15,11 +13,11 @@ namespace DNVGL.OAuth.Web.TokenCache
 		private readonly DistributedCacheEntryOptions _cacheOptions;
 		private readonly IDataProtector _dataProtector;
 
-		public MsalTokenCacheProvider(IDistributedCache cache, IServiceProvider serviceProvider, DistributedCacheEntryOptions cacheOptions = null)
+		public MsalTokenCacheProvider(IDistributedCache cache, DistributedCacheEntryOptions cacheOptions, IDataProtectionProvider dataProtectionProvider)
 		{
-			_cache = cache;
-			_cacheOptions = cacheOptions ?? new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-			_dataProtector = serviceProvider.GetService<IDataProtector>();
+			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
+			_cacheOptions = cacheOptions ?? throw new ArgumentNullException(nameof(cacheOptions));
+			_dataProtector = dataProtectionProvider?.CreateProtector(nameof(MsalTokenCacheProvider));
 		}
 
 		public Task InitializeAsync(ITokenCache tokenCache)
@@ -46,10 +44,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 			if (!string.IsNullOrEmpty(args.SuggestedCacheKey))
 			{
 				var bytes = await this.ReadCacheBytesAsync(args.SuggestedCacheKey).ConfigureAwait(false);
-
-				if (bytes != null && _dataProtector != null) bytes = _dataProtector.Unprotect(bytes);
-
-				args.TokenCache.DeserializeMsalV3(bytes, true);
+				args.TokenCache.DeserializeMsalV3(this.Unprotect(bytes), true);
 			}
 		}
 
@@ -60,10 +55,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 				if (args.HasTokens)
 				{
 					var bytes = args.TokenCache.SerializeMsalV3();
-
-					if (bytes != null && _dataProtector != null) bytes = _dataProtector.Protect(bytes);
-
-					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, bytes).ConfigureAwait(false);
+					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, this.Protect(bytes)).ConfigureAwait(false);
 				}
 				else
 				{
@@ -79,5 +71,11 @@ namespace DNVGL.OAuth.Web.TokenCache
 		private Task<byte[]> ReadCacheBytesAsync(string cacheKey) => _cache.GetAsync(cacheKey);
 
 		private Task WriteCacheBytesAsync(string cacheKey, byte[] bytes) => _cache.SetAsync(cacheKey, bytes, _cacheOptions);
+
+		private byte[] Protect(byte[] bytes) =>
+			bytes != null && _dataProtector != null ? _dataProtector.Protect(bytes) : bytes;
+
+		private byte[] Unprotect(byte[] bytes) =>
+			bytes != null && _dataProtector != null ? _dataProtector.Unprotect(bytes) : bytes;
 	}
 }
