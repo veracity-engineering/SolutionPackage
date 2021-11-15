@@ -3,8 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 		<Authors>Eric Liu &lt;li.eric.liu@dnv.com&gt;</Authors>
-		<Company>DNVGL</Company>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Company>DNV</Company>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">

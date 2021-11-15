@@ -53,8 +53,6 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(authenticationSchema, jwtOptions);
 		}
 
-
-
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
@@ -116,6 +114,7 @@ namespace DNVGL.OAuth.Web
 			oidcSetupAction(oidcOptions);
 			return services.AddOidc(oidcOptions, cookieSetupAction);
 		}
+
 		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			var builder = services.AddAuthentication(o =>
