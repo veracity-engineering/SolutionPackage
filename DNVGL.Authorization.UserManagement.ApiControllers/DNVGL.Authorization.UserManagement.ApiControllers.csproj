@@ -10,16 +10,32 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>apidocs\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<RepositoryUrl>https://dev.azure.com/dnvgl-one/Innersource/_git/DNVGL.SolutionPackage</RepositoryUrl>
+		<PackageIcon>user.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup Label="Packaging">
 		<Content Include="apidocs\$(AssemblyName).xml">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<PackageFlatten>true</PackageFlatten>
 		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Text.Json" Version="6.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="user.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 

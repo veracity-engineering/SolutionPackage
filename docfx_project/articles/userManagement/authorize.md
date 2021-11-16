@@ -11,7 +11,44 @@ Configuration to enable Role-based authorization.
         public void ConfigureServices(IServiceCollection services)
         {
             //...
-            services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));
+            services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler());
+            //...
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            //Put UseRouting before UseAuthentication and UseAuthorization
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            //...
+        }
+    }
+```
+
+Configuration to enable Role-based authorization if `DNVGL.OAuth.Web` is used in authentication.
+```cs
+    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddOidc(o =>
+            {
+                //....
+            }, cookieOption => cookieOption.Events.AddCookieValidateHandler());
+            //...
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            //Put UseRouting before UseAuthentication and UseAuthorization
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             //...
         }
     }
@@ -27,7 +64,7 @@ Then `AuthorizeAttribute` can be used to decorate an API to perfrom authorizatio
         }
 ```
 
-Alternatively, `PermissionAuthorizeAttribute` is also working.
+Alternatively, `PermissionAuthorizeAttribute` is still working.
 ```cs
         [HttpGet]
         [PermissionAuthorize(WeatherPermission.ReadWeather)]

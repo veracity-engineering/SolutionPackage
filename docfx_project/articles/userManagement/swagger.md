@@ -13,6 +13,7 @@ It will serperate User Management APIs from your project APIs.
         public void ConfigureServices(IServiceCollection services)
         {
             //...
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 // swagger documentaion group for User Management.

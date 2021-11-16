@@ -1,5 +1,5 @@
 # User Management and Authorization
-DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/articles/userManagement/overview) to understand the logic behind the package.
+DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through [Overview](/articles/userManagement/overview) to understand the logic behind the package. Check out [Demo Projects](https://github.com/HK-Zhang/DNV_UserManagement_Demo).
 
 ## Prerequisites
 PM> `Install-Package DNVGL.Authorization.UserManagement.ApiControllers`
@@ -23,6 +23,25 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
                 });
             //...
         }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            //Put UseRouting before UseAuthentication and UseAuthorization
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            //...
+
+            //...
+            app.UseEndpoints(endpoints =>
+            {
+                //...
+                endpoints.MapDefaultControllerRoute();
+            });
+
+            //...
+        }
     }
 ```
 ### 2. Create tables in database
@@ -44,6 +63,7 @@ The following is sample.
         public void ConfigureServices(IServiceCollection services)
         {
             //...
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 // swagger documentaion group for User Management.

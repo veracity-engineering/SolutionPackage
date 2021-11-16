@@ -26,7 +26,7 @@ namespace DNVGL.Authorization.Web
                 options.Events = new CookieAuthenticationEvents();
             }
 
-            options.Events.AddCookieValidateHandler(_userPermissionReader, _permissionOptions);
+            options.Events.AddCookieValidateHandler();
         }
 
         public void Configure(CookieAuthenticationOptions options)
