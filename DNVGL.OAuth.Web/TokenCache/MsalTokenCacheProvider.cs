@@ -30,14 +30,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return Task.CompletedTask;
 		}
 
-		public async Task ClearAsync(string identifier)
-		{
-			// This is a user token cache
-			await this.RemoveKeyAsync(identifier).ConfigureAwait(false);
-
-			// TODO: Clear the cookie session if any. Get inspiration from
-			// https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/issues/240
-		}
+		public async Task ClearAsync(string identifier) => await this.RemoveKeyAsync(identifier).ConfigureAwait(false);
 
 		private async Task OnBeforeAccessAsync(TokenCacheNotificationArgs args)
 		{
