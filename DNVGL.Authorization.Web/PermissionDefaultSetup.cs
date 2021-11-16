@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace DNVGL.Authorization.Web
 {
@@ -125,17 +127,8 @@ namespace DNVGL.Authorization.Web
         /// Claim based authorization is enabled only if this customized CookieValidateHandler are added.
         /// </remarks>
         /// <param name="cookieEvents"><see cref="CookieAuthenticationEvents"/></param>
-        /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="CookieAuthenticationEvents"/></returns>
-        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
-        {
-            var serviceProvider = services.BuildServiceProvider();
-            var userPermission = serviceProvider.GetService<IUserPermissionReader>();
-            var premissionOptions = serviceProvider.GetService<PermissionOptions>();
-            return AddCookieValidateHandler(cookieEvents, userPermission, premissionOptions);
-        }
-
-        internal static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IUserPermissionReader userPermission, PermissionOptions premissionOptions)
+        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents)
         {
             var previousValidatePrincipal = cookieEvents.OnValidatePrincipal;
 
@@ -147,8 +140,14 @@ namespace DNVGL.Authorization.Web
                     _ = previousValidatePrincipal.Invoke(ctx);
                 }
 
+
+                IUserPermissionReader userPermission = ctx.HttpContext.RequestServices.GetRequiredService<IUserPermissionReader>();
+                PermissionOptions premissionOptions = ctx.HttpContext.RequestServices.GetRequiredService<PermissionOptions>();
+
                 var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
+     
                 var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
+
                 if (!string.IsNullOrEmpty(companyId))
                 {
                     var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");

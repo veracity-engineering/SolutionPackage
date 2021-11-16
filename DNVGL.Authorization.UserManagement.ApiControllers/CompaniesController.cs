@@ -117,15 +117,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var currentUser = await GetCurrentUser();
             var decodedUrl = WebUtility.UrlDecode(url);
-            var urlParts = decodedUrl.ToLowerInvariant().Replace("https://", "").Replace("http://", "").Split("/");
+            var urlParts = decodedUrl.Replace("https://", "", StringComparison.InvariantCultureIgnoreCase).Replace("http://", "", StringComparison.InvariantCultureIgnoreCase).Split("/");
 
+            TCompany company = null;
+            if (urlParts.Length > 1)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[0] + "/" + urlParts[1]);
+            }
 
-            var company = await _companyRepository.ReadByDomain(urlParts[0]);
+            if (company == null)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[0]);
+            }
+            
             if (company == null && urlParts.Length > 1)
             {
                 company = await _companyRepository.ReadByDomain(urlParts[1]);
             }
-            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && currentUser.SuperAdmin))
+
+            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && !currentUser.SuperAdmin))
             {
                 return null;
             }
