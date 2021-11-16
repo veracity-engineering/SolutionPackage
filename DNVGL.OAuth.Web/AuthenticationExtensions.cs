@@ -104,11 +104,7 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddOidc for Web App
-		public static AuthenticationBuilder AddOidc(
-			this IServiceCollection services,
-			Action<OidcOptions> oidcSetupAction,
-			Action<CookieAuthenticationOptions> cookieSetupAction = null,
-			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			if (oidcSetupAction == null)
 			{
@@ -117,14 +113,10 @@ namespace DNVGL.OAuth.Web
 
 			var oidcOptions = new OidcOptions();
 			oidcSetupAction(oidcOptions);
-			return services.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
+			return services.AddOidc(oidcOptions, cookieSetupAction);
 		}
 
-		public static AuthenticationBuilder AddOidc(
-			this IServiceCollection services,
-			OidcOptions oidcOptions,
-			Action<CookieAuthenticationOptions> cookieSetupAction = null,
-			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		public static AuthenticationBuilder AddOidc(this IServiceCollection services, OidcOptions oidcOptions, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			var builder = services.AddAuthentication(o =>
 			{
@@ -132,14 +124,11 @@ namespace DNVGL.OAuth.Web
 				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 			});
 
-			return builder.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
+			builder.AddOidc(oidcOptions, cookieSetupAction);
+			return builder;
 		}
 
-		public static AuthenticationBuilder AddOidc(
-			this AuthenticationBuilder builder,
-			Action<OidcOptions> oidcSetupAction,
-			Action<CookieAuthenticationOptions> cookieSetupAction = null,
-			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		public static AuthenticationBuilder AddOidc(this AuthenticationBuilder builder, Action<OidcOptions> oidcSetupAction, Action<CookieAuthenticationOptions> cookieSetupAction = null)
 		{
 			if (oidcSetupAction == null)
 			{
@@ -148,7 +137,7 @@ namespace DNVGL.OAuth.Web
 
 			var oidcOptions = new OidcOptions();
 			oidcSetupAction(oidcOptions);
-			return builder.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
+			return builder.AddOidc(oidcOptions, cookieSetupAction);
 		}
 
 		/// <summary>
@@ -172,6 +161,12 @@ namespace DNVGL.OAuth.Web
 
 			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
 
+			// switch to authorization code flow.
+			if (oidcOptions.ResponseType.Split(' ').Contains(OpenIdConnectResponseType.Code))
+			{
+				AddMsalClientApp(builder.Services, oidcOptions, cacheSetupAction);
+			}
+
 			builder.AddOpenIdConnect(o =>
 			{
 				o.Authority = oidcOptions.Authority;
@@ -188,12 +183,6 @@ namespace DNVGL.OAuth.Web
 				ConfigureSecurityTokenValidator(oidcOptions, o);
 				ConfigureEvents(oidcOptions, o);
 			});
-
-			// switch to authorization code flow.
-			if (oidcOptions.ResponseType.Split(' ').Contains(OpenIdConnectResponseType.Code))
-			{
-				AddDistributedTokenCache(builder.Services, oidcOptions, cacheSetupAction);
-			}
 
 			return builder;
 		}
@@ -234,7 +223,7 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		public static void AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		private static void AddMsalClientApp(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			services.AddDataProtection();
 
@@ -248,34 +237,38 @@ namespace DNVGL.OAuth.Web
 				return provider;
 			});
 
-			services.AddSingleton<IClientAppBuilder>(p =>
+			services.AddSingleton(p =>
 			{
 				var tokenCacheProvider = p.GetRequiredService<ITokenCacheProvider>();
-				var appBuilder = new MsalClientAppBuilder(tokenCacheProvider, oidcOptions);
+				var appBuilder = new MsalClientAppBuilder(tokenCacheProvider)
+					.WithOAuth2Options(oidcOptions);
 				return appBuilder;
 			});
 
-			services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
-			{
-				var onAuthorizationCodeReceived = o.Events.OnAuthorizationCodeReceived;
+			if (oidcOptions.Events == null) oidcOptions.Events = new OpenIdConnectEvents();
 
-				o.Events.OnAuthorizationCodeReceived = async context =>
+			if (oidcOptions.Events.OnAuthorizationCodeReceived == null)
+			{
+				oidcOptions.Events.OnAuthorizationCodeReceived = onCodeReceived;
+			}
+			else
+			{
+				var onAuthorizationCodeReceived = oidcOptions.Events.OnAuthorizationCodeReceived;
+
+				oidcOptions.Events.OnAuthorizationCodeReceived = async context =>
 				{
 					await onCodeReceived(context);
 					await onAuthorizationCodeReceived(context);
 				};
-			});
+			}
 
 			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
 			{
-				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier");
-				var authCode = context.TokenEndpointRequest.Code;
 				var clientAppBuilder = context.HttpContext.RequestServices.GetService<IClientAppBuilder>();
-				var clienApp = clientAppBuilder.Build();
-
-				context.HandleCodeRedemption();
-				var result = await clienApp.AcquireTokenByAuthorizationCode(authCode, codeVerifier);
-				context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+				var clienApp = clientAppBuilder
+					.WithOAuth2Options(oidcOptions)
+					.BuildForUserCredentials(context);
+				await clienApp.AcquireTokenByAuthorizationCode(context);
 			}
 		}
 		#endregion
