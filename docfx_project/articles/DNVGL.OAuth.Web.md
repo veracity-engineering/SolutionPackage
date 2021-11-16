@@ -82,7 +82,7 @@ Beware of the usage of `[Authorize]` attribute, and do have an authentication fa
 
 ---
 
-# Authentication for Web APIs
+# Authentication for web APIs
 
 Unlike the website, web API expect every incoming request with an access token tagged alone, and web API will not help you to get a token. You get either a successful access or a 401.
 
@@ -101,7 +101,7 @@ public void ConfigureServices(IServiceCollection services)
 	services.AddAuthentication("Bearer")
 		.AddJwt("Bearer", o =>
 		{
-			o.Authority = "https://login.veracity.com/tfp/a68572e3-63ce-4bc1-acdc-b64943502e9d/	b2c_1a_signinwithadfsidp/v2.0";
+			o.Authority = "https://login.veracity.com/tfp/a68572e3-63ce-4bc1-acdc-b64943502e9d/b2c_1a_signinwithadfsidp/v2.0";
 			o.ClientId = "<ClientId>";
 		});
 	...
@@ -127,32 +127,19 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 	}
 ```
 
+```bash
+curl https://localhost:44301/api --get --include --header "Authorization: Bearer <token>"
+```
+
 5. A sample project is ready for you to try out: [SimpleOAuthSample](https://dnvgl-one.visualstudio.com/Innersource/_git/DNVGL.SolutionPackage.Demo?path=/SimpleOAuthSample).
 
 ---
 
-# Access Token Cache Usage
+# Access token cache for websites
 
 If you web project act as an API gateway, you will want to cache users' access tokens to prevent unnecessary token requests. The library uses `MSAL (Microsoft Authentication Library)` to manipulate tokens.
 
-1. Authorization code flow needs to be set to acquire access token, and refresh token is required for MSAL to re-acquire token from IDP if the token exceed its expiration.
-
-```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-	...
-	var oidcOptions = new OidcOptions
-	{
-		ClientId = "<ClientId>",
-		ClientSecret = "<ClientSecret>",
-		Scopes = new[] { "<Scope>", "offline_access" },	// offline_access is required to retrieve refresh_token.
-		ResponseType = "code""
-	};
-	...
-}
-```
-
-2. To cache the tokens, an implementaion of `IDistributedCache` such as `MemoryDistributedCache` needs to be added.
+1. To cache the tokens, an implementaion of `IDistributedCache` such as `MemoryDistributedCache` needs to be added.
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -169,7 +156,7 @@ You can also add `RedisCache` instead.
 public void ConfigureServices(IServiceCollection services)
 {
 	...
-	services.AddDistributedRedisCache(o =>
+	services.AddStackExchangeRedisCache(o =>
 	{
 		o.InstanceName = "<InstanceName>";
 		o.Configuration = "<Configuration>";
@@ -178,28 +165,74 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-3. Calling `AddDistributedTokenCache` will have `IDistributedCache` attached to MSAL client app behind the scene, and the token acquiring process will be replaced by MSAL client app.
+2. Authorization code flow needs to be set to acquire access token, and refresh token is required for MSAL to re-acquire new token from IdP.
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
 	...
-	services.AddDistributedTokenCache(oidcOptions);
+	services.AddOidc(o =>
+	{
+		o.Authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/b2c_1a_signinwithadfsidp/v2.0";
+		o.ClientId = "<ClientId>";
+		o.ClientSecret = "<ClientSecret>";
+		// offline_access is required to retrieve refresh_token.
+		o.Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/<ResourceId>/user_impersonation", "offline_access" };
+		o.ResponseType = "code";
+	});
 	...
 }
 ```
 
-4. Don't forget to add `AddOidc` after what you did previously.
+3. To retrieve the cached token, we need to get the `IClientAppBuilder` by dependency injection and create an `IClientApp`. `IClientApp` will read the token from cache or re-acquire a new token from IdP.
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
+[Authorize]
+public class HomeController : Controller
 {
-	...
-	services.AddOidc(oidcOptions);
-	...
+	private readonly IClientAppBuilder _appBuilder;
+
+	public HomeController(IClientAppBuilder appBuilder)
+	{
+		_appBuilder = appBuilder;
+	}
+
+	public async Task<IActionResult> Index()
+	{
+		try
+		{
+			var clientApp = _appBuilder.Build();
+			var result = await clientApp.AcquireTokenSilent(this.HttpContext.User);
+			var accessToken = result.AccessToken;
+		}
+		catch (TokenExpiredException)
+		{
+		}
+
+		return View();
+	}
+}
+```
+
+4. You can also acquire a token with another scope for other API (such as MyService) with the cached token instead of re-authenticate.
+
+```csharp
+public async Task<IActionResult> Refresh()
+{
+	try
+	{
+		var anotherScope = "https://dnvglb2ctest.onmicrosoft.com/0d6191c4-331b-4d08-984b-5d96001fc30b/user_impersonation";
+		var clientApp = _appBuilder.Build(anotherScope);
+		var result = await clientApp.AcquireTokenSilent(this.HttpContext.User);
+		var accessToken = result.AccessToken; // verify the `aud` in the new access token.
+	}
+	catch (TokenExpiredException)
+	{
+	}
+
+	return View("Index");
 }
 ```
 
 5. A sample project is ready for you to try out: [TokenCacheDemo](//TokenCacheDemo).
-
 ---

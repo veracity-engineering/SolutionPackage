@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
+	/// <summary>
+	/// An implementation of token cache for confidential clients backed by <see cref="IDistributedCache"/>.
+	/// </summary>
 	public class MsalTokenCacheProvider : ITokenCacheProvider
 	{
 		private readonly IDistributedCache _cache;

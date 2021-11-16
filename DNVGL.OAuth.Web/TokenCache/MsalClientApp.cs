@@ -1,11 +1,9 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
 using DNVGL.OAuth.Web.Exceptions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.TokenCache
@@ -13,32 +11,27 @@ namespace DNVGL.OAuth.Web.TokenCache
 	public class MsalClientApp : IClientApp
 	{
 		private readonly IConfidentialClientApplication _clientApp;
-		private readonly IEnumerable<string> _scopes;
+		private readonly StringValues _scope;
 
-		public MsalClientApp(IConfidentialClientApplication confidentialClientApplication, IEnumerable<string> scopes)
+		public MsalClientApp(IConfidentialClientApplication confidentialClientApplication, StringValues scopes)
 		{
 			_clientApp = confidentialClientApplication;
-			_scopes = scopes;
+			_scope = scopes;
 		}
 
-		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode<TOptions>(RemoteAuthenticationContext<TOptions> context) where TOptions : AuthenticationSchemeOptions
-		{
-			var authContext = context as AuthorizationCodeReceivedContext;
-			authContext.HandleCodeRedemption();
-			
-			var builder = _clientApp.AcquireTokenByAuthorizationCode(_scopes, authContext.ProtocolMessage.Code);
-			var codeVerifier = authContext.TokenEndpointRequest.GetParameter("code_verifier");
+		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string authCode, string codeVerifier = null)
+		{			
+			var builder = _clientApp.AcquireTokenByAuthorizationCode(_scope, authCode);
 
-			if (string.IsNullOrWhiteSpace(codeVerifier)) builder.WithPkceCodeVerifier(codeVerifier);
+			if (!string.IsNullOrWhiteSpace(codeVerifier)) builder.WithPkceCodeVerifier(codeVerifier);
 
 			var result = await builder.ExecuteAsync();
-			authContext.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			return result;
 		}
 
-		public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext)
+		public async Task<AuthenticationResult> AcquireTokenSilent(ClaimsPrincipal claimsPrincipal)
 		{
-			var identifier = httpContext.User.GetMsalAccountId();
+			var identifier = claimsPrincipal.GetMsalAccountId();
 			var account = await _clientApp.GetAccountAsync(identifier);
 			return await AcquireTokenSilent(account);
 		}
@@ -47,7 +40,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			try
 			{
-				var builder = _clientApp.AcquireTokenSilent(_scopes, account);
+				var builder = _clientApp.AcquireTokenSilent(_scope, account);
 				return await builder.ExecuteAsync();
 			}
 			catch (MsalUiRequiredException)
@@ -58,15 +51,15 @@ namespace DNVGL.OAuth.Web.TokenCache
 
 		public async Task<AuthenticationResult> AcquireTokenForClient()
 		{
-			var builder = _clientApp.AcquireTokenForClient(_scopes);
+			var builder = _clientApp.AcquireTokenForClient(_scope);
 			return await builder.ExecuteAsync();
 		}
 
-		public async Task ClearUserTokenCache(HttpContext httpContext)
+		public async Task ClearUserTokenCache(ClaimsPrincipal claimsPrincipal)
 		{
-			var userAccount = await _clientApp.GetAccountAsync(httpContext.User.GetMsalAccountId());
-			if (userAccount != null)
-				await _clientApp.RemoveAsync(userAccount);
+			var userAccount = await _clientApp.GetAccountAsync(claimsPrincipal.GetMsalAccountId());
+
+			if (userAccount != null) await _clientApp.RemoveAsync(userAccount);
 		}
 	}
 }
