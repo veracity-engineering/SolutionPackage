@@ -40,25 +40,23 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 		private async Task<string> GetVersion1AccessToken()
 		{
 			var authContext = new AuthenticationContext(_options.OAuthClientOptions.Authority, GetTokenCache());
-			var authResult = await authContext.AcquireTokenAsync(_options.OAuthClientOptions.Resource, 
-                new ClientCredential(_options.OAuthClientOptions.ClientId, _options.OAuthClientOptions.ClientSecret));
+			var authResult = await authContext.AcquireTokenAsync(_options.OAuthClientOptions.Resource,
+				new ClientCredential(_options.OAuthClientOptions.ClientId, _options.OAuthClientOptions.ClientSecret));
 			return authResult.AccessToken;
 		}
 
 		private IClientApp GetOrCreateClientApp()
 		{
-			if (_clientApp != null)
-				return _clientApp;
-			_clientApp = _appBuilder
-				.WithOAuth2Options(_options.OAuthClientOptions)
-				.BuildForClientCredentials();
+			if (_clientApp != null) return _clientApp;
+
+			_clientApp = _appBuilder.BuildWithOptions(_options.OAuthClientOptions);
 			return _clientApp;
 		}
 
 		private TokenCache GetTokenCache()
 		{
-			if (_tokenCache == null)
-				_tokenCache = new TokenCache();
+			if (_tokenCache == null) _tokenCache = new TokenCache();
+
 			return _tokenCache;
 		}
 	}
