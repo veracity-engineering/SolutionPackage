@@ -11,7 +11,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 		protected IDistributedCache Cache { get; }
 		protected DistributedCacheEntryOptions CacheOptions { get; }
 
-		public TokenCacheProviderBase(IDistributedCache cache, DistributedCacheEntryOptions cacheOptions)
+		protected TokenCacheProviderBase(IDistributedCache cache, DistributedCacheEntryOptions cacheOptions)
 		{
 			this.Cache = cache ?? throw new ArgumentNullException(nameof(cache));
 			this.CacheOptions = cacheOptions ?? throw new ArgumentNullException(nameof(cacheOptions));
