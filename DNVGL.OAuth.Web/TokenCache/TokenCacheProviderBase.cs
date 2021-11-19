@@ -13,8 +13,8 @@ namespace DNVGL.OAuth.Web.TokenCache
 
 		public TokenCacheProviderBase(IDistributedCache cache, DistributedCacheEntryOptions cacheOptions)
 		{
-			Cache = cache ?? throw new ArgumentNullException(nameof(cache));
-			CacheOptions = cacheOptions ?? throw new ArgumentNullException(nameof(cacheOptions));
+			this.Cache = cache ?? throw new ArgumentNullException(nameof(cache));
+			this.CacheOptions = cacheOptions ?? throw new ArgumentNullException(nameof(cacheOptions));
 		}
 
 		public virtual Task InitializeAsync(ITokenCache tokenCache)
@@ -27,7 +27,7 @@ namespace DNVGL.OAuth.Web.TokenCache
 			return Task.CompletedTask;
 		}
 
-		public virtual async Task ClearAsync(string identifier) => await this.RemoveKeyAsync(identifier).ConfigureAwait(false);
+		public virtual async Task ClearAsync(string identifier) => await this.Cache.RemoveAsync(identifier).ConfigureAwait(false);
 
 		protected virtual async Task OnAfterAccessAsync(TokenCacheNotificationArgs args)
 		{
@@ -36,11 +36,11 @@ namespace DNVGL.OAuth.Web.TokenCache
 				if (args.HasTokens)
 				{
 					var bytes = this.Protect(args.TokenCache.SerializeMsalV3());
-					await this.WriteCacheBytesAsync(args.SuggestedCacheKey, bytes).ConfigureAwait(false);
+					await this.Cache.SetAsync(args.SuggestedCacheKey, bytes, this.CacheOptions).ConfigureAwait(false);
 				}
 				else
 				{
-					await this.RemoveKeyAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+					await Cache.RemoveAsync(args.SuggestedCacheKey).ConfigureAwait(false);
 				}
 			}
 		}
@@ -49,18 +49,12 @@ namespace DNVGL.OAuth.Web.TokenCache
 		{
 			if (!string.IsNullOrEmpty(args.SuggestedCacheKey))
 			{
-				var bytes = await this.ReadCacheBytesAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+				var bytes = await this.Cache.GetAsync(args.SuggestedCacheKey).ConfigureAwait(false);
 				args.TokenCache.DeserializeMsalV3(this.Unprotect(bytes), true);
 			}
 		}
 
 		protected virtual Task OnBeforeWriteAsync(TokenCacheNotificationArgs args) => Task.CompletedTask;
-
-		protected virtual Task RemoveKeyAsync(string cacheKey) => Cache.RemoveAsync(cacheKey);
-
-		protected virtual Task<byte[]> ReadCacheBytesAsync(string cacheKey) => Cache.GetAsync(cacheKey);
-
-		protected virtual Task WriteCacheBytesAsync(string cacheKey, byte[] bytes) => Cache.SetAsync(cacheKey, bytes, CacheOptions);
 
 		protected abstract byte[] Protect(byte[] bytes);
 
