@@ -9,7 +9,11 @@ Some of the supported features include:
 - [DNVGL.OAuth.Api.HttpClient](./DNVGL.OAuth.Api.HttpClient.md)
 
 ## Security
-- [DNGL.Web.Security](./securityHeader)
+- [DNGL.Web.Security](./securityHeader.md)
+
+- [User management](./userManagement.md)
+
+- [Secrets manager](./DNV.SecretsManager.md)
 
 ## Integration
 - [DNVGL.Veracity.Services.Api](./DNVGL.Veracity.Services.Api.md)
