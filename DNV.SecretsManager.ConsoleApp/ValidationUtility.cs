@@ -12,14 +12,14 @@ namespace DNV.SecretsManager.ConsoleApp
 
 		public static bool IsFilenameValid(string value)
 		{
-			FileInfo fileInfo = null;
+			FileInfo fileInfo;
 			try
 			{
 				fileInfo = new FileInfo(value);
 			}
-			catch (ArgumentException) { }
-			catch (PathTooLongException) { }
-			catch (NotSupportedException) { }
+			catch (ArgumentException) { return false; }
+			catch (PathTooLongException) { return false; }
+			catch (NotSupportedException) { return false; }
 			return !ReferenceEquals(fileInfo, null);
 		}
 	}
