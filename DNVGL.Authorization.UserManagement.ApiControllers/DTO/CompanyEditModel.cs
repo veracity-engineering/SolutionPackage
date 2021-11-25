@@ -1,6 +1,7 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 
@@ -43,9 +44,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     /// </summary>
     public class CompanyViewDto : Company
     {
-        private new string Permissions { get; set; }
+        [JsonIgnore]
+        public override string Permissions { get; set; }
 
-        private new IReadOnlyList<string> PermissionKeys { get; set; }
+        [JsonIgnore]
+        public override IReadOnlyList<string> PermissionKeys { get;}
 
         /// <summary>
         /// Gets or sets the company permissions for this company.

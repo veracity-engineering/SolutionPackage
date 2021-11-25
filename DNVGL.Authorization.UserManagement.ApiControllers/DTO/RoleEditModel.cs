@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {
@@ -40,11 +40,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     /// </summary>
     public class RoleViewDto : Role
     {
-        private new string Permissions { get; set; }
+        [JsonIgnore]
+        public override string Permissions { get; set; }
 
-        private new string CompanyId { get; set; }
+        [JsonIgnore]
+        public override string CompanyId { get; set; }
 
-        private new IReadOnlyList<string> PermissionKeys { get; set; }
+        [JsonIgnore]
+        public override IReadOnlyList<string> PermissionKeys { get; }
 
         /// <summary>
         /// Gets the company permission list for this role.

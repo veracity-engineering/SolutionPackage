@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace DNVGL.Authorization.Web
 {
@@ -60,6 +62,20 @@ namespace DNVGL.Authorization.Web
         }
 
         /// <summary>
+        /// Use you own IPermissionRepository implementation to replace default built-in implementation.
+        /// </summary>
+        /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
+        public static IServiceCollection UsePermissionRepository<TPermissionRepository>(this IServiceCollection services) where TPermissionRepository : IPermissionRepository
+        {
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IPermissionRepository));
+            services.Remove(descriptor);
+            services.AddScoped(typeof(IPermissionRepository), typeof(TPermissionRepository));
+            return services;
+        }
+
+        /// <summary>
         /// Setup permission authorization with customized implementation of <see cref="IPermissionRepository"/>. <b>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </b>
         /// </summary>
         /// <typeparam name="TPermissionRepository">The implemenation of <see cref="IPermissionRepository"/></typeparam>
@@ -101,22 +117,18 @@ namespace DNVGL.Authorization.Web
 
         /// <summary>
         /// Add customized CookieValidateHandler to the <see cref="CookieAuthenticationEvents.OnValidatePrincipal"/>.
+        /// <example>
+        /// <code>
+        /// services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));
+        /// </code>
+        /// </example>
         /// </summary>
         /// <remarks>
         /// Claim based authorization is enabled only if this customized CookieValidateHandler are added.
         /// </remarks>
         /// <param name="cookieEvents"><see cref="CookieAuthenticationEvents"/></param>
-        /// <param name="services"><see cref="IServiceCollection"/></param>
         /// <returns><see cref="CookieAuthenticationEvents"/></returns>
-        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IServiceCollection services)
-        {
-            var serviceProvider = services.BuildServiceProvider();
-            var userPermission = serviceProvider.GetService<IUserPermissionReader>();
-            var premissionOptions = serviceProvider.GetService<PermissionOptions>();
-            return AddCookieValidateHandler(cookieEvents, userPermission, premissionOptions);
-        }
-
-        internal static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents, IUserPermissionReader userPermission, PermissionOptions premissionOptions)
+        public static CookieAuthenticationEvents AddCookieValidateHandler(this CookieAuthenticationEvents cookieEvents)
         {
             var previousValidatePrincipal = cookieEvents.OnValidatePrincipal;
 
@@ -128,8 +140,14 @@ namespace DNVGL.Authorization.Web
                     _ = previousValidatePrincipal.Invoke(ctx);
                 }
 
+
+                IUserPermissionReader userPermission = ctx.HttpContext.RequestServices.GetRequiredService<IUserPermissionReader>();
+                PermissionOptions premissionOptions = ctx.HttpContext.RequestServices.GetRequiredService<PermissionOptions>();
+
                 var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
+     
                 var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
+
                 if (!string.IsNullOrEmpty(companyId))
                 {
                     var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");

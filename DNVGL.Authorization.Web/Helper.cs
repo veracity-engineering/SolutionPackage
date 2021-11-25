@@ -18,6 +18,7 @@ namespace DNVGL.Authorization.Web
                 companyId = premissionOptions.GetCompanyIdentity(context);
             }
 
+
             if (string.IsNullOrEmpty(companyId))
             {
                 companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];

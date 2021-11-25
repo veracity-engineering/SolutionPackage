@@ -4,6 +4,7 @@ using DNVGL.Veracity.Services.Api.This.Abstractions;
 using DNVGL.Veracity.Services.Api.This.Abstractions.Models;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -16,10 +17,10 @@ namespace DNVGL.Veracity.Services.Api.This
         }
 
 		public Task<CreateUserReference> Create(CreateUserOptions options) =>
-			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, new StringContent(Serialize(options)));
+			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
 
 		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options) =>
-			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options)));
+			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
 
 		public Task<IEnumerable<UserReference>> Resolve(string email) =>
 			GetResource<IEnumerable<UserReference>>(ThisUsersUrls.Resolve(email));

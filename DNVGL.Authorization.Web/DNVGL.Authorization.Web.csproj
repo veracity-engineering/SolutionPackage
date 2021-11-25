@@ -5,6 +5,12 @@
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Provide implementaion of permission authorization.</Description>
+		<PackageTags>aspnetcore;identity;membership</PackageTags>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+		<RepositoryUrl>https://dev.azure.com/dnvgl-one/Innersource/_git/DNVGL.SolutionPackage</RepositoryUrl>
+		<PackageIcon>user.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,6 +19,13 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="user.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 	
 </Project>

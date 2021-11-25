@@ -339,3 +339,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /WebSpPoc
+/DNVGL.Authorization.UserManagement.ApiControllers/content/DNVGL.Authorization.UserManagement.ApiControllers.xml
+/DNVGL.Authorization.UserManagement.ApiControllers/apidocs/DNVGL.Authorization.UserManagement.ApiControllers.xml

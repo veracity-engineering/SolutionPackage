@@ -47,23 +47,23 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// Gets or sets id of roles which this user has.
         /// </summary>
         /// <value>Role's ids are combined as a string which use semicolon(;) as a delimiter.</value>
-        public string RoleIds { get; set; }
+        public virtual string RoleIds { get; set; }
 
         /// <summary>
         /// Get the roles id list of roles which this user has.
         /// </summary>
-        public IReadOnlyList<string> RoleIdList => RoleIds.SplitToList(';');
+        public virtual IReadOnlyList<string> RoleIdList => RoleIds.SplitToList(';');
 
         /// <summary>
         /// Gets or sets id of company to which this user belongs.
         /// </summary>
         /// <value>Company's ids are combined as a string which use semicolon(;) as a delimiter.</value>
-        public string CompanyIds { get; set; }
+        public virtual string CompanyIds { get; set; }
 
         /// <summary>
         /// Get the company's id list of company to which this user belongs.
         /// </summary>
-        public IReadOnlyList<string> CompanyIdList => CompanyIds.SplitToList(';');
+        public virtual IReadOnlyList<string> CompanyIdList => CompanyIds.SplitToList(';');
 
         /// <summary>
         /// Gets or sets a flag indicating if this user is active or not.
@@ -91,7 +91,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// <remarks>
         /// <para>Do not set this property to change a user's role. Instead, set <see cref="RoleIds"/>.</para>
         /// </remarks>
-        public IReadOnlyList<Role> RoleList { get; set; }
+        public virtual IReadOnlyList<Role> RoleList { get; set; }
 
         /// <summary>
         /// Get the list of companys to which this user belongs.
@@ -99,7 +99,7 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         /// <remarks>
         /// <para>Do not set this property to change a user's company. Instead, set <see cref="CompanyIds"/>.</para>
         /// </remarks>
-        public IReadOnlyList<Company> CompanyList { get; set; }
+        public virtual IReadOnlyList<Company> CompanyList { get; set; }
 
         /// <summary>
         /// Gets or sets the name of user who created this user.

@@ -1,4 +1,5 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
+using DNVGL.OAuth.Web.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -32,12 +33,19 @@ namespace DNVGL.OAuth.Web.TokenCache
 		public async Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext)
 		{
 			var account = await this.GetAccount(httpContext);
-			return await _clientApp.AcquireTokenSilent(_scopes, account).ExecuteAsync();
+			return await AcquireTokenSilent(account);
 		}
 
 		public async Task<AuthenticationResult> AcquireTokenSilent(IAccount account)
 		{
-			return await _clientApp.AcquireTokenSilent(_scopes, account).ExecuteAsync();
+			try
+			{
+				return await _clientApp.AcquireTokenSilent(_scopes, account).ExecuteAsync();
+			}
+			catch (MsalUiRequiredException)
+			{
+				throw new TokenExpiredException();
+			}
 		}
 
 		public async Task<AuthenticationResult> AcquireTokenForClient()
