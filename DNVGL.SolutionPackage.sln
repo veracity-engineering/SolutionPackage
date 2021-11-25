@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Domain.Seedwork", "DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj", "{09E89967-A1FD-471B-9625-CEDC1C5E1E4A}"
 EndProject
@@ -66,6 +66,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth.APIClient", "OAuth.APIClient", "{275F235F-1574-4E5C-9A2E-066D505B4C9B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Api.HttpClient.Test", "DNVGL.OAuth.Api.HttpClient.Test\DNVGL.OAuth.Api.HttpClient.Test.csproj", "{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecretsManager", "SecretsManager", "{561EA555-4BD3-4100-B8CD-8A5C315F718C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "DNV.SecretsManager\DNV.SecretsManager.csproj", "{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{BFF10B2A-1525-49F1-A76C-E222CBAB046E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,6 +171,14 @@ Global
 		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +209,8 @@ Global
 		{06A08091-8196-4629-A907-08C251BFD6A3} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 		{36DDB213-9592-423E-B2E6-8C112B7AFE07} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
 		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB} = {275F235F-1574-4E5C-9A2E-066D505B4C9B}
+		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
+		{BFF10B2A-1525-49F1-A76C-E222CBAB046E} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}
