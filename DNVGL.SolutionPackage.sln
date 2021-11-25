@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Domain.Seedwork", "DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj", "{09E89967-A1FD-471B-9625-CEDC1C5E1E4A}"
 EndProject
@@ -72,8 +72,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "DNV.SecretsManager\DNV.SecretsManager.csproj", "{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{BFF10B2A-1525-49F1-A76C-E222CBAB046E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.SecretsManager.VisualStudioExtension", "DNV.SecretsManager.VisualStudioExtension\DNV.SecretsManager.VisualStudioExtension.csproj", "{BBA72229-2921-4171-BE00-3E08EC38A4E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,10 +179,6 @@ Global
 		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBA72229-2921-4171-BE00-3E08EC38A4E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBA72229-2921-4171-BE00-3E08EC38A4E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBA72229-2921-4171-BE00-3E08EC38A4E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBA72229-2921-4171-BE00-3E08EC38A4E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -217,7 +211,6 @@ Global
 		{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB} = {275F235F-1574-4E5C-9A2E-066D505B4C9B}
 		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 		{BFF10B2A-1525-49F1-A76C-E222CBAB046E} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
-		{BBA72229-2921-4171-BE00-3E08EC38A4E0} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}
