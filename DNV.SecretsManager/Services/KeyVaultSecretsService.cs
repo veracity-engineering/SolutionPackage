@@ -3,7 +3,6 @@ using Microsoft.Azure.Management.KeyVault;
 using Microsoft.Azure.Management.ResourceManager;
 using Microsoft.Azure.Services.AppAuthentication;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
@@ -53,7 +52,7 @@ namespace DNV.SecretsManager.Services
 				}
 				return keyvaults.OrderBy(v => v.Key);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				throw;
 			}
@@ -77,7 +76,6 @@ namespace DNV.SecretsManager.Services
 				secretsDict.Add(key, value);
 			}
 
-			var stopwatch = Stopwatch.StartNew();
 			while (!string.IsNullOrEmpty(secrets.NextPageLink))
 			{
 				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
@@ -96,9 +94,6 @@ namespace DNV.SecretsManager.Services
 				}
 				*/
 			}
-			stopwatch.Stop();
-			var time = stopwatch.Elapsed.TotalSeconds;
-
 			return secretsDict;
 		}
 

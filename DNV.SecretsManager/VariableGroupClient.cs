@@ -31,12 +31,10 @@ namespace DNV.SecretsManager
 
 			using (var client = GetAuthenticatedClient())
 			{
-				using (HttpResponseMessage response = client.GetAsync(url).Result)
-				{
-					var responseBody = await response.Content.ReadAsStringAsync();
-					response.EnsureSuccessStatusCode();
-					return JsonConvert.DeserializeObject<VariableGroup>(responseBody);
-				}
+				var response = await client.GetAsync(url);
+				var responseBody = await response.Content.ReadAsStringAsync();
+				response.EnsureSuccessStatusCode();
+				return JsonConvert.DeserializeObject<VariableGroup>(responseBody);
 			}
 		}
 
@@ -46,12 +44,10 @@ namespace DNV.SecretsManager
 
 			using (var client = GetAuthenticatedClient())
 			{
-				using (HttpResponseMessage response = client.GetAsync(url).Result)
-				{
-					var responseBody = await response.Content.ReadAsStringAsync();
-					response.EnsureSuccessStatusCode();
-					return JsonConvert.DeserializeObject<VariableGroupCollection>(responseBody).Value;
-				}
+				var response = await client.GetAsync(url);
+				var responseBody = await response.Content.ReadAsStringAsync();
+				response.EnsureSuccessStatusCode();
+				return JsonConvert.DeserializeObject<VariableGroupCollection>(responseBody).Value;
 			}
 		}
 
@@ -62,11 +58,8 @@ namespace DNV.SecretsManager
 			using (var client = GetAuthenticatedClient())
 			{
 				var content = new StringContent(JsonConvert.SerializeObject(group), Encoding.UTF8, "application/json");
-				using (HttpResponseMessage response = client.PutAsync(url, content).Result)
-				{
-					var responseBody = await response.Content.ReadAsStringAsync();
-					response.EnsureSuccessStatusCode();
-				}
+				var response = await client.PutAsync(url, content);
+				response.EnsureSuccessStatusCode();
 			}
 		}
 

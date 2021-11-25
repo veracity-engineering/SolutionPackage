@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using DNV.SecretsManager.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace DNV.SecretsManager
 
 		public static Dictionary<string, string> Flatten(JObject jsonObject)
 		{
-			var jTokens = jsonObject.Descendants().Where(p => p.Count() == 0);
+			var jTokens = jsonObject.Descendants().Where(p => !p.Any());
 			var results = jTokens.Aggregate(new Dictionary<string, string>(), (properties, jToken) =>
 			{
 				properties.Add(jToken.Path.Replace(".", PathDelimeter).Replace("[", PathDelimeter).Replace("]", ""), jToken.ToString());
@@ -124,7 +125,7 @@ namespace DNV.SecretsManager
 		{
 			if (int.TryParse(pathSegment, out var result))
 				return result;
-			throw new Exception($"Unable to parse array index: {pathSegment}");
+			throw new JsonParseException(pathSegment);
 		}
 	}
 }

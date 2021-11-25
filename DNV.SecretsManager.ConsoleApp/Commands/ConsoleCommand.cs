@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace DNV.SecretsManager.ConsoleApp.Commands
 {
-	public class ConsoleCommand
+	public static class ConsoleCommand
 	{
 		public static Dictionary<string, object> CollectOptions(IEnumerable<ConsoleOption> optionDefinitions, string[] args)
 		{
@@ -88,47 +89,55 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			return value;
 		}
 
-		public static string GetFilenameOrInvalid(string value, CommandType type)
+		public static string GetFilenameOrInvalid(CommandType type, string value)
 		{
 			if (type == CommandType.Download)
+				return GetDownloadFilenameOrInvalid(value);
+			if (type == CommandType.Upload)
+				return GetUploadFilenameOrInvalid(value);
+			return value;
+		}
+
+		private static string GetDownloadFilenameOrInvalid(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				Console.WriteLine("Specify the target filename you would like to download to:");
+			while (string.IsNullOrEmpty(value))
 			{
-				if (string.IsNullOrEmpty(value))
-					Console.WriteLine("Specify the target filename you would like to download to:");
-				while (string.IsNullOrEmpty(value))
+				var input = Console.ReadLine();
+				if (ValidationUtility.IsFilenameValid(input))
 				{
-					var input = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(input))
+					return input;
+				}
+				else
+				{
+					Console.WriteLine($"Invaild filename '{input}'. Please specify a valid filename to download to:");
+				}
+			}
+			return value;
+		}
+
+		private static string GetUploadFilenameOrInvalid(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				Console.WriteLine("Specify the source file you would like to upload:");
+			while (string.IsNullOrEmpty(value))
+			{
+				var input = Console.ReadLine();
+				if (ValidationUtility.IsFilenameValid(input))
+				{
+					if (File.Exists(input))
 					{
 						return input;
 					}
 					else
 					{
-						Console.WriteLine($"Invaild filename '{input}'. Please specify a valid filename to download to:");
+						Console.WriteLine($"Could not find source file '{input}'.  Please specify an existing file to upload:");
 					}
 				}
-			}
-			else if (type == CommandType.Upload)
-			{
-				if (string.IsNullOrEmpty(value))
-					Console.WriteLine("Specify the source file you would like to upload:");
-				while (string.IsNullOrEmpty(value))
+				else
 				{
-					var input = Console.ReadLine();
-					if (ValidationUtility.IsFilenameValid(input))
-					{
-						if (File.Exists(input))
-						{
-							return input;
-						}
-						else
-						{
-							Console.WriteLine($"Could not find source file '{input}'.  Please specify an existing file to upload:");
-						}
-					}
-					else
-					{
-						Console.WriteLine($"Invalid filename '{input}'. Please specify a valid filename to upload:");
-					}
+					Console.WriteLine($"Invalid filename '{input}'. Please specify a valid filename to upload:");
 				}
 			}
 			return value;
@@ -136,16 +145,16 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public static string BuildCommandUseage(IConsoleCommand command, string applicationName)
 		{
-			var useage = $"useage: {applicationName} {command.Name}";
+			var stringBuilder = new StringBuilder($"useage: {applicationName} {command.Name}");
 			if (command.Options != null && command.Options.Any())
 			{
-				useage += "\t";
+				stringBuilder.Append("\t");
 				foreach (var option in command.Options)
 				{
-					useage += BuildOptionUseage(option) + " ";
+					stringBuilder.Append($"{BuildOptionUseage(option)} ");
 				}
 			}
-			return useage.TrimEnd(' ');
+			return stringBuilder.ToString().TrimEnd(' ');
 		}
 
 		private static string BuildOptionUseage(ConsoleOption option)

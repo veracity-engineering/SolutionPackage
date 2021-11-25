@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DNV.SecretsManager.ConsoleApp
 {
-	class Program
+	static class Program
 	{
 		private static readonly IEnumerable<IConsoleCommand> _commands = new IConsoleCommand[]
 		{

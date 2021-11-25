@@ -38,7 +38,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 
 		public string Filename { get; set; }
 
-		private string _applicationName;
+		private readonly string _applicationName;
 
 		public VariableGroupCommand(string applicationName)
 		{
@@ -105,7 +105,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			);
 
 			// Filename
-			Filename = ConsoleCommand.GetFilenameOrInvalid(Filename, Type);
+			Filename = ConsoleCommand.GetFilenameOrInvalid(Type, Filename);
 
 			return this;
 		}

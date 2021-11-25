@@ -37,8 +37,8 @@ namespace DNV.SecretsManager.Services
 			group.Variables = secrets.ToDictionary(s => s.Key, s => new VariableValue
 			{
 				Value = s.Value,
-				IsReadOnly = group.Variables.ContainsKey(s.Key) ? group.Variables[s.Key].IsReadOnly : false,
-				IsSecret = group.Variables.ContainsKey(s.Key) ? group.Variables[s.Key].IsSecret : false
+				IsReadOnly = group.Variables.ContainsKey(s.Key) && group.Variables[s.Key].IsReadOnly,
+				IsSecret = group.Variables.ContainsKey(s.Key) && group.Variables[s.Key].IsSecret
 			});
 			await _client.SetVariableGroup(variableGroupId, group);
 		}
