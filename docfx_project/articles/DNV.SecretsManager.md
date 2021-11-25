@@ -1,4 +1,4 @@
-# Overview
+# Secrets Manager
 
 DNV.SecretsManager is a command line tool for managing secrets from the Azure KeyVault or Azure DevOps Variable Groups.
 

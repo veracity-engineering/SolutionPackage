@@ -1,4 +1,4 @@
-# Overview
+# DNVGL.Veracity.Services.Api
 DNVGL.Veracity.Services.Api provides a lightweight .NET client for Veracity My Services API v3 built on top of packages from the Solution Package.
 
 This package allows developers to query and manipulate data from My services including user profiles, service profiles, notification messages, company profiles, admin roles and subscriptions.
