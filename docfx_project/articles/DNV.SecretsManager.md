@@ -41,11 +41,11 @@ Requests that a provided JSON file be uploaded to a specified source.
 
 `-s | --url <url>`
 
-Allows you to provide the URL to the keyvault.
+Provide the URL to the keyvault.
 
 `-f | --filename <filename>`
 
-Allows you to specify the file to which you would like to download to or upload from.
+Specify the file to which you would like to download to or upload from.
 
 ---
 
@@ -74,20 +74,20 @@ Requests that a provided JSON file be uploaded to a specified source.
 
 `-s | --base-url <base-url>`
 
-Allows you to provide the base URL to the Azure DevOps.
+Provide the base URL to the Azure DevOps.
 
 `-o | --organization <organization>`
 
-Allows you to provide the organization under Azure DevOps to which a variable group belongs.
+Provide the organization under Azure DevOps to which a variable group belongs.
 
 `-p | --pat <pat>`
 
-Allows you to specify the Person Access Token for authentication.
+Specify the Person Access Token for authentication.
 
 `-g | --group-id <group-id>`
 
-Allows you to specifc the id of the variable group you would like to download from or upload to.
+Specify the id of the variable group you would like to download from or upload to.
 
 `-f | --filename <filename>`
 
-Allows you to specify the file to which you would like to download to or upload from.
+Specify the file to which you would like to download to or upload from.
