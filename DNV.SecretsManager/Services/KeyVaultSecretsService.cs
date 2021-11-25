@@ -33,42 +33,35 @@ namespace DNV.SecretsManager.Services
 
 		public override async Task<IEnumerable<KeyValuePair<string, string>>> GetSources()
 		{
-			try
+			var credentials = await GetManagementCredentials();
+			var client = new KeyVaultManagementClient(credentials)
 			{
-				var credentials = await GetManagementCredentials();
-				var client = new KeyVaultManagementClient(credentials)
+				SubscriptionId = _azureSubscriptionId
+			};
+			var result = await client.Vaults.ListBySubscriptionAsync();
+			var keyvaults = result.ToDictionary(v => v.Name, v => v.Properties.VaultUri);
+			while (!string.IsNullOrEmpty(result.NextPageLink))
+			{
+				result = await client.Vaults.ListBySubscriptionNextAsync(result.NextPageLink);
+				foreach (var keyvault in result)
 				{
-					SubscriptionId = _azureSubscriptionId
-				};
-				var result = await client.Vaults.ListBySubscriptionAsync();
-				var keyvaults = result.ToDictionary(v => v.Name, v => v.Properties.VaultUri);
-				while (!string.IsNullOrEmpty(result.NextPageLink))
-				{
-					result = await client.Vaults.ListBySubscriptionNextAsync(result.NextPageLink);
-					foreach (var keyvault in result)
-					{
-						keyvaults.Add(keyvault.Name, keyvault.Properties.VaultUri);
-					}
+					keyvaults.Add(keyvault.Name, keyvault.Properties.VaultUri);
 				}
-				return keyvaults.OrderBy(v => v.Key);
 			}
-			catch (Exception)
-			{
-				throw;
-			}
+			return keyvaults.OrderBy(v => v.Key);
 		}
 
-		public override async Task<string> GetSecretsAsJson(string vaultBaseUrl) =>
-			ToJson(await GetSecretsAsDictionary(vaultBaseUrl));
+		public override async Task<string> GetSecretsAsJson(string source) =>
+			ToJson(await GetSecretsAsDictionary(source));
 
-		public override Task SetSecretsFromJson(string vaultBaseUrl, string json) =>
-			SetSecretsFromDictionary(vaultBaseUrl, FromJson(json));
+		public override Task SetSecretsFromJson(string source, string json) =>
+			SetSecretsFromDictionary(source, FromJson(json));
 
-		public override async Task<Dictionary<string, string>> GetSecretsAsDictionary(string vaultBaseUrl)
+		public override async Task<Dictionary<string, string>> GetSecretsAsDictionary(string source)
 		{
 			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
 			var secretsDict = new Dictionary<string, string>();
-			var secrets = await keyVaultClient.GetSecretsAsync(vaultBaseUrl);
+			var secrets = await keyVaultClient.GetSecretsAsync(source);
 			foreach (var secret in secrets)
 			{
 				var key = secret.Identifier.Name;
@@ -97,7 +90,7 @@ namespace DNV.SecretsManager.Services
 			return secretsDict;
 		}
 
-		public override async Task SetSecretsFromDictionary(string vaultBaseUrl, Dictionary<string, string> secrets)
+		public override async Task SetSecretsFromDictionary(string source, Dictionary<string, string> secrets)
 		{
 			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
 			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
@@ -105,7 +98,7 @@ namespace DNV.SecretsManager.Services
 			foreach (var secret in secrets)
 			{
 				Console.WriteLine($"Updating secret: '{secret.Key}'");
-				await keyVaultClient.SetSecretAsync(vaultBaseUrl, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
 			}
 		}
 
