@@ -55,7 +55,8 @@ The package injects a `OAuthHttpClientFactory` which is able to provide multiple
 The configuration shown above lists 2 HttpClients.  The first with name `"userCredentialsClient"` is an example of a configuration which would honour the signed in user's credentials for the API for which it makes requests.  The second with name `"clientCredentialsClient"` provides configuration for a client which would be authenticated via the client credential flow with a client id and secret to make requests in an API.  This configuration would allow us to request either type of HttpClient by requesting it from from the HttpClientFactory by providing one of the two names: `"userCredentialsClient"` or `"clientCredentialsClient"` in the method call to the HttpClientFactory.
 
 ## 2. Registration
-Call the `ServiceCollection` extension method `AddOAuthHttpClientFactory` to register an instance of the `OAuthHttpClientFactory` in to your project.
+Call the `ServiceCollection` extension method `AddOAuthHttpClientFactory` to register an instance of the `OAuthHttpClientFactory` in to your project in your `Startup.cs` file.
+
 The below code is retrieving the configuration from the `"ApiHttpClientOptions"` section defined in `apsettings.json` above.
 
 ```cs
@@ -95,7 +96,7 @@ public void ConfigureService(IServiceCollection services)
 If you only require HttpClients applying the client credential flow the DNVGL.OAuth.Web package is not required.
 
 ## 3. Request a client
-Resolve `OAuthHttpClientFactory` to create user-credential or client-credential `HttpClient` to access web api. 
+Resolve `OAuthHttpClientFactory` to create user-credential or client-credential `HttpClient` to access web API. 
 ```cs
 public class TestController
 {
