@@ -1,4 +1,4 @@
-# DNVGL.Veracity.Services.Api.My
+# DNVGL.Veracity.Services.Api.Directory
 ...
 
 # Package Install
@@ -7,5 +7,5 @@ Ensure you have configured to package NuGet Package Source or find the instructi
 
 Package Manager Console
 ```
-PM> `Install-Package DNVGL.Veracity.Services.Api`
+PM> `Install-Package DNVGL.Veracity.Services.Api.Directory`
 ```
