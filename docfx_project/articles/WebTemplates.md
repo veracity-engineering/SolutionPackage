@@ -127,4 +127,4 @@ Processing post-creation actions...
 No Primary Outputs to restore.
 ```
 
-![](C:\workspace\repos\DNVGL.SolutionPackage\docfx_project\images\WebTemplates\Demo.Website.PNG)
+![](../images/WebTemplates/Demo.Website.PNG)
