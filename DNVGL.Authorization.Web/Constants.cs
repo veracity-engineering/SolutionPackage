@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DNVGL.Authorization.Web
 {
-    public class Constants
+    public static class Constants
     {
         public const string COMPANY_ROLE_NOT_RELEVANT = "Company_Role_Not_Relevant";
         public const string AUTHORIZATION_COMPANYID = "AUTHORIZATION.COMPANYID";
