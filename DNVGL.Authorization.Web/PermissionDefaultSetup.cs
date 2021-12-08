@@ -172,9 +172,8 @@ namespace DNVGL.Authorization.Web
         /// <param name="claimsPrincipal"><see cref="ClaimsPrincipal"/></param>
         /// <param name="companyId">Thd id of a company.</param>
         /// <returns></returns>
-        public static async Task PouplateRoleOfPrincipal(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, string companyId)
+        public static async Task PouplateRoleOfPrincipal(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, string companyId = Constants.COMPANY_ROLE_NOT_RELEVANT)
         {
-
             IUserPermissionReader userPermission = httpContext.RequestServices.GetRequiredService<IUserPermissionReader>();
             PermissionOptions premissionOptions = httpContext.RequestServices.GetRequiredService<PermissionOptions>();
 
