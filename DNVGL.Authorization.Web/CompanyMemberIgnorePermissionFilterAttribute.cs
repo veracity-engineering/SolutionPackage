@@ -60,8 +60,8 @@ namespace DNVGL.Authorization.Web
             {
                 if (_permissionsToIgore != null && _permissionsToIgore.Length>0)
                 {
-                    context.HttpContext.Request.Headers.Remove("AUTHORIZATION.COMPANY.IGNORE.PERMISSIONS");
-                    context.HttpContext.Request.Headers.Add("AUTHORIZATION.COMPANY.IGNORE.PERMISSIONS", string.Join(',', _permissionsToIgore));
+                    context.HttpContext.Request.Headers.Remove(Constants.IGNORE_PERMISSIONS);
+                    context.HttpContext.Request.Headers.Add(Constants.IGNORE_PERMISSIONS, string.Join(',', _permissionsToIgore));
                 }
 
                 await next();
