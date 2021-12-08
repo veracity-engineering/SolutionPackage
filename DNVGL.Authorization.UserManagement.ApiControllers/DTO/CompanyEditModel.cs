@@ -43,7 +43,6 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets or sets the company permissions for this company.
         /// </summary>
-        [Required]
         public IEnumerable<string> PermissionKeys { get; set; }
     }
 

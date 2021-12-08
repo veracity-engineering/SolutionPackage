@@ -145,35 +145,38 @@ namespace DNVGL.Authorization.Web
                 PermissionOptions premissionOptions = ctx.HttpContext.RequestServices.GetRequiredService<PermissionOptions>();
 
                 var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
-     
+
                 var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
 
-                if (!string.IsNullOrEmpty(companyId))
+
+                if (companyId == null)
                 {
-                    var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");
-                    if (companyIdClaim == null || companyIdClaim.Value != companyId)
+                    companyId = "Company_Role_Not_Relevant";
+                }
+
+                var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");
+                if (companyIdClaim == null || companyIdClaim.Value != companyId)
+                {
+                    var varacityId = premissionOptions.GetUserIdentity(ctx.Principal);
+                    var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+
+                    var identity = ctx.Principal.Identity as ClaimsIdentity;
+                    if (companyIdClaim != null)
                     {
-                        var varacityId = premissionOptions.GetUserIdentity(ctx.Principal);
-                        var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+                        ctx.Principal.Claims.Where(t => t.Type == "AuthorizationTenantRoute"
+                        || t.Type == "AuthorizationCompanyId"
+                        || t.Type == "AuthorizationPermissions"
+                        || t.Type == ClaimTypes.Role).ToList().ForEach(t => identity.RemoveClaim(t));
+                    }
 
-                        var identity = ctx.Principal.Identity as ClaimsIdentity;
-                        if (companyIdClaim != null)
-                        {
-                            ctx.Principal.Claims.Where(t => t.Type == "AuthorizationTenantRoute" 
-                            || t.Type == "AuthorizationCompanyId" 
-                            || t.Type == "AuthorizationPermissions" 
-                            || t.Type== ClaimTypes.Role).ToList().ForEach(t => identity.RemoveClaim(t));
-                        }
-
-                        var claims = new List<Claim>() {
+                    var claims = new List<Claim>() {
                             new Claim("AuthorizationTenantRoute", companyId),
                             new Claim("AuthorizationCompanyId", companyId),
                             new Claim("AuthorizationPermissions", string.Join(',',ownedPermissions.Select(t=>t.Key)))};
-                        ownedPermissions.Select(t => t.Key).ToList().ForEach(t => claims.Add(new Claim(ClaimTypes.Role, t)));
+                    ownedPermissions.Select(t => t.Key).ToList().ForEach(t => claims.Add(new Claim(ClaimTypes.Role, t)));
 
-                        identity.AddClaims(claims);
-                        ctx.ShouldRenew = true;
-                    }
+                    identity.AddClaims(claims);
+                    ctx.ShouldRenew = true;
                 }
             };
             return cookieEvents;
