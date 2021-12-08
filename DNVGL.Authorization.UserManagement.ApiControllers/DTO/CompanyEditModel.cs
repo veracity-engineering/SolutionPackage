@@ -1,6 +1,7 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
@@ -15,12 +16,18 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets or sets the company name for this company.
         /// </summary>
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the company description for this company.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service id for this company.
+        /// </summary>
+        public string ServiceId { get; set; }
 
         /// <summary>
         /// Gets or sets the company web domain for this company.
@@ -36,6 +43,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets or sets the company permissions for this company.
         /// </summary>
+        [Required]
         public IEnumerable<string> PermissionKeys { get; set; }
     }
 

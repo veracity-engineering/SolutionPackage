@@ -8,6 +8,7 @@ In this section, you learn the built-in data model in User Management Package. T
 | Id | `string` | The primary key of the company |
 | Name | `string` | |
 | Description | `string` | |
+| ServiceId | `string` | It is the veracity service id. |
 | DomainUrl | `string` | It is domain url like *dnv.com*. or the secondary directory in url like *oilgas* in dnv.com/oilgas/phonebook. |
 | Permissions | `string` | Permissions are combined as a string which use *semicolon(;)* as a delimiter. |
 | Active | `bool` | |

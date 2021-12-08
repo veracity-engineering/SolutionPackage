@@ -26,6 +26,11 @@ namespace DNVGL.Authorization.UserManagement.Abstraction.Entity
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the service id for this company.
+        /// </summary>
+        public string ServiceId { get; set; }
+
+        /// <summary>
         /// Gets or sets the company domain or sub domain name for this company.
         /// </summary>
         public string DomainUrl { get; set; }
