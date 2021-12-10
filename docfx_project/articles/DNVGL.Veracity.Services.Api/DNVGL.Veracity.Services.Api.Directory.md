@@ -12,20 +12,14 @@ Package Manager Console
 PM> `Install-Package DNVGL.Veracity.Services.Api.Directory`
 ```
 
-# Getting started
+# Example
 
-With the nuget package installed, services may injected for each resource individually by using one or more of the following extension methods from `DNVGL.Veracity.Services.Api.Directory.Extensions` inside the `ConfigureServices` method of your `Startup.cs` file:
-
-| Registration method | Service interface |
-|--|--|
-| `AddCompanyDirectory(string clientConfigurationName)` | ICompanyDirectory |
-| `AddServiceDirectory(string clientConfigurationName)` | IServiceDirectory |
-| `AddUserDirectory(string clientConfigurationName)` | IUserDirectory |
-
-> Where `clientConfigurationName` refers to the `Name` inside the configuration section providing the parameters in the form of `OAuthHttpClientFactoryOptions`.
+With the nuget package installed, services for each resource may be individually configured, injected and requested inside your solution.
 
 ## 1. Configuration
-`appsettings.json`
+To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
+
+ `appsettings.json`
 ```json
 {
 	"OAuthHttpClients": [
@@ -42,27 +36,42 @@ With the nuget package installed, services may injected for each resource indivi
 ```
 
 ## 2. Registration
+Register the service or services using extensions methods available from the `DNVGL.Veracity.Services.Api.Directory.Extensions` namespace.
+
 `startup.cs`
+> Packages from `DNVGL.Veracity.Service.Api` are dependent on the [DNVGL.OAuth.Api.HttpClient](/articles/DNVGL.OAuth.Api.HttpClient.md) package, therefore the HttpClientFactory should also be injected.
 ```cs
 public void ConfigureServices(IServiceCollection services)
 {
+	...
+	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
 	...
 	services.AddCompanyDirectory("company-directory")
 	...
 }
 ```
 
-This would then make the service available in the constructor where requested by its interface:
-
 ## 3. Request service
-`CompanyController.cs`
+Request the service from the constructor by its interface:
+
+`TestController.cs`
 ```cs
-private readonly ICompanyDirectory _companyDirectory;
-...
-public void CompanyController(ICompanyDirectory companyDirectory)
+public class TestController : Controller
 {
 	...
-	_companyDirectory = companyDirectory ?? throw new ArgumentNullException(nameof(companyDirectory));
+	private readonly ICompanyDirectory _companyDirectory;
+	...
+	public TestController(ICompanyDirectory companyDirectory)
+	{
+		...
+		_companyDirectory = companyDirectory ?? throw new ArgumentNullException(nameof(companyDirectory));
+		...
+	}
+	...
+	public async Task<IActionResult> FetchCompany(string companyId)
+	{
+		return Json(await _companyDirectory.Get(companyId);
+	}
 	...
 }
 ```
@@ -73,18 +82,30 @@ public void CompanyController(ICompanyDirectory companyDirectory)
 - Users
 
 ## Companies
+| Registration method | Service interface |
+|--|--|
+| `AddCompanyDirectory(string clientConfigurationName)` | `ICompanyDirectory` |
+
 | Name | Description |
 |--|--|
 | `Get(string companyId)` | Retrieves an individual company. |
 | `ListUsers(string companyId, int page, int pageSize)` | Retrieves a paginated collection of user references of users affiliated with a company. |
 
 ## Services
+| Registration method | Service interface |
+|--|--|
+| `AddServiceDirectory(string clientConfigurationName)` | `IServiceDirectory` |
+
 | Name | Description |
 |--|--|
 | `Get(string serviceId)` | Retrieves an individual service. |
 | `ListUsers(string serviceId, int page, int pageSize)` | Retrieves a paginated collection of user references of users subscribed to a service. |
 
 ## Users
+| Registration method | Service interface |
+|--|--|
+| `AddUserDirectory(string clientConfigurationName)` | `IUserDirectory` |
+
 | Name | Description |
 |--|--|
 | `Get(string userId)` | Retrieves an individual user. |

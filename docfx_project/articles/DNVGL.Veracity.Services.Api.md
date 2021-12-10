@@ -3,15 +3,6 @@ DNVGL.Veracity.Services.Api provides a lightweight .NET client for Veracity My S
 
 This package allows developers to query and manipulate data from My services including user profiles, service profiles, notification messages, company profiles, admin roles and subscriptions.
 
-# Package Install
-
-Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
-
-Package Manager Console
-```
-PM> `Install-Package DNVGL.Veracity.Services.Api`
-```
-
 # View Points
 
 As a client to API v3, the package is divided in to the following view points:

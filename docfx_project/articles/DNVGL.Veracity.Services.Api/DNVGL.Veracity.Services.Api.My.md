@@ -22,11 +22,19 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.My`
 - Services
 
 ## Companies
+| Registration method | Service interface |
+|--|--|
+| `AddMyCompanies(string clientConfigurationName)` | `IMyCompanies` |
+
 | Name | Description |
 |--|--|
 | `List()` | Retrieves a collection of company references for the authenticated user. |
 
 ## Messages
+| Registration method | Service interface |
+|--|--|
+| `AddMyMessages(string clientConfigurationName)` | `IMyMessages` |
+
 | Name | Description |
 |--|--|
 | `List(bool includeRead)` | Retrieves a collection of messages addressed to the authenticated user. |
@@ -34,17 +42,29 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.My`
 | `GetUnreadCount()` | Retrieves the numeric value indicating how many messages have not been marked as read by the authenticated user. |
 
 ## Policies
+| Registration method | Service interface |
+|--|--|
+| `AddMyPolicies(string clientConfigurationName)` | `IMyPolicies` |
+
 | Name | Description |
 |--|--|
 | `ValidatePolicies(string returnUrl)` | Validates all policies for the authenticated user. |
 | `ValidatePolicy(string serviceId, string returnUrl, string skipSubscriptionCheck)` | Validates an individual policy for the authenticated user. | 
 
 ## Profile
+| Registration method | Service interface |
+|--|--|
+| `AddMyProfile(string clientConfigurationName)` | `IMyProfile` |
+
 | Name | Description |
 |--|--|
 | `Get()` | Retrieves the user profile for the authenticated user. |
 
 ## Services
+| Registration method | Service interface |
+|--|--|
+| `AddMyServices(string clientConfigurationName)` | `IMyServices` |
+
 | Name | Description |
 |--|--|
 | `List()` | Retrieves a collection of service references for services the authenticated user is subscribed to. |

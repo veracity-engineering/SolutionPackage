@@ -21,12 +21,20 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 - Users
 
 ## Administrators
+| Registration method | Service interface |
+|--|--|
+| `AddThisAdministrators(string clientConfigurationName)` | `IThisAdministrators` |
+
 | Name | Description |
 |--|--|
 | `Get(string userId)` | Retrieves an individual administrator for the authenticated service. |
 | `List(int page, int pageSize)` | Retrieves a collection of administrator references for the authenticated service. |
 
 ## Services
+| Registration method | Service interface |
+|--|--|
+| `AddThisServices(string clientConfigurationName)` | `IThisServices` |
+
 | Name | Description |
 |--|--|
 | `AddSubscription(string serviceId, string userId, SubscriptionOptions options)` | Add a subscription to the authenticated service or nested services. |
@@ -39,6 +47,10 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 | `RemoveSubscription(string servieId, string userId)` | Remove a user subscription for a user and the authenticated service or a nested service. |
 
 ## Subscribers
+| Registration method | Service interface |
+|--|--|
+| `AddThisSubscribers(string clientConfigurationName)` | `IThisSubscribers` |
+
 | Name | Description |
 |--|--|
 | `Add(string userId, SubscriptionOptions options)` | Add a subscription to the authenticated service for a specified user. |
@@ -47,6 +59,10 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 | `Remove(string userId)` | Remove a user subscription to the authenticated service by specified user. |
 
 ## Users
+| Registration method | Service interface |
+|--|--|
+| `AddThisUsers(string clientConfigurationName)` | `IThisUsers` |
+
 | Name | Description |
 |--|--|
 | `Create(CreateUserOptions options)` | Create a new user. |
