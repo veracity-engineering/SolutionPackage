@@ -5,7 +5,7 @@ DNVGL.OAuth.Web is a .NETCore library for developers to simplify the work of set
 ---
 # Package Install
 
-Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```

@@ -1,11 +1,13 @@
 # DNVGL.Veracity.Services.Api.My
 Provides a client to resources available under the 'My' view point of API v3.
 
+This view point is appropriate if you intend to use Veracity as an identity provider for your application.
+
 Resources retrieved from this view point are from the perspective of the authenticated user, **user authentication flow is required to access these resources.**
 
 # Package Install
 
-Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```

@@ -5,7 +5,7 @@ This package allows developers to query and manipulate data from My services inc
 
 # Package Install
 
-Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```
@@ -17,6 +17,6 @@ PM> `Install-Package DNVGL.Veracity.Services.Api`
 As a client to API v3, the package is divided in to the following view points:
 | Name | Description | Supported authentication |
 |--|--|--|
-| My | Allows fetching information and making requests for the authenticated user. | User credentials |
-| This | Allows manipulation and retrieval of information related to a service. | Client credentials |
-| Directory | Allows fetching and updating resources without a focus on a specifc user or service resource. | Client credentials |
+| [Directory](/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.Directory.md) | Allows fetching and updating resources without a focus on a specifc user or service resource.  Recommended for core platform applications. | Client credentials |
+| [My](/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.My.md) | Allows fetching information and making requests for a user authenticated by user credential flow. | User credentials |
+| [This](/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.This.md) | Allows manipulation and retrieval of information related to a service where an application is authenticated as a service owner. | Client credentials |

@@ -4,21 +4,21 @@ A collection of tools and packages for developers to support rapid, robust and e
 Some of the supported features include:
 
 ## Authentication
-- [DNVGL.OAuth.Web](./DNVGL.OAuth.Web.md)
+- [OpenId Connection authentication](/articles/DNVGL.OAuth.Web.md)
 
-- [DNVGL.OAuth.Api.HttpClient](./DNVGL.OAuth.Api.HttpClient.md)
+- [HTTP client factory](/articles/DNVGL.OAuth.Api.HttpClient.md)
 
 ## Security
-- [DNGL.Web.Security](./securityHeader.md)
+- [Security headers](/articles/securityHeader.md)
 
-- [User management](./userManagement.md)
+- [User management](/articles/userManagement.md)
 
-- [Secrets manager](./DNV.SecretsManager.md)
+- [Secrets manager](/articles/DNV.SecretsManager.md)
 
 ## Integration
-- [DNVGL.Veracity.Services.Api](./DNVGL.Veracity.Services.Api.md)
+- [Veracity - My Services V3](/articles/DNVGL.Veracity.Services.Api.md)
 
 ---
 
 ## Getting started
-- [Installing packages](./PackageInstall.md)
+- [Installing packages](/articles/PackageInstall.md)

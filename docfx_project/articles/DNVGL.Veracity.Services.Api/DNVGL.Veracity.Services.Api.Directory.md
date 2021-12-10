@@ -1,9 +1,11 @@
 # DNVGL.Veracity.Services.Api.Directory
 Provides a client to resources available under the 'Directory' view point of API v3.
 
+This view point is appropriate for core Veracity applications where resources are not restricted to any context.
+
 # Package Install
 
-Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```

@@ -10,7 +10,7 @@ This package supports two type of credential authentication:
 ---
 # Package Install
 
-Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```
@@ -68,7 +68,7 @@ public void ConfigureService(IServiceCollection services)
 }
 ```
 
-If you require a HttpClient applying the user credential flow you should also include the web authentication (`AddOidc`) and token cache handling (`AddDistributedMemoryCache`) from the [DNVGL.OAuth.Web](./DNVGL.OAuth.Web.md) package.  Include the NuGet package in your project and call the required methods as below:
+If you require a HttpClient applying the user credential flow you should also include the web authentication (`AddOidc`) and token cache handling (`AddDistributedMemoryCache`) from the [DNVGL.OAuth.Web](/articles/DNVGL.OAuth.Web.md) package.  Include the NuGet package in your project and call the required methods as below:
 
 ```cs
 public void ConfigureService(IServiceCollection services)
