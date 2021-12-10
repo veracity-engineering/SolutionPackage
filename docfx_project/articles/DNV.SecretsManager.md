@@ -4,6 +4,52 @@ DNV.SecretsManager is a command line tool for managing secrets from the Azure Ke
 
 This tool allows collections of secrets to be downloaded and uploaded as structured JSON files.
 
+## Example
+Given a large collection of key vault secrets in an Azure Key vault such as those shown below:
+![KeyVault secrets](../images/DNV.SecretsManager/keyvault-secrets.png)
+
+The secrets manager tool could be executed with a command:
+
+```
+secretsmanager keyvault -d -s <keyvault-url> -f output-file.json
+```
+
+The resulting `output-file.json` would look like:
+
+```json
+{
+  "Account": {
+    "BaseUrl": <secret value>
+  },
+  "Company": {
+    "ApiKey": <secret value>,
+    "Authority": <secret value>,
+    "BaseUrl": <secret value>,
+    "ClientId": <secret value>,
+    "ClientSecret": <secret value>,
+    "Resource": <secret value>
+  },
+  "Customer": {
+    "ApiKey": <secret value>,
+    "Authority": <secret value>,
+    "BaseUrl": <secret value>,
+    "ClientId": <secret value>,
+    "ClientSecret": <secret value>,
+    "IsApiKeyOnly": <secret value>,
+    "Resource": <secret value>
+  },
+  "Emailer": {
+    "BaseUri": <secret value>,
+    "FunctionKey": <secret value>
+  ...
+```
+
+Conversely, an input json file (`input-file.json`) could be uploaded to an Azure Key vault by executing a command:
+
+```
+secretsmanager keyvault -u -s <keyvault-url> -f input-file.json
+```
+
 ---
 # Useage
 
