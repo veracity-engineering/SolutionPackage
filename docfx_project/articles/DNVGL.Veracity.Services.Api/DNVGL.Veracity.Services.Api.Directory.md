@@ -12,6 +12,61 @@ Package Manager Console
 PM> `Install-Package DNVGL.Veracity.Services.Api.Directory`
 ```
 
+# Getting started
+
+With the nuget package installed, services may injected for each resource individually by using one or more of the following extension methods from `DNVGL.Veracity.Services.Api.Directory.Extensions` inside the `ConfigureServices` method of your `Startup.cs` file:
+
+| Registration method | Service interface |
+|--|--|
+| `AddCompanyDirectory(string clientConfigurationName)` | ICompanyDirectory |
+| `AddServiceDirectory(string clientConfigurationName)` | IServiceDirectory |
+| `AddUserDirectory(string clientConfigurationName)` | IUserDirectory |
+
+> Where `clientConfigurationName` refers to the `Name` inside the configuration section providing the parameters in the form of `OAuthHttpClientFactoryOptions`.
+
+## 1. Configuration
+`appsettings.json`
+```json
+{
+	"OAuthHttpClients": [
+		...
+		{
+			"Name": "company-directory",
+			"Flow": "ClientCredentials",
+			"BaseUri": <BaseUri>
+			...
+		}
+		...
+	]
+}
+```
+
+## 2. Registration
+`startup.cs`
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddCompanyDirectory("company-directory")
+	...
+}
+```
+
+This would then make the service available in the constructor where requested by its interface:
+
+## 3. Request service
+`CompanyController.cs`
+```cs
+private readonly ICompanyDirectory _companyDirectory;
+...
+public void CompanyController(ICompanyDirectory companyDirectory)
+{
+	...
+	_companyDirectory = companyDirectory ?? throw new ArgumentNullException(nameof(companyDirectory));
+	...
+}
+```
+
 # Resources
 - Companies
 - Services
