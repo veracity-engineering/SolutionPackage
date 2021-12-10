@@ -11,6 +11,10 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
+		/// <summary>
+		/// Retrieves the user profile for the authenticated user.
+		/// </summary>
+		/// <returns></returns>
 		public Task<Profile> Get() =>
 			GetResource<Profile>(MyProfileUrls.Root);
     }

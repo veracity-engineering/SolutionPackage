@@ -14,15 +14,37 @@ namespace DNVGL.Veracity.Services.Api.This
         {
         }
 
+		/// <summary>
+		/// Add a subscription to the authenticated service for a specified user.
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="options"></param>
+		/// <returns></returns>
 		public Task Add(string userId, SubscriptionOptions options) =>
 			PutResource(ThisSubscribersUrls.Subscriber(userId), new StringContent(Serialize(options)));
 
+		/// <summary>
+		/// Retrieve a user reference for a user subscribed to the authenticated service.
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		public Task<UserReference> Get(string userId) =>
 			GetResource<UserReference>(ThisSubscribersUrls.Subscriber(userId));
 
+		/// <summary>
+		/// Retrieve a collection of user references to users subscribed to the authenticated service.
+		/// </summary>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
+		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> List(int page, int pageSize) =>
 			GetResource<IEnumerable<UserReference>>(ThisSubscribersUrls.List(page, pageSize));
 
+		/// <summary>
+		/// Remove a user subscription to the authenticated service by specified user.
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		public Task Remove(string userId) =>
 			DeleteResource(ThisSubscribersUrls.Subscriber(userId));
     }

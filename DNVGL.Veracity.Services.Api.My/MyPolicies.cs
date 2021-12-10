@@ -11,6 +11,11 @@ namespace DNVGL.Veracity.Services.Api.My
 		{
 		}
 
+		/// <summary>
+		/// Validates all policies for the authenticated user.
+		/// </summary>
+		/// <param name="returnUrl"></param>
+		/// <returns></returns>
 		public async Task ValidatePolicies(string returnUrl = null)
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicies);
@@ -19,6 +24,13 @@ namespace DNVGL.Veracity.Services.Api.My
 			await ToResourceResult(request);
 		}
 
+		/// <summary>
+		/// Validates an individual policy for the authenticated user.
+		/// </summary>
+		/// <param name="serviceId"></param>
+		/// <param name="returnUrl"></param>
+		/// <param name="skipSubscriptionCheck"></param>
+		/// <returns></returns>
 		public async Task ValidatePolicy(string serviceId, string returnUrl = null, string skipSubscriptionCheck = null)
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicy(serviceId));
