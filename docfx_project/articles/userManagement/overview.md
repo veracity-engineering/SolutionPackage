@@ -98,8 +98,6 @@ By default, the soft deletion is enabled. Change the default behavior to hard de
     }
 ```
 
-A work-aroud to implement **SOFT DELETE**, you can utilize `Active` field in the data model with update APIs as of now.
-
 ## 5. Data Access Implementation
 We provide data access implementation in package - `DNVGL.Authorization.UserManagement.EFCore`. It has dependency on EF Core 5.0+. 
 

@@ -35,7 +35,7 @@ namespace DNVGL.Authorization.Web
             var companyId = Helper.GetCompanyId(httpContext, _premissionOptions,context.Resource as RouteEndpoint);
 
             var requiredPermissions = attributes.SelectMany(t => t.PermissionsToCheck).ToList();
-            var ownedPermissionsInClaim = httpContext.User.Claims.FirstOrDefault(t => t.Type == "AuthorizationPermissions")?.Value;
+            var ownedPermissionsInClaim = httpContext.User.Claims.FirstOrDefault(t => t.Type == Constants.AUTHORIZATIONPERMISSIONS)?.Value;
             IEnumerable<PermissionEntity> ownedPermissions = new List<PermissionEntity>();
             if (!string.IsNullOrEmpty(ownedPermissionsInClaim))
             {

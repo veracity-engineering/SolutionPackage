@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Threading.Tasks;
 
 namespace DNVGL.Authorization.Web
 {
@@ -145,38 +146,60 @@ namespace DNVGL.Authorization.Web
                 PermissionOptions premissionOptions = ctx.HttpContext.RequestServices.GetRequiredService<PermissionOptions>();
 
                 var endpoint = ctx.HttpContext.Features.Get<IEndpointFeature>()?.Endpoint as RouteEndpoint;
-     
+
                 var companyId = Helper.GetCompanyId(ctx.HttpContext, premissionOptions, endpoint);
 
-                if (!string.IsNullOrEmpty(companyId))
+
+                if (companyId == null)
                 {
-                    var companyIdClaim = ctx.Principal.FindFirst("AuthorizationCompanyId");
-                    if (companyIdClaim == null || companyIdClaim.Value != companyId)
-                    {
-                        var varacityId = premissionOptions.GetUserIdentity(ctx.Principal);
-                        var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+                    companyId = Constants.COMPANY_ROLE_NOT_RELEVANT;
+                }
 
-                        var identity = ctx.Principal.Identity as ClaimsIdentity;
-                        if (companyIdClaim != null)
-                        {
-                            ctx.Principal.Claims.Where(t => t.Type == "AuthorizationTenantRoute" 
-                            || t.Type == "AuthorizationCompanyId" 
-                            || t.Type == "AuthorizationPermissions" 
-                            || t.Type== ClaimTypes.Role).ToList().ForEach(t => identity.RemoveClaim(t));
-                        }
-
-                        var claims = new List<Claim>() {
-                            new Claim("AuthorizationTenantRoute", companyId),
-                            new Claim("AuthorizationCompanyId", companyId),
-                            new Claim("AuthorizationPermissions", string.Join(',',ownedPermissions.Select(t=>t.Key)))};
-                        ownedPermissions.Select(t => t.Key).ToList().ForEach(t => claims.Add(new Claim(ClaimTypes.Role, t)));
-
-                        identity.AddClaims(claims);
-                        ctx.ShouldRenew = true;
-                    }
+                var companyIdClaim = ctx.Principal.FindFirst(Constants.AUTHORIZATIONCOMPANYID);
+                if (companyIdClaim == null || companyIdClaim.Value != companyId)
+                {
+                    await PouplateRoleOfPrincipal(ctx.HttpContext, ctx.Principal, companyId);
+                    ctx.ShouldRenew = true;
                 }
             };
             return cookieEvents;
+        }
+
+        /// <summary>
+        /// Populate user's permissions into Role Claims. 
+        /// </summary>
+        /// <param name="httpContext">Get injected services from <see cref="HttpContext"/>'s RequestServices</param>
+        /// <param name="claimsPrincipal"><see cref="ClaimsPrincipal"/></param>
+        /// <param name="companyId">Thd id of a company.</param>
+        /// <returns></returns>
+        public static async Task PouplateRoleOfPrincipal(HttpContext httpContext, ClaimsPrincipal claimsPrincipal, string companyId = Constants.COMPANY_ROLE_NOT_RELEVANT)
+        {
+            IUserPermissionReader userPermission = httpContext.RequestServices.GetRequiredService<IUserPermissionReader>();
+            PermissionOptions premissionOptions = httpContext.RequestServices.GetRequiredService<PermissionOptions>();
+
+            var companyIdClaim = claimsPrincipal.FindFirst(Constants.AUTHORIZATIONCOMPANYID);
+            if (companyIdClaim == null || companyIdClaim.Value != companyId)
+            {
+                var varacityId = premissionOptions.GetUserIdentity(claimsPrincipal);
+                var ownedPermissions = (await userPermission.GetPermissions(varacityId, companyId)) ?? new List<PermissionEntity>();
+
+                var identity = claimsPrincipal.Identity as ClaimsIdentity;
+                if (companyIdClaim != null)
+                {
+                    claimsPrincipal.Claims.Where(t => t.Type == Constants.AUTHORIZATIONTENANTROUTE
+                    || t.Type == Constants.AUTHORIZATIONCOMPANYID
+                    || t.Type == Constants.AUTHORIZATIONPERMISSIONS
+                    || t.Type == ClaimTypes.Role).ToList().ForEach(t => identity.RemoveClaim(t));
+                }
+
+                var claims = new List<Claim>() {
+                            new Claim(Constants.AUTHORIZATIONTENANTROUTE, companyId),
+                            new Claim(Constants.AUTHORIZATIONCOMPANYID, companyId),
+                            new Claim(Constants.AUTHORIZATIONPERMISSIONS, string.Join(',',ownedPermissions.Select(t=>t.Key)))};
+                ownedPermissions.Select(t => t.Key).ToList().ForEach(t => claims.Add(new Claim(ClaimTypes.Role, t)));
+
+                identity.AddClaims(claims);
+            }
         }
     }
 }

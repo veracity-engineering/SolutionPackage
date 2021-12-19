@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DNVGL.Authorization.Web.Abstraction;
@@ -24,7 +25,7 @@ namespace DNVGL.Authorization.Web
         [HttpGet]
         public async Task<IEnumerable<PermissionEntity>> Get()
         {
-            return await _permissionRepository.GetAll();
+            return (await _permissionRepository.GetAll()).Where(t => t.Key != "ViewCompany" && t.Key != "ManageCompany");
         }
     }
 }

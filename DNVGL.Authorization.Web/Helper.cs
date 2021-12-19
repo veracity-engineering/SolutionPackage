@@ -11,7 +11,7 @@ namespace DNVGL.Authorization.Web
     {
         internal static string GetCompanyId(HttpContext context, PermissionOptions premissionOptions, RouteEndpoint endpoint)
         {
-            var companyId = context.Request.Headers["AUTHORIZATION.COMPANYID"];
+            var companyId = context.Request.Headers[Constants.AUTHORIZATION_COMPANYID];
 
             if (string.IsNullOrEmpty(companyId) && premissionOptions.GetCompanyIdentity != null)
             {
@@ -21,7 +21,7 @@ namespace DNVGL.Authorization.Web
 
             if (string.IsNullOrEmpty(companyId))
             {
-                companyId = context.GetRouteData().Values["companyId"] as string ?? context.Request.Query["companyId"];
+                companyId = context.GetRouteData().Values[Constants.COMPANYID] as string ?? context.Request.Query[Constants.COMPANYID];
             }
 
             if (string.IsNullOrEmpty(companyId))
@@ -38,12 +38,21 @@ namespace DNVGL.Authorization.Web
                 }
             }
 
+            if (string.IsNullOrEmpty(companyId))
+            {
+                var companyIdClaim = context.User.FindFirst(Constants.AUTHORIZATIONCOMPANYID);
+                if (companyIdClaim != null && companyIdClaim.Value != Constants.COMPANY_ROLE_NOT_RELEVANT)
+                {
+                    companyId = companyIdClaim.Value;
+                }
+            }
+
             return companyId;
         }
 
         internal static string GetCompanyMemberIgnorePermission(HttpContext context, RouteEndpoint endpoint)
         {
-            var premissions = context.Request.Headers["AUTHORIZATION.COMPANY.IGNORE.PERMISSIONS"];
+            var premissions = context.Request.Headers[Constants.IGNORE_PERMISSIONS];
 
             if (string.IsNullOrEmpty(premissions))
             {

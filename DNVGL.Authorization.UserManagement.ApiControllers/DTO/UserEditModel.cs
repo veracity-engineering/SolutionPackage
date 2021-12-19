@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {
@@ -14,6 +15,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets or sets the email for this user.
         /// </summary>
+        [Required(AllowEmptyStrings = false)]
         public string Email { get; set; }
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <remarks>
         /// It is an id provided by identity provider. 
         /// </remarks>
+        [Required(AllowEmptyStrings = false)]
         public string VeracityId { get; set; }
 
         /// <summary>
