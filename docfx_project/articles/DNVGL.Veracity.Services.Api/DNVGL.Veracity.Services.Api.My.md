@@ -3,7 +3,8 @@ The `DNVGL.Veracity.Services.Api.My` package provides a client to resources avai
 
 This view point is appropriate if you intend to use Veracity as an identity provider for your application.
 
-Resources retrieved from this view point are from the perspective of the authenticated user, **user authentication flow is required to access these resources.**
+Resources retrieved from this view point are from the perspective of the authenticated user, 
+> Only **User credentials** authentication is supported by this package.
 
 # Package Install
 

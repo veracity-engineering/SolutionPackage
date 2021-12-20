@@ -3,7 +3,8 @@ The `DNVGL.Veracity.Services.Api.This` package provides a client to resources av
 
 This view point is appropriate for service owners integrating with Veracity enabling management of their service and sub-service subscriptions.
 
-Resources retrieved from this view point are from the perspective of a service, **client credential authentication flow is required to access these resources.**
+Resources retrieved from this view point are from the perspective of a service, 
+> Only **Client credentials** authentication is supported by this package.
 
 # Package Install
 

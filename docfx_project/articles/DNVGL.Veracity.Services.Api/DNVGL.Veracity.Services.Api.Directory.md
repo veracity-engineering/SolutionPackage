@@ -2,6 +2,7 @@
 The `DNVGL.Veracity.Services.Api.Directory` package provides a client to resources available under the 'Directory' view point of API v3.
 
 This view point is appropriate for core Veracity applications where resources are not restricted to any context.
+> Only **Client credentials** authentication is supported by this package.
 
 # Package Install
 
