@@ -1,10 +1,9 @@
 # Secrets Manager
+The `DNV.SecretsManager` package is a command line tool for managing secrets from the Azure KeyVault or Azure DevOps Variable Groups.
 
-DNV.SecretsManager is a command line tool for managing secrets from the Azure KeyVault or Azure DevOps Variable Groups.
+This tool allows secrets to be downloaded and uploaded as structured JSON files, meaning secrets may be uploaded in structured collections where previously they might have been maintained individually.
 
-This tool allows secrets to be downloaded and uploaded as structured JSON files, meaning secrets may be uploaded in structured collections where previously they might have been added individually.
-
-## Example
+## What it does
 Given a large collection of key vault secrets in an Azure Key vault such as those shown below:
 ![KeyVault secrets](../images/DNV.SecretsManager/keyvault-secrets.png)
 

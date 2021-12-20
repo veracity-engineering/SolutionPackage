@@ -1,12 +1,12 @@
 # Solution Package
-A collection of tools and packages for developers to support rapid, robust and extensible development of applications and services within DNV.
+A collection of packages and tools for developers to support rapid, robust and extensible development of applications and services within DNV.
 
 Some of the supported features include:
 
 ## Authentication
-- [OpenId Connection authentication](/articles/DNVGL.OAuth.Web.md)
+- [OpenId connection authentication](/articles/DNVGL.OAuth.Web.md)
 
-- [HTTP client factory](/articles/DNVGL.OAuth.Api.HttpClient.md)
+- [OAuth HTTP client factory](/articles/DNVGL.OAuth.Api.HttpClient.md)
 
 ## Security
 - [Security headers](/articles/securityHeader.md)
@@ -16,7 +16,7 @@ Some of the supported features include:
 - [Secrets manager](/articles/DNV.SecretsManager.md)
 
 ## Integration
-- [Veracity - My Services V3](/articles/DNVGL.Veracity.Services.Api.md)
+- [Veracity - My Services API v3 clients](/articles/DNVGL.Veracity.Services.Api.md)
 
 ---
 

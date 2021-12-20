@@ -1,5 +1,5 @@
-# DNVGL.Veracity.Services.Api.My
-Provides a client to resources available under the 'My' view point of API v3.
+# Veracity - My Services API v3 - My Client
+The `DNVGL.Veracity.Services.Api.My` package provides a client to resources available under the 'My' view point of API v3.
 
 This view point is appropriate if you intend to use Veracity as an identity provider for your application.
 
@@ -82,7 +82,7 @@ public class TestController : Controller
 	...
 }
 ```
-
+---
 # Resources
 - Companies
 - Messages

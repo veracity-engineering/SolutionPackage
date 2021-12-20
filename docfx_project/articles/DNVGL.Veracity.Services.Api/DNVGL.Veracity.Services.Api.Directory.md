@@ -1,5 +1,5 @@
-# DNVGL.Veracity.Services.Api.Directory
-Provides a client to resources available under the 'Directory' view point of API v3.
+# Veracity - My Services API v3 - Directory Client
+The `DNVGL.Veracity.Services.Api.Directory` package provides a client to resources available under the 'Directory' view point of API v3.
 
 This view point is appropriate for core Veracity applications where resources are not restricted to any context.
 
@@ -83,7 +83,7 @@ public class TestController : Controller
 	...
 }
 ```
-
+---
 # Resources
 - Companies
 - Services

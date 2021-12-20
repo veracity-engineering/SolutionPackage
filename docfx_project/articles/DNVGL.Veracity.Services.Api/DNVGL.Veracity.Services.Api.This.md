@@ -1,5 +1,5 @@
-# DNVGL.Veracity.Services.Api.This
-Provides a client to resources available under the 'This' view point of API v3.
+# Veracity - My Services API v3 - This Client
+The `DNVGL.Veracity.Services.Api.This` package provides a client to resources available under the 'This' view point of API v3.
 
 This view point is appropriate for service owners integrating with Veracity enabling management of their service and sub-service subscriptions.
 
@@ -85,7 +85,7 @@ public class TestController : Controller
 	...
 }
 ```
-
+---
 # Resources
 - Administrators
 - Services
