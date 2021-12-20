@@ -12,12 +12,26 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
+		/// <summary>
+		/// Retrieves a collection of messages addressed to the authenticated user.
+		/// </summary>
+		/// <param name="includeRead">Set this to true to include messages marked as read.</param>
+		/// <returns></returns>
 		public Task<IEnumerable<Message>> List(bool includeRead = false) =>
 			GetResource<IEnumerable<Message>>(MyMessagesUrls.List(includeRead), false);
 
+		/// <summary>
+		/// Retrieves an individual message addressed to the authenticated user.
+		/// </summary>
+		/// <param name="messageId">The unique identifier for the message to be retrieved.</param>
+		/// <returns></returns>
 		public Task<Message> Get(string messageId) =>
 			GetResource<Message>(MyMessagesUrls.Message(messageId));
 
+		/// <summary>
+		/// Retrieves the numeric value indicating how many messages have not been marked as read by the authenticated user.
+		/// </summary>
+		/// <returns></returns>
 		public Task<int> GetUnreadCount() =>
 			GetResource<int>(MyMessagesUrls.UnreadCount, false);
     }

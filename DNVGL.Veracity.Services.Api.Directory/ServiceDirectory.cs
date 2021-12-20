@@ -12,9 +12,21 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		{
 		}
 
+		/// <summary>
+		/// Retrieves an individual service.
+		/// </summary>
+		/// <param name="serviceId"></param>
+		/// <returns></returns>
 		public Task<Service> Get(string serviceId) =>
 			GetResource<Service>(ServiceDirectoryUrls.Service(serviceId));
 
+		/// <summary>
+		/// Retrieves a paginated collection of user references of users subscribed to a service.
+		/// </summary>
+		/// <param name="serviceId"></param>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
+		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> ListUsers(string serviceId, int page = 1, int pageSize = 20) =>
 			GetResource<IEnumerable<UserReference>>(ServiceDirectoryUrls.ServiceUsers(serviceId, page, pageSize), false);
 	}

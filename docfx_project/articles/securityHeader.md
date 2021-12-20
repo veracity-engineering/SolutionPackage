@@ -1,8 +1,15 @@
 # HTTP Response Security Header
 DNVGL.Web.Security provides extension methods to setup http response headers for ASP.NET Core application.
 
-## Prerequisites
-PM> `Install-Package DNVGL.Web.Security`
+---
+# Package Install
+
+Ensure you have configured to package NuGet Package Source or find the instructions [here](./PackageInstall.md).
+
+Package Manager Console
+```
+PM> `Install-Package DNVGL.OAuth.Web`
+```
 
 ## 1. Basic Example
 

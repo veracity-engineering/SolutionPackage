@@ -12,3 +12,9 @@
 
 - name: User Management and Authorization
   href: userManagement.md
+
+- name: Secrets Manager
+  href: DNV.SecretsManager.md
+
+- name: DNVGL.Veracity.Services.Api
+  href: DNVGL.Veracity.Services.Api.md

@@ -12,9 +12,20 @@ namespace DNVGL.Veracity.Services.Api.This
 		{
 		}
 
+		/// <summary>
+		/// Retrieves an individual administrator for the authenticated service.
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		public Task<Administrator> Get(string userId) =>
 			GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
 
+		/// <summary>
+		/// Retrieves a collection of administrator references for the authenticated service.
+		/// </summary>
+		/// <param name="page"></param>
+		/// <param name="pageSize"></param>
+		/// <returns></returns>
 		public Task<IEnumerable<AdministratorReference>> List(int page, int pageSize) =>
 			GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
 	}

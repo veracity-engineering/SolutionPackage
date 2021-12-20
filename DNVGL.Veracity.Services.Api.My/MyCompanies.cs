@@ -12,6 +12,10 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
+		/// <summary>
+		/// Retrieves a collection of company references for the authenticated user.
+		/// </summary>
+		/// <returns></returns>
 		public Task<IEnumerable<CompanyReference>> List() =>
 			GetResource<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
     }
