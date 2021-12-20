@@ -18,8 +18,9 @@ With the nuget package installed, services for each resource may be individually
 
 ## 1. Configuration
 To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
-> The `Directory` view point only supports Client Credential Flow.
+
  `appsettings.json`
+ > The `Directory` view point only supports Client Credential Flow.
 ```json
 {
 	"OAuthHttpClients": [

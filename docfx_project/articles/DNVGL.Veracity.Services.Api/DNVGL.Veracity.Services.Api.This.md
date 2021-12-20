@@ -14,6 +14,78 @@ Package Manager Console
 PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 ```
 
+# Example
+
+With the nuget package installed, services for each resource may be individually configured, injected and requested inside your solution.
+
+## 1. Configuration
+To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
+
+ `appsettings.json`
+ > The `This` view point only supports Client Credential Flow.
+```json
+{
+	"OAuthHttpClients": [
+		...
+		{
+			"Name": "this-subscribers",
+			"Flow": "ClientCredentials",
+			"BaseUri": <BaseUri>,
+			"SubscriptionKey": <SubscriptionKey>,
+			"OpenIdConnectOptions": {
+				"Authority": <Authority>,
+				"ClientId": <ClientId>,
+				"ClientSecret": <ClientSecret>,
+				"Resource": <Resource>,
+				"Scopes": [ <Scope> ],
+			}
+		}
+		...
+	]
+}
+```
+
+## 2. Registration
+Register the service or services using extensions methods available from the `DNVGL.Veracity.Services.Api.This.Extensions` namespace.
+
+`startup.cs`
+> Packages from `DNVGL.Veracity.Service.Api` are dependent on the [DNVGL.OAuth.Api.HttpClient](/articles/DNVGL.OAuth.Api.HttpClient.md) package, therefore the HttpClientFactory should also be injected.
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+	...
+	services.AddThisSubscribers("this-subscribers")
+	...
+}
+```
+
+## 3. Request service
+Request the service from the constructor by its interface:
+
+`TestController.cs`
+```cs
+public class TestController : Controller
+{
+	...
+	private readonly IThisSubscribers _thisSubscribers;
+	...
+	public TestController(IThisSubscribers thisSubscribers)
+	{
+		...
+		_thisSubscribers = thisSubscribers ?? throw new ArgumentNullException(nameof(thisSubscribers));
+		...
+	}
+	...
+	public async Task<IActionResult> FetchSubscribers(int page, int pageSize)
+	{
+		return Json(await _thisSubscribers.List(page, pageSize));
+	}
+	...
+}
+```
+
 # Resources
 - Administrators
 - Services
