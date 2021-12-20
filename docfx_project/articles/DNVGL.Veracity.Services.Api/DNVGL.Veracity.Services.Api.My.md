@@ -85,11 +85,11 @@ public class TestController : Controller
 ```
 ---
 # Resources
-- Companies
-- Messages
-- Policies
-- Profile
-- Services
+- [Companies](#companies)
+- [Messages](#messages)
+- [Policies](#policies)
+- [Profile](#profile)
+- [Services](#services)
 
 ## Companies
 | Registration method | Service interface |

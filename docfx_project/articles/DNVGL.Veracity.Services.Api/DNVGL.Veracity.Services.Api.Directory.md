@@ -86,9 +86,9 @@ public class TestController : Controller
 ```
 ---
 # Resources
-- Companies
-- Services
-- Users
+- [Companies](#companies)
+- [Services](#services)
+- [Users](#users)
 
 ## Companies
 | Registration method | Service interface |

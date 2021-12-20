@@ -88,10 +88,10 @@ public class TestController : Controller
 ```
 ---
 # Resources
-- Administrators
-- Services
-- Subscribers
-- Users
+- [Administrators](#administrators)
+- [Services](#services)
+- [Subscribers](#subscribers)
+- [Users](#users)
 
 ## Administrators
 | Registration method | Service interface |
