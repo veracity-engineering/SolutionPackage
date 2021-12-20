@@ -18,7 +18,7 @@ With the nuget package installed, services for each resource may be individually
 
 ## 1. Configuration
 To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
-
+> The `Directory` view point only supports Client Credential Flow.
  `appsettings.json`
 ```json
 {
@@ -27,8 +27,15 @@ To configure a resource service, introduce configuration in the form of `OAuthHt
 		{
 			"Name": "company-directory",
 			"Flow": "ClientCredentials",
-			"BaseUri": <BaseUri>
-			...
+			"BaseUri": <BaseUri>,
+			"SubscriptionKey": <SubscriptionKey>,
+			"OpenIdConnectOptions": {
+				"Authority": <Authority>,
+				"ClientId": <ClientId>,
+				"ClientSecret": <ClientSecret>,
+				"Resource": <Resource>,
+				"Scopes": [ <Scope> ],
+			}
 		}
 		...
 	]
@@ -70,7 +77,7 @@ public class TestController : Controller
 	...
 	public async Task<IActionResult> FetchCompany(string companyId)
 	{
-		return Json(await _companyDirectory.Get(companyId);
+		return Json(await _companyDirectory.Get(companyId));
 	}
 	...
 }

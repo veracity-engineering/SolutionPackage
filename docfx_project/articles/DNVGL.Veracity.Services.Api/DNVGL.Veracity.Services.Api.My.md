@@ -14,6 +14,75 @@ Package Manager Console
 PM> `Install-Package DNVGL.Veracity.Services.Api.My`
 ```
 
+# Example
+
+With the nuget package installed, services for each resource may be individually configured, injected and requested inside your solution.
+
+## 1. Configuration
+To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
+> The `My` view point only supports User Credential Flow.
+
+ `appsettings.json`
+```json
+{
+	"OAuthHttpClients": [
+		...
+		{
+			"Name": "my-profile",
+			"Flow": "UserCredentials",
+			"BaseUri": <BaseUri>,
+			"SubscriptionKey": <SubscriptionKey>,
+			"OpenIdConnectOptions": {
+				"Authority": <Authority>,
+				"Scopes": [ <Scope> ]
+			}
+		}
+		...
+	]
+}
+```
+
+## 2. Registration
+Register the service or services using extensions methods available from the `DNVGL.Veracity.Services.Api.My.Extensions` namespace.
+
+`startup.cs`
+> Packages from `DNVGL.Veracity.Service.Api` are dependent on the [DNVGL.OAuth.Api.HttpClient](/articles/DNVGL.OAuth.Api.HttpClient.md) package, therefore the HttpClientFactory should also be injected.
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+	...
+	services.AddMyProfile("my-profile")
+	...
+}
+```
+
+## 3. Request service
+Request the service from the constructor by its interface:
+
+`TestController.cs`
+```cs
+public class TestController : Controller
+{
+	...
+	private readonly IMyProfile _myPofile;
+	...
+	public TestController(IMyProfile myProfile)
+	{
+		...
+		_myPofile = myProfile ?? throw new ArgumentNullException(nameof(myProfile));
+		...
+	}
+	...
+	public async Task<IActionResult> FetchProfile()
+	{
+		return Json(await _myPofile.Get());
+	}
+	...
+}
+```
+
 # Resources
 - Companies
 - Messages
