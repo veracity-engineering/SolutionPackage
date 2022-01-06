@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DNVGL.Web.Security
 {
-    /// <summary>
-    /// Extension methods to Response.Headers  
-    /// </summary>
-    public static class HttpResponseHeaderExtensions
+	/// <summary>
+	/// Extension methods to Response.Headers  
+	/// </summary>
+	public static class HttpResponseHeaderExtensions
     {
         private const string DefaultSrc = "'self'";
         private const string ObjectSrc = "'self'";

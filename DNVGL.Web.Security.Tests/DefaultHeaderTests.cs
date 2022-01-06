@@ -149,6 +149,29 @@ namespace DNVGL.Web.Security.Tests
         }
 
         [Fact]
+        public async Task TestNonceInCSPHeader()
+        {
+            var nonce = string.Empty;
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(webHost =>
+                {
+                    webHost.UseTestServer();
+                    webHost.Configure(app => app.UseDefaultHeaders((h,r) =>
+                    {
+                        nonce = r.HttpContext.CreateNonce();
+                        h.ExtendDefaultContentSecurityPolicy(styleSrc: nonce, scriptSrc: nonce);
+                    })
+                    .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
+                });
+
+            var host = await hostBuilder.StartAsync();
+            var client = host.GetTestClient();
+            var response = await client.GetAsync("/");
+            response.EnsureSuccessStatusCode();
+            Assert.Contains(nonce, response.Headers.GetValues("Content-Security-Policy").FirstOrDefault());
+        }
+
+        [Fact]
         public async Task TestSkipCSPHeader()
         {
             var hostBuilder = new HostBuilder()
