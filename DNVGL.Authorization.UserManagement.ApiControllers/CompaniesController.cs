@@ -113,21 +113,33 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <returns></returns>
         [HttpGet]
         [Route("domain/{*url}")]
-        public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(string))]
+        public async Task<ActionResult> GetCompanyByDomain([FromRoute] string url)
         {
             var currentUser = await GetCurrentUser();
             TCompany company = await GetCompanyFromURL(url);
 
-            if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && !currentUser.SuperAdmin))
+            if (company == null)
             {
-                return null;
+                return NoContent();
             }
+
+            if (currentUser.CompanyList.All(t => t.Id != company.Id) && !currentUser.SuperAdmin)
+            {
+                return Forbid();
+            }
+
 
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
             result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
-            return result;
+            return Ok(result);
+
         }
 
         /// <summary>
