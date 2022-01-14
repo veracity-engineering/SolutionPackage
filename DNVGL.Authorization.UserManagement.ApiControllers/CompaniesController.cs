@@ -113,7 +113,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         /// <returns></returns>
         [HttpGet]
         [Route("domain/{*url}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CompanyViewDto))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(string))]
