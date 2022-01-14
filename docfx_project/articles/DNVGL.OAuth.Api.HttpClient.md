@@ -1,5 +1,5 @@
-# DNVGL.OAuth.Api.HttpClient
-DNVGL.OAuth.Api.HttpClient is a .NET library which provides a factory for producing authenticated HttpClients for API integration via OAuth.
+# OAuth HTTP Client Factory
+The `DNVGL.OAuth.Api.HttpClient package` is a .NET library which provides a factory for producing authenticated HttpClients for API integration via OAuth.
 
 Developers can use this library to create HttpClient instances which will be pre-authenticated for API requests based on provided configuration.
 
