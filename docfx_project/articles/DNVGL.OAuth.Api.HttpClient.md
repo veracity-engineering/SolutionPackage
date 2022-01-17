@@ -1,24 +1,26 @@
-# Overview
-DNVGL.OAuth.Api.HttpClient package has two type credentials. One is user credentials which use current user's credentials to access api. Other is client credentials which is a service to service model to access api. The http client will integrate the credentials to access web api.   
+# OAuth HTTP Client Factory
+The `DNVGL.OAuth.Api.HttpClient package` is a .NET library which provides a factory for producing authenticated HttpClients for API integration via OAuth.
 
+Developers can use this library to create HttpClient instances which will be pre-authenticated for API requests based on provided configuration.
+
+This package supports two type of credential authentication:
+- User credentials - A user may authenticate by providing a username and password via a UI. 
+- Client credentials - A service or application may provide a client id and secret to silently authenticate.
+
+---
 # Package Install
 
-To install DNVGL.OAuth.Api.HttpClient package, you may need to add the below package feed to your nuget sources.
-
-```
-https://dnvgl-one.pkgs.visualstudio.com/_packaging/DNVGL.SolutionPackage/nuget/v3/index.json
-```
+Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
 Package Manager Console
 ```
 PM> `Install-Package DNVGL.OAuth.Api.HttpClient`
 ```
-Or Package Manager for solution/project
-![](../images/dnvgl.oauth.api.httpclient/add-package.png)
 
 # Basic example
 
-1. Setup API http client configuration in `appsettings.json` file.  
+## 1. Configuration
+Setup API http client configuration in `appsettings.json` file:
 
 ```js
   {
@@ -26,19 +28,19 @@ Or Package Manager for solution/project
       {
         "Name": "userCredentialsClient",
         "Flow":"user-credentials",
-        "BaseUri": "https://localhost/api/user",
-        "SubscriptionKey": "eqrqie3431qre234"
+        "BaseUri": "<BaseUri>",
+        "SubscriptionKey": "<SubscriptionKey>"
       },
       {
         "Name": "clientCredentialsClient",
         "Flow":"client-credentials",
-        "BaseUri": "https://localhost/api/client",
-        "SubscriptionKey": "eqrqisfs34s1qre734"
+        "BaseUri": "<BaseUri>",
+        "SubscriptionKey": "<SubscriptionKey>"
         "OpenIdConnectOptions": {
-          "TenantId": "ed815121-cdfa-4097-b524-e2b23cd36eb6",
-          "ClientId": "35807f23-80d5-4e97-b07a-21b86013a9ff",
-          "ClientSecret": "44adfa232#1ad6@#",
-          "Scopes": [ "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation", "offline_access" ],
+          "TenantId": "<TenantId>",
+          "ClientId": "<ClientId>",
+          "ClientSecret": "<ClientSecret>",
+          "Scopes": [ "<Scope>", "offline_access" ],
           "SignInPolicy": "B2C_1A_SignInWithADFSIdp"
         }
       }
@@ -47,11 +49,15 @@ Or Package Manager for solution/project
   }
 
 ```
-2. Calling `AddOAuthHttpClientFactory` extension to register api client to `ServiceCollection`
 
-If you want to create user credential `HttpClient`, you must add `AddOidc` extension method and token cache to `ConfigureSerices` too. The Oidc configuraton is used by user credntial. Please refer details to [DNVGL.OAuth.Web](./DNVGL.OAuth.Web.md). 
+The package injects a `OAuthHttpClientFactory` which is able to provide multiple HttpClients for different purposes.  The HttpClients may all be configured through a configuration section in which the individual client configurations are listed with a unique `Name` which is used to request HttpClients with the corresponding configurations.
 
-If you want to create client credential `HttpClient`, you have to set up `OpenIdConnectOptions`, Please see above setup API http client configuration.  
+The configuration shown above lists 2 HttpClients.  The first with name `"userCredentialsClient"` is an example of a configuration which would honour the signed in user's credentials for the API for which it makes requests.  The second with name `"clientCredentialsClient"` provides configuration for a client which would be authenticated via the client credential flow with a client id and secret to make requests in an API.  This configuration would allow us to request either type of HttpClient by requesting it from from the HttpClientFactory by providing one of the two names: `"userCredentialsClient"` or `"clientCredentialsClient"` in the method call to the HttpClientFactory.
+
+## 2. Registration
+Call the `ServiceCollection` extension method `AddOAuthHttpClientFactory` to register an instance of the `OAuthHttpClientFactory` in to your project in your `Startup.cs` file.
+
+The below code is retrieving the configuration from the `"ApiHttpClientOptions"` section defined in `apsettings.json` above.
 
 ```cs
 public void ConfigureService(IServiceCollection services)
@@ -59,12 +65,38 @@ public void ConfigureService(IServiceCollection services)
   ...
   services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
   ...
-
 }
 ```
 
+If you require a HttpClient applying the user credential flow you should also include the web authentication (`AddOidc`) and token cache handling (`AddDistributedMemoryCache`) from the [DNVGL.OAuth.Web](/articles/DNVGL.OAuth.Web.md) package.  Include the NuGet package in your project and call the required methods as below:
 
-3. Resolve `OAuthHttpClientFactory` to create user-credential or client-credential `HttpClient` to access web api. 
+```cs
+public void ConfigureService(IServiceCollection services)
+{
+  ...
+  services.AddDistributedMemoryCache();
+  ...
+  var oidcOptions = new OidcOptions
+  {
+	  TenantId = "<TenantId>",
+	  SignInPolicy = "b2c_1a_signinwithadfsidp",
+	  ClientId = "<ClientId>",
+	  ClientSecret = "<ClientSecret>",
+	  Scopes = new[] { "<Scope>", "offline_access" },
+	  CallbackPath = "/signin-oidc",
+	  ResponseType = OpenIdConnectResponseType.Code
+  };
+  services.AddOidc(oidcOptions);
+  ...
+  services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+  ...
+}
+```
+
+If you only require HttpClients applying the client credential flow the DNVGL.OAuth.Web package is not required.
+
+## 3. Request a client
+Resolve `OAuthHttpClientFactory` to create user-credential or client-credential `HttpClient` to access web API. 
 ```cs
 public class TestController
 {
@@ -72,25 +104,19 @@ public class TestController
 
   public TestController(IOAuthHttpClientFactory httpClientFactory)
   {
-    _oauthHttpClientFactory = httpClientFactory;
+    _httpClientFactory = httpClientFactory;
   }
 
-  public User GetUser(string id)
+  public User DoSomethingWithSignInUser(string id)
   {
-    var client = _oauthHttpClientFactory.Create('userCredentialsClient');
+    var client = _httpClientFactory.Create("userCredentialsClient");
     ...
   }
 
-  public Company GetCompany(string id)
+  public Company DoSomethingWithService(string id)
   {
-    var client = _oauthHttpClientFactory.Create('clientCredentialsClient');
+    var client = _httpClientFactory.Create("clientCredentialsClient");
     ...
   }
 }
-
 ```
-
-
-
-
-

@@ -5,6 +5,7 @@ using DNVGL.Authorization.UserManagement.Abstraction;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {
@@ -16,6 +17,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets or sets the role name for this role.
         /// </summary>
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; }
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
         /// <summary>
         /// Gets the company permission list for this role.
         /// </summary>
+        [Required]
         public IList<string> PermissionKeys { get; set; }
     }
 

@@ -116,24 +116,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<CompanyViewDto> GetCompanyByDomain([FromRoute] string url)
         {
             var currentUser = await GetCurrentUser();
-            var decodedUrl = WebUtility.UrlDecode(url);
-            var urlParts = decodedUrl.Replace("https://", "", StringComparison.InvariantCultureIgnoreCase).Replace("http://", "", StringComparison.InvariantCultureIgnoreCase).Split("/");
-
-            TCompany company = null;
-            if (urlParts.Length > 1)
-            {
-                company = await _companyRepository.ReadByDomain(urlParts[0] + "/" + urlParts[1]);
-            }
-
-            if (company == null)
-            {
-                company = await _companyRepository.ReadByDomain(urlParts[0]);
-            }
-            
-            if (company == null && urlParts.Length > 1)
-            {
-                company = await _companyRepository.ReadByDomain(urlParts[1]);
-            }
+            TCompany company = await GetCompanyFromURL(url);
 
             if (company == null || (currentUser.CompanyList.All(t => t.Id != company.Id) && !currentUser.SuperAdmin))
             {
@@ -170,13 +153,22 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("custommodel")]
         [PermissionAuthorize(Premissions.ManageCompany)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
-        public async Task<string> CreateCompanyFromCustomModel([FromBody] TCompany model)
+        public async Task<ActionResult> CreateCompanyFromCustomModel([FromBody] TCompany model)
         {
+            var companyExist = await GetCompanyFromURL(model.DomainUrl);
+            if (companyExist != null)
+            {
+                return BadRequest("Domain URL has been taken by another company.");
+            }
+
             var currentUser = await GetCurrentUser();
             model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             model = await _companyRepository.Create(model);
-            return model.Id;
+            return Ok(model.Id);
         }
 
         /// <summary>
@@ -201,14 +193,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPost]
         [Route("")]
         [PermissionAuthorize(Premissions.ManageCompany)]
-        public async Task<string> CreateCompany([FromBody] CompanyEditModel model)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        public async Task<ActionResult> CreateCompany([FromBody] CompanyEditModel model)
         {
+
+            var companyExist = await GetCompanyFromURL(model.DomainUrl);
+            if (companyExist != null)
+            {
+                return BadRequest("Domain URL has been taken by another company.");
+            }
+
             var currentUser = await GetCurrentUser();
 
 
             var company = new TCompany
             {
                 Description = model.Description,
+                ServiceId = model.ServiceId,
                 Name = model.Name,
                 Active = model.Active,
                 Permissions = string.Join(';', model.PermissionKeys),
@@ -216,7 +219,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}"
             };
             company = await _companyRepository.Create(company);
-            return company.Id;
+            return Ok(company.Id);
         }
 
         /// <summary>
@@ -242,14 +245,25 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("custommodel/{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ApiExplorerSettings(GroupName = "UserManagement's Company APIs - Custom Model")]
-        public async Task UpdateCompanyFromCustomModel([FromRoute] string id, TCompany model)
+        public async Task<ActionResult> UpdateCompanyFromCustomModel([FromRoute] string id, TCompany model)
         {
+            var companyExist = await GetCompanyFromURL(model.DomainUrl);
             var company = await _companyRepository.Read(id);
+
+            if (companyExist != null && company.Id != companyExist.Id)
+            {
+                return BadRequest("Domain URL has been taken by another company.");
+            }
             var currentUser = await GetCurrentUser();
             model.Id = company.Id;
             model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _companyRepository.Update(model);
+
+            return Ok();
         }
 
         /// <summary>
@@ -275,18 +289,32 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpPut]
         [Route("{id}")]
         [PermissionAuthorize(Premissions.ManageCompany)]
-        public async Task UpdateCompany([FromRoute] string id, CompanyEditModel model)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        public async Task<ActionResult> UpdateCompany([FromRoute] string id, CompanyEditModel model)
         {
+
+            var companyExist = await GetCompanyFromURL(model.DomainUrl);
             var company = await _companyRepository.Read(id);
+
+            if (companyExist != null && company.Id != companyExist.Id)
+            {
+                return BadRequest("Domain URL has been taken by another company.");
+            }
+
             var currentUser = await GetCurrentUser();
             company.Id = id;
             company.Active = model.Active;
             company.DomainUrl = model.DomainUrl;
             company.Description = model.Description;
+            company.ServiceId = model.ServiceId;
             company.Name = model.Name;
             company.Permissions = string.Join(';', model.PermissionKeys);
             company.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _companyRepository.Update(company);
+
+            return Ok();
         }
 
         /// <summary>
@@ -303,6 +331,37 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task DeleteCompany([FromRoute] string id)
         {
             await _companyRepository.Delete(id);
+        }
+
+
+        private async Task<TCompany> GetCompanyFromURL(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+                
+            var decodedUrl = WebUtility.UrlDecode(url);
+            var urlParts = decodedUrl.Replace("https://", "", StringComparison.InvariantCultureIgnoreCase).Replace("http://", "", StringComparison.InvariantCultureIgnoreCase).Split("/");
+
+
+            TCompany company = null;
+            if (urlParts.Length > 1)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[0] + "/" + urlParts[1]);
+            }
+
+            if (company == null)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[0]);
+            }
+
+            if (company == null && urlParts.Length > 1)
+            {
+                company = await _companyRepository.ReadByDomain(urlParts[1]);
+            }
+
+            return company;
         }
 
     }

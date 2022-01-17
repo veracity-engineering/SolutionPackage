@@ -78,7 +78,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 }
 
                 var requiredPermissions = permissionRequired.Split(',').ToList();
-                var ownedPermissionsInClaim = context.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "AuthorizationPermissions")?.Value;
+                var ownedPermissionsInClaim = context.HttpContext.User.Claims.FirstOrDefault(t => t.Type == Constants.AUTHORIZATIONPERMISSIONS)?.Value;
                 IEnumerable<PermissionEntity> ownedPermissions = new List<PermissionEntity>();
                 if (!string.IsNullOrEmpty(ownedPermissionsInClaim))
                 {
@@ -104,7 +104,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             private string GetCompanyId(ActionExecutingContext context)
             {
-                string companyId = context.HttpContext.Request.Headers["AUTHORIZATION.COMPANYID"];
+                string companyId = context.HttpContext.Request.Headers[Constants.AUTHORIZATION_COMPANYID];
 
                 return companyId;
             }

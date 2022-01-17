@@ -38,7 +38,7 @@ namespace DNVGL.Authorization.Web
 
             if (string.IsNullOrEmpty(_companyIdInRoute) && string.IsNullOrEmpty(_companyIdInQuery) && string.IsNullOrEmpty(_companyIdInActionArguments))
             {
-                _companyIdInRoute = "companyId";
+                _companyIdInRoute = Constants.COMPANYID;
             }
         }
 
@@ -51,8 +51,8 @@ namespace DNVGL.Authorization.Web
             var companyId = context.GetRouteData().Values[_companyIdInRoute] as string ?? context.Request.Query[_companyIdInQuery];
             if (!string.IsNullOrEmpty(companyId))
             {
-                context.Request.Headers.Remove("AUTHORIZATION.COMPANYID");
-                context.Request.Headers.Add("AUTHORIZATION.COMPANYID", companyId);
+                context.Request.Headers.Remove(Constants.AUTHORIZATION_COMPANYID);
+                context.Request.Headers.Add(Constants.AUTHORIZATION_COMPANYID, companyId);
             }
         }
 
@@ -70,7 +70,7 @@ namespace DNVGL.Authorization.Web
 
                 if (string.IsNullOrEmpty(_companyIdInRoute) && string.IsNullOrEmpty(_companyIdInQuery) && string.IsNullOrEmpty(_companyIdInActionArguments))
                 {
-                    _companyIdInRoute = "companyId";
+                    _companyIdInRoute = Constants.COMPANYID;
                 }
                 _premissionOptions = premissionOptions;
             }
@@ -82,8 +82,8 @@ namespace DNVGL.Authorization.Web
 
                 if (!string.IsNullOrEmpty(companyId))
                 {
-                    context.HttpContext.Request.Headers.Remove("AUTHORIZATION.COMPANYID");
-                    context.HttpContext.Request.Headers.Add("AUTHORIZATION.COMPANYID", companyId);
+                    context.HttpContext.Request.Headers.Remove(Constants.AUTHORIZATION_COMPANYID);
+                    context.HttpContext.Request.Headers.Add(Constants.AUTHORIZATION_COMPANYID, companyId);
                     
                 }
 

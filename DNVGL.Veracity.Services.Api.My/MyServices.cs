@@ -12,6 +12,10 @@ namespace DNVGL.Veracity.Services.Api.My
 		{
 		}
 
+		/// <summary>
+		/// Retrieves a collection of service references for services the authenticated user is subscribed to.
+		/// </summary>
+		/// <returns></returns>
 		public Task<IEnumerable<MyServiceReference>> List() =>
 			GetResource<IEnumerable<MyServiceReference>>(MyServicesUrls.Root, false);
 	}

@@ -16,12 +16,27 @@ namespace DNVGL.Veracity.Services.Api.This
         {
         }
 
+		/// <summary>
+		/// Create a new user.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns></returns>
 		public Task<CreateUserReference> Create(CreateUserOptions options) =>
 			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
 
+		/// <summary>
+		/// Create a collection of new users.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns></returns>
 		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options) =>
 			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
 
+		/// <summary>
+		/// Retrieves a collection of user references for users with a specified email value.
+		/// </summary>
+		/// <param name="email"></param>
+		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> Resolve(string email) =>
 			GetResource<IEnumerable<UserReference>>(ThisUsersUrls.Resolve(email));
     }
