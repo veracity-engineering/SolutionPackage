@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace DNVGL.OAuth.Web.Extensions.Veracity
 {
@@ -18,5 +19,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
         public string MyPoliciesApiConfigName { get; set; }
 
         public string ServiceId { get; set; }
+
+        public Func<HttpContext, string> GetReturnUrl { get; set; }
     }
 }

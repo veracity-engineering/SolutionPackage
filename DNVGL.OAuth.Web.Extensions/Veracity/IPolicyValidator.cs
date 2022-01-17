@@ -24,14 +24,14 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			_policies = policies ?? throw new ArgumentNullException(nameof(policies));
 		}
 
-		public async Task Validate<TOptions>(RemoteAuthenticationContext<TOptions> context, PolicyValidationOptions options, string returnUrl) where TOptions : AuthenticationSchemeOptions
+		public async Task Validate<TOptions>(RemoteAuthenticationContext<TOptions> context, PolicyValidationOptions options) where TOptions : AuthenticationSchemeOptions
 		{
 			PolicyValidationResult result;
 			if ((options.PolicyValidationMode | PolicyValidationMode.PlatformAndService) > 0)
 			{
 				result = await _policies.ValidatePolicy(
 					options.ServiceId, 
-					returnUrl, 
+					options?.GetReturnUrl(context.HttpContext), 
 					(options.PolicyValidationMode | PolicyValidationMode.ServiceSubscription) > 0 ? "true": "false");
 			}
 			else if ((options.PolicyValidationMode | PolicyValidationMode.PlatformTermsAndCondition) > 0)

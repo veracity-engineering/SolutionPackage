@@ -42,7 +42,8 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			var policyValidationOptions = new PolicyValidationOptions();
 			policyValidationSetupAction(policyValidationOptions);
 
-			return services.AddOidcWithPolicyValidation(oidcOptions, policyValidationOptions, cookieSetupAction, cacheSetupAction);
+			return services.AddOidcWithPolicyValidation(oidcOptions, policyValidationOptions, cookieSetupAction,
+				cacheSetupAction);
 		}
 
 		/// <summary>
@@ -57,7 +58,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			oidcOptions.AddPolicyValidation(policyValidationOptions);
-			
+
 			services.AddMyPolicies(policyValidationOptions.MyPoliciesApiConfigName);
 
 			return services.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
@@ -70,7 +71,8 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 		/// <param name="policyValidationOptions"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
-		private static OidcOptions AddPolicyValidation(this OidcOptions oidcOptions, PolicyValidationOptions policyValidationOptions)
+		private static OidcOptions AddPolicyValidation(this OidcOptions oidcOptions,
+			PolicyValidationOptions policyValidationOptions)
 		{
 			if (oidcOptions == null)
 				throw new ArgumentNullException(nameof(oidcOptions));
@@ -91,7 +93,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 
 			return oidcOptions;
 		}
-		
+
 		private static async Task Validate(TokenValidatedContext ctx, PolicyValidationOptions policyValidationOptions)
 		{
 			var cu = ctx.HttpContext.User;
@@ -100,7 +102,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			var validator = ctx.HttpContext.RequestServices.GetRequiredService<IPolicyValidator>();
 			try
 			{
-				await validator.Validate(ctx);
+				await validator.Validate(ctx, policyValidationOptions.GetReturnUrl(ctx.HttpContext));
 			}
 			catch (Exception e)
 			{
@@ -110,3 +112,4 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			ctx.HttpContext.User = cu;
 		}
 	}
+}
