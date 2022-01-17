@@ -2,6 +2,7 @@
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DNVGL.Veracity.Services.Api.Models;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
@@ -21,7 +22,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicies);
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
-			await ToResourceResult(request);
+			await ToResourceResult<PolicyValidationResult>(request);
 		}
 
 		/// <summary>

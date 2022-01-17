@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+	  <Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
+	  <Company>DNVGL</Company>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
+    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
+  </ItemGroup>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
+		<DefineConstants>NETCORE2</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+		<DefineConstants>NETCORE3</DefineConstants>
+	</PropertyGroup>
+</Project>
