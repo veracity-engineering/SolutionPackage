@@ -86,7 +86,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			if (Type == CommandType.Upload)
 			{
 				Console.WriteLine($"Uploading secrets from file '{Filename}' to Azure KeyVault '{Url}'...");
-				var result = await UploadKeyVaultSecrets(Url, Filename);
+				var result = await UploadKeyVaultSecrets(Filename, Url);
 				Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
 			}
