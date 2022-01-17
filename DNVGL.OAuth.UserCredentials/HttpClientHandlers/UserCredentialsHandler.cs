@@ -19,18 +19,17 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 
         protected override async Task<string> RetrieveToken()
         {
-            var clientApp = GetOrCreateClientApp(_httpContextAccessor.HttpContext);
-            var authResult = await clientApp.AcquireTokenSilent(_httpContextAccessor.HttpContext);
+            var user = _httpContextAccessor.HttpContext.User;
+            var clientApp = GetOrCreateClientApp();
+            var authResult = await clientApp.AcquireTokenSilent(user);
             return authResult.AccessToken;
         }
 
-        private IClientApp GetOrCreateClientApp(HttpContext httpContext)
+        private IClientApp GetOrCreateClientApp()
         {
-            if (_clientApp != null)
-                return _clientApp;
-            _clientApp = _appBuilder
-                .WithOAuth2Options(_options.OAuthClientOptions)
-                .BuildForUserCredentials(httpContext);
+            if (_clientApp != null) return _clientApp;
+            
+            _clientApp = _appBuilder.BuildWithOptions(_options.OAuthClientOptions);
             return _clientApp;
         }
     }

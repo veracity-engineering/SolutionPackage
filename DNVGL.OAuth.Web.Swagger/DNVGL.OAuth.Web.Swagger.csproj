@@ -1,35 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 		<Authors>Eric Liu &lt;li.eric.liu@dnv.com&gt;</Authors>
-		<Company>DNVGL</Company>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Company>DNV</Company>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.4" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="6.1.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.2.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.3" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.16" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.16" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.21" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.21" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.21" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="3.1.21" />
 	</ItemGroup>
 
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
-		<DefineConstants>NETCORE2</DefineConstants>
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+		<DefineConstants>NETSTANDARD2</DefineConstants>
 	</PropertyGroup>
-	
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
-		<DefineConstants>NETCORE3</DefineConstants>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.1'">
+		<DefineConstants>NETSTANDARD21</DefineConstants>
 	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
-	  <DocumentationFile></DocumentationFile>
-	</PropertyGroup>
+
 </Project>

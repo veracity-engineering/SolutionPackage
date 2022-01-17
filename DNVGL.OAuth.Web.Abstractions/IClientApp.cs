@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Identity.Client;
+﻿using Microsoft.Identity.Client;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DNVGL.OAuth.Web.Abstractions
@@ -10,17 +9,17 @@ namespace DNVGL.OAuth.Web.Abstractions
 		/// <summary>
 		/// Attempts to authenticate using account retrieved from the specified context by calling <see cref="IConfidentialClientApplication.AcquireTokenByAuthorizationCode"/>.
 		/// </summary>
-		/// <typeparam name="TOptions"></typeparam>
-		/// <param name="context"></param>
+		/// <param name="authCode"></param>
+		/// <param name="codeVerifier"></param>
 		/// <returns>Authentication result containing a token for the requested scopes.</returns>
-		Task<AuthenticationResult> AcquireTokenByAuthorizationCode<TOptions>(RemoteAuthenticationContext<TOptions> context) where TOptions : AuthenticationSchemeOptions;
+		Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string authCode, string codeVerifier = null);
 
 		/// <summary>
-		/// Attempts to authenticate using account retrieved from the <see cref="HttpContext"/> by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
+		/// Attempts to authenticate using account retrieved from the <see cref="ClaimsPrincipal"/> by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
 		/// </summary>
-		/// <param name="httpContext"></param>
+		/// <param name="claimsPrincipal"></param>
 		/// <returns>Authentication result containing a token.</returns>
-		Task<AuthenticationResult> AcquireTokenSilent(HttpContext httpContext);
+		Task<AuthenticationResult> AcquireTokenSilent(ClaimsPrincipal claimsPrincipal);
 
 		/// <summary>
 		/// Attempts to authenticate using account by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
@@ -36,15 +35,9 @@ namespace DNVGL.OAuth.Web.Abstractions
 		Task<AuthenticationResult> AcquireTokenForClient();
 
 		/// <summary>
-		/// Gets the authenticated account from the specified <see cref="HttpContext"/>.
+		/// Removes all tokens in the cache for the account retrieved from the specified <see cref="ClaimsPrincipal"/>.
 		/// </summary>
-		/// <param name="httpContext"></param>
-		Task<IAccount> GetAccount(HttpContext httpContext);
-
-		/// <summary>
-		/// Removes all tokens in the cache for the account retrieved from the specified <see cref="HttpContext"/>.
-		/// </summary>
-		/// <param name="httpContext"></param>
-		Task ClearUserTokenCache(HttpContext httpContext);
+		/// <param name="claimsPrincipal"></param>
+		Task ClearUserTokenCache(ClaimsPrincipal claimsPrincipal);
 	}
 }

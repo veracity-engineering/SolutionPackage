@@ -32,7 +32,6 @@ namespace DNVGL.OAuth.Web
 			}
 
 			throw new SecurityTokenValidationException("Custom validation failed");
-
 		}
 	}
 }

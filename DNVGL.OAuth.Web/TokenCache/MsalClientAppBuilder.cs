@@ -1,78 +1,58 @@
 ﻿using DNVGL.OAuth.Web.Abstractions;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Identity.Client;
 using System;
+using System.Linq;
 
 namespace DNVGL.OAuth.Web.TokenCache
 {
+	/// <summary>
+	/// Provides a simple way to create <see cref="IClientApp"/>.
+	/// </summary>
 	public class MsalClientAppBuilder : IClientAppBuilder
 	{
 		private readonly ITokenCacheProvider _tokenCacheProvider;
-		private Abstractions.OAuth2Options _options;
+		private readonly OAuth2Options _options;
 
-		public MsalClientAppBuilder(ITokenCacheProvider tokenCacheProvider)
+		public MsalClientAppBuilder(ITokenCacheProvider tokenCacheProvider, OAuth2Options options)
 		{
 			_tokenCacheProvider = tokenCacheProvider;
-		}
-
-		public IClientAppBuilder WithOAuth2Options(Abstractions.OAuth2Options options)
-		{
 			_options = options;
-			return this;
 		}
 
-		public IClientApp BuildForClientCredentials()
+		/// <summary>
+		/// Builds a <see cref="IClientApp"/> instance, new scopes can be attatched.
+		/// </summary>
+		/// <param name="scopes"></param>
+		/// <returns></returns>
+		public IClientApp Build(params string[] scopes)
 		{
-			var builder = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
-				.WithAuthority(new Uri(_options.Authority));
+			var options = _options.Clone();
+			options.Scopes = scopes?.Any() == true ? scopes : _options.Scopes;
+			return this.BuildWithOptions(options);
+		}
 
-			if (!string.IsNullOrWhiteSpace(_options.ClientSecret))
-				builder.WithClientSecret(_options.ClientSecret);
+		/// <summary>
+		/// Builds a <see cref="IClientApp"/> instance with giving <see cref="OAuth2Options"/>.
+		/// </summary>
+		/// <param name="options"></param>
+		/// <returns></returns>
+		public IClientApp BuildWithOptions(OAuth2Options options)
+		{
+			var builder = ConfidentialClientApplicationBuilder.Create(options.ClientId)
+				.WithAuthority(new Uri(options.Authority));
+
+			if (!string.IsNullOrWhiteSpace(options.ClientSecret))
+				builder.WithClientSecret(options.ClientSecret);
 
 			var clientApp = builder.Build();
 
-			MountCache(clientApp);
-
-			return new MsalClientApp(clientApp, _options.Scopes);
-		}
-
-		public IClientApp BuildForUserCredentials(HttpContext httpContext, string codeVerifier = null)
-		{
-			var request = httpContext.Request;
-			var returnUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, _options.CallbackPath);
-			var builder = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
-				.WithAuthority(new Uri(_options.Authority))
-				.WithRedirectUri(returnUri);
-
-			if (!string.IsNullOrWhiteSpace(_options.ClientSecret))
-				builder.WithClientSecret(_options.ClientSecret);
-
-			if (!string.IsNullOrWhiteSpace(codeVerifier))
-				builder.WithExtraQueryParameters($"code_verifier={codeVerifier}");
-
-			var clientApp = builder.Build();
-
-			MountCache(clientApp);
-
-			return new MsalClientApp(clientApp, _options.Scopes);
-		}
-
-		public IClientApp BuildForUserCredentials<TOptions>(RemoteAuthenticationContext<TOptions> context) where TOptions : AuthenticationSchemeOptions
-		{
-			var authContext = context as AuthorizationCodeReceivedContext;
-			return BuildForUserCredentials(context.HttpContext, authContext.TokenEndpointRequest.GetParameter("code_verifier"));
-		}
-
-		private void MountCache(IConfidentialClientApplication confidentialClientApplication)
-		{
 			if (_tokenCacheProvider != null)
 			{
-				_tokenCacheProvider.InitializeAsync(confidentialClientApplication.UserTokenCache);
-				_tokenCacheProvider.InitializeAsync(confidentialClientApplication.AppTokenCache);
+				_tokenCacheProvider.InitializeAsync(clientApp.UserTokenCache);
+				_tokenCacheProvider.InitializeAsync(clientApp.AppTokenCache);
 			}
+
+			return new MsalClientApp(clientApp, options.Scopes);
 		}
 	}
 }
