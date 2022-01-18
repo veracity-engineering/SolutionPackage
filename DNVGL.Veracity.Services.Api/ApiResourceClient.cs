@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 using Microsoft.Identity.Client;
 
 namespace DNVGL.Veracity.Services.Api
@@ -35,14 +36,17 @@ namespace DNVGL.Veracity.Services.Api
 		}
 
 		protected HttpClient Client => _client.Value;
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <param name="configurationName"></param>
 		/// <returns></returns>
-		protected abstract HttpClient CreateClient(IOAuthHttpClientFactory factory, string configurationName);
+		protected virtual HttpClient CreateClient(IOAuthHttpClientFactory factory, string configurationName)
+		{
+			return factory.Create(c => c.Name == configurationName);
+		}
 
 		protected virtual string ToAcceptMediaType(DataFormat dataFormat)
 		{
@@ -72,9 +76,9 @@ namespace DNVGL.Veracity.Services.Api
 		protected Task DeleteResource(string requestUri) =>
 			ToResourceResult(new HttpRequestMessage(HttpMethod.Delete, requestUri));
 
-		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull)
+		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull = false)
 		{
-			var result =  await DoCallApi<T>(() => Client.SendAsync(request));
+			var result =  await DoCallApi<T>(() => Client.SendAsync(request), isNotFoundNull);
 
 			return result;
 		}
