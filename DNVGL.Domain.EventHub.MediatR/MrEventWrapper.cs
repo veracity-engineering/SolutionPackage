@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DNVGL.Domain.EventHub.MediatR
 {
-    internal class MrEventWrapper : INotification
+	internal class MrEventWrapper: INotification
     {
         public Event DomainEvent { get; }
 

@@ -1,27 +1,25 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DNVGL.Domain.Seedwork.Extensions;
 
-namespace DNVGL.Domain.Seedwork
+namespace DNV.Application.Abstractions.UoW
 {
     /// <summary>
     /// 
     /// </summary>
     public class UnitOfWork: IUnitOfWork
     {
-        private readonly IUnitOfWorkProvider _uowContext;
-
-        private readonly IEventHub _eventHub;
+        private readonly IUoWProvider _uowContext;
 
         private int _disposed;
 
-        public bool AutoCommit { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool AutoCommit { get; set; }
 
-        public UnitOfWork(IUnitOfWorkProvider uowContext, IEventHub eventHub)
+        internal UnitOfWork(IUoWProvider uowContext, bool autoCommit)
         {
             _uowContext = uowContext ?? throw new ArgumentNullException(nameof(uowContext));
-            _eventHub = eventHub ?? throw new ArgumentNullException(nameof(eventHub));
+            AutoCommit = autoCommit;
         }
 
         public virtual async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
@@ -31,11 +29,24 @@ namespace DNVGL.Domain.Seedwork
             if (_uowContext.ChangedEntities.Count <= 0)
                 return true;
 
-            await _eventHub.DispatchDomainEventsAsync(_uowContext);
+            await FlushDomainEventsAsync(_uowContext.EventHub, _uowContext);
 
             var result = await _uowContext.SaveChangesAsync(cancellationToken);
 
             return result >= 0;
+        }
+
+        private static async Task FlushDomainEventsAsync(IEventHub eventHub, IUoWProvider uowContext)
+        {
+	        var entities = uowContext.ChangedEntities.Where(e => e.DomainEvents?.Any() ?? false).ToList();
+
+	        var domainEvents = entities.SelectMany(e => e.DomainEvents).ToList();
+
+	        entities.ForEach(e => e.ClearDomainEvents());
+
+	        var tasks = domainEvents.Select(e => eventHub.PublishAsync(e));
+
+	        await Task.WhenAll(tasks);
         }
 
         public void Dispose()

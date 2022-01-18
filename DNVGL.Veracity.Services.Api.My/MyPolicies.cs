@@ -2,6 +2,7 @@
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DNVGL.Veracity.Services.Api.Models;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
@@ -16,12 +17,12 @@ namespace DNVGL.Veracity.Services.Api.My
 		/// </summary>
 		/// <param name="returnUrl"></param>
 		/// <returns></returns>
-		public async Task ValidatePolicies(string returnUrl = null)
+		public async Task<PolicyValidationResult> ValidatePolicies(string returnUrl = null)
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicies);
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
-			await ToResourceResult(request);
+			return await ToResourceResult<PolicyValidationResult>(request);
 		}
 
 		/// <summary>
@@ -31,14 +32,14 @@ namespace DNVGL.Veracity.Services.Api.My
 		/// <param name="returnUrl"></param>
 		/// <param name="skipSubscriptionCheck"></param>
 		/// <returns></returns>
-		public async Task ValidatePolicy(string serviceId, string returnUrl = null, string skipSubscriptionCheck = null)
+		public async Task<PolicyValidationResult> ValidatePolicy(string serviceId, string returnUrl = null, string skipSubscriptionCheck = null)
 		{
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicy(serviceId));
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
 			if (!string.IsNullOrEmpty(skipSubscriptionCheck))
 				request.Headers.Add("skipSubscriptionCheck", skipSubscriptionCheck);
-			await ToResourceResult(request);
+			return await ToResourceResult<PolicyValidationResult>(request);
 		}
 	}
 
