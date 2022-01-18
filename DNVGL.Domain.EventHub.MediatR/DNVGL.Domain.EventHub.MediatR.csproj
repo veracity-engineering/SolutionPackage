@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DNV.Application.Abstractions\DNV.Application.Abstractions.csproj" />
     <ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
   </ItemGroup>
 

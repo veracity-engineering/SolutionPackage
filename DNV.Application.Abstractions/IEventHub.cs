@@ -1,7 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using DNVGL.Domain.Seedwork;
 
-namespace DNVGL.Domain.Seedwork
+namespace DNV.Application.Abstractions
 {
     /// <summary>
     /// 

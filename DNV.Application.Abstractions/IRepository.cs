@@ -1,4 +1,6 @@
-﻿using DNVGL.Domain.Seedwork;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DNVGL.Domain.Seedwork;
 
 namespace DNV.Application.Abstractions
 {
@@ -6,9 +8,9 @@ namespace DNV.Application.Abstractions
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRepository<T>: IReadonlyRepository<T> where T : IAggregateRoot
+    public interface IRepository<T> where T : IAggregateRoot
     {
-        IUnitOfWork StartWorkUnit(bool autoCommit = true);
+	    Task<T> GetAsync(string id, CancellationToken cancellationToken = default);
 
         T Add(T entity);
 

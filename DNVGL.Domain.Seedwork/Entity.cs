@@ -12,19 +12,20 @@ namespace DNVGL.Domain.Seedwork
     {
         private int _hashCode;
 
-        public string Id { get; }
+        public string Id { get; set; }
 
         private List<Event> _domainEvents;
 
         public IReadOnlyCollection<Event> DomainEvents => _domainEvents?.AsReadOnly();
 
-        protected Entity(string id)
+        // comment out because of EF required?
+        /*protected Entity(string id)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id));
 
             Id = id;
-        }
+        }*/
 
         public void AddDomainEvent(Event @event)
         {
