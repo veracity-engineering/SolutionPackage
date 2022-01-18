@@ -102,7 +102,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 			var validator = ctx.HttpContext.RequestServices.GetRequiredService<IPolicyValidator>();
 			try
 			{
-				await validator.Validate(ctx, policyValidationOptions.GetReturnUrl(ctx.HttpContext));
+				await validator.Validate(ctx, policyValidationOptions);
 			}
 			catch (Exception e)
 			{
