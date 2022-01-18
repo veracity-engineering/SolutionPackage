@@ -42,5 +42,10 @@
 		/// The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 		/// </summary>
 		public string CallbackPath { get; set; } = "/signin-oidc";
+
+		public OAuth2Options Clone()
+		{
+			return (OAuth2Options)MemberwiseClone();
+		}
 	}
 }

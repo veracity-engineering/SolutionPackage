@@ -1,7 +1,8 @@
-# DNVGL.Veracity.Services.Api.Directory
-Provides a client to resources available under the 'Directory' view point of API v3.
+# Veracity - My Services API v3 - Directory Client
+The `DNVGL.Veracity.Services.Api.Directory` package provides a client to resources available under the 'Directory' view point of API v3.
 
 This view point is appropriate for core Veracity applications where resources are not restricted to any context.
+> Only **Client credentials** authentication is supported by this package.
 
 # Package Install
 
@@ -20,6 +21,7 @@ With the nuget package installed, services for each resource may be individually
 To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
 
  `appsettings.json`
+ > The `Directory` view point only supports Client Credential Flow.
 ```json
 {
 	"OAuthHttpClients": [
@@ -27,8 +29,15 @@ To configure a resource service, introduce configuration in the form of `OAuthHt
 		{
 			"Name": "company-directory",
 			"Flow": "ClientCredentials",
-			"BaseUri": <BaseUri>
-			...
+			"BaseUri": <BaseUri>,
+			"SubscriptionKey": <SubscriptionKey>,
+			"OpenIdConnectOptions": {
+				"Authority": <Authority>,
+				"ClientId": <ClientId>,
+				"ClientSecret": <ClientSecret>,
+				"Resource": <Resource>,
+				"Scopes": [ <Scope> ],
+			}
 		}
 		...
 	]
@@ -70,16 +79,16 @@ public class TestController : Controller
 	...
 	public async Task<IActionResult> FetchCompany(string companyId)
 	{
-		return Json(await _companyDirectory.Get(companyId);
+		return Json(await _companyDirectory.Get(companyId));
 	}
 	...
 }
 ```
-
+---
 # Resources
-- Companies
-- Services
-- Users
+- [Companies](#companies)
+- [Services](#services)
+- [Users](#users)
 
 ## Companies
 | Registration method | Service interface |

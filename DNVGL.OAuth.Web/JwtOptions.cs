@@ -7,7 +7,7 @@ namespace DNVGL.OAuth.Web
 	{
 		public string ClientId { get; set; }
 
-        public TokenValidationParameters TokenValidationParameters { get; set; }
+		public TokenValidationParameters TokenValidationParameters { get; set; }
 
 		public JwtBearerEvents Events { get; set; }
 

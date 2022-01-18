@@ -3,14 +3,20 @@
 DNVGL.OAuth.Web is a .NETCore library for developers to simplify the work of setting up OpenId Connection authentication (OIDC) such as Veracity or Azure AD B2C for ASP.NET Core web project.
 
 ---
+
 # Package Install
 
 Ensure you have configured to package NuGet Package Source or find the instructions [here](/articles/PackageInstall.md).
 
+
 Package Manager Console
+
 ```
 PM> `Install-Package DNVGL.OAuth.Web`
 ```
+
+---
+
 # Basic Authentication Usage
 
 To simplify your authentication implementation of Veracity for your ASP.NET Core web project, you need to add 3 blocks of codes to `Startup.cs`.

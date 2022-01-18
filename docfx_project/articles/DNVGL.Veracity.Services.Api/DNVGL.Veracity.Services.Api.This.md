@@ -1,9 +1,10 @@
-# DNVGL.Veracity.Services.Api.This
-Provides a client to resources available under the 'This' view point of API v3.
+# Veracity - My Services API v3 - This Client
+The `DNVGL.Veracity.Services.Api.This` package provides a client to resources available under the 'This' view point of API v3.
 
 This view point is appropriate for service owners integrating with Veracity enabling management of their service and sub-service subscriptions.
 
-Resources retrieved from this view point are from the perspective of a service, **client credential authentication flow is required to access these resources.**
+Resources retrieved from this view point are from the perspective of a service, 
+> Only **Client credentials** authentication is supported by this package.
 
 # Package Install
 
@@ -14,11 +15,83 @@ Package Manager Console
 PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 ```
 
+# Example
+
+With the nuget package installed, services for each resource may be individually configured, injected and requested inside your solution.
+
+## 1. Configuration
+To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
+
+ `appsettings.json`
+ > The `This` view point only supports Client Credential Flow.
+```json
+{
+	"OAuthHttpClients": [
+		...
+		{
+			"Name": "this-subscribers",
+			"Flow": "ClientCredentials",
+			"BaseUri": <BaseUri>,
+			"SubscriptionKey": <SubscriptionKey>,
+			"OpenIdConnectOptions": {
+				"Authority": <Authority>,
+				"ClientId": <ClientId>,
+				"ClientSecret": <ClientSecret>,
+				"Resource": <Resource>,
+				"Scopes": [ <Scope> ],
+			}
+		}
+		...
+	]
+}
+```
+
+## 2. Registration
+Register the service or services using extensions methods available from the `DNVGL.Veracity.Services.Api.This.Extensions` namespace.
+
+`startup.cs`
+> Packages from `DNVGL.Veracity.Service.Api` are dependent on the [DNVGL.OAuth.Api.HttpClient](/articles/DNVGL.OAuth.Api.HttpClient.md) package, therefore the HttpClientFactory should also be injected.
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+	...
+	services.AddThisSubscribers("this-subscribers")
+	...
+}
+```
+
+## 3. Request service
+Request the service from the constructor by its interface:
+
+`TestController.cs`
+```cs
+public class TestController : Controller
+{
+	...
+	private readonly IThisSubscribers _thisSubscribers;
+	...
+	public TestController(IThisSubscribers thisSubscribers)
+	{
+		...
+		_thisSubscribers = thisSubscribers ?? throw new ArgumentNullException(nameof(thisSubscribers));
+		...
+	}
+	...
+	public async Task<IActionResult> FetchSubscribers(int page, int pageSize)
+	{
+		return Json(await _thisSubscribers.List(page, pageSize));
+	}
+	...
+}
+```
+---
 # Resources
-- Administrators
-- Services
-- Subscribers
-- Users
+- [Administrators](#administrators)
+- [Services](#services)
+- [Subscribers](#subscribers)
+- [Users](#users)
 
 ## Administrators
 | Registration method | Service interface |
