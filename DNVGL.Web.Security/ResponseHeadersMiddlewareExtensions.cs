@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace DNVGL.Web.Security
@@ -12,7 +13,7 @@ namespace DNVGL.Web.Security
 	{
 		/// <summary>
 		///<para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
-		///<para>To avoid overwrite your own customized response header settings, call this method  at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+		///<para>To avoid overwrite your own customized response header settings, call this method at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
 		///<para>To remove 'server' header on Kestrel Server, add the folowing code into ConfigureService method: services.PostConfigure&lt;KestrelServerOptions&gt;(t => t.AddServerHeader = false);</para>
 		/// <example>
 		/// This sample shows how to call the <see cref="UseDefaultHeaders"/> method in the Configure method of Startup class.
@@ -82,39 +83,14 @@ namespace DNVGL.Web.Security
 		/// </item>
 		/// </list>
 		/// </remarks>
-		/// <param name="makeHeaders">make your own response headers, It will overwrite the default headers.</param>
+		/// <param name="configureHeaders">make your own response headers, It will overwrite the default headers.</param>
 		/// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-		public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary> makeHeaders = null)
-		{
-			return builder.UseDefaultHeaders((headers, request) =>
-			{
-				makeHeaders?.Invoke(headers);
-			});
-		}
-
-		public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary, HttpRequest> makeHeaders)
+		public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null, Action<IHeaderDictionary> customizeHeaders = null)
 		{
 			return builder.Use(async (context, next) =>
 			{
-				makeHeaders?.Invoke(context.Response.Headers, context.Request);
-				context.Response.Headers.SetupDefaultHeaders();
-				context.Response.Headers.AddContentSecurityPolicy(context.Request);
-				await next();
-			});
-		}
-
-		public static IApplicationBuilder UseWebApiDefaultHeaders(this IApplicationBuilder builder, Action<IHeaderDictionary> makeHeaders = null, Func<HttpRequest, bool> skipRequest = null)
-		{
-
-			return builder.Use(async (context, next) =>
-			{
-				makeHeaders?.Invoke(context.Response.Headers);
-				context.Response.Headers.SetupDefaultHeaders();
-				if (skipRequest == null || !skipRequest.Invoke(context.Request))
-				{
-					context.Response.Headers.Add("Content-Security-Policy", "default-src 'none'");
-				}
-
+				context.Response.SetDefaultSecurityHeaders(apiPredicate, exceptionPredicate);
+				customizeHeaders?.Invoke(context.Response.Headers);
 				await next();
 			});
 		}
