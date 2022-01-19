@@ -20,7 +20,7 @@ namespace DNVGL.Web.Security.Tests
 		[Fact]
 		public async Task TestDefaultHeader()
 		{
-			var (headers, responseString) = await MockResponse(app => app.UseDefaultHeaders());
+			var (headers, responseString) = await MockResponse(app => app.UseDefaultSecurityHeaders());
 			Assert.Equal("Hello World!", responseString);
 			Assert.Equal("1", headers.GetValues("X-Xss-Protection").FirstOrDefault());
 			Assert.Equal("SAMEORIGIN", headers.GetValues("X-Frame-Options").FirstOrDefault());
@@ -29,7 +29,6 @@ namespace DNVGL.Web.Security.Tests
 			Assert.Equal("none", headers.GetValues("X-Permitted-Cross-Domain-Policies").FirstOrDefault());
 			Assert.Equal("enforce, max-age=7776000", headers.GetValues("Expect-CT").FirstOrDefault());
 			Assert.Equal("max-age=15552000; includeSubDomains", headers.GetValues("Strict-Transport-Security").FirstOrDefault());
-			//Assert.Equal(ExpetctedDefaultCSP, headers.GetValues("Content-Security-Policy").FirstOrDefault());
 			var csp = headers.GetValues("Content-Security-Policy").FirstOrDefault();
 			Assert.Contains(Nonce, csp);
 			Assert.Contains("connect-src: 'self' https://dc.services.visualstudio.com https://login.microsoftonline.com https://login.veracity.com https://loginstag.veracity.com https://logintest.veracity.com", csp);
@@ -40,7 +39,7 @@ namespace DNVGL.Web.Security.Tests
 		[Fact]
 		public async Task TestCustomizedHeader()
 		{
-			var (headers, _) = await MockResponse(app => app.UseDefaultHeaders(customizeHeaders: r =>
+			var (headers, _) = await MockResponse(app => app.UseDefaultSecurityHeaders(customizeHeaders: r =>
 			{
 				r.Set("X-Xss-Protection", "0");
 				r.Set("X-Frame-Options", "DENNY");
@@ -58,22 +57,23 @@ namespace DNVGL.Web.Security.Tests
 			Assert.Equal("all", headers.GetValues("X-Permitted-Cross-Domain-Policies").FirstOrDefault());
 			Assert.Equal("enforce, max-age=777", headers.GetValues("Expect-CT").FirstOrDefault());
 			Assert.Equal("max-age=15552222; includeSubDomains", headers.GetValues("Strict-Transport-Security").FirstOrDefault());
-			//Assert.Equal(ExpetctedDefaultCSP, headers.GetValues("Content-Security-Policy").FirstOrDefault());
 			Assert.Contains(Nonce, headers.GetValues("Content-Security-Policy").FirstOrDefault());
 		}
 
 		[Fact]
-		public async Task TestSkipCSPHeader()
+		public async Task TestExceptionalHeader()
 		{
+			// use default headers just for web api.
 			var (headers, _) = await MockResponse(
-				app => app.UseDefaultHeaders(apiPredicate: request => request.Path.Value.Contains("/api/")),
+				app => app.UseDefaultSecurityHeaders(apiPredicate: request => request.Path.Value.Contains("/api/")),
 				"/api/v1/customer"
 			);
 
 			Assert.Equal("frame-ancestors 'none'", headers.GetValues("Content-Security-Policy").FirstOrDefault());
 
+			// ignore security headers for swagger UI.
 			(headers, _) = await MockResponse(
-				app => app.UseDefaultHeaders(exceptionPredicate: request => request.Path.Value.Contains("/swagger/")),
+				app => app.UseDefaultSecurityHeaders(exceptionPredicate: request => request.Path.Value.Contains("/swagger/")),
 				"/swagger/index.html"
 			);
 
@@ -82,7 +82,7 @@ namespace DNVGL.Web.Security.Tests
 
 		private static async Task<(HttpResponseHeaders, string)> MockResponse(Action<IApplicationBuilder> configure, string uri = "/")
 		{
-			var hostBuilder = new HostBuilder()
+			var host = await new HostBuilder()
 				.ConfigureWebHost(webHost =>
 				{
 					webHost.UseTestServer();
@@ -95,9 +95,8 @@ namespace DNVGL.Web.Security.Tests
 							await ctx.Response.WriteAsync("Hello World!");
 						});
 					});
-				});
-
-			var host = await hostBuilder.StartAsync();
+				})
+				.StartAsync();
 			var client = host.GetTestClient();
 			var response = await client.GetAsync(uri);
 			response.EnsureSuccessStatusCode();

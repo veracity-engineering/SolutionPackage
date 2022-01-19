@@ -27,7 +27,7 @@ namespace DNVGL.Web.Security.CSP
 
 		public string GetValue()
 		{
-			return string.Join(";", _directives.Select(p => $"{p.Key}: {string.Join(" ", p.Value)}"));
+			return string.Join(";", _directives.Select(p => $"{p.Key} {string.Join(" ", p.Value)}"));
 		}
 
 		public static ContentSecurityPolicy CreateDefault(string nonce = null)

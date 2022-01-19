@@ -12,80 +12,42 @@ namespace DNVGL.Web.Security
 	public static class ResponseHeadersMiddlewareExtensions
 	{
 		/// <summary>
-		///<para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
-		///<para>To avoid overwrite your own customized response header settings, call this method at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
-		///<para>To remove 'server' header on Kestrel Server, add the folowing code into ConfigureService method: services.PostConfigure&lt;KestrelServerOptions&gt;(t => t.AddServerHeader = false);</para>
-		/// <example>
-		/// This sample shows how to call the <see cref="UseDefaultHeaders"/> method in the Configure method of Startup class.
-		/// <list type="number">
-		/// <item>
-		/// No customized response headers is required:  
-		/// <code>
-		/// app.UseDefaultHeaders();
-		/// </code>
-		/// </item>
-		/// <item>
-		/// To customize X-Frame-Options in response headers:
-		/// <code>
-		///  <para/>app.UseDefaultHeaders(h =>
-		///  <para/>{
-		///  <para/>h.Add("X-Frame-Options", "DENNY");
-		///  <para/>});
-		/// </code>
-		/// </item>
-		/// <item>
-		/// To customize csp in response headers:
-		/// <code>
-		///  <para/>app.UseDefaultHeaders(h =>
-		///  <para/>{
-		///  <para/>h.ReplaceDefaultContentSecurityPolicy(styleSrc: "'self' 'nonce-123456789909876543ghjklkjvcvbnm'");
-		///  <para/>});
-		/// </code>
-		/// </item>
-		/// <item>
-		/// To skip csp for specific requests:
-		/// <code>
-		///  <para/>app.UseDefaultHeaders(h =>
-		///  <para/>{
-		///  <para/>h.SkipContentSecurityPolicyForRequests((req) => req.Path.ToString().ToLowerInvariant().Contains("/swagger/"));
-		///  <para/>});
-		/// </code>
-		/// </item>
-		/// </list>
-		/// </example>
+		/// <para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
+		/// <para>To avoid overwrite your own customized response header settings, call this method at last. If the predefined headers is not desired, setup you desired headers before calling this method</para> 
+		/// <para>To remove 'server' header on Kestrel Server, add the folowing code into ConfigureService method: services.PostConfigure&lt;KestrelServerOptions&gt;(t => t.AddServerHeader = false);</para>
 		/// </summary>
 		/// <remarks>
 		/// <para>The prefined security headers includes:</para>
-		/// <list type="number">
-		/// <item>
-		/// <description>X-Xss-Protection = 1</description>
-		/// </item>
-		/// <item>
-		/// <description>X-Frame-Options = SAMEORIGIN</description>
-		/// </item>
-		/// <item>
-		/// <description>Referrer-Policy = no-referrer</description>
-		/// </item>
-		/// <item>
-		/// <description>X-Content-Type-Options = nosniff</description>
-		/// </item>
-		/// <item>
-		/// <description>X-Permitted-Cross-Domain-Policies = none</description>
-		/// </item>
-		/// <item>
-		/// <description>Expect-CT = enforce, max-age=7776000</description>
-		/// </item>
-		/// <item>
-		/// <description>X-Xss-Protection = 1</description>
-		/// </item>
-		/// <item>
-		/// <description>Content-Security-Policy = default-src 'self'; object-src 'self'; connect-src 'self' https://dc.services.visualstudio.com; script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn; font-src 'self' data: https://onedesign.azureedge.net; media-src 'self'; img-src 'self' data: https://onedesign.azureedge.net; frame-src 'self' https://www.google.com https://www.recaptcha.net/;style-src 'self' https://onedesign.azureedge.net;worker-src 'self' blob:</description>
-		/// </item>
+		/// <list type="bullet">
+		/// <item>X-Xss-Protection: 1</item>
+		/// <item>X-Frame-Options: SAMEORIGIN</item>
+		/// <item>Referrer-Policy: no-referrer</item>
+		/// <item>X-Content-Type-Options: nosniff</item>
+		/// <item>X-Permitted-Cross-Domain-Policies: none</item>
+		/// <item>Expect-CT: enforce, max-age=7776000</item>
+		/// <item>X-Xss-Protection: 1</item>
+		/// <item>Content-Security-Policy: 
+		/// <list type="bullet">
+		///		<item>connect-src 'self' https://dc.services.visualstudio.com https://login.microsoftonline.com https://login.veracity.com https://loginstag.veracity.com https://logintest.veracity.com; </item>
+		///		<item>default-src 'self'; </item>
+		///		<item>font-src 'self' data: https://onedesign.azureedge.net; </item>
+		///		<item>frame-src 'self' https://www.google.com https://www.recaptcha.net/; </item>
+		///		<item>img-src 'self' data: https://onedesign.azureedge.net; </item>
+		///		<item>media-src 'self'; </item>
+		///		<item>object-src 'self' {nonce}; </item>
+		///		<item>script-src 'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn {nonce}; </item>
+		///		<item>style-src 'self' https://onedesign.azureedge.net {nonce}; </item>
+		///		<item>worker-src 'self' blob:</item>
+		///	</list>
+		///	</item>
 		/// </list>
 		/// </remarks>
-		/// <param name="configureHeaders">make your own response headers, It will overwrite the default headers.</param>
+		/// <param name="builder"></param>
+		/// <param name="apiPredicate"></param>
+		/// <param name="exceptionPredicate"></param>
+		/// <param name="customizeHeaders"></param>
 		/// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-		public static IApplicationBuilder UseDefaultHeaders(this IApplicationBuilder builder, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null, Action<IHeaderDictionary> customizeHeaders = null)
+		public static IApplicationBuilder UseDefaultSecurityHeaders(this IApplicationBuilder builder, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null, Action<IHeaderDictionary> customizeHeaders = null)
 		{
 			return builder.Use(async (context, next) =>
 			{

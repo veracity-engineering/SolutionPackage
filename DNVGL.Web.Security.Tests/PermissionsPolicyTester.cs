@@ -57,7 +57,7 @@ namespace DNVGL.Web.Security.Tests
                 .ConfigureWebHost(webHost =>
                 {
                     webHost.UseTestServer();
-                    webHost.Configure(app => app.UseDefaultHeaders(customizeHeaders: h => h.DisableAllPermissionsPolicy())
+                    webHost.Configure(app => app.UseDefaultSecurityHeaders(customizeHeaders: h => h.DisableAllPermissionsPolicy())
                     .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
                 });
 
@@ -79,7 +79,7 @@ namespace DNVGL.Web.Security.Tests
                 .ConfigureWebHost(webHost =>
                 {
                     webHost.UseTestServer();
-                    webHost.Configure(app => app.UseDefaultHeaders(customizeHeaders: h => h.EnableAllPermissionsPolicyForSelf())
+                    webHost.Configure(app => app.UseDefaultSecurityHeaders(customizeHeaders: h => h.EnableAllPermissionsPolicyForSelf())
                     .Run(async ctx => await ctx.Response.WriteAsync("Hello World!")));
                 });
 
