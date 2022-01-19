@@ -31,8 +31,8 @@ namespace DNVGL.Web.Security.Tests
 			Assert.Equal("max-age=15552000; includeSubDomains", headers.GetValues("Strict-Transport-Security").FirstOrDefault());
 			var csp = headers.GetValues("Content-Security-Policy").FirstOrDefault();
 			Assert.Contains(Nonce, csp);
-			Assert.Contains("connect-src: 'self' https://dc.services.visualstudio.com https://login.microsoftonline.com https://login.veracity.com https://loginstag.veracity.com https://logintest.veracity.com", csp);
-			Assert.Contains($"style-src: 'self' https://onedesign.azureedge.net {Nonce}", csp);
+			Assert.Contains("connect-src 'self' https://dc.services.visualstudio.com https://login.microsoftonline.com https://login.veracity.com https://loginstag.veracity.com https://logintest.veracity.com", csp);
+			Assert.Contains($"style-src 'self' https://onedesign.azureedge.net {Nonce}", csp);
 			Assert.Contains(Nonce, csp);
 		}
 
