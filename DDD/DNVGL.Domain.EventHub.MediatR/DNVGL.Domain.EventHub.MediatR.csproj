@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Common.Core\DNVGL.Common.Core.csproj" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNV.Application.Abstractions\DNV.Application.Abstractions.csproj" />
+    <ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
   </ItemGroup>
 
 </Project>
