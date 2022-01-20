@@ -22,18 +22,16 @@ namespace DNV.Application.Abstractions.UoW
             AutoCommit = autoCommit;
         }
 
-        public virtual async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<int> SaveAllEntitiesAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             if (_uowContext.ChangedEntities.Count <= 0)
-                return true;
+                return 0;
 
             await FlushDomainEventsAsync(_uowContext.EventHub, _uowContext);
 
-            var result = await _uowContext.SaveChangesAsync(cancellationToken);
-
-            return result >= 0;
+            return await _uowContext.SaveChangesAsync(cancellationToken);
         }
 
         private static async Task FlushDomainEventsAsync(IEventHub eventHub, IUoWProvider uowContext)
@@ -62,7 +60,7 @@ namespace DNV.Application.Abstractions.UoW
 
                 if (AutoCommit)
                 {
-                    if (!SaveEntitiesAsync().Result)
+                    if (SaveAllEntitiesAsync().Result < 0)
                         throw new ApplicationException($"Failed to save changed entities. +(UnitOfWork provider type: '{_uowContext.GetType().FullName}') ");
                 }
             }

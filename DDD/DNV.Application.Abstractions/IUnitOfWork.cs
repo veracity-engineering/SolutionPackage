@@ -11,6 +11,6 @@ namespace DNV.Application.Abstractions
     {
         bool AutoCommit { get; set; }
 
-        Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+        Task<int> SaveAllEntitiesAsync(CancellationToken cancellationToken = default);
     }
 }
