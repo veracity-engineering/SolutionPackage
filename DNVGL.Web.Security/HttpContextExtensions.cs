@@ -81,5 +81,29 @@ namespace DNVGL.Web.Security
 
 			return source;
 		}
+
+		public static HttpResponse SetSecurityHeaders(this HttpResponse source, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
+		{
+			if(setupCSP == null) throw new ArgumentNullException(nameof(setupCSP));
+
+			var request = source.HttpContext?.Request;
+
+			if (exceptionPredicate?.Invoke(request) == true)
+			{
+				return source;
+			}
+
+			if (apiPredicate?.Invoke(request) == true)
+			{
+				source.Headers.SetDefaultForApi();
+			}
+			else
+			{
+				var csp = setupCSP(source.HttpContext) ?? ContentSecurityPolicy.CreateDefault().GetValue();
+				source.Headers.SetDefault(csp);
+			}
+
+			return source;
+		}
 	}
 }

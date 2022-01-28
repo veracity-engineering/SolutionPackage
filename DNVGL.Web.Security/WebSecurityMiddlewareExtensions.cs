@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices;
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DNVGL.Web.Security
 {
 	/// <summary>
 	/// Default Response Headers extensions to <see cref="IApplicationBuilder"/>.
 	/// </summary>
-	public static class ResponseHeadersMiddlewareExtensions
+	public static class WebSecurityMiddlewareExtensions
 	{
 		/// <summary>
 		/// <para> Adds and configures the predefined headers for Http response headers. Content-Security-Policy header is not added to request which url contains 'swagger'</para> 
@@ -53,6 +54,15 @@ namespace DNVGL.Web.Security
 			{
 				context.Response.SetDefaultSecurityHeaders(apiPredicate, exceptionPredicate);
 				customizeHeaders?.Invoke(context.Response.Headers);
+				await next();
+			});
+		}
+
+		public static IApplicationBuilder UseSecutiryHeaders(this IApplicationBuilder builder, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
+		{
+			return builder.Use(async (context, next) =>
+			{
+				context.Response.SetSecurityHeaders(setupCSP, apiPredicate, exceptionPredicate);
 				await next();
 			});
 		}
