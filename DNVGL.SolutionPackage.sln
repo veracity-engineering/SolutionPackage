@@ -61,7 +61,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth.APIClient", "OAuth.AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Api.HttpClient.Test", "DNVGL.OAuth.Api.HttpClient.Test\DNVGL.OAuth.Api.HttpClient.Test.csproj", "{EDA3CB29-10E6-48C4-B2C3-D5572E0C23BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Web.Extensions", "DNVGL.OAuth.Web.Extensions\DNVGL.OAuth.Web.Extensions.csproj", "{F6DCC23B-B0ED-4ED5-A9D7-0FBB0CACB584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.OAuth.Web.Extensions", "DNVGL.OAuth.Web.Extensions\DNV.OAuth.Web.Extensions.csproj", "{F6DCC23B-B0ED-4ED5-A9D7-0FBB0CACB584}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecretsManager", "SecretsManager", "{561EA555-4BD3-4100-B8CD-8A5C315F718C}"
 EndProject

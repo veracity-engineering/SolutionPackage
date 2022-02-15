@@ -1,24 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using DNVGL.OAuth.Api.HttpClient.Extensions;
+using DNV.OAuth.Web.Extensions.Veracity.Constants;
+using DNV.OAuth.Web.Extensions.Veracity.Validator;
+using DNVGL.OAuth.Web;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using DNVGL.Veracity.Services.Api.My.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace DNVGL.OAuth.Web.Extensions.Veracity
+namespace DNV.OAuth.Web.Extensions.Veracity.Extensions
 {
-	public static class VeracityExtensions
+	public static class ConfigurationExtensions
 	{
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="options"></param>
+		/// <param name="oidcOptions"></param>
 		/// <returns></returns>
 		public static AuthenticationBuilder AddOidcWithPolicyValidation(this IServiceCollection services,
 			Action<OidcOptions> oidcSetupAction,
@@ -49,7 +51,7 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="options"></param>
+		/// <param name="oidcOptions"></param>
 		/// <returns></returns>
 		public static AuthenticationBuilder AddOidcWithPolicyValidation(this IServiceCollection services,
 			OidcOptions oidcOptions,
@@ -59,18 +61,40 @@ namespace DNVGL.OAuth.Web.Extensions.Veracity
 		{
 			oidcOptions.AddPolicyValidation(policyValidationOptions);
 
-			services.AddMyPolicies(policyValidationOptions.MyPoliciesApiConfigName);
+			services.AddServices(policyValidationOptions.VeracityPolicyApiConfigName);
 
 			return services.AddOidc(oidcOptions, cookieSetupAction, cacheSetupAction);
 		}
 
+		internal const string VeracityDefaultPolicy = nameof(VeracityDefaultPolicy);
+
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="oidcOptions"></param>
-		/// <param name="policyValidationOptions"></param>
+		/// <param name="services"></param>
+		/// <param name="optionSetupAction"></param>
 		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
+		public static IServiceCollection AddAuthorizationWithPolicyValidation(this IServiceCollection services,
+			Action<AuthorizationOptions> optionSetupAction = null)
+		{
+			return services.AddAuthorization(opt =>
+			{
+				optionSetupAction?.Invoke(opt);
+				opt.AddPolicy(VeracityDefaultPolicy,
+					pb => pb.Combine(opt.DefaultPolicy).RequireClaim(TokenClaimTypes.VeracityPolicyValidated));
+				opt.DefaultPolicy = opt.GetPolicy(VeracityDefaultPolicy);
+			});
+		}
+
+		private static IServiceCollection AddServices(this IServiceCollection services, string apiConfigName)
+		{
+			services.TryAddSingleton<IPolicyValidator, PolicyValidator>();
+			services.TryAddSingleton<IPolicyViolationHandler, PolicyViolationHandler>();
+			services.AddMyPolicies(apiConfigName);
+
+			return services;
+		}
+
 		private static OidcOptions AddPolicyValidation(this OidcOptions oidcOptions,
 			PolicyValidationOptions policyValidationOptions)
 		{

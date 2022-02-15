@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DNVGL.OAuth.Web
@@ -10,6 +13,8 @@ namespace DNVGL.OAuth.Web
 		public TokenValidationParameters TokenValidationParameters { get; set; }
 
 		public JwtBearerEvents Events { get; set; }
+
+		public Func<IEnumerable<Claim>, (bool Succeeded, string FailedReason)> CustomClaimsValidator { get; set; }
 
 		public ISecurityTokenValidator SecurityTokenValidator { get; set; }
 
@@ -26,6 +31,11 @@ namespace DNVGL.OAuth.Web
 		/// 
 		/// path segment 'tfp' is required for MSAL, it is obsoleted and might be removed in the future.
 		/// </remarks>
-		public string Authority { get; set; } = "https://login.veracity.com/tfp/a68572e3-63ce-4bc1-acdc-b64943502e9d/b2c_1a_signinwithadfsidp/v2.0";
+		public string Authority { get; set; }
+
+		/// <summary>
+		/// Multiple Authorities
+		/// </summary>
+		public List<(string SchemePostfix, string Authority)> Authorities { get; set; } = new List<(string, string)>();
 	}
 }

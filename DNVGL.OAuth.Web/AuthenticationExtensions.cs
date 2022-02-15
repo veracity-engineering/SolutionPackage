@@ -12,11 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DNVGL.OAuth.Web.TokenValidator;
 
 namespace DNVGL.OAuth.Web
 {
 	public static class AuthenticationExtensions
 	{
+		private const string DefaultJwtAuthorizationPolicy = nameof(DefaultJwtAuthorizationPolicy);
+
 		#region AddJwt for Web Api
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IEnumerable<IConfigurationSection> sections)
 		{
@@ -66,38 +69,70 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions, bool populateAuthorizationPolicy = true)
 		{
 			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
 
+			var schemeNames = new List<string>();
+
 			foreach (var schemaOption in schemaOptions)
 			{
 				var jwtOptions = schemaOption.Value;
 
-				builder.AddJwtBearer(schemaOption.Key, o =>
+				if (!string.IsNullOrEmpty(jwtOptions.Authority))
 				{
-					o.Authority = jwtOptions.Authority;
-					o.Audience = jwtOptions.ClientId;
-
-					if (jwtOptions.TokenValidationParameters != null) o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
-
-					if (jwtOptions.Events != null) { o.Events = jwtOptions.Events; }
-
-					o.SecurityTokenValidators.Clear();
-
-					if (jwtOptions.SecurityTokenValidator != null)
+					var schemeName = schemaOption.Key;
+					builder.AddJwtBearer(schemeName, o =>
 					{
-						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator);
-					}
-					else
+						o.Authority = jwtOptions.Authority;
+						o.Audience = jwtOptions.ClientId;
+
+						if (jwtOptions.TokenValidationParameters != null)
+							o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
+
+						if (jwtOptions.Events != null)
+							o.Events = jwtOptions.Events;
+
+						o.SecurityTokenValidators.Clear();
+						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ??
+						                              new JwtTokenValidator(jwtOptions.CustomClaimsValidator));
+					});
+					schemeNames.Add(schemeName);
+				}
+
+				if (jwtOptions.Authorities.Any())
+					jwtOptions.Authorities.ForEach(aut =>
 					{
-						o.SecurityTokenValidators.Add(new DNVTokenValidator());
-					}
-				});
+						var schemeName = $"{schemaOption.Key}{aut.SchemePostfix}";
+						builder.AddJwtBearer(schemeName, o =>
+						{
+							o.Authority = aut.Authority;
+							o.Audience = jwtOptions.ClientId;
+
+							if (jwtOptions.TokenValidationParameters != null) 
+								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
+
+							if (jwtOptions.Events != null)  
+								o.Events = jwtOptions.Events; 
+
+							o.SecurityTokenValidators.Clear();
+							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new JwtTokenValidator(jwtOptions.CustomClaimsValidator));
+						});
+
+						schemeNames.Add(schemeName);
+					});
 			}
+
+			if (populateAuthorizationPolicy && schemeNames.Any())
+				builder.Services.AddAuthorization(o =>
+				{
+					o.AddPolicy(DefaultJwtAuthorizationPolicy,
+						p => { p.AddAuthenticationSchemes(schemeNames.ToArray()).RequireAuthenticatedUser(); });
+					o.DefaultPolicy = o.GetPolicy(DefaultJwtAuthorizationPolicy);
+				});
 
 			return builder;
 		}
@@ -174,24 +209,28 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(oidcOptions));
 			}
 
-			builder = cookieSetupAction != null ? builder.AddCookie(o => cookieSetupAction(o)) : builder.AddCookie();
+			builder = cookieSetupAction != null ? 
+				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, 
+					o => cookieSetupAction(o)): 
+				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
-			builder.AddOpenIdConnect(o =>
-			{
-				o.Authority = oidcOptions.Authority;
-				o.ClientId = oidcOptions.ClientId;
-				o.ClientSecret = oidcOptions.ClientSecret;
-				o.CallbackPath = oidcOptions.CallbackPath;
-				o.ResponseType = oidcOptions.ResponseType;
-				o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
-#if NETCORE3
-				o.UsePkce = true;
-#endif
+			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, 
+				o =>
+				{
+					o.Authority = oidcOptions.Authority;
+					o.ClientId = oidcOptions.ClientId;
+					o.ClientSecret = oidcOptions.ClientSecret;
+					o.CallbackPath = oidcOptions.CallbackPath;
+					o.ResponseType = oidcOptions.ResponseType;
+					o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
+	#if NETCORE3
+					o.UsePkce = true;
+	#endif
 
-				ConfigureScopes(oidcOptions, o);
-				ConfigureSecurityTokenValidator(oidcOptions, o);
-				ConfigureEvents(oidcOptions, o);
-			});
+					ConfigureScopes(oidcOptions, o);
+					ConfigureSecurityTokenValidator(oidcOptions, o);
+					ConfigureEvents(oidcOptions, o);
+				});
 
 			// switch to authorization code flow.
 			if (oidcOptions.ResponseType.Split(' ').Contains(OpenIdConnectResponseType.Code))
@@ -214,7 +253,7 @@ namespace DNVGL.OAuth.Web
 
 		private static void ConfigureSecurityTokenValidator(OidcOptions oidcOptions, OpenIdConnectOptions o)
 		{
-			o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new DNVTokenValidator();
+			o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new JwtTokenValidator();
 		}
 
 		private static void ConfigureEvents(OidcOptions oidcOptions, OpenIdConnectOptions o)

@@ -1,22 +1,13 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace DNVGL.OAuth.Web.Extensions.Veracity
+namespace DNV.OAuth.Web.Extensions.Veracity
 {
-	[Flags]
-	public enum PolicyValidationMode
-	{
-		PlatformTermsAndCondition = 0x00000001,
-        PlatformAndService = 0x00000002,
-        ServiceSubscription = 0x00000004,
-        All = PlatformAndService | ServiceSubscription
-    }
-
-    public class PolicyValidationOptions
+	public class PolicyValidationOptions
     {
         public PolicyValidationMode PolicyValidationMode { get; set; }
 
-        public string MyPoliciesApiConfigName { get; set; }
+        public string VeracityPolicyApiConfigName { get; set; }
 
         public string ServiceId { get; set; }
 

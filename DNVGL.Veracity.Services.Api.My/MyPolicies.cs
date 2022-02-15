@@ -1,7 +1,9 @@
-﻿using DNVGL.OAuth.Api.HttpClient;
+﻿using System.Net;
+using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DNVGL.Veracity.Services.Api.Exceptions;
 using DNVGL.Veracity.Services.Api.Models;
 
 namespace DNVGL.Veracity.Services.Api.My
@@ -11,6 +13,31 @@ namespace DNVGL.Veracity.Services.Api.My
 		public MyPolicies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
 		{
 		}
+
+        protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
+        {
+            if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotAcceptable)
+            {
+                if (ignoreNotFound && response.StatusCode == HttpStatusCode.NotFound)
+                    return;
+
+                throw await ServerErrorException.FromResponse(response);
+            }
+        }
+
+        protected override async Task<T> BuildResult<T>(HttpResponseMessage response)
+        {
+			var result = default (T);
+            if (response.StatusCode == HttpStatusCode.NotAcceptable)
+                result = Deserialize<T>(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
+            else if (response.IsSuccessStatusCode)
+            {
+                var r = new PolicyValidationResult { StatusCode = (int)response.StatusCode };
+                result = (T)(object)r;
+            }
+
+            return result;
+        }
 
 		/// <summary>
 		/// Validates all policies for the authenticated user.
@@ -22,6 +49,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			var request = new HttpRequestMessage(HttpMethod.Get, MyPoliciesUrls.ValidatePolicies);
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
+
 			return await ToResourceResult<PolicyValidationResult>(request);
 		}
 

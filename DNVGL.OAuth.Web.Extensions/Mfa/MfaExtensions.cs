@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DNVGL.OAuth.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 
-namespace DNVGL.OAuth.Web.Extensions.Mfa
+namespace DNV.OAuth.Web.Extensions.Mfa
 {
 	public static class MfaExtensions
 	{
