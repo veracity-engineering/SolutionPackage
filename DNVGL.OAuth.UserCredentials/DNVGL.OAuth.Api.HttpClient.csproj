@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
+    <ProjectReference Include="..\OAuth.Web\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
