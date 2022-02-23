@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DNVGL.Domain.Seedwork;
@@ -11,7 +13,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DNVGL.Domain.EventHub.MediatR
 {
-    internal class MrEventHandlerAdapter : INotificationHandler<MrEventWrapper>
+	internal class MrEventHandler<T> : INotificationHandler<MrEventWrapper<T>> where T : Event
+	{
+		private readonly IReadOnlyCollection<IEventHandler<T>> _eventHandlers;
+
+		public MrEventHandler(IEnumerable<IEventHandler<T>> eventHandlers)
+		{
+			_eventHandlers = eventHandlers.ToList().AsReadOnly();
+		}
+
+		public async Task Handle(MrEventWrapper<T> mrEvent, CancellationToken cancellationToken)
+		{
+			var tasks = _eventHandlers.Select(h => h.HandleAsync(mrEvent.DomainEvent, cancellationToken));
+
+			await Task.WhenAll(tasks);
+		}
+	}
+
+    /*internal class MrEventHandlerAdapter : INotificationHandler<MrEventWrapper>
     {
         private static readonly ConcurrentDictionary<Type, Delegate> TypesMapping = new ConcurrentDictionary<Type, Delegate>();
 
@@ -68,5 +87,5 @@ namespace DNVGL.Domain.EventHub.MediatR
         {
             return handler.HandleAsync(@event, cancellationToken);
         }
-    }
+    }*/
 }

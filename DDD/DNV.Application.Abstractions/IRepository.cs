@@ -14,7 +14,7 @@ namespace DNV.Application.Abstractions
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T> where T : Entity, IAggregateRoot
     {
-	    Task<T> GetAsync(string id, CancellationToken cancellationToken = default);
+	    Task<T?> GetAsync(string id, CancellationToken cancellationToken = default);
 
 	    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predict, CancellationToken cancellationToken = default);
 

@@ -5,7 +5,7 @@
     /// </summary>
     public abstract class EventType : Enumeration<string>
     {
-        private EventType(string @namespace, string id, string name) : base($"{@namespace}/{id}", name)
+        protected EventType(string @namespace, string id, string name) : base($"{@namespace}/{id}", name)
         {
             Namespace = @namespace;
         }

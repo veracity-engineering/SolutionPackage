@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DNVGL.Domain.Seedwork;
 
 namespace DNV.Application.Abstractions.UoW
 {
@@ -10,28 +11,48 @@ namespace DNV.Application.Abstractions.UoW
     /// </summary>
     public class UnitOfWork: IUnitOfWork
     {
-        private readonly IUoWProvider _uowContext;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IUoWProvider _uowProvider;
+        private readonly IEventHub? _eventHub;
 
         private int _disposed;
 
         public bool AutoCommit { get; set; }
 
-        internal UnitOfWork(IUoWProvider uowContext, bool autoCommit)
+        internal UnitOfWork(IServiceProvider serviceProvider, bool autoCommit)
         {
-            _uowContext = uowContext ?? throw new ArgumentNullException(nameof(uowContext));
+	        _serviceProvider = serviceProvider;
+	        _uowProvider = serviceProvider.GetService(typeof(IUoWProvider)) as IUoWProvider 
+	                       ?? throw new NullReferenceException($"Failed to get service {typeof(IUoWProvider).FullName}");
+	        _eventHub = serviceProvider.GetService(typeof(IEventHub)) as IEventHub;
             AutoCommit = autoCommit;
+        }
+
+        public TR? ResolveRepository<TR, TE>() where TR : class, IRepository<TE> where TE : Entity, IAggregateRoot
+        {
+	        var r = _serviceProvider.GetService(typeof(TR));
+
+	        if (r == null)
+		        return default;
+
+	        var repo = (TR) r;
+
+	        _uowProvider.JoinUoW(repo);
+
+            return repo;
         }
 
         public virtual async Task<int> SaveAllEntitiesAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
-            if (_uowContext.ChangedEntities.Count <= 0)
+            if (_uowProvider.ChangedEntities.Count <= 0)
                 return 0;
 
-            await FlushDomainEventsAsync(_uowContext.EventHub, _uowContext);
+            if (_eventHub != null)
+				await FlushDomainEventsAsync(_eventHub, _uowProvider);
 
-            return await _uowContext.SaveChangesAsync(cancellationToken);
+            return await _uowProvider.SaveChangesAsync(cancellationToken);
         }
 
         private static async Task FlushDomainEventsAsync(IEventHub eventHub, IUoWProvider uowContext)
@@ -40,11 +61,11 @@ namespace DNV.Application.Abstractions.UoW
 
 	        var domainEvents = entities.SelectMany(e => e.DomainEvents).ToList();
 
-	        entities.ForEach(e => e.ClearDomainEvents());
-
 	        var tasks = domainEvents.Select(e => eventHub.PublishAsync(e));
 
 	        await Task.WhenAll(tasks);
+
+	        entities.ForEach(e => e.ClearDomainEvents());
         }
 
         public void Dispose()
@@ -61,7 +82,7 @@ namespace DNV.Application.Abstractions.UoW
                 if (AutoCommit)
                 {
                     if (SaveAllEntitiesAsync().Result < 0)
-                        throw new ApplicationException($"Failed to save changed entities. +(UnitOfWork provider type: '{_uowContext.GetType().FullName}') ");
+                        throw new ApplicationException($"Failed to save changed entities. +(UnitOfWork provider type: '{_uowProvider.GetType().FullName}') ");
                 }
             }
         }

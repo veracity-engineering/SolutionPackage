@@ -16,9 +16,9 @@ namespace DNVGL.Domain.EventHub.MediatR
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task PublishAsync(Event @event, CancellationToken cancellationToken = default)
+        public Task PublishAsync<T>(T mrEvent, CancellationToken cancellationToken = default) where T : Event
         {
-            return _mediator.Publish(MrEventWrapper.Create(@event), cancellationToken); 
+            return _mediator.Publish(MrEventWrapper<T>.Create(mrEvent), cancellationToken); 
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
+		<Company>DNV</Company>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
+	</ItemGroup>
 </Project>

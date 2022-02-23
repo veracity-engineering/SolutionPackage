@@ -16,7 +16,7 @@ namespace DNVGL.Domain.Seedwork
 
         private List<Event> _domainEvents;
 
-        public IReadOnlyCollection<Event> DomainEvents => _domainEvents?.AsReadOnly();
+        public IReadOnlyCollection<Event>? DomainEvents => _domainEvents?.AsReadOnly();
 
         // comment out because of EF required?
         /*protected Entity(string id)

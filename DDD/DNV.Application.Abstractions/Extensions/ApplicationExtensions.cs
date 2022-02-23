@@ -10,9 +10,9 @@ namespace DNV.Application.Abstractions.Extensions
 {
 	public static class ApplicationExtensions
 	{
-		public static IUnitOfWork CreateUoW<T>(this IUoWProvider provider, bool autoCommit = true) where T : Entity, IAggregateRoot
+		public static IUnitOfWork CreateUoW(this IServiceProvider serviceProvider, bool autoCommit = true)
 		{
-			return new UnitOfWork(provider, autoCommit);
+			return new UnitOfWork(serviceProvider, autoCommit);
 		}
 	}
 }

@@ -4,18 +4,18 @@ using MediatR;
 
 namespace DNVGL.Domain.EventHub.MediatR
 {
-	internal class MrEventWrapper: INotification
+	internal class MrEventWrapper<T>: INotification where T: Event
     {
-        public Event DomainEvent { get; }
+        public T DomainEvent { get; }
 
-        private MrEventWrapper(Event @event)
+        private MrEventWrapper(T @event)
         {
             DomainEvent = @event ?? throw new ArgumentNullException(nameof(@event));
         }
 
-        public static MrEventWrapper Create(Event @event)
+        public static MrEventWrapper<T> Create(T @event)
         {
-            return new MrEventWrapper(@event);
+            return new MrEventWrapper<T>(@event);
         }
     }
 }
