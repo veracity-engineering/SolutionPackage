@@ -79,6 +79,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Veracity.Services.Api", "Veracity\Services\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj", "{3CA1F91F-4071-4EBB-85C3-31DCC634DCB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.DDD.Test", "DNV.DDD.Test\DNV.DDD.Test.csproj", "{26D40C5A-C011-4AA8-A623-5D60DEBA2DED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,10 @@ Global
 		{3CA1F91F-4071-4EBB-85C3-31DCC634DCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CA1F91F-4071-4EBB-85C3-31DCC634DCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CA1F91F-4071-4EBB-85C3-31DCC634DCB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26D40C5A-C011-4AA8-A623-5D60DEBA2DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26D40C5A-C011-4AA8-A623-5D60DEBA2DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26D40C5A-C011-4AA8-A623-5D60DEBA2DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26D40C5A-C011-4AA8-A623-5D60DEBA2DED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +238,7 @@ Global
 		{EFA4F0DA-72BB-4FA2-A55A-555D0800E9EA} = {7E7B2247-DB4F-46CA-81F3-6D5A995622C6}
 		{25DD698E-B379-4971-A75F-C579F3015A41} = {7E7B2247-DB4F-46CA-81F3-6D5A995622C6}
 		{3CA1F91F-4071-4EBB-85C3-31DCC634DCB1} = {7E7B2247-DB4F-46CA-81F3-6D5A995622C6}
+		{26D40C5A-C011-4AA8-A623-5D60DEBA2DED} = {896376C3-33A0-4A46-B33E-ACE7229F5452}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

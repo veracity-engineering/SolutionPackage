@@ -9,6 +9,6 @@ namespace DNV.Application.Abstractions
     /// </summary>
     public interface IEventHub
     {
-        Task PublishAsync(Event @event, CancellationToken cancellationToken = default);
+        Task PublishAsync<T>(T @event, CancellationToken cancellationToken = default) where T: Event;
     }
 }

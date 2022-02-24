@@ -10,7 +10,7 @@ namespace DNV.Application.Abstractions.UoW
     /// </summary>
     public interface IUoWProvider
     {
-        IEventHub EventHub { get; }
+	    void JoinUoW<T>(IRepository<T> repository) where T : Entity, IAggregateRoot;
 
         IReadOnlyCollection<Entity> ChangedEntities{ get; }
 
