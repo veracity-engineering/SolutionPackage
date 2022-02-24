@@ -61,7 +61,26 @@ namespace DNVGL.Domain.EventHub.MediatR.Extensions
 	        return services.AddMrEventHub(types.Select(t => t.GetTypeInfo().Assembly).ToArray());
         }
 
-        public static IServiceCollection AddMrEventHub(this IServiceCollection services, params Assembly [] assemblies)
+		public static IServiceCollection AddMrEventHub(this IServiceCollection services, Action<MediatRServiceConfiguration> configAction, params Type[] types)
+		{
+			return services.AddMrEventHub(configAction, types.Select(t => t.GetTypeInfo().Assembly).ToArray());
+		}
+
+		public static IServiceCollection AddMrEventHub(this IServiceCollection services, params Assembly[] assemblies)
+		{
+			return services.AddMrEventHub(new MediatRServiceConfiguration(), assemblies);
+		}
+
+		public static IServiceCollection AddMrEventHub(this IServiceCollection services, Action<MediatRServiceConfiguration> configAction, params Assembly[] assemblies)
+		{
+			var cfg = new MediatRServiceConfiguration();
+
+			configAction(cfg);
+
+			return services.AddMrEventHub(cfg, assemblies);
+		}
+
+		public static IServiceCollection AddMrEventHub(this IServiceCollection services, MediatRServiceConfiguration config, params Assembly [] assemblies)
         {
             var definitionType = typeof(IEventHandler<>);
             var eventTypeList = new List<Type>();
@@ -87,9 +106,11 @@ namespace DNVGL.Domain.EventHub.MediatR.Extensions
 	            .ToList()
 	            .ForEach(eventType => services.AddMrEventHandler(eventType));
 
-            ServiceRegistrar.AddRequiredServices(services, new MediatRServiceConfiguration());
+            ServiceRegistrar.AddRequiredServices(services, config);
 
-            return services.AddSingleton<IEventHub, MrEventHub>();
+            services.Add(new ServiceDescriptor(typeof(IEventHub), typeof(MrEventHub), config.Lifetime));
+
+			return services;
         }
 
         private static IServiceCollection AddEventHandler(this IServiceCollection services, Type eventType, Type handlerType)

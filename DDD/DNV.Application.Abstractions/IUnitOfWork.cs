@@ -10,7 +10,7 @@ namespace DNV.Application.Abstractions
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
-	    TR? ResolveRepository<TR, TE>() where TR : class, IRepository<TE> where TE : Entity, IAggregateRoot;
+	    void ResolveRepository<TR, TE>(out TR? repository) where TR : class, IRepository<TE> where TE : Entity, IAggregateRoot;
 
         bool AutoCommit { get; set; }
 

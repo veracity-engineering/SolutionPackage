@@ -28,18 +28,12 @@ namespace DNV.Application.Abstractions.UoW
             AutoCommit = autoCommit;
         }
 
-        public TR? ResolveRepository<TR, TE>() where TR : class, IRepository<TE> where TE : Entity, IAggregateRoot
+        public void ResolveRepository<TR, TE>(out TR? repository) where TR : class, IRepository<TE> where TE : Entity, IAggregateRoot
         {
-	        var r = _serviceProvider.GetService(typeof(TR));
+	        repository = _serviceProvider.GetService(typeof(TR)) as TR;
 
-	        if (r == null)
-		        return default;
-
-	        var repo = (TR) r;
-
-	        _uowProvider.JoinUoW(repo);
-
-            return repo;
+            if(repository != null)
+				_uowProvider.JoinUoW(repository);
         }
 
         public virtual async Task<int> SaveAllEntitiesAsync(CancellationToken cancellationToken = default)
@@ -61,7 +55,7 @@ namespace DNV.Application.Abstractions.UoW
 
 	        var domainEvents = entities.SelectMany(e => e.DomainEvents).ToList();
 
-	        var tasks = domainEvents.Select(e => eventHub.PublishAsync(e));
+	        var tasks = domainEvents.Select(e => (Task)eventHub.PublishAsync((dynamic)e));
 
 	        await Task.WhenAll(tasks);
 

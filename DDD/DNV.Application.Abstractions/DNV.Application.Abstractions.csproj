@@ -7,6 +7,9 @@
 		<Company>DNV</Company>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
 	</ItemGroup>
 </Project>
