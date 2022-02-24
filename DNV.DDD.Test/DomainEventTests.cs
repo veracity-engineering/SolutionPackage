@@ -86,7 +86,7 @@ namespace DNV.DDD.Test
 		    await _eventHub.PublishAsync(new EntityCreated(null));
 		    await _eventHub.PublishAsync(new EntityChanged(null));
 
-			Assert.True(DomainEventsHandler1.EventCount > 1 & DomainEventsHandler2.EventCount > 1);
+			Assert.True(DomainEventsHandler1.EventCount > 1 && DomainEventsHandler2.EventCount > 1);
 	    }
     }
 }
