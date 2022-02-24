@@ -28,7 +28,7 @@ namespace DNV.DDD.Test
 		{
 		}
 
-		public override EventType EventType => TestDomainEventTypes.EntityCreated;
+		public override EventType EventType => TestDomainEventTypes.EntityChanged;
 	}
 
 	public class DomainEventsHandler1 : IEventHandler<EntityCreated>, IEventHandler<EntityChanged>
