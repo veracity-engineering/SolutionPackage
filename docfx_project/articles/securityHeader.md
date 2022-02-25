@@ -47,10 +47,10 @@ PM> `Install-Package DNVGL.OAuth.Web`
 |object-src|'self'
 |connect-src|'self' https://dc.services.visualstudio.com
 |script-src|'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn
-|font-src|'self' data: https://onedesign.azureedge.net
+|font-src|'self' data: https://onedesign.azureedge.net https://veracitycdn.azureedge.net
 |media-src|'self'
 |worker-src|'self' blob:
-|img-src|'self' https://onedesign.azureedge.net
+|img-src|'self' https://onedesign.azureedge.net https://dnvglcom.azureedge.net https://cdnveracity.azureedge.net
 |frame-src|'self' https://www.google.com https://www.recaptcha.net/
 |style-src|'self' https://onedesign.azureedge.net
 
