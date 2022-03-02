@@ -2,13 +2,12 @@
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Nullable>enable</Nullable>
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.22" />
@@ -18,10 +17,15 @@
 		<ProjectReference Include="..\..\Veracity\Services\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
 		<ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
 	</ItemGroup>
+
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
 		<DefineConstants>NETCORE2</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
 		<DefineConstants>NETCORE3</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
+		<DocumentationFile></DocumentationFile>
+		<NoWarn>1701;1702;S101</NoWarn>
 	</PropertyGroup>
 </Project>

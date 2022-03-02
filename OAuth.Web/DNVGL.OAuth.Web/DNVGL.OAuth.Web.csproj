@@ -24,16 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="TokenCache1\**" />
-	  <EmbeddedResource Remove="TokenCache1\**" />
-	  <None Remove="TokenCache1\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Remove="AuthenticationExtensions1.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <PackageReference Include="Microsoft.Identity.Client" Version="4.37.0" />
 	</ItemGroup>
 
