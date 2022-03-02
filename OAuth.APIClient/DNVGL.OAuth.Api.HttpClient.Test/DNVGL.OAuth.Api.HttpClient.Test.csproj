@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
+    <ProjectReference Include="..\DNVGL.OAuth.Api.HttpClient\DNVGL.OAuth.Api.HttpClient.csproj" />
   </ItemGroup>
 
 </Project>
