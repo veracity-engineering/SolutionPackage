@@ -5,8 +5,7 @@
     <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
     <Company>DNVGL</Company>
     <AssemblyName>DNVGL.Veracity.Services.Api.This.Abstractions</AssemblyName>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Abstractions supporting the DNVGL.Veracity.Services.Api.This package.</Description>
+	  <Description>Abstractions supporting the DNVGL.Veracity.Services.Api.This package.</Description>
   </PropertyGroup>
 
   <ItemGroup>
