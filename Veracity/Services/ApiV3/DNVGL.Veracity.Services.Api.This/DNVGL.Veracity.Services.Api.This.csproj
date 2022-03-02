@@ -11,7 +11,6 @@ Allows manipulation and retrival of information related to a service.</Descripti
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\DNVGL.OAuth.UserCredentials\DNVGL.OAuth.Api.HttpClient.csproj" />
     <ProjectReference Include="..\..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
     <ProjectReference Include="..\..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
   </ItemGroup>
