@@ -57,7 +57,9 @@ namespace DNVGL.OAuth.Api.HttpClient
 
         private System.Net.Http.HttpClient BuildClient(OAuthHttpClientFactoryOptions config)
         {
-            return new System.Net.Http.HttpClient(BuildHandler(config)) { BaseAddress = new Uri(config.BaseUri) };
+	        var handler = BuildHandler(config);
+	        handler.InnerHandler = new HttpClientHandler();
+            return new System.Net.Http.HttpClient(handler) { BaseAddress = new Uri(config.BaseUri) };
         }
 
         private static OAuthHttpClientFactoryOptions CloneConfig(OAuthHttpClientFactoryOptions config)
