@@ -9,11 +9,14 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
     {
         protected readonly OAuthHttpClientFactoryOptions _options;
 
-        protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options): this (options, new HttpClientHandler()) { }
+        protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options)
+        {
+	        _options = options;
+        }
 
         protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options, HttpMessageHandler handler): base(handler)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+	        _options = options;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage original, CancellationToken cancellationToken)
