@@ -1,4 +1,4 @@
-﻿using DNVGL.OAuth.Web.Abstractions;
+﻿using DNV.OAuth.Abstractions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 

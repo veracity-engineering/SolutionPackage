@@ -6,6 +6,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.Web;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using DNVGL.Authorization.Web.Abstraction;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {

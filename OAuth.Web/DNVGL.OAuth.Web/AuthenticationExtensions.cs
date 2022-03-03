@@ -1,5 +1,4 @@
-﻿using DNVGL.OAuth.Web.Abstractions;
-using DNVGL.OAuth.Web.TokenCache;
+﻿using DNV.OAuth.Core.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -12,7 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DNVGL.OAuth.Web.TokenValidator;
+using DNV.OAuth.Abstractions;
+using DNV.OAuth.Core;
+using DNV.OAuth.Core.TokenValidator;
 
 namespace DNVGL.OAuth.Web
 {
@@ -57,7 +58,7 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(authenticationSchema, jwtOptions);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<Dictionary<string, JwtOptions>> setupAction)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Action<IDictionary<string, JwtOptions>> setupAction)
 		{
 			if (setupAction == null)
 			{
@@ -69,7 +70,7 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, Dictionary<string, JwtOptions> schemaOptions, bool populateAuthorizationPolicy = true)
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IDictionary<string, JwtOptions> schemaOptions, bool populateAuthorizationPolicy = true)
 		{
 			if (schemaOptions == null || !schemaOptions.Any())
 			{
@@ -98,7 +99,7 @@ namespace DNVGL.OAuth.Web
 
 						o.SecurityTokenValidators.Clear();
 						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ??
-						                              new JwtTokenValidator(jwtOptions.CustomClaimsValidator));
+						                              new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
 					});
 					schemeNames.Add(schemeName);
 				}
@@ -119,7 +120,7 @@ namespace DNVGL.OAuth.Web
 								o.Events = jwtOptions.Events; 
 
 							o.SecurityTokenValidators.Clear();
-							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new JwtTokenValidator(jwtOptions.CustomClaimsValidator));
+							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
 						});
 
 						schemeNames.Add(schemeName);
@@ -253,7 +254,7 @@ namespace DNVGL.OAuth.Web
 
 		private static void ConfigureSecurityTokenValidator(OidcOptions oidcOptions, OpenIdConnectOptions o)
 		{
-			o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new JwtTokenValidator();
+			o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new DNVTokenValidator();
 		}
 
 		private static void ConfigureEvents(OidcOptions oidcOptions, OpenIdConnectOptions o)
@@ -278,43 +279,27 @@ namespace DNVGL.OAuth.Web
 		{
 			services.AddDataProtection();
 
-			services.AddSingleton<ITokenCacheProvider>(p =>
-			{
-				var cache = p.GetRequiredService<IDistributedCache>();
-				var cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-				cacheSetupAction?.Invoke(cacheOptions);
-				var dataProtectionProvider = p.GetService<IDataProtectionProvider>();
-				var provider = new TokenCacheProvider(cache, cacheOptions, dataProtectionProvider);
-				return provider;
-			});
-
-			services.AddSingleton<IClientAppBuilder>(p =>
-			{
-				var tokenCacheProvider = p.GetRequiredService<ITokenCacheProvider>();
-				var appBuilder = new MsalClientAppBuilder(tokenCacheProvider, oidcOptions);
-				return appBuilder;
-			});
-
-			services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
-			{
-				var onAuthorizationCodeReceived = o.Events.OnAuthorizationCodeReceived;
-
-				o.Events.OnAuthorizationCodeReceived = async context =>
+			services.AddOAuthCore(cacheSetupAction)
+				.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
 				{
-					await onCodeReceived(context);
-					await onAuthorizationCodeReceived(context);
-				};
-			});
+					var previous = o.Events.OnAuthorizationCodeReceived;
 
-			async Task onCodeReceived(AuthorizationCodeReceivedContext context)
+					o.Events.OnAuthorizationCodeReceived = async context =>
+					{
+						await OnCodeReceived(context);
+						await previous(context);
+					};
+				});
+
+			async Task OnCodeReceived(AuthorizationCodeReceivedContext context)
 			{
-				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier");
+				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier"); 
 				var authCode = context.TokenEndpointRequest.Code;
 				var clientAppBuilder = context.HttpContext.RequestServices.GetRequiredService<IClientAppBuilder>();
-				var clienApp = clientAppBuilder.Build();
+				var clientApp = clientAppBuilder.Build(oidcOptions);
 
 				context.HandleCodeRedemption();
-				var result = await clienApp.AcquireTokenByAuthorizationCode(authCode, codeVerifier);
+				var result = await clientApp.AcquireTokenByAuthorizationCode(authCode, codeVerifier);
 				context.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			}
 		}
