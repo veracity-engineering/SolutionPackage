@@ -22,7 +22,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="options"></param>
 		/// <returns></returns>
 		public Task<CreateUserReference> Create(CreateUserOptions options) =>
-			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
+			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, ToJsonContent(options));
 
 		/// <summary>
 		/// Create a collection of new users.
@@ -30,7 +30,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="options"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options) =>
-			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, new StringContent(Serialize(options), Encoding.UTF8, "application/json"));
+			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, ToJsonContent(options));
 
 		/// <summary>
 		/// Retrieves a collection of user references for users with a specified email value.

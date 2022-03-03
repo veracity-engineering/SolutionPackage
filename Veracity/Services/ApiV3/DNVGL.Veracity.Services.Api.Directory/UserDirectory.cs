@@ -28,7 +28,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <param name="userIds"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<User>> ListByUserId(params string[] userIds) =>
-			PostResource<IEnumerable<User>>(UserDirectoryUrls.Root, new StringContent(Serialize(userIds)), false);
+			PostResource<IEnumerable<User>>(UserDirectoryUrls.Root, ToJsonContent(userIds), false);
 
 		/// <summary>
 		/// Retrieves a collection of user references by a specified email value.
