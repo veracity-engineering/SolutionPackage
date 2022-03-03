@@ -3,14 +3,12 @@ using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.This.Abstractions;
 using DNVGL.Veracity.Services.Api.This.Abstractions.Models;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-    public class ThisUsers : ApiResourceClient, IThisUsers
+	public class ThisUsers : ApiResourceClient, IThisUsers
     {
         public ThisUsers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
         {
