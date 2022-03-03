@@ -127,5 +127,9 @@ namespace DNVGL.Veracity.Services.Api
 		protected void Serialize<T>(T value, Stream stream) => _serializer.Serialize(stream);
 
 		protected T Deserialize<T>(Stream stream) => _serializer.Deserialize<T>(stream);
+
+		protected HttpContent ToJsonContent(string serializedContent) => new StringContent(serializedContent, Encoding.UTF8, "application/json");
+
+		protected HttpContent ToJsonContent(object content) => ToJsonContent(Serialize(content));
 	}
 }
