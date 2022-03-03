@@ -4,6 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
