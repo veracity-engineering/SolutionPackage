@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
 		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
-		<AssemblyName>DNVGL.OAuth.Web.Abstractions</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.42.0" />
