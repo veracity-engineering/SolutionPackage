@@ -9,7 +9,7 @@ namespace DNV.Context.AspNet
 {
 	public static class AspNetContextExtensions
 	{
-		public static IApplicationBuilder UseAspNetContext<T>(this IApplicationBuilder builder, JsonSerializerSettings? jsonSerializerSettings) where T : class
+		public static IApplicationBuilder UseAspNetContext<T>(this IApplicationBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
 		{
 			return builder.UseMiddleware<AspNetContextMiddleware<T>>(jsonSerializerSettings);
 		}
