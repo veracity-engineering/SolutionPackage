@@ -15,12 +15,12 @@ namespace DNV.Context.HttpClient
 			    ? services.AddHttpClient(HttpClientContextHandler<T>.ClientName) 
 			    : services.AddHttpClient(HttpClientContextHandler<T>.ClientName, configAction);
 
-		    builder.AddContextHandler<T>(jsonSerializerSettings);
+		    builder.AddHttpClientContextHandler<T>(jsonSerializerSettings);
 
 		    return services;
 	    }
 
-		public static IHttpClientBuilder AddContextHandler<T>(this IHttpClientBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
+		public static IHttpClientBuilder AddHttpClientContextHandler<T>(this IHttpClientBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
 		{
 			builder.Services.AddTransient(sp =>
 				new HttpClientContextHandler<T>(sp.GetRequiredService<IContextAccessor<T>>(), jsonSerializerSettings));
