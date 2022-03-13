@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
+	[Obsolete("Please use interface System.Net.Http.IHttpClientFactory in BCL instead.")]
     public interface IOAuthHttpClientFactory
     {
 	    IEnumerable<OAuthHttpClientFactoryOptions> ClientOptions { get; }

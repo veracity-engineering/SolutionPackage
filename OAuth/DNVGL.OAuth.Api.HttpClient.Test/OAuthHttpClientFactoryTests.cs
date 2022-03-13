@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using DNV.OAuth.Abstractions;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
@@ -12,7 +14,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Tests
         [Test]
         public void CreateBothUserAndClientCredentialsHttpClients()
         {
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+	        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
             mockHttpContextAccessor.Setup(m => m.HttpContext).Returns(context);
 
@@ -46,15 +48,22 @@ namespace DNVGL.OAuth.Api.HttpClient.Tests
                     }
                 }
             };
-            var oauthHttpClientFactory = new OAuthHttpClientFactory(options, 
-                mockHttpContextAccessor.Object, 
-                mockClientAppBuilder.Object);
 
-            var userHttpClient = oauthHttpClientFactory.Create(userHttpClientName);
+            var mockFactory = new Mock<IHttpClientFactory>();
+            mockFactory.Setup(f => 
+		            f.CreateClient(It.Is<string>(name => name == $"{options[0].Name}:{options[0].Flow}")))
+	            .Returns(() => new System.Net.Http.HttpClient { BaseAddress = new Uri(options[0].BaseUri) });
+            mockFactory.Setup(f => 
+		            f.CreateClient(It.Is<string>(name => name == $"{options[1].Name}:{options[1].Flow}")))
+	            .Returns(() => new System.Net.Http.HttpClient { BaseAddress = new Uri(options[1].BaseUri) });
+
+            var oauthHttpClientFactory = new OAuthHttpClientFactory(mockFactory.Object, options);
+
+            var userHttpClient = oauthHttpClientFactory.CreateWithUserCredentialFlow(userHttpClientName);
             Assert.IsNotNull(userHttpClient);
             Assert.AreEqual(userHttpClient.BaseAddress.AbsoluteUri, "https://localhost/");
 
-            var serverHttpClient = oauthHttpClientFactory.Create(serverHttpClientName);
+            var serverHttpClient = oauthHttpClientFactory.CreateWithClientCredentialFlow(serverHttpClientName);
             Assert.IsNotNull(serverHttpClient);
             Assert.AreEqual(serverHttpClient.BaseAddress.AbsoluteUri, "https://veracity.com/");
         }

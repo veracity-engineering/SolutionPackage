@@ -8,29 +8,19 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
     internal class UserCredentialsHandler : BaseHttpClientHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IClientAppBuilder _appBuilder;
-        private IClientApp _clientApp;
+        private readonly Lazy<IClientApp> _clientApp;
 
-        public UserCredentialsHandler(OAuthHttpClientFactoryOptions options, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder) : base(options)
+        public UserCredentialsHandler(OAuthHttpClientOptions option, IHttpContextAccessor httpContextAccessor, IClientAppBuilder appBuilder) : base(option)
         {
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            _appBuilder = appBuilder ?? throw new ArgumentNullException(nameof(appBuilder));
+	        _httpContextAccessor = httpContextAccessor;
+	        _clientApp = new Lazy<IClientApp>(() => appBuilder.Build(OAuthOptions));
         }
 
         protected override async Task<string> RetrieveToken()
         {
             var user = _httpContextAccessor.HttpContext.User;
-            var clientApp = GetOrCreateClientApp();
-            var authResult = await clientApp.AcquireTokenSilent(user);
+            var authResult = await _clientApp.Value.AcquireTokenSilent(user);
             return authResult.AccessToken;
-        }
-
-        private IClientApp GetOrCreateClientApp()
-        {
-            if (_clientApp != null) return _clientApp;
-            
-            _clientApp = _appBuilder.Build(_options.OAuthClientOptions);
-            return _clientApp;
         }
     }
 }

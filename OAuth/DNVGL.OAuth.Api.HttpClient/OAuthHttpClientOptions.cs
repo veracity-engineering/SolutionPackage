@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Runtime.Serialization;
-using DNV.OAuth.Abstractions;
+﻿using DNV.OAuth.Abstractions;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
-    public class OAuthHttpClientFactoryOptions
+    public class OAuthHttpClientOptions
     {
         /// <summary>
         /// Gets or sets a unique identifier for HTTP client instance which is used to retrieve it from the IOAuthHttpClientFactory.
@@ -32,14 +29,5 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// Gets or sets the Open Id Connect options to apply to authentication by the HTTP client instance.
         /// </summary>
         public OAuth2Options OAuthClientOptions { get; set; }
-    }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum OAuthCredentialFlow
-	{
-        [EnumMember(Value = "user-credentials")]
-        UserCredentials,
-        [EnumMember(Value = "client-credentials")]
-        ClientCredentials
     }
 }
