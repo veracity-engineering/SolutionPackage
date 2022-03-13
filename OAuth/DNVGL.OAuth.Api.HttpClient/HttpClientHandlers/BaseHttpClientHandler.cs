@@ -2,38 +2,48 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DNV.OAuth.Abstractions;
 
 namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
     internal abstract class BaseHttpClientHandler : DelegatingHandler
     {
-        protected readonly OAuthHttpClientFactoryOptions _options;
+        protected readonly OAuthHttpClientOptions _option;
 
-        protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options)
+        protected BaseHttpClientHandler(OAuthHttpClientOptions option)
         {
-	        _options = options;
+	        _option = option;
         }
 
-        protected BaseHttpClientHandler(OAuthHttpClientFactoryOptions options, HttpMessageHandler handler): base(handler)
+        protected BaseHttpClientHandler(OAuthHttpClientOptions option, HttpMessageHandler handler): base(handler)
         {
-	        _options = options;
+	        _option = option;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage original, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await RetrieveToken();
-            var request = AppendAuthHeaders(original, token, _options.SubscriptionKey);
+            PopulateAuthHeader(request, await RetrieveToken());
+            PopulateSubKeyHeader(request);
+
             return await base.SendAsync(request, cancellationToken);
         }
 
-        private static HttpRequestMessage AppendAuthHeaders(HttpRequestMessage original, string token, string subscriptionKey)
+        protected virtual void PopulateAuthHeader(HttpRequestMessage request, string accessToken)
         {
-            var request = original;
-            request.Headers.Add("Authorization", $"Bearer {token}");
-            if (!string.IsNullOrEmpty(subscriptionKey))
-                request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-            return request;
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
         }
+
+        protected string? SubscriptionKey => _option.SubscriptionKey;
+
+        protected virtual void PopulateSubKeyHeader(HttpRequestMessage request)
+        {
+	        if (!string.IsNullOrEmpty(SubscriptionKey))
+		        request.Headers.Add("Ocp-Apim-Subscription-Key", SubscriptionKey);
+        }
+
+        protected OAuth2Options OAuthOptions => _option.OAuthClientOptions;
+
+        protected string Authority => _option.OAuthClientOptions.Authority;
 
         protected abstract Task<string> RetrieveToken();
     }
