@@ -4,7 +4,7 @@ namespace DNV.Context.AspNet
 {
 	internal sealed class AspNetContext<T> : IAmbientContext<T> where T : class
 	{
-		private static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
+		internal static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
 
 		internal AspNetContext(T context)
 		{
