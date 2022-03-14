@@ -11,7 +11,9 @@ namespace DNV.Context.AspNet
 	{
 		public static IApplicationBuilder UseAspNetContext<T>(this IApplicationBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
 		{
-			return builder.UseMiddleware<AspNetContextMiddleware<T>>(jsonSerializerSettings);
+			return jsonSerializerSettings == null? 
+				builder.UseMiddleware<AspNetContextMiddleware<T>>(): 
+				builder.UseMiddleware<AspNetContextMiddleware<T>>(jsonSerializerSettings);
 		}
 
 		public static IServiceCollection AddAspNetContext<T>(this IServiceCollection services, Func<HttpContext, T> ctxCreator) where T : class
