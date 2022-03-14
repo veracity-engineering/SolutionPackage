@@ -8,20 +8,22 @@ namespace DNV.Context.AspNet
     internal class AspNetContextAccessor<T>: IContextAccessor<T> where T: class
     {
 	    private readonly AsyncLocal<AspNetContext<T>> _aspNetContext;
-	    private readonly Func<HttpContext, T> _ctxCreator;
+	    private readonly Func<HttpContext, (bool, T)> _ctxCreator;
 
-	    public AspNetContextAccessor(Func<HttpContext, T> ctxCreator)
+	    public AspNetContextAccessor(Func<HttpContext, (bool, T)> ctxCreator)
 	    {
 		    _aspNetContext = new AsyncLocal<AspNetContext<T>>();
 		    _ctxCreator = ctxCreator;
-
 	    }
 
         public IAmbientContext<T>? Current => _aspNetContext.Value;
 
-        internal void CreateContext(HttpContext context)
+        internal void CreateContext(HttpContext httpContext)
         {
-	        _aspNetContext.Value = new AspNetContext<T>(_ctxCreator(context));
+	        var (succeeded, context) = _ctxCreator(httpContext);
+	        if (!succeeded)
+		        return;
+			_aspNetContext.Value = new AspNetContext<T>(context);
         }
 
         internal void CreateContext(T context)

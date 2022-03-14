@@ -16,7 +16,7 @@ namespace DNV.Context.AspNet
 				builder.UseMiddleware<AspNetContextMiddleware<T>>(jsonSerializerSettings);
 		}
 
-		public static IServiceCollection AddAspNetContext<T>(this IServiceCollection services, Func<HttpContext, T> ctxCreator) where T : class
+		public static IServiceCollection AddAspNetContext<T>(this IServiceCollection services, Func<HttpContext, (bool succeeded, T context)> ctxCreator) where T : class
 		{
 			return services.AddScoped(_ => new AspNetContextAccessor<T>(ctxCreator))
 				.AddScoped(sp => sp.GetRequiredService<AspNetContextAccessor<T>>() as IContextAccessor<T>);
