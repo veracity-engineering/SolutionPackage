@@ -29,7 +29,7 @@ namespace DNV.Context.AspNet
                 return;
             }
 
-            if (context.Request.Headers.TryGetValue(AspNetContext<T>.Key, out var ctxJsonStr))
+            if (context.Request.Headers.TryGetValue(AspNetContext<T>.HeaderKey, out var ctxJsonStr))
             {
 	            var serializer = JsonSerializer.CreateDefault(_jsonSerializerSettings);
 
