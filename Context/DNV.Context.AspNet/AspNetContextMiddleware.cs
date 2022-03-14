@@ -11,7 +11,9 @@ namespace DNV.Context.AspNet
         private readonly RequestDelegate _next;
         private readonly JsonSerializerSettings? _jsonSerializerSettings;
 
-        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerSettings? jsonSerializerSettings = null)
+        public AspNetContextMiddleware(RequestDelegate next): this(next, null) { }
+
+        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerSettings? jsonSerializerSettings)
         {
             _next = next;
             _jsonSerializerSettings = jsonSerializerSettings;
@@ -27,9 +29,7 @@ namespace DNV.Context.AspNet
                 return;
             }
 
-	        var aspNetContext = context.RequestServices.GetRequiredService<AspNetContext<T>>();
-
-            if (context.Request.Headers.TryGetValue(aspNetContext.Key, out var ctxJsonStr))
+            if (context.Request.Headers.TryGetValue(AspNetContext<T>.Key, out var ctxJsonStr))
             {
 	            var serializer = JsonSerializer.CreateDefault(_jsonSerializerSettings);
 
