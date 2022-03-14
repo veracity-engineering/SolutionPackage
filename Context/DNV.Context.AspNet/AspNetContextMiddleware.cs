@@ -11,7 +11,7 @@ namespace DNV.Context.AspNet
         private readonly RequestDelegate _next;
         private readonly JsonSerializerSettings? _jsonSerializerSettings;
 
-        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerSettings? jsonSerializerSettings)
+        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerSettings? jsonSerializerSettings = null)
         {
             _next = next;
             _jsonSerializerSettings = jsonSerializerSettings;
