@@ -1,34 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using DNV.Context.Abstractions;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace DNV.Context.AspNet
 {
-    internal class AspNetContextAccessor<T>: IContextAccessor<T> where T: class
+    public class AspNetContextAccessor<T>: IContextAccessor<T> where T: class
     {
-	    private readonly AsyncLocal<AspNetContext<T>> _aspNetContext;
-	    private readonly Func<HttpContext, (bool, T)> _ctxCreator;
+	    public static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
 
-	    public AspNetContextAccessor(Func<HttpContext, (bool, T)> ctxCreator)
+		private readonly Lazy<AsyncLocalContext<T>> _asyncLocalContext;
+	    private readonly Func<HttpContext, (bool, T?)> _payloadCreator;
+
+	    public AspNetContextAccessor(Func<HttpContext, (bool, T?)> payloadCreator)
 	    {
-		    _aspNetContext = new AsyncLocal<AspNetContext<T>>();
-		    _ctxCreator = ctxCreator;
+		    _asyncLocalContext = new Lazy<AsyncLocalContext<T>>();
+			_payloadCreator = payloadCreator;
 	    }
 
-        public IAmbientContext<T>? Current => _aspNetContext.Value;
+	    public bool Initialized => _asyncLocalContext.IsValueCreated;
 
-        internal void CreateContext(HttpContext httpContext)
-        {
-	        var (succeeded, context) = _ctxCreator(httpContext);
-	        if (!succeeded)
-		        return;
-			_aspNetContext.Value = new AspNetContext<T>(context);
-        }
+		public IAmbientContext<T>? Context => _asyncLocalContext.Value;
 
-        internal void CreateContext(T context)
+        internal void Initialize(HttpContext httpContext, JsonSerializerSettings? jsonSerializerSettings)
         {
-	        _aspNetContext.Value = new AspNetContext<T>(context);
+	        if (Initialized) return;
+
+	        if (httpContext.Request.Headers.TryGetValue(HeaderKey, out var ctxJsonStr))
+	        {
+		        var serializer = JsonSerializer.CreateDefault(jsonSerializerSettings);
+
+		        using var sr = new StringReader(ctxJsonStr);
+		        using var jr = new JsonTextReader(sr);
+		        var ctx = serializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(jr);
+
+		        if (ctx == null) return;
+		        _asyncLocalContext.Value.Payload = ctx.Payload;
+		        _asyncLocalContext.Value.CorrelationId = ctx.CorrelationId;
+		        foreach (var i in ctx.Items)
+			        _asyncLocalContext.Value.Items[i.Key] = i.Value;
+	        }
+	        else
+	        {
+				var (succeeded, payload) = _payloadCreator(httpContext);
+				if (!succeeded || payload == null)
+					return;
+
+				_asyncLocalContext.Value.Payload = payload;
+				_asyncLocalContext.Value.CorrelationId = httpContext.TraceIdentifier;
+	        }
         }
-	}
+    }
 }

@@ -1,9 +1,13 @@
-﻿namespace DNV.Context.Abstractions
-{
-	public interface IAmbientContext<out T> where T: class
-	{
-		string Key { get; }
+﻿using System.Collections.Generic;
 
-		T Context { get; }
+namespace DNV.Context.Abstractions
+{
+	public interface IAmbientContext<out T> where T : class
+	{
+		string? CorrelationId { get; }
+
+		T? Payload { get; }
+
+		IDictionary<object, object>? Items { get; }
 	}
 }

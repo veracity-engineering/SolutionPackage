@@ -2,6 +2,8 @@
 {
 	public interface IContextAccessor<out T> where T : class
 	{
-		public IAmbientContext<T>? Current { get; }
+		bool Initialized { get; }
+
+		IAmbientContext<T>? Context { get; }
 	}
 }
