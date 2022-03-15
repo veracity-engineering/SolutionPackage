@@ -12,18 +12,18 @@ namespace DNV.Context.AspNet
     {
 	    public static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
 
-		private readonly Lazy<AsyncLocalContext<T>> _asyncLocalContext;
+		private readonly AsyncLocalContext<T> _asyncLocalContext;
 	    private readonly Func<HttpContext, (bool, T?)> _payloadCreator;
 
 	    public AspNetContextAccessor(Func<HttpContext, (bool, T?)> payloadCreator)
 	    {
-		    _asyncLocalContext = new Lazy<AsyncLocalContext<T>>();
+		    _asyncLocalContext = new AsyncLocalContext<T>();
 			_payloadCreator = payloadCreator;
 	    }
 
-	    public bool Initialized => _asyncLocalContext.IsValueCreated;
+	    public bool Initialized => _asyncLocalContext.HasValue;
 
-		public IAmbientContext<T>? Context => _asyncLocalContext.Value;
+		public IAmbientContext<T>? Context => _asyncLocalContext;
 
         internal void Initialize(HttpContext httpContext, JsonSerializerSettings? jsonSerializerSettings)
         {
@@ -37,11 +37,9 @@ namespace DNV.Context.AspNet
 		        using var jr = new JsonTextReader(sr);
 		        var ctx = serializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(jr);
 
-		        if (ctx == null) return;
-		        _asyncLocalContext.Value.Payload = ctx.Payload;
-		        _asyncLocalContext.Value.CorrelationId = ctx.CorrelationId;
-		        foreach (var i in ctx.Items)
-			        _asyncLocalContext.Value.Items[i.Key] = i.Value;
+		        if (ctx?.Payload == null) return;
+
+				_asyncLocalContext.CreateContext(ctx.Payload, ctx.CorrelationId, ctx.Items);
 	        }
 	        else
 	        {
@@ -49,8 +47,7 @@ namespace DNV.Context.AspNet
 				if (!succeeded || payload == null)
 					return;
 
-				_asyncLocalContext.Value.Payload = payload;
-				_asyncLocalContext.Value.CorrelationId = httpContext.TraceIdentifier;
+				_asyncLocalContext.CreateContext(payload, httpContext.TraceIdentifier);
 	        }
         }
     }
