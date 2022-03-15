@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using DNV.Context.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -23,27 +24,13 @@ namespace DNV.Context.AspNet
         {
 	        var contextAccessor = context.RequestServices.GetRequiredService<AspNetContextAccessor<T>>();
 
-            if (contextAccessor.Current != null)
+            if (contextAccessor.Initialized)
             {
                 await _next(context);
                 return;
             }
 
-            if (context.Request.Headers.TryGetValue(AspNetContext<T>.HeaderKey, out var ctxJsonStr))
-            {
-	            var serializer = JsonSerializer.CreateDefault(_jsonSerializerSettings);
-
-	            using var sr = new StringReader(ctxJsonStr);
-	            using var jr = new JsonTextReader(sr);
-	            var ctx = serializer.Deserialize<T>(jr);
-
-                if (ctx != null)
-					contextAccessor.CreateContext(ctx);
-            }
-            else
-            {
-	            contextAccessor.CreateContext(context);
-            }
+            contextAccessor.Initialize(context, _jsonSerializerSettings);
 
             await _next(context);
         }

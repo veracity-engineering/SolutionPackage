@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DNV.Context.Abstractions;
+using DNV.Context.AspNet;
 using Newtonsoft.Json;
 
 namespace DNV.Context.HttpClient
@@ -36,16 +37,16 @@ namespace DNV.Context.HttpClient
 
         private void SerializeContextToHeaders(HttpRequestMessage request)
         {
-	        if (_contextAccessor.Current == null)
+	        if (_contextAccessor.Context == null)
 		        return;
 
 	        var serializer = JsonSerializer.CreateDefault(_jsonSerializerSettings);
             var sb = new StringBuilder();
 	        using var sr = new StringWriter(sb);
 	        using var jr = new JsonTextWriter(sr);
-	        serializer.Serialize(jr, _contextAccessor.Current.Context);
+	        serializer.Serialize(jr, _contextAccessor.Context);
 
-            request.Headers.Add(_contextAccessor.Current.Key, sb.ToString());
+            request.Headers.Add(AspNetContextAccessor<T>.HeaderKey, sb.ToString());
         }
     }
 }

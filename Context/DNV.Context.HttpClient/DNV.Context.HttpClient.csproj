@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DNV.Context.Abstractions\DNV.Context.Abstractions.csproj" />
+    <ProjectReference Include="..\DNV.Context.AspNet\DNV.Context.AspNet.csproj" />
   </ItemGroup>
 
 </Project>
