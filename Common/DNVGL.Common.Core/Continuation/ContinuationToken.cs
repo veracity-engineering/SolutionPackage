@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DNVGL.Common.Core.Pagination
+namespace DNVGL.Common.Core.Continuation
 {
     /// <summary>
     /// 
