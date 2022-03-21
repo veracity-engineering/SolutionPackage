@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
+		<Company>DNV</Company>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Common\DNVGL.Common.Core\DNVGL.Common.Core.csproj" />
+		<ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
+	</ItemGroup>
+</Project>

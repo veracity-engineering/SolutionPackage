@@ -1,6 +1,6 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-namespace DNVGL.Authorization.Web
+namespace DNVGL.Authorization.Web.Abstraction
 {
     /// <summary>
     /// Represents permission information for a permission record.

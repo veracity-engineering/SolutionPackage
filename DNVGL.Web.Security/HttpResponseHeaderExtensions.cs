@@ -13,10 +13,10 @@ namespace DNVGL.Web.Security
         private const string ObjectSrc = "'self'";
         private const string ConnectSrc = "'self' https://dc.services.visualstudio.com https://login.veracity.com https://login.microsoftonline.com";
         private const string ScriptSrc = "'self' https://www.recaptcha.net https://www.gstatic.com https://www.gstatic.cn";
-        private const string FontSrc = "'self' data: https://onedesign.azureedge.net";
+        private const string FontSrc = "'self' data: https://onedesign.azureedge.net https://veracitycdn.azureedge.net";
         private const string MediaSrc = "'self'";
         private const string WorkerSrc = "'self' blob:";
-        private const string ImgSrc = "'self' https://onedesign.azureedge.net";
+        private const string ImgSrc = "'self' https://onedesign.azureedge.net https://dnvglcom.azureedge.net https://cdnveracity.azureedge.net";
         private const string FrameSrc = "'self' https://www.google.com https://www.recaptcha.net/";
         private const string StyleSrc = "'self' https://onedesign.azureedge.net";
         private static string csp = string.Empty;
