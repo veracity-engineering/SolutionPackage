@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace DNVGL.Web.Security
 {
-    /// <summary>
-    /// Extension methods to Response.Headers  
-    /// </summary>
-    public static class HttpResponseHeaderExtensions
+	/// <summary>
+	/// Extension methods to Response.Headers  
+	/// </summary>
+	public static class HttpResponseHeaderExtensions
     {
         private const string DefaultSrc = "'self'";
         private const string ObjectSrc = "'self'";
@@ -58,16 +57,16 @@ namespace DNVGL.Web.Security
         /// <param name="headerDictionary">The Response.Headers</param>
         public static void SetupDefaultHeaders(this IHeaderDictionary headerDictionary)
         {
-            headerDictionary.AddKeyOnlyIfNotExists("X-Xss-Protection", "1");
-            headerDictionary.AddKeyOnlyIfNotExists("X-Frame-Options", "SAMEORIGIN");
-            headerDictionary.AddKeyOnlyIfNotExists("Referrer-Policy", "no-referrer");
-            headerDictionary.AddKeyOnlyIfNotExists("X-Content-Type-Options", "nosniff");
-            headerDictionary.AddKeyOnlyIfNotExists("X-Permitted-Cross-Domain-Policies", "none");
-            headerDictionary.AddKeyOnlyIfNotExists("Expect-CT", "enforce, max-age=7776000");
-            headerDictionary.AddKeyOnlyIfNotExists("Strict-Transport-Security", "max-age=15552000; includeSubDomains");
+            headerDictionary.AddIfNotExists("X-Xss-Protection", "1");
+            headerDictionary.AddIfNotExists("X-Frame-Options", "SAMEORIGIN");
+            headerDictionary.AddIfNotExists("Referrer-Policy", "no-referrer");
+            headerDictionary.AddIfNotExists("X-Content-Type-Options", "nosniff");
+            headerDictionary.AddIfNotExists("X-Permitted-Cross-Domain-Policies", "none");
+            headerDictionary.AddIfNotExists("Expect-CT", "enforce, max-age=7776000");
+            headerDictionary.AddIfNotExists("Strict-Transport-Security", "max-age=15552000; includeSubDomains");
         }
 
-        private static void AddKeyOnlyIfNotExists(this IHeaderDictionary headerDictionary, string key, string value)
+        private static void AddIfNotExists(this IHeaderDictionary headerDictionary, string key, string value)
         {
             if (!headerDictionary.ContainsKey(key))
             {
@@ -195,7 +194,7 @@ namespace DNVGL.Web.Security
         }
 
 
-        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest)
+        internal static void AddContentSecurityPolicy(this IHeaderDictionary headerDictionary, HttpRequest httpRequest, string requestId = null)
         {
             if (!SkipRequest(httpRequest))
             {
@@ -209,6 +208,12 @@ namespace DNVGL.Web.Security
                     headerDictionary.Remove(cspKey);
                 }
             }
+
+            if(requestId != null)
+			{
+                var nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(requestId));
+                headerDictionary.ExtendDefaultContentSecurityPolicy(scriptSrc: $"nonce-{nonce}");
+			}
         }
 
         /// <summary>
