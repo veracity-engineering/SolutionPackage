@@ -15,4 +15,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="content\web.config.transform">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
