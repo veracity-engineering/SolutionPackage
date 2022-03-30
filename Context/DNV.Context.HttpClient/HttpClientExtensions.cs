@@ -2,6 +2,7 @@
 using System.Net.Http;
 using DNV.Context.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Newtonsoft.Json;
 
@@ -22,7 +23,7 @@ namespace DNV.Context.HttpClient
 
 		public static IHttpClientBuilder AddHttpClientContextHandler<T>(this IHttpClientBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
 		{
-			builder.Services.AddTransient(sp =>
+			builder.Services.TryAddTransient(sp =>
 				new HttpClientContextHandler<T>(sp.GetRequiredService<IContextAccessor<T>>(), jsonSerializerSettings));
 
 			builder.AddHttpMessageHandler<HttpClientContextHandler<T>>();
