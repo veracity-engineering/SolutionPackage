@@ -7,17 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="HttpResponseHeaderExtensions.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="content\web.config.transform">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <None Update="Content\web.config.transform">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
 
