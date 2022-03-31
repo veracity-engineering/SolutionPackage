@@ -1,10 +1,9 @@
 ﻿using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace DNVGL.OAuth.Api.HttpClient;
 
-[JsonConverter(typeof(StringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OAuthCredentialFlow
 {
 	[EnumMember(Value = "user-credentials")]

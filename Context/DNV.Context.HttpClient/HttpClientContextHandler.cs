@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DNV.Context.Abstractions;
 using DNV.Context.AspNet;
-using Newtonsoft.Json;
 
 namespace DNV.Context.HttpClient
 {
@@ -14,18 +14,18 @@ namespace DNV.Context.HttpClient
 	    public static readonly string ClientName = typeof(T).FullName;
 
         private readonly IContextAccessor<T> _contextAccessor;
-        private readonly JsonSerializerSettings? _jsonSerializerSettings;
+        private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
-        public HttpClientContextHandler(IContextAccessor<T> contextAccessor, JsonSerializerSettings? jsonSerializerSettings)
+        public HttpClientContextHandler(IContextAccessor<T> contextAccessor, JsonSerializerOptions? jsonSerializerOptions)
         {
 	        _contextAccessor = contextAccessor;
-	        _jsonSerializerSettings = jsonSerializerSettings;
+	        _jsonSerializerOptions = jsonSerializerOptions;
         }
 
-        public HttpClientContextHandler(HttpMessageHandler handler, IContextAccessor<T> contextAccessor, JsonSerializerSettings? jsonSerializerSettings) : base(handler)
+        public HttpClientContextHandler(HttpMessageHandler handler, IContextAccessor<T> contextAccessor, JsonSerializerOptions? jsonSerializerOptions) : base(handler)
         {
 	        _contextAccessor = contextAccessor;
-	        _jsonSerializerSettings = jsonSerializerSettings;
+	        _jsonSerializerOptions = jsonSerializerOptions;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -40,13 +40,10 @@ namespace DNV.Context.HttpClient
 	        if (_contextAccessor.Context == null)
 		        return;
 
-	        var serializer = JsonSerializer.CreateDefault(_jsonSerializerSettings);
-            var sb = new StringBuilder();
-	        using var sr = new StringWriter(sb);
-	        using var jr = new JsonTextWriter(sr);
-	        serializer.Serialize(jr, _contextAccessor.Context);
 
-            request.Headers.Add(AspNetContextAccessor<T>.HeaderKey, sb.ToString());
+	        var json = JsonSerializer.Serialize(_contextAccessor.Context, _jsonSerializerOptions);
+
+            request.Headers.Add(AspNetContextAccessor<T>.HeaderKey, json);
         }
     }
 }

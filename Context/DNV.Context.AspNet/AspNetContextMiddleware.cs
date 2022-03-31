@@ -1,23 +1,23 @@
 ﻿using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DNV.Context.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace DNV.Context.AspNet
 {
     public class AspNetContextMiddleware<T> where T: class
     {
         private readonly RequestDelegate _next;
-        private readonly JsonSerializerSettings? _jsonSerializerSettings;
+        private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
         public AspNetContextMiddleware(RequestDelegate next): this(next, null) { }
 
-        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerSettings? jsonSerializerSettings)
+        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerOptions? jsonSerializerOptions)
         {
             _next = next;
-            _jsonSerializerSettings = jsonSerializerSettings;
+            _jsonSerializerOptions = jsonSerializerOptions;
         }
 
         public async Task Invoke(HttpContext context)
@@ -30,7 +30,7 @@ namespace DNV.Context.AspNet
                 return;
             }
 
-            contextAccessor.Initialize(context, _jsonSerializerSettings);
+            contextAccessor.Initialize(context, _jsonSerializerOptions);
 
             await _next(context);
         }

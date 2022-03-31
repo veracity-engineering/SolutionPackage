@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading;
 using DNV.Context.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace DNV.Context.AspNet
 {
@@ -25,19 +25,15 @@ namespace DNV.Context.AspNet
 
 		public IAmbientContext<T>? Context => _asyncLocalContext;
 
-        internal void Initialize(HttpContext httpContext, JsonSerializerSettings? jsonSerializerSettings)
+        internal void Initialize(HttpContext httpContext, JsonSerializerOptions? jsonSerializerOptions)
         {
 	        if (Initialized) return;
 
 	        if (httpContext.Request.Headers.TryGetValue(HeaderKey, out var ctxJsonStr))
 	        {
-		        var serializer = JsonSerializer.CreateDefault(jsonSerializerSettings);
+		        var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
 
-		        using var sr = new StringReader(ctxJsonStr);
-		        using var jr = new JsonTextReader(sr);
-		        var ctx = serializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(jr);
-
-		        if (ctx?.Payload == null) return;
+				if (ctx?.Payload == null) return;
 
 				_asyncLocalContext.CreateContext(ctx.Payload, ctx.CorrelationId, ctx.Items);
 	        }

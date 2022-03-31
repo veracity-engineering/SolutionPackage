@@ -1,7 +1,6 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.Veracity.Services.Api.Exceptions;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -9,8 +8,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DNVGL.OAuth.Api.HttpClient.Extensions;
-using Microsoft.Identity.Client;
 
 namespace DNVGL.Veracity.Services.Api
 {
@@ -117,16 +114,21 @@ namespace DNVGL.Veracity.Services.Api
 
 		protected virtual async Task<T> BuildResult<T>(HttpResponseMessage response)
 		{
-			var result = response.IsSuccessStatusCode ? Deserialize<T>(await response.Content.ReadAsStreamAsync().ConfigureAwait(false)) : default;
+			var result = response.IsSuccessStatusCode 
+				? await DeserializeFromStream<T>(
+					await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false) 
+				: default;
 
 			return result;
 		}
 
 		protected string Serialize<T>(T value) => _serializer.Serialize(value);
 
-		protected void Serialize<T>(T value, Stream stream) => _serializer.Serialize(stream);
+		protected T? Deserialize<T>(string strValue) => _serializer.Deserialize<T>(strValue);
 
-		protected T Deserialize<T>(Stream stream) => _serializer.Deserialize<T>(stream);
+		protected Task SerializeToStream<T>(T value, Stream stream) => _serializer.SerializeAsync(value, stream);
+
+		protected Task<T?> DeserializeFromStream<T>(Stream stream) => _serializer.DeserializeAsync<T>(stream);
 
 		protected HttpContent ToJsonContent(string serializedContent) => new StringContent(serializedContent, Encoding.UTF8, "application/json");
 

@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using DNV.Context.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
-using Newtonsoft.Json;
 
 namespace DNV.Context.HttpClient
 {
     public static class HttpClientExtensions
     {
-	    public static IServiceCollection AddHttpClientContext<T>(this IServiceCollection services, Action<IServiceProvider, System.Net.Http.HttpClient>? configAction = null, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
+	    public static IServiceCollection AddHttpClientContext<T>(this IServiceCollection services, Action<IServiceProvider, System.Net.Http.HttpClient>? configAction = null, JsonSerializerOptions? jsonSerializerOptions = null) where T : class
 	    {
 		    var builder = configAction == null 
 			    ? services.AddHttpClient(HttpClientContextHandler<T>.ClientName) 
 			    : services.AddHttpClient(HttpClientContextHandler<T>.ClientName, configAction);
 
-		    builder.AddHttpClientContextHandler<T>(jsonSerializerSettings);
+		    builder.AddHttpClientContextHandler<T>(jsonSerializerOptions);
 
 		    return services;
 	    }
 
-		public static IHttpClientBuilder AddHttpClientContextHandler<T>(this IHttpClientBuilder builder, JsonSerializerSettings? jsonSerializerSettings = null) where T : class
+		public static IHttpClientBuilder AddHttpClientContextHandler<T>(this IHttpClientBuilder builder, JsonSerializerOptions? jsonSerializerOptions = null) where T : class
 		{
 			builder.Services.TryAddTransient(sp =>
-				new HttpClientContextHandler<T>(sp.GetRequiredService<IContextAccessor<T>>(), jsonSerializerSettings));
+				new HttpClientContextHandler<T>(sp.GetRequiredService<IContextAccessor<T>>(), jsonSerializerOptions));
 
 			builder.AddHttpMessageHandler<HttpClientContextHandler<T>>();
 

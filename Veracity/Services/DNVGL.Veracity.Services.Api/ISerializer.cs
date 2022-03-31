@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api
@@ -15,10 +16,10 @@ namespace DNVGL.Veracity.Services.Api
 
         string Serialize<T>(T value);
 
-        void Serialize<T>(T value, Stream stream);
+        Task SerializeAsync<T>(T value, Stream stream, CancellationToken cancellationToken = default);
 
-        T Deserialize<T>(string value);
+        T? Deserialize<T>(string strValue);
 
-        T Deserialize<T>(Stream stream);
+        Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default);
     }
 }
