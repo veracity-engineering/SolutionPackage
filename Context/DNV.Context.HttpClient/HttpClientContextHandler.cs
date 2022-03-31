@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DNV.Context.Abstractions;
 using DNV.Context.AspNet;
+using Microsoft.Extensions.Options;
 
 namespace DNV.Context.HttpClient
 {
@@ -16,10 +17,10 @@ namespace DNV.Context.HttpClient
         private readonly IContextAccessor<T> _contextAccessor;
         private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
-        public HttpClientContextHandler(IContextAccessor<T> contextAccessor, JsonSerializerOptions? jsonSerializerOptions)
+        public HttpClientContextHandler(IContextAccessor<T> contextAccessor, IOptions<JsonSerializerOptions>? jsonSerializerOptions)
         {
 	        _contextAccessor = contextAccessor;
-	        _jsonSerializerOptions = jsonSerializerOptions;
+	        _jsonSerializerOptions = jsonSerializerOptions?.Value;
         }
 
         public HttpClientContextHandler(HttpMessageHandler handler, IContextAccessor<T> contextAccessor, JsonSerializerOptions? jsonSerializerOptions) : base(handler)

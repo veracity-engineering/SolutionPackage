@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DNV.Context.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DNV.Context.AspNet
 {
@@ -12,12 +13,10 @@ namespace DNV.Context.AspNet
         private readonly RequestDelegate _next;
         private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
-        public AspNetContextMiddleware(RequestDelegate next): this(next, null) { }
-
-        public AspNetContextMiddleware(RequestDelegate next, JsonSerializerOptions? jsonSerializerOptions)
+        public AspNetContextMiddleware(RequestDelegate next, IOptions<JsonSerializerOptions>? jsonSerializerOptions)
         {
             _next = next;
-            _jsonSerializerOptions = jsonSerializerOptions;
+            _jsonSerializerOptions = jsonSerializerOptions?.Value;
         }
 
         public async Task Invoke(HttpContext context)
