@@ -29,7 +29,8 @@ namespace DNVGL.Veracity.Services.Api.My
         {
 			var result = default (T);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
-                result = Deserialize<T>(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
+                result = await DeserializeFromStream<T>(
+		                await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false);
             else if (response.IsSuccessStatusCode)
             {
                 var r = new PolicyValidationResult { StatusCode = (int)response.StatusCode };

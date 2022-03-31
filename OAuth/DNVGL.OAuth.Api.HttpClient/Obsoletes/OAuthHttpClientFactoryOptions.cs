@@ -1,8 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Runtime.Serialization;
-using DNV.OAuth.Abstractions;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {

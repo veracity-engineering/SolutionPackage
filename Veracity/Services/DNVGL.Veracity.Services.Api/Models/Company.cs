@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DNVGL.Veracity.Services.Api.Models
 {
@@ -15,11 +15,11 @@ namespace DNVGL.Veracity.Services.Api.Models
         public string CountryCode { get; set; }
         public string ZipCode { get; set; }
 
-        [JsonProperty("#employees")]
+        [JsonPropertyName("#employees")]
         public uint NumberOfEmployees { get; set; }
         public string Email { get; set; }
 
-        [JsonProperty("#requests")]
+        [JsonPropertyName("#requests")]
         public uint NumberOfRequests { get; set; }
         public string InternalId { get; set; }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace DNVGL.Common.Core.Pagination
 {
@@ -9,7 +8,6 @@ namespace DNVGL.Common.Core.Pagination
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-	[JsonObject]
     public class PaginatedResult<T>: IEnumerable<T>
     {
 	    private readonly IEnumerable<T> _result;

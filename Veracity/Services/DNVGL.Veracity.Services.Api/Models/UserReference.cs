@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace DNVGL.Veracity.Services.Api.Models
 {
     public class UserReference : Reference
     {
-        [JsonProperty("activated")]
+        [JsonPropertyName("activated")]
         public bool IsActivated { get; set; }
     }
 }
