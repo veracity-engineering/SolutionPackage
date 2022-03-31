@@ -3,19 +3,20 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using JSerializer= System.Text.Json.JsonSerializer;
 
 namespace DNVGL.Veracity.Services.Api
 {
     public class JsonSerializer : ISerializer
     {
-	    private readonly JsonSerializerOptions? _jsonSerializerOptions;
+	    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
 	    public DataFormat DataFormat => DataFormat.Json;
 
-		public JsonSerializer(JsonSerializerOptions? jsonSerializerOptions = null)
+		public JsonSerializer(IOptions<JsonSerializerOptions> jsonSerializerOptions)
 		{
-			_jsonSerializerOptions = jsonSerializerOptions;
+			_jsonSerializerOptions = jsonSerializerOptions.Value;
 		}
 
 		public T? Deserialize<T>(string strValue)
