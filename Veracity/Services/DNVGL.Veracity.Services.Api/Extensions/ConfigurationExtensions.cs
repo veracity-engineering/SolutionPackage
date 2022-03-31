@@ -11,14 +11,17 @@ namespace DNVGL.Veracity.Services.Api.Extensions
 {
     public static class ConfigurationExtensions
     {
-	    internal static readonly JsonSerializerOptions DefaultJsonSerializerOptions =
-		    new JsonSerializerOptions(JsonSerializerDefaults.Web);
+	    internal static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new(JsonSerializerDefaults.Web);
 
 		public static IServiceCollection AddSerializer(this IServiceCollection services, Action<JsonSerializerOptions>? optionsSetup = null)
         {
-			services.AddOptions()
-				.Configure(optionsSetup ?? (o => DefaultJsonSerializerOptions.CopyTo(o)))
-				.TryAddTransient<ISerializer, JsonSerializer>();
+	        if (optionsSetup == null)
+				services.TryAddSingleton(_ => Options.Create(DefaultJsonSerializerOptions));
+			else
+				services.AddOptions().Configure(optionsSetup);
+
+	        services.TryAddTransient<ISerializer, JsonSerializer>();
+
             return services;
         }
 
