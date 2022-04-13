@@ -25,7 +25,7 @@ namespace DNV.Context.AspNet
 
 		public IAmbientContext<T>? Context => _asyncLocalContext;
 
-        public void Initialize(HttpContext httpContext, JsonSerializerOptions? jsonSerializerOptions)
+        public void Initialize(HttpContext httpContext, JsonSerializerOptions? jsonSerializerOptions = null)
         {
 	        if (Initialized) return;
 
