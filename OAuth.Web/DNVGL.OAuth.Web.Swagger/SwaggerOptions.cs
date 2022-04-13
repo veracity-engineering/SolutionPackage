@@ -1,4 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using System;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace DNVGL.OAuth.Web.Swagger
 {
@@ -12,5 +14,6 @@ namespace DNVGL.OAuth.Web.Swagger
 		public OpenApiOAuthFlow ImplicitFlow { get; set; }
 		public OpenApiOAuthFlow AuthCodeFlow { get; set; }
 		public OpenApiOAuthFlow ClientCredsFlow { get; set; }
+		public Action<SwaggerGenOptions> PostConfigure { get; set; }
 	}
 }
