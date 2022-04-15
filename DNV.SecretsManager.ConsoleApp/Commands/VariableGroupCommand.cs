@@ -74,7 +74,8 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			// Type
 			var downloadOption = Options.First(o => o.Name.Equals("download"));
 			var uploadOption = Options.First(o => o.Name.Equals("upload"));
-			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption);
+			var clearOption = Options.First(o => o.Name.Equals("clear"));
+			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption, clearOption);
 
 			// Base url
 			BaseUrl = ConsoleCommand.GetStringOrInvalid(BaseUrl,

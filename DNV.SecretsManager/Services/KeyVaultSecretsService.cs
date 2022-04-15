@@ -102,6 +102,32 @@ namespace DNV.SecretsManager.Services
 			}
 		}
 
+		public override async Task<int> ClearSecrets(string source)
+		{
+			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
+			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
+			//await Task.WhenAll(tasks);
+
+			var secretKeys = new List<string>();
+			var secrets = await keyVaultClient.GetSecretsAsync(source);
+			while (!string.IsNullOrEmpty(secrets.NextPageLink))
+			{
+				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
+				var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
+				var results = await Task.WhenAll(tasks);
+				secretKeys.AddRange(results.Select(r => r.SecretIdentifier.Name));
+			}
+
+			var deletedCount = 0;
+			foreach (var secretKey in secretKeys)
+			{
+				Console.WriteLine($"Deleting secret: '{secretKey}'");
+				await keyVaultClient.DeleteSecretAsync(source, secretKey);
+				deletedCount++;
+			}
+			return deletedCount;
+		}
+
 		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
 		{
 			var token = await new AzureServiceTokenProvider().GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false);

@@ -19,6 +19,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			new ConsoleOption { Name = "help", Abbreviation = 'h', IsFlag = true, IsOptional = true },
 			new ConsoleOption { Name = "download", Abbreviation = 'd', IsFlag = true },
 			new ConsoleOption { Name = "upload", Abbreviation = 'u', IsFlag = true },
+			new ConsoleOption { Name = "clear", Abbreviation = 'c', IsFlag = true },
 			new ConsoleOption { Name = "url", Abbreviation = 's' },
 			new ConsoleOption { Name = "filename", Abbreviation = 'f' }
 		};
@@ -48,6 +49,8 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				Type = CommandType.Download;
 			if (options.ContainsKey("upload"))
 				Type = CommandType.Upload;
+			if (options.ContainsKey("clear"))
+				Type = CommandType.Clear;
 
 			if (options.ContainsKey("url"))
 				Url = options["url"].ToString();
@@ -59,7 +62,8 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			// Type
 			var downloadOption = Options.First(o => o.Name.Equals("download"));
 			var uploadOption = Options.First(o => o.Name.Equals("upload"));
-			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption);
+			var clearOption = Options.First(o => o.Name.Equals("clear"));
+			Type = ConsoleCommand.GetCommandTypeOrInvalid(Type, downloadOption, uploadOption, clearOption);
 
 			// Url
 			Url = ConsoleCommand.GetStringOrInvalid(Url,
@@ -90,6 +94,14 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
 			}
+			if (Type == CommandType.Clear)
+			{
+				Console.WriteLine($"Clearing all secrets in KeyVault '{Url}'...");
+				var result = await ClearKeyVaultSecrets(Url);
+				Console.WriteLine($"Clear complete.  Cleared {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
+				return;
+
+			}
 			DisplayHelp();
 		}
 
@@ -119,6 +131,19 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			return new CommandResult
 			{
 				Count = secrets.Count,
+				ElapsedTime = stopwatch.Elapsed
+			};
+		}
+
+		private static async Task<CommandResult> ClearKeyVaultSecrets(string keyVaultBaseUrl)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			var secretsService = new KeyVaultSecretsService();
+			var deletedCount = await secretsService.ClearSecrets(keyVaultBaseUrl);
+			stopwatch.Stop();
+			return new CommandResult
+			{
+				Count = deletedCount,
 				ElapsedTime = stopwatch.Elapsed
 			};
 		}

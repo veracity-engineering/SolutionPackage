@@ -42,5 +42,10 @@ namespace DNV.SecretsManager.Services
 			});
 			await _client.SetVariableGroup(source, group);
 		}
+
+		public override Task<int> ClearSecrets(string source)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }
