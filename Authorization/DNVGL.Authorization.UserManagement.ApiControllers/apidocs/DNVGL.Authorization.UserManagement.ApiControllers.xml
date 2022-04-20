@@ -1,0 +1,1182 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DNVGL.Authorization.UserManagement.ApiControllers</name>
+    </assembly>
+    <members>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute">
+            <summary>
+            Provides a api controller filter to add permissions check for users when access resource of company they do not belong.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute.PermissionsToCheck">
+            <summary>
+            Get a collection of required permissions.
+            </summary>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute.#ctor(System.String[])">
+            <summary>
+            Constructs a new instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute"/>.
+            </summary>
+            <param name="permissionsToCheck">A collection of required permissions.</param>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute.#ctor(System.Object[])">
+            <summary>
+            Constructs a new instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.AccessCrossCompanyPermissionFilterAttribute"/>.
+            </summary>
+            <param name="permissionsToCheck">A collection of required permissions.</param>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.AccessibleCompanyFilterAttribute">
+            <summary>
+             Provides a api controller filter to check if user has access on a specific company resource.
+            </summary>
+            <remarks>
+            The specific Company Id is specified in attribute <see cref="T:DNVGL.Authorization.Web.CompanyIdentityFieldNameFilterAttribute"/>
+            </remarks>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.AccessibleCompanyFilterAttribute.#ctor">
+            <summary>
+            Constructs a new instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.AccessibleCompanyFilterAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.GetCompanys">
+            <summary>
+            Get all companies.
+            </summary>
+            <remarks>
+            Required Permission: ViewCompany
+            </remarks>
+            <returns>An array of company</returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.GetCompany(System.String)">
+            <summary>
+            Get a company by companyId
+            </summary>
+            <remarks>
+            Required Permission: ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.GetCompanyByDomain(System.String)">
+            <summary>
+            Get a company from its dedicated domain url.
+            </summary>
+            <remarks>
+            Required Permission: None
+            </remarks>
+            <param name="url">Company Domain URL</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.CreateCompanyFromCustomModel(`0)">
+             <summary>
+             Create a company using custom model. Only if custom company model is used.
+             </summary>
+             <remarks>
+             Required Permissions: ManageCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "domainUrl": "",
+                    "active":true,
+                    "customProperty":"",
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.CreateCompany(DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel)">
+             <summary>
+             Create a company.
+             </summary>
+             <remarks>
+             Required Permissions: ManageCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "domainUrl": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.UpdateCompanyFromCustomModel(System.String,`0)">
+             <summary>
+             Update a company using custom model. Only if custom company model is used.
+             </summary>
+             <remarks>
+             Required Permissions: ManageCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "domainUrl": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="id"></param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.UpdateCompany(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel)">
+             <summary>
+             Update a company
+             </summary>
+             <remarks>
+             Required Permissions: ManageCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "domainUrl": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="id"></param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.CompaniesController`2.DeleteCompany(System.String)">
+            <summary>
+            Delete a company. It is hard delete.
+            </summary>
+            <remarks>
+            Required Permissions: ManageCompany
+            </remarks>
+            <param name="id">Company Id</param>
+            <returns></returns>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel">
+            <summary>
+            Represents company information for a company edit record.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.Name">
+            <summary>
+            Gets or sets the company name for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.Description">
+            <summary>
+            Gets or sets the company description for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.ServiceId">
+            <summary>
+            Gets or sets the service id for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.DomainUrl">
+            <summary>
+            Gets or sets the company web domain for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.Active">
+            <summary>
+            Gets or sets a flag indicating if this company is active or not.
+            </summary>
+            <value>True if this company is active, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyEditModel.PermissionKeys">
+            <summary>
+            Gets or sets the company permissions for this company.
+            </summary>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto">
+            <summary>
+            Represents company information for a company view record.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.permissions">
+            <summary>
+            Gets or sets the company permissions for this company.
+            </summary>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel">
+            <summary>
+            Represents role information for a role edit record.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel.Name">
+            <summary>
+            Gets or sets the role name for this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel.Description">
+            <summary>
+            Gets or sets the role description for this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel.Active">
+            <summary>
+            Gets or sets a flag indicating if this role is active or not.
+            </summary>
+            <value>True if this role is active, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel.PermissionKeys">
+            <summary>
+            Gets the company permission list for this role.
+            </summary>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto">
+            <summary>
+            Represents role information for a role view record..
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.permissions">
+            <summary>
+            Gets the company permission list for this role.
+            </summary>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel">
+            <summary>
+            Represents user information for a user edit record.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.Email">
+            <summary>
+            Gets or sets the email for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.FirstName">
+            <summary>
+            Gets or sets the first name for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.LastName">
+            <summary>
+            Gets or sets the last name for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.VeracityId">
+            <summary>
+            Gets or sets the identity id for this user.
+            </summary>
+            <remarks>
+            It is an id provided by identity provider. 
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.Description">
+            <summary>
+            Gets or sets the description for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.SuperAdmin">
+            <summary>
+            Gets or sets a flag indicating if this user is super admin or not.
+            </summary>
+            <value>True if this user is super admin, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.RoleIds">
+            <summary>
+            Gets or sets id of roles which this user has.
+            </summary>
+            <value>Role's ids are combined as a string which use semicolon(;) as a delimiter.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.CompanyIds">
+            <summary>
+            Gets or sets id of company to which this user belongs.
+            </summary>
+            <value>Company's ids are combined as a string which use semicolon(;) as a delimiter.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel.Active">
+            <summary>
+            Gets or sets a flag indicating if this user is active or not.
+            </summary>
+            <value>True if this user is active, otherwise false.</value>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel">
+            <summary>
+            Represents user information for a user view record.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Roles">
+            <summary>
+            Get the list of roles which this user has.
+            </summary>
+            <remarks>
+            <para>Do not set this property to change a user's role. Instead, set <see cref="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.RoleIds"/>.</para>
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Companies">
+            <summary>
+            Get the list of companys to which this user belongs.
+            </summary>
+            <remarks>
+            <para>Do not set this property to change a user's company. Instead, set <see cref="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.CompanyIds"/>.</para>
+            </remarks>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.GetRoles">
+            <summary>
+            Get all roles.
+            </summary>
+            <remarks>
+            Required Permission: ViewRole
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.GetRole(System.String)">
+            <summary>
+            Get role by role id
+            </summary>
+            <remarks>
+            Required Permission: ViewRole
+            </remarks>
+            <param name="id">Role id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.CreateRoleFromCustomModel(`0)">
+             <summary>
+             Create a role using custom model. Only if custom role model is used.
+             </summary>
+             <remarks>
+             Required Permission: ManageRole
+              
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.CreateRole(DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel)">
+             <summary>
+             Create a role
+             </summary>
+             <remarks>
+             Required Permission: ManageRole
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.UpdateRoleFromCustomModel(System.String,`0)">
+             <summary>
+             Update a role using custom model. Only if custom role model is used.
+             </summary>
+             <remarks>
+             Required Permission: ManageRole
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="id"></param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.UpdateRole(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel)">
+             <summary>
+             Update a role.
+             </summary>
+             <remarks>
+             Required Permission: ManageRole
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="id">Role Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.DeleteRole(System.String)">
+            <summary>
+            Delete a role.
+            </summary>
+            <remarks>
+            Required Permission: ManageRole
+            </remarks>
+            <param name="id">Role Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUsers">
+            <summary>
+            Get all users
+            </summary>
+            <remarks>
+            Required Permission: ViewUser
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUser(System.String)">
+            <summary>
+            Get a user by user id
+            </summary>
+            <remarks>
+            Required Permission: ViewUser
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.UpdateUserFromCustomModel(System.String,`0)">
+             <summary>
+             Update a user using custom model. Only if custom user model is used.
+             </summary>
+             <remarks>
+             Required Permissions: ManageUser
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.UpdateUser(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Update a user
+             </summary>
+             <remarks>
+             Required Permissions: ManageUser
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.CreateUserFromCustommodel(`0)">
+             <summary>
+             Create a user using custom model. Only if custom user model is used.
+             </summary>
+             <remarks>
+             Required Permissions: ManageUser
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.CreateUser(DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Create a user
+             </summary>
+             <remarks>
+             Required Permissions: ManageUser
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.DeleteUser(System.String)">
+            <summary>
+            Delete a user
+            </summary>
+            <remarks>
+            Required Permissions: ManageUser
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUserByIdentityId">
+            <summary>
+            Get current user info.
+            </summary>
+            <remarks>
+            No Required Permissions
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUserCorssCompanyPermissions(System.String)">
+            <summary>
+            Get a user's all permissions
+            </summary>
+            <remarks>
+            No Required Permissions
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.GetCompanyRoles(System.String)">
+            <summary>
+            Get all roles of a company.
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewRole 
+            
+            Required Permission for user not in this company: ViewRole,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.GetRole(System.String,System.String)">
+            <summary>
+            Get a role by its id
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewRole 
+            
+            Required Permission for user not in this company: ViewRole,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="id">Role Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.CreateRoleFromCustomModel(System.String,`1)">
+             <summary>
+             Create a role using custom model. Only if custom role model is used.
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageRole 
+             
+             Required Permission for user not in this company: ManageRole,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.CreateRole(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel)">
+             <summary>
+             Create a role
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageRole 
+             
+             Required Permission for user not in this company: ManageRole,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.UpdateRoleFromCustomModel(System.String,System.String,`1)">
+             <summary>
+             Update a role using custom model. Only if custom role model is used.
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageRole 
+             
+             Required Permission for user not in this company: ManageRole,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="id">Role Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.UpdateRole(System.String,System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel)">
+             <summary>
+             Update a role
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageRole 
+             
+             Required Permission for user not in this company: ManageRole,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "name": "Item1",
+                    "description": "",
+                    "active":true,
+                    "permissionKeys":["ReadWeather","ManageWeather"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="id">Role Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.DeleteRole(System.String,System.String)">
+            <summary>
+            Delete Role
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ManageRole 
+            
+            Required Permission for user not in this company: ManageRole,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="id">Role Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.RolesController`3.GetRoles">
+            <summary>
+            Get all roles
+            </summary>
+            <remarks>
+            Required Permission: ViewRole, ViewCompany 
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup">
+            <summary>
+            Provides extension methods to register user management related services to <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup.AddUserManagement(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions)">
+            <summary>
+            <para>Thie extension methods will setup user management module with built in services and data models:<see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Company"/>,<see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Role"/> and <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.User"/>.</para>
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></param>
+            <param name="options">A instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions"/> to configure the user management module.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup.AddUserManagementWithCustomModel``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions)">
+            <summary>
+            <para>Thie extension methods will setup user management module with built in services and data models:<see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Company"/> and <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Role"/>.</para>
+            <para>A customized user model should be specified to replace generic type: <c>TUser</c></para>
+            </summary>
+            <typeparam name="TUser">The type that represents a customized user model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.User"/>.</typeparam>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></param>
+            <param name="options">A instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions"/> to configure the user management module.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+            <remarks>
+            <example>For example,
+            <code>
+            services.AddUserManagementWithCustomModel&lt;User&gt;(
+            ...
+            });
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup.AddUserManagementWithCustomModel``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions)">
+            <summary>
+            <para>Thie extension methods will setup user management module with built in services and data models:<see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Role"/>.</para>
+            <para>customized company and user model should be specified to replace generic type: <c>TCompany</c>, <c>TUser</c></para>
+            </summary>
+            <typeparam name="TCompany">The type that represents a customized company model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Company"/>.</typeparam>
+            <typeparam name="TUser">The type that represents a customized user model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.User"/>.</typeparam>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></param>
+            <param name="options">A instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions"/> to configure the user management module.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+            <remarks>
+            <example>For example,
+            <code>
+            services.AddUserManagementWithCustomModel&lt;Company,User&gt;(
+            ...
+            });
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup.AddUserManagementWithCustomModel``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions)">
+            <summary>
+            <para>Thie extension methods will setup user management module with built in services.</para>
+            <para>customized company, role and user model should be specified to replace generic type: <c>TCompany</c>, <c>TRole</c>, <c>TUser</c></para>
+            </summary>
+            <typeparam name="TCompany">The type that represents a customized company model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Company"/>.</typeparam>
+            <typeparam name="TRole">The type that represents a customized role model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Role"/>.</typeparam>
+            <typeparam name="TUser">The type that represents a customized user model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.User"/>.</typeparam>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></param>
+            <param name="options">A instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions"/> to configure the user management module.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+            <remarks>
+            <example>For example,
+            <code>
+            services.AddUserManagementWithCustomModel&lt;Company,Role,User&gt;(
+            ...
+            });
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementDefaultSetup.AddUserManagementWithCustomModelAndCRUD``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions)">
+            <summary>
+            <para>customized data access service to be registered into <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> at other place.</para>
+            <para>customized company, role and user model should be specified to replace generic type: <c>TCompany</c>, <c>TRole</c>, <c>TUser</c>.</para>
+            </summary>
+            <typeparam name="TCompany">The type that represents a customized company model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Company"/>.</typeparam>
+            <typeparam name="TRole">The type that represents a customized role model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.Role"/>.</typeparam>
+            <typeparam name="TUser">The type that represents a customized user model.It mush be inherited from <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.Entity.User"/>.</typeparam>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></param>
+            <param name="options">A instance of <see cref="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions"/> to configure the user management module.</param>
+            <returns><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+            <remarks>
+            <example>For example,
+            <code>
+            services.AddUserManagementWithCustomModel&lt;Company,Role,User&gt;(
+            ...
+            });
+            services.AddDbContext&lt;UserManagementContext&gt;(options => options.UseSqlServer(@"Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;"))
+                   .AddScoped&lt;IUserPermissionReader, UserPermissionReader&gt;()
+                   .AddScoped&lt;IRole&lt;Role&gt;, RoleRepository&gt;()
+                   .AddScoped&lt;IUser&lt;User&gt;, UserRepository&gt;()
+                   .AddScoped&lt;ICompany&lt;Company&gt;, CompanyRepository&gt;();
+            </code>
+            </example>
+            </remarks>
+        </member>
+        <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions">
+            <summary>
+            Provides an option to configure the user management module.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions.Mode">
+            <summary>
+            Gets or sets the <see cref="T:DNVGL.Authorization.UserManagement.Abstraction.UserManagementMode"/>.
+            </summary>
+            <remarks>
+            By default, it is <see cref="F:DNVGL.Authorization.UserManagement.Abstraction.UserManagementMode.Company_CompanyRole_User"/>.
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions.PermissionOptions">
+            <summary>
+            Gets or sets the <see cref="P:DNVGL.Authorization.UserManagement.ApiControllers.UserManagementOptions.PermissionOptions"/>.
+            <example>For example, Get user identity from name claim in windows authentication:
+            <code>
+               PermissionOptions = new PermissionOptions{
+                   GetUserIdentity = (userPrincipal) => userPrincipal.Claims.FirstOrDefault(t => t.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value,
+                   HandleUnauthorizedAccess = BuiltinUnauthorizedAccessHandler.Return403ForbiddenCode}
+            </code>
+            </example>
+            </summary>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUsers(System.String)">
+            <summary>
+            Get all user of a company
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUser(System.String,System.String)">
+            <summary>
+            Get user info by user id
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.UpdateUserFromCustomModel(System.String,System.String,`1)">
+             <summary>
+             Update a user using custom model. Only if custom user model is used.
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageUser 
+             
+             Required Permission for user not in this company: ManageUser,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.UpdateUser(System.String,System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Update a user
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageUser 
+             
+             Required Permission for user not in this company: ManageUser,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.CreateUserFromCustommodel(System.String,`1)">
+             <summary>
+             Create a user using custom model. Only if custom user model is used.
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageUser 
+             
+             Required Permission for user not in this company: ManageUser,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.CreateUser(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Create a user.
+             </summary>
+             <remarks>
+             Required Permission for user in the this company: ManageUser 
+             
+             Required Permission for user not in this company: ManageUser,ViewCompany
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="companyId">Company Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.DeleteUser(System.String,System.String)">
+            <summary>
+            Delete a user
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ManageUser 
+            
+            Required Permission for user not in this company: ManageUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCompanyUserByIdentityId(System.String)">
+            <summary>
+            Get Current user info with user's permission in this company.
+            </summary>
+            <remarks>
+            No permission is required
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUserPermissions(System.String,System.String)">
+            <summary>
+            Ger a user's permission in this company.
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUserByIdentityId">
+            <summary>
+            Get Current user info with user's all permission 
+            </summary>
+            <remarks>
+            No permission is required
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUserCorssCompanyPermissions(System.String)">
+            <summary>
+            Get a user's all permissions.
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCrossCompanyUsers">
+            <summary>
+            Get all users. 
+            </summary>
+            <remarks>
+            Required Permission: ViewUser,ViewCompany
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCrossCompanyUser(System.String)">
+            <summary>
+            Get a user's info. Only using it if user's company is unknown.
+            </summary>
+            <remarks>
+            Required Permission: ViewUser,ViewCompany
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.CreateCrossCompanyUserFromCustomModel(`1)">
+             <summary>
+             Create a user using custom model. Only if custom user model is used. Only using it if user's company is unknown.
+             </summary>
+             <remarks>
+             Required Permission: ManageUser, ViewCompany 
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.CreateCrossCompanyUser(DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Create a user. Only using it if user's company is unknown.
+             </summary>
+             <remarks>
+             Required Permission: ManageUser, ViewCompany 
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.UpdateCrossCompanyUserFromCustomModel(System.String,`1)">
+             <summary>
+             Update a user using custom model. Only if custom user model is used. Only using it if user's company is unknown.
+             </summary>
+             <remarks>
+             Required Permission: ManageUser, ViewCompany 
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.UpdateCrossCompanyUser(System.String,DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel)">
+             <summary>
+             Update a user.Only using it if user's company is unknown.
+             </summary>
+             <remarks>
+             Required Permission: ManageUser, ViewCompany 
+             
+             Sample request:
+            
+                 {
+                    "email": "",
+                    "firstName": "",
+                    "lastName": "",
+                    "veracityId": "user identity id in Identity Provider",
+                    "description": "",
+                    "superAdmin": false,
+                    "active":true,
+                    "roleIds":["1","2"],
+                    "companyIds":["1","2"]
+                 }
+            
+             </remarks>
+             <param name="id">User Id</param>
+             <param name="model"></param>
+             <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.DeleteCrossCompanyUser(System.String)">
+            <summary>
+            Delete a user.Only using it if user's company is unknown.
+            </summary>
+            <remarks>
+            Required Permission: ManageUser, ViewCompany 
+            </remarks>
+            <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -15,17 +15,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiV3", "ApiV3", "{FB9BE59A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authorization", "Authorization", "{2E985B44-D129-41BC-8CA8-7AC4975CFE61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web", "DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web", "Authorization\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.Abstraction", "DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.Abstraction", "Authorization\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web.Tests", "DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web.Tests", "Authorization\DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore", "DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj", "{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore", "Authorization\DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj", "{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.ApiControllers", "DNVGL.Authorization.UserManagement.ApiControllers\DNVGL.Authorization.UserManagement.ApiControllers.csproj", "{E1083941-EBD5-43FF-ADD7-FDA087FF9900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.ApiControllers", "Authorization\DNVGL.Authorization.UserManagement.ApiControllers\DNVGL.Authorization.UserManagement.ApiControllers.csproj", "{E1083941-EBD5-43FF-ADD7-FDA087FF9900}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore.Tests", "DNVGL.Authorization.UserManagement.EFCore.Tests\DNVGL.Authorization.UserManagement.EFCore.Tests.csproj", "{06A08091-8196-4629-A907-08C251BFD6A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore.Tests", "Authorization\DNVGL.Authorization.UserManagement.EFCore.Tests\DNVGL.Authorization.UserManagement.EFCore.Tests.csproj", "{06A08091-8196-4629-A907-08C251BFD6A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DDD", "DDD", "{896376C3-33A0-4A46-B33E-ACE7229F5452}"
 EndProject
