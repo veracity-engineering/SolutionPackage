@@ -24,7 +24,7 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Validator
 
 		public async Task Validate<TOptions>(RemoteAuthenticationContext<TOptions> ctx, PolicyValidationOptions options) where TOptions : AuthenticationSchemeOptions
 		{
-			var returnUrl = options.GetReturnUrl?.Invoke(ctx.HttpContext) ?? GetDefaultReturnUrl(ctx);
+			var returnUrl = options.GetReturnUrl?.Invoke(ctx.HttpContext, ctx.Properties.RedirectUri) ?? GetDefaultReturnUrl(ctx);
 
 			PolicyValidationResult result;
 			if ((options.PolicyValidationMode & PolicyValidationMode.PlatformAndService) > 0)
