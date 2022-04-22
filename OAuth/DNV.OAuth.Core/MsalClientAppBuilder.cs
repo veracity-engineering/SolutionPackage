@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using DNV.OAuth.Abstractions;
+using DNV.OAuth.Core.Exceptions;
 using Microsoft.Identity.Client;
 
 namespace DNV.OAuth.Core
@@ -33,6 +35,9 @@ namespace DNV.OAuth.Core
 
 			_tokenCacheProvider.InitializeAsync(clientApp.UserTokenCache);
 			_tokenCacheProvider.InitializeAsync(clientApp.AppTokenCache);
+
+			if (options.Scopes == null || !options.Scopes.Any())
+				throw new MissingScopesException();
 
 			return new MsalClientApp(clientApp, options.Scopes);
 		}
