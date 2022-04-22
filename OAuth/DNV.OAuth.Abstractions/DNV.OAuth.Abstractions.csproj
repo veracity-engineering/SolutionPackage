@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
-		<AssemblyName>DNVGL.OAuth.Web.Abstractions</AssemblyName>
+		<AssemblyName>DNVGL.OAuth.Abstractions</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
