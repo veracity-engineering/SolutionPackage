@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>10.0</LangVersion>
+	<Nullable>enable</Nullable>
+    <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
+    <Company>DNVGL</Company>
+    <AssemblyName>DNVGL.OAuth.Api.HttpClient</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Description>Provides a factory for producing authenticated HttpClients for API integration via OAuth.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.9" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNV.OAuth.Abstractions\DNV.OAuth.Abstractions.csproj" />
+    <ProjectReference Include="..\DNV.OAuth.Core\DNV.OAuth.Core.csproj" />
+  </ItemGroup>
+
+</Project>

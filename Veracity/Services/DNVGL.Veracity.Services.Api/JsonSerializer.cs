@@ -1,51 +1,42 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using JSerializer= System.Text.Json.JsonSerializer;
 
 namespace DNVGL.Veracity.Services.Api
 {
     public class JsonSerializer : ISerializer
     {
-	    private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
+	    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
 	    public DataFormat DataFormat => DataFormat.Json;
 
-		public JsonSerializer(Newtonsoft.Json.JsonSerializer jsonSerializer = null)
+		public JsonSerializer(IOptions<JsonSerializerOptions> jsonSerializerOptions)
 		{
-			_jsonSerializer = jsonSerializer ?? Newtonsoft.Json.JsonSerializer.Create();
+			_jsonSerializerOptions = jsonSerializerOptions.Value;
 		}
 
-		public T Deserialize<T>(string value)
+		public T? Deserialize<T>(string strValue)
 		{
-			using (var reader = new StringReader(value))
-			using (var jsonReader = new JsonTextReader(reader))
-				return _jsonSerializer.Deserialize<T>(jsonReader);
+			return JSerializer.Deserialize<T>(strValue, _jsonSerializerOptions);
 		}
 
-		public T Deserialize<T>(Stream stream)
+		public Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken)
 		{
-			using (var reader = new StreamReader(stream))
-			using (var jsonReader = new JsonTextReader(reader))
-				return _jsonSerializer.Deserialize<T>(jsonReader);
+			return JSerializer.DeserializeAsync<T>(stream, _jsonSerializerOptions, cancellationToken).AsTask();
 		}
 
 		public string Serialize<T>(T value)
 		{
-			var sb = new StringBuilder(1000);
-
-			using (var writer = new StringWriter(sb))
-			using (var jsonWriter = new JsonTextWriter(writer))
-				_jsonSerializer.Serialize(jsonWriter, value, typeof(T));
-
-			return sb.ToString();
+			return JSerializer.Serialize(value, _jsonSerializerOptions);
 		}
 
-		public void Serialize<T>(T value, Stream stream)
+		public Task SerializeAsync<T>(T value, Stream stream, CancellationToken cancellationToken)
 		{
-			using (var writer = new StreamWriter(stream))
-			using (var jsonWriter = new JsonTextWriter(writer))
-				_jsonSerializer.Serialize(jsonWriter, value, typeof(T));
+			return JSerializer.SerializeAsync(stream, value, _jsonSerializerOptions, cancellationToken);
 		}
 	}
 }

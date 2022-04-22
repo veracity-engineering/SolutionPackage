@@ -1,34 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DNVGL.Common.Core.Pagination
 {
     /// <summary>
     /// 
     /// </summary>
-    public static class PaginatedResult
+    /// <typeparam name="T"></typeparam>
+    public class PaginatedResult<T>: IEnumerable<T>
     {
-        private class PResult<T> : IPaginatedResult<T>
+	    private readonly IEnumerable<T> _result;
+
+	    public PaginatedResult(IEnumerable<T> result, int pageIndex, int pageSize, int? totalCount)
+	    {
+		    if (pageIndex <= 0)
+			    throw new ArgumentOutOfRangeException(nameof(pageIndex), "Must be greater than zero.");
+		    if (pageSize <= 0)
+			    throw new ArgumentOutOfRangeException(nameof(pageSize), "Must be greater than zero.");
+		    if (totalCount < 0)
+			    throw new ArgumentOutOfRangeException(nameof(totalCount), "Must be greater than or equal to zero.");
+		    _result = result;
+            PageIndex = pageIndex;
+		    PageSize = pageSize;
+		    TotalCount = totalCount;
+	    }
+
+        public int PageIndex { get; }
+
+        public int PageSize { get; }
+
+        public int? TotalCount { get; }
+
+        public int? TotalPages => TotalCount.HasValue? 
+	        TotalCount / PageSize + (((TotalCount % PageSize) > 0)? 1: 0): 
+	        null;
+
+        public IEnumerator<T> GetEnumerator()
         {
-            public PResult(IEnumerable<T> result, ContinuationToken continuationToken)
-            {
-                Result = result;
-
-                ContinuationToken = continuationToken;
-            }
-
-            public IEnumerable<T> Result { get; }
-
-            public ContinuationToken ContinuationToken { get; }
+	        return _result.GetEnumerator();
         }
 
-        public static IPaginatedResult<T> Create<T>(IEnumerable<T> result, ContinuationToken continuationToken)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return new PResult<T>(result, continuationToken);
-        }
-
-        public static IPaginatedResult<T> PaginateAt<T>(this IEnumerable<T> result, ContinuationToken continuationToken)
-        {
-            return Create(result, continuationToken);
+	        return GetEnumerator();
         }
     }
 }

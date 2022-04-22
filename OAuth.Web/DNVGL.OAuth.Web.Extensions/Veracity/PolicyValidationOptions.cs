@@ -7,10 +7,10 @@ namespace DNV.OAuth.Web.Extensions.Veracity
     {
         public PolicyValidationMode PolicyValidationMode { get; set; }
 
-        public string VeracityPolicyApiConfigName { get; set; }
+        public string? VeracityPolicyApiConfigName { get; set; }
 
-        public string ServiceId { get; set; }
+        public string? ServiceId { get; set; }
 
-        public Func<HttpContext, string> GetReturnUrl { get; set; }
+        public Func<HttpContext, string, string>? GetReturnUrl { get; set; }
     }
 }

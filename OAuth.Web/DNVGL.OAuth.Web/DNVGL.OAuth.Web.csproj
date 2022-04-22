@@ -13,7 +13,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.16" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.23" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.23" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.10" />
 	</ItemGroup>
 
@@ -25,11 +25,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Identity.Client" Version="4.37.0" />
+	  <PackageReference Include="Microsoft.Identity.Client" Version="4.42.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DNVGL.OAuth.Web.Abstractions\DNVGL.OAuth.Web.Abstractions.csproj" />
+	  <ProjectReference Include="..\..\OAuth\DNV.OAuth.Abstractions\DNV.OAuth.Abstractions.csproj" />
+	  <ProjectReference Include="..\..\OAuth\DNV.OAuth.Core\DNV.OAuth.Core.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">

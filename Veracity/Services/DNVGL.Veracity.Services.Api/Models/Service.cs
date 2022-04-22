@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace DNVGL.Veracity.Services.Api.Models
 {
@@ -17,13 +17,13 @@ namespace DNVGL.Veracity.Services.Api.Models
 
         public string Category { get; set; }
 
-        [JsonProperty("public")]
+        [JsonPropertyName("public")]
         public bool IsPublic { get; set; }
 
-        [JsonProperty("inherited")]
+        [JsonPropertyName("inherited")]
         public bool IsInherited { get; set; }
 
-        [JsonProperty("selfSubscribe")]
+        [JsonPropertyName("selfSubscribe")]
         public bool IsSelfSubscribable { get; set; }
 
         public string ServiceOwner { get; set; }

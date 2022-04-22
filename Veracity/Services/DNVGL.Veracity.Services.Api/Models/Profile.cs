@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace DNVGL.Veracity.Services.Api.Models
 {
@@ -13,24 +13,24 @@ namespace DNVGL.Veracity.Services.Api.Models
         public string Email { get; set; }
         public string Id { get; set; }
 
-        [JsonProperty("#companies")]
+        [JsonPropertyName("#companies")]
         public uint NumberOfCompanies { get; set; }
 
-        [JsonProperty("verifiedEmail")]
+        [JsonPropertyName("verifiedEmail")]
         public bool IsEmailVerified { get; set; }
         public string Language { get; set; }
         public string Phone { get; set; }
 
-        [JsonProperty("verifiedPhone")]
+        [JsonPropertyName("verifiedPhone")]
         public bool IsPhoneVerified { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string CountryCode { get; set; }
 
-        [JsonProperty("managedAccount")]
+        [JsonPropertyName("managedAccount")]
         public bool IsAccountManaged { get; set; }
 
-        [JsonProperty("activated")]
+        [JsonPropertyName("activated")]
         public bool IsActivated { get; set; }
     }
 }
