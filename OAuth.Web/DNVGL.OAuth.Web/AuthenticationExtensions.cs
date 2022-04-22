@@ -275,7 +275,7 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		public static void AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			services.AddDataProtection();
 
@@ -302,6 +302,8 @@ namespace DNVGL.OAuth.Web
 				var result = await clientApp.AcquireTokenByAuthorizationCode(authCode, codeVerifier);
 				context.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			}
+
+			return services;
 		}
 		#endregion
 	}
