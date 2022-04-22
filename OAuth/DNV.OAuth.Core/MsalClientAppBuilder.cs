@@ -37,7 +37,7 @@ namespace DNV.OAuth.Core
 			_tokenCacheProvider.InitializeAsync(clientApp.AppTokenCache);
 
 			if (options.Scopes == null || !options.Scopes.Any())
-				throw new MissingScopesException();
+				throw new MissingScopeException();
 
 			return new MsalClientApp(clientApp, options.Scopes);
 		}
