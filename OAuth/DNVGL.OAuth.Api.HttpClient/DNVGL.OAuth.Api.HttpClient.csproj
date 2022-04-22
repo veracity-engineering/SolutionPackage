@@ -6,6 +6,9 @@
 	<Nullable>enable</Nullable>
     <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
     <Company>DNVGL</Company>
+    <AssemblyName>DNVGL.OAuth.Api.HttpClient</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Description>Provides a factory for producing authenticated HttpClients for API integration via OAuth.</Description>
   </PropertyGroup>
 
   <ItemGroup>

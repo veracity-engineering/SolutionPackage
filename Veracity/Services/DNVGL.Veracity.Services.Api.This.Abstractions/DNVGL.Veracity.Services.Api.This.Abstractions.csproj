@@ -6,6 +6,7 @@
     <Company>DNVGL</Company>
     <AssemblyName>DNVGL.Veracity.Services.Api.This.Abstractions</AssemblyName>
 	  <Description>Abstractions supporting the DNVGL.Veracity.Services.Api.This package.</Description>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
