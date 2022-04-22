@@ -7,6 +7,7 @@
     <AssemblyName>DNVGL.Veracity.Services.Api.My</AssemblyName>
 	  <Description>Provides an async .NET client for the 'My' view point in Veracity My Service API v3.
 Allows fetching information and making requests for the authenticated user.</Description>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
