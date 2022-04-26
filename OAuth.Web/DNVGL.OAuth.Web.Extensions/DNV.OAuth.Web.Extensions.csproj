@@ -6,6 +6,7 @@
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Version>1.1.1</Version>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
@@ -14,8 +15,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.22" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
-		<ProjectReference Include="..\..\Veracity\Services\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
+		<ProjectReference
+			Include="..\..\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
+		<ProjectReference
+			Include="..\..\Veracity\Services\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
 		<ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
 	</ItemGroup>
 

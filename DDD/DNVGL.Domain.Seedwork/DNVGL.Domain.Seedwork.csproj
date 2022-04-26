@@ -5,5 +5,6 @@
 		<Nullable>enable</Nullable>
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
+		<Version>1.1.1</Version>
 	</PropertyGroup>
 </Project>
