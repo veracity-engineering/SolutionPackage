@@ -5,6 +5,7 @@
 		<Company>DNV</Company>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+
 	</PropertyGroup>
 
 	<ItemGroup>

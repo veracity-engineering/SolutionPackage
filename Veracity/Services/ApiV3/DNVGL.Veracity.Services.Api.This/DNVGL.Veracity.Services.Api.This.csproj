@@ -1,18 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
-    <Company>DNVGL</Company>
-    <AssemblyName>DNVGL.Veracity.Services.Api.This</AssemblyName>
-	  <Description>Provides an async .NET client for the 'This' view point in Veracity My Service API v3.
-Allows manipulation and retrival of information related to a service.</Description>
-	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
+		<Company>DNVGL</Company>
+		<AssemblyName>DNVGL.Veracity.Services.Api.This</AssemblyName>
+		<Description>
+			Provides an async .NET client for the 'This' view point in Veracity My Service API v3.
+			Allows manipulation and retrival of information related to a service.
+		</Description>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Version>1.1.1</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
-    <ProjectReference Include="..\..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference
+			Include="..\..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
+		<ProjectReference Include="..\..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -10,27 +10,29 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 		<RepositoryUrl>https://dev.azure.com/dnvgl-one/Innersource/_git/DNVGL.SolutionPackage</RepositoryUrl>
 		<PackageIcon>user.png</PackageIcon>
+		<Version>1.1.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup Label="Packaging">
 		<Content Include="content\NewTableScript.sql">
 		</Content>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
+		<ProjectReference
+			Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="user.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
+		<None Update="user.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 </Project>
