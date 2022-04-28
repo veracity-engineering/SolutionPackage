@@ -1,14 +1,16 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.This.Abstractions;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
 	public class ThisAdministrators : ApiResourceClient, IThisAdministrators
 	{
-		public ThisAdministrators(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		public ThisAdministrators(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
 		{
 		}
 
