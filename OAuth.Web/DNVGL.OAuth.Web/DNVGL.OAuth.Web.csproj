@@ -5,7 +5,7 @@
 		<Authors>Eric Liu &lt;li.eric.liu@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-
+		<Version>1.1.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
