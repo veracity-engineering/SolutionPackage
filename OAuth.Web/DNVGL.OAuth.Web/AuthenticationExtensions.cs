@@ -282,12 +282,12 @@ namespace DNVGL.OAuth.Web
 			services.AddOAuthCore(cacheSetupAction)
 				.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
 				{
-					var previous = o.Events.OnAuthorizationCodeReceived;
+					var handler = o.Events.OnAuthorizationCodeReceived;
 
 					o.Events.OnAuthorizationCodeReceived = async context =>
 					{
 						await OnCodeReceived(context);
-						await previous(context);
+						await handler(context);
 					};
 				});
 

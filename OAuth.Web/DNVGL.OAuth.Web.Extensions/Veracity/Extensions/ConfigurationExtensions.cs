@@ -106,34 +106,37 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Extensions
 
 			oidcOptions.Events = oidcOptions.Events ?? new OpenIdConnectEvents();
 
-			var previous = oidcOptions.Events.OnTokenValidated;
+			var handler = oidcOptions.Events.OnTokenValidated;
 			oidcOptions.Events.OnTokenValidated = async ctx =>
 			{
-				if (previous != null)
-					await previous(ctx).ConfigureAwait(false);
+				var result = await Validate(ctx, policyValidationOptions).ConfigureAwait(false);
 
-				await Validate(ctx, policyValidationOptions).ConfigureAwait(false);
+				if (result && handler != null)
+					await handler(ctx).ConfigureAwait(false);
 			};
 
 			return oidcOptions;
 		}
 
-		private static async Task Validate(TokenValidatedContext ctx, PolicyValidationOptions policyValidationOptions)
+		private static async Task<bool> Validate(TokenValidatedContext ctx, PolicyValidationOptions policyValidationOptions)
 		{
 			var cu = ctx.HttpContext.User;
 			ctx.HttpContext.User = ctx.Principal;
 
-			var validator = ctx.HttpContext.RequestServices.GetRequiredService<IPolicyValidator>();
 			try
 			{
-				await validator.Validate(ctx, policyValidationOptions);
+				var validator = ctx.HttpContext.RequestServices.GetRequiredService<IPolicyValidator>();
+				return await validator.Validate(ctx, policyValidationOptions);
 			}
 			catch (Exception e)
 			{
 				ctx.Fail(e);
+				return false;
 			}
-
-			ctx.HttpContext.User = cu;
+			finally
+			{
+				ctx.HttpContext.User = cu;
+			}
 		}
 	}
 }
