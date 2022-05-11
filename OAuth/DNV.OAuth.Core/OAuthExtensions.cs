@@ -35,12 +35,17 @@ namespace DNV.OAuth.Core
 		/// <param name="cacheSetupAction"></param>
 		public static IServiceCollection AddOAuthCore(this IServiceCollection services, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
 		{
+			services.AddSingleton<TokenCacheOptions>(_ =>
+			{
+				var options = new TokenCacheOptions();
+				cacheSetupAction?.Invoke(options);
+				return options;
+			});
+
 			services.TryAddSingleton<ITokenCacheProvider>(p =>
 			{
 				var cache = p.GetRequiredService<IDistributedCache>();
-				var cacheOptions = new DistributedCacheEntryOptions
-					{ AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-				cacheSetupAction?.Invoke(cacheOptions);
+				var cacheOptions = p.GetService<TokenCacheOptions>();
 				var dataProtectionProvider = p.GetService<IDataProtectionProvider>();
 				var provider = new TokenCacheProvider(cache, cacheOptions, dataProtectionProvider);
 				return provider;
