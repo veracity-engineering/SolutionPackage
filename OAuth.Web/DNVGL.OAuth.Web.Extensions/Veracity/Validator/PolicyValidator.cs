@@ -22,7 +22,7 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Validator
 			_violationHandler = violationHandler ?? throw new ArgumentNullException(nameof(violationHandler));
 		}
 
-		public async Task Validate<TOptions>(RemoteAuthenticationContext<TOptions> ctx, PolicyValidationOptions options) where TOptions : AuthenticationSchemeOptions
+		public async Task<bool> Validate<TOptions>(RemoteAuthenticationContext<TOptions> ctx, PolicyValidationOptions options) where TOptions : AuthenticationSchemeOptions
 		{
 			var returnUrl = options.GetReturnUrl?.Invoke(ctx.HttpContext, ctx.Properties.RedirectUri) ?? GetDefaultReturnUrl(ctx);
 
@@ -41,14 +41,14 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Validator
 			else
 			{
 				ctx.Fail($"Invalid {nameof(options.PolicyValidationMode)}: '{(int)options.PolicyValidationMode}', either '{nameof(PolicyValidationMode.PlatformTermsAndCondition)}' or '{nameof(PolicyValidationMode.PlatformTermsAndCondition)}' must be selected.");
-				return;
+				return false;
 			}
 
 			if (result.StatusCode is >= StatusCodes.Status200OK and <= 299)
 			{
 				((ClaimsIdentity)ctx.Principal.Identity).AddClaim(new Claim(TokenClaimTypes.VeracityPolicyValidated,
 					"true"));
-				return;
+				return true;
 			}
 
 			if (result.StatusCode is StatusCodes.Status406NotAcceptable or 0)
@@ -64,15 +64,15 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Validator
 						case 0:
 						case 1:
 							await _violationHandler.HandleServiceSubscriptionViolated(ctx, result);
-							return;
+							return false;
 						// terms hasn't accepted
 						case 3:
 							await _violationHandler.HandleTermsAndConditionsViolated(ctx, result);
-							return;
+							return false;
 						// no company affiliated with
 						default:
 							await _violationHandler.HandleCompanyAffiliationViolated(ctx, result);
-							return;
+							return false;
 					}
 				}
 			}
@@ -80,6 +80,7 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Validator
 			ctx.HandleResponse();
 			ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 			await ctx.Response.WriteAsync($"{result.Message}. +(violated: {result.ViolatedPolicies.Aggregate((a, b)=> $"{a}, {b}")})");
+			return false;
 		}
 
 		private static string GetDefaultReturnUrl<TOptions>(RemoteAuthenticationContext<TOptions> ctx) where TOptions : AuthenticationSchemeOptions
