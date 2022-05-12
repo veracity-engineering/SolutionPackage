@@ -266,7 +266,7 @@ namespace DNVGL.OAuth.Web
 
 			if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost)
 			{
-				var handler  = o.Events.OnRedirectToIdentityProvider;
+				var onRedirectToIdp = o.Events.OnRedirectToIdentityProvider;
 
 				o.Events.OnRedirectToIdentityProvider = context =>
 				{
@@ -276,7 +276,20 @@ namespace DNVGL.OAuth.Web
 					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
 #endif
 
-					return handler != null ? handler(context) : Task.CompletedTask;
+					return onRedirectToIdp != null ? onRedirectToIdp(context) : Task.CompletedTask;
+				};
+
+				var onRedirectToIdpSignOut = o.Events.OnRedirectToIdentityProviderForSignOut;
+
+				o.Events.OnRedirectToIdentityProviderForSignOut = context =>
+				{
+#if NETCORE2
+					context.ProtocolMessage = new ExtendedOidcMessage(context.ProtocolMessage);
+#else
+					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
+#endif
+
+					return onRedirectToIdpSignOut != null ? onRedirectToIdpSignOut(context) : Task.CompletedTask;
 				};
 			}
 		}
