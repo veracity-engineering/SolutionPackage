@@ -10,6 +10,7 @@ namespace DNVGL.OAuth.Web.Swagger
 		public string Version { get; set; } = "v1";
 		public string ClientId { get; set; }
 		public string ClientSecret { get; set; }
+		public string DocumentTitle { get; set; } = "Swagger UI";
 		public OpenApiInfo ApiInfo { get; set; }
 		public OpenApiOAuthFlow ImplicitFlow { get; set; }
 		public OpenApiOAuthFlow AuthCodeFlow { get; set; }

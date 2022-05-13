@@ -119,6 +119,8 @@ namespace DNVGL.OAuth.Web.Swagger
 					o.DisplayOperationId();
 					o.EnableFilter();
 
+					o.DocumentTitle = options.DocumentTitle;
+
 					o.ConfigObject.AdditionalItems.Add("syntaxHighlight", false);
 				});
 
