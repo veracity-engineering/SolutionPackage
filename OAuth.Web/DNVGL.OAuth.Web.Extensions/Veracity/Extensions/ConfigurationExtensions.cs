@@ -20,8 +20,13 @@ namespace DNV.OAuth.Web.Extensions.Veracity.Extensions
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="oidcOptions"></param>
+		/// <param name="services"></param>
+		/// <param name="oidcSetupAction"></param>
+		/// <param name="policyValidationSetupAction"></param>
+		/// <param name="cookieSetupAction"></param>
+		/// <param name="cacheSetupAction"></param>
 		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public static AuthenticationBuilder AddOidcWithPolicyValidation(this IServiceCollection services,
 			Action<OidcOptions> oidcSetupAction,
 			Action<PolicyValidationOptions> policyValidationSetupAction,

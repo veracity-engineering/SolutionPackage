@@ -1,8 +1,6 @@
-﻿using DNV.OAuth.Core.TokenCache;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,13 +8,11 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core;
 using DNV.OAuth.Core.TokenValidator;
-using DNVGL.OAuth.Web.Extensions;
-using Microsoft.IdentityModel.Protocols;
+using DNVGL.OAuth.Web.Oidc;
 
 namespace DNVGL.OAuth.Web
 {
