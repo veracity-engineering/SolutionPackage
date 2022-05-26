@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DNVGL.Veracity.Services.Api.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace DNV.OAuth.Web.Extensions.Veracity.Validator
+namespace DNV.OAuth.Web.Extensions.Policy.Validator
 {
 	class PolicyViolationHandler : IPolicyViolationHandler
 	{

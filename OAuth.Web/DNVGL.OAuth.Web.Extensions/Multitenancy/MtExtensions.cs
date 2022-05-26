@@ -34,30 +34,34 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="services"></param>
+		/// <param name="builder"></param>
 		/// <param name="configAction"></param>
-		public static void AddMultitenantAuthentication(
-			this IServiceCollection services,
+		/// <returns></returns>
+		public static AuthenticationBuilder AddMultitenantAuthentication(
+			this AuthenticationBuilder builder,
 			Action<CookieAuthenticationOptions, HttpContext>? configAction = null)
 		{
-			services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, MtOidcPostConfigureOptions>();
-			services.AddSingleton<IOptionsMonitor<CookieAuthenticationOptions>, MtCookieOptionsMonitor>();
-			services.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>>(sp =>
-			{
-				var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-				return new MtCookieConfigureNamedOptions(
-					httpContextAccessor, 
-					configAction?? ((options, context) =>
-					{
-						var tenant = context.Request.PathBase.Value?.Trim('/');
+			builder.Services
+				.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, MtOidcPostConfigureOptions>()
+				.AddSingleton<IOptionsMonitor<CookieAuthenticationOptions>, MtCookieOptionsMonitor>()
+				.AddSingleton<IConfigureOptions<CookieAuthenticationOptions>>(sp =>
+				{
+					var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+					return new MtCookieConfigureNamedOptions(
+						httpContextAccessor,
+						configAction ?? ((options, context) =>
+						{
+							var tenant = context.Request.PathBase.Value?.Trim('/');
 
-						options.DataProtectionProvider = context
-							.RequestServices.GetRequiredService<IDataProtectionProvider>()
-							.CreateProtector($"{tenant}.Data.Protection");
+							options.DataProtectionProvider = context
+								.RequestServices.GetRequiredService<IDataProtectionProvider>()
+								.CreateProtector($"{tenant}.Data.Protection");
 
-						options.Cookie.Name = $"{tenant}.Oidc.Cookie";
-					}));
-			});
+							options.Cookie.Name = $"{tenant}.Oidc.Cookie";
+						}));
+				});
+
+			return builder;
 		}
 	}
 }

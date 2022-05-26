@@ -55,7 +55,7 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
 
             if (string.Equals(tenantAlias, _oidcOptions.CallbackPath.Value.Trim('/'), StringComparison.OrdinalIgnoreCase))
             {
-                var properties = await GetPropertiesFromState(context);
+	            var properties = await GetPropertiesFromState(context);
 
                 if (properties != null && !string.IsNullOrEmpty(properties.RedirectUri))
                 {
@@ -68,6 +68,11 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
                 }
 
                 tenantAlias = null;
+            } 
+            else if (string.Equals(tenantAlias, _oidcOptions.SignedOutCallbackPath.Value.Trim('/'),
+	                       StringComparison.OrdinalIgnoreCase))
+            {
+	            tenantAlias = null;
             }
 
             if (!string.IsNullOrWhiteSpace(tenantAlias)
