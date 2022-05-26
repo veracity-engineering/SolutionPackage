@@ -8,23 +8,13 @@ namespace DNV.OAuth.Core.TokenCache
 {
 	public abstract class TokenCacheProviderBase : ITokenCacheProvider
 	{
-		protected IDistributedCache Cache { get; }
-
-		protected DistributedCacheEntryOptions CacheOptions { get; }
-
-		protected TokenCacheProviderBase(IDistributedCache cache, DistributedCacheEntryOptions cacheOptions)
-		{;
-			Cache = cache;
-			CacheOptions = cacheOptions;
-		}
-
 		public virtual Task InitializeAsync(ITokenCache tokenCache)
 		{
 			if (tokenCache == null) throw new ArgumentNullException(nameof(tokenCache));
 
-			tokenCache.SetBeforeAccessAsync(this.OnBeforeAccessAsync);
-			tokenCache.SetAfterAccessAsync(this.OnAfterAccessAsync);
-			tokenCache.SetBeforeWriteAsync(this.OnBeforeWriteAsync);
+			tokenCache.SetBeforeAccessAsync(OnBeforeAccessAsync);
+			tokenCache.SetAfterAccessAsync(OnAfterAccessAsync);
+			tokenCache.SetBeforeWriteAsync(OnBeforeWriteAsync);
 			return Task.CompletedTask;
 		}
 
@@ -36,8 +26,8 @@ namespace DNV.OAuth.Core.TokenCache
 			{
 				if (args.HasTokens)
 				{
-					var bytes = this.Protect(args.TokenCache.SerializeMsalV3());
-					await this.Cache.SetAsync(args.SuggestedCacheKey, bytes, this.CacheOptions).ConfigureAwait(false);
+					var bytes = Protect(args.TokenCache.SerializeMsalV3());
+					await Cache.SetAsync(args.SuggestedCacheKey, bytes, CacheOptions).ConfigureAwait(false);
 				}
 				else
 				{
@@ -50,11 +40,15 @@ namespace DNV.OAuth.Core.TokenCache
 		{
 			if (!string.IsNullOrEmpty(args.SuggestedCacheKey))
 			{
-				var bytes = await this.Cache.GetAsync(args.SuggestedCacheKey).ConfigureAwait(false);
+				var bytes = await Cache.GetAsync(args.SuggestedCacheKey).ConfigureAwait(false);
 				args.TokenCache.DeserializeMsalV3(this.Unprotect(bytes), true);
 			}
 		}
+		
+		protected abstract IDistributedCache Cache { get; }
 
+		protected abstract DistributedCacheEntryOptions CacheOptions { get; }
+		
 		protected virtual Task OnBeforeWriteAsync(TokenCacheNotificationArgs args) => Task.CompletedTask;
 
 		protected abstract byte[]? Protect(byte[]? bytes);

@@ -10,8 +10,20 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
+	/// <summary>
+	/// 
+	/// </summary>
     public static class OAuthHttpClientExtensions
     {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="optionsConfigAction"></param>
+		/// <param name="configBuilderAction"></param>
+		/// <param name="clientConfigAction"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddOAuthHttpClients(this IServiceCollection services,
 			Action<ICollection<OAuthHttpClientOptions>> optionsConfigAction,
 			Action<IHttpClientBuilder>? configBuilderAction = null,
@@ -24,6 +36,15 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			return services.AddOAuthHttpClients(options, configBuilderAction, clientConfigAction, cacheConfigAction);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="options"></param>
+		/// <param name="configBuilderAction"></param>
+		/// <param name="clientConfigAction"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddOAuthHttpClients(this IServiceCollection services, 
 			IEnumerable<OAuthHttpClientOptions> options, 
 			Action<IHttpClientBuilder>? configBuilderAction = null, 
@@ -35,6 +56,15 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			return services;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="option"></param>
+		/// <param name="configBuilderAction"></param>
+		/// <param name="clientConfigAction"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddOAuthHttpClient(this IServiceCollection services, 
 			OAuthHttpClientOptions option, 
 			Action<IHttpClientBuilder>? configBuilderAction = null, 
@@ -51,7 +81,15 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			return services;
 		}
 
-		public static IHttpClientBuilder AddOAuthHttpClientHandler(this IHttpClientBuilder builder, OAuthHttpClientOptions options, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="options"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		public static IHttpClientBuilder AddOAuthHttpClientHandler(this IHttpClientBuilder builder, OAuthHttpClientOptions options, Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
 
 			switch (options.Flow)
@@ -73,16 +111,16 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 					throw new ArgumentOutOfRangeException(nameof(options.Flow));
 			}
 
-			builder.Services.AddMandatoryDependencies(cacheSetupAction);
+			builder.Services.AddMandatoryDependencies(cacheConfigAction);
 
 			return builder;
 		}
 
 		private static IServiceCollection AddMandatoryDependencies(this IServiceCollection services,
-			Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
+			Action<DistributedCacheEntryOptions>? cacheConfigAction)
 		{
 			return services.AddHttpContextAccessor()
-				.AddOAuthCore(cacheSetupAction);
+				.AddOAuthCore(cacheConfigAction);
 		}
 	}
 }

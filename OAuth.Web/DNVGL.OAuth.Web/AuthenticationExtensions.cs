@@ -275,11 +275,11 @@ namespace DNVGL.OAuth.Web
 		#endregion
 
 		#region AddDistributedTokenCache
-		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
+		private static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheConfigAction = null)
 		{
 			services.AddDataProtection();
 
-			services.AddOAuthCore(cacheSetupAction)
+			services.AddOAuthCore(cacheConfigAction)
 				.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
 				{
 					var previous = o.Events.OnAuthorizationCodeReceived;
