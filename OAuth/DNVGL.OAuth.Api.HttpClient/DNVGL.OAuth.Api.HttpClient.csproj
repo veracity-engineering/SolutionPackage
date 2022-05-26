@@ -8,7 +8,7 @@
 		<Company>DNVGL</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Description>Provides a factory for producing authenticated HttpClients for API integration via OAuth.</Description>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
