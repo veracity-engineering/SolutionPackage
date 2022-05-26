@@ -2,7 +2,7 @@
 using DNVGL.Veracity.Services.Api.Models;
 using Microsoft.AspNetCore.Authentication;
 
-namespace DNV.OAuth.Web.Extensions.Veracity
+namespace DNV.OAuth.Web.Extensions.Policy
 {
 	public interface IPolicyViolationHandler
 	{

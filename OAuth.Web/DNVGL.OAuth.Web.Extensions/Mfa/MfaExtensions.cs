@@ -28,12 +28,12 @@ namespace DNV.OAuth.Web.Extensions.Mfa
 
 			options.Events = options.Events ?? new OpenIdConnectEvents();
 
-			var previous = options.Events.OnRedirectToIdentityProvider;
+			var handler = options.Events.OnRedirectToIdentityProvider;
 			options.Events.OnRedirectToIdentityProvider = async ctx =>
 			{
-				if (previous != null)
-					await previous(ctx).ConfigureAwait(false);
 				SetMfaParameter(ctx, mfaPredict);
+				if (handler != null)
+					await handler(ctx).ConfigureAwait(false);
 			};
 
 			return options;

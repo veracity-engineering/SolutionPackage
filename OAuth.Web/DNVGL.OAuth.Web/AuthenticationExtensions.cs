@@ -1,8 +1,6 @@
-﻿using DNV.OAuth.Core.TokenCache;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +12,7 @@ using System.Threading.Tasks;
 using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core;
 using DNV.OAuth.Core.TokenValidator;
+using DNVGL.OAuth.Web.Oidc;
 
 namespace DNVGL.OAuth.Web
 {
@@ -261,20 +260,39 @@ namespace DNVGL.OAuth.Web
 		{
 			if (oidcOptions.Events != null) o.Events = oidcOptions.Events;
 
-			if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost && o.Events.OnRedirectToIdentityProvider != null)
+			if (o.AuthenticationMethod == OpenIdConnectRedirectBehavior.FormPost)
 			{
-				var onRedirectToIdentityProvider = o.Events.OnRedirectToIdentityProvider;
+				var onRedirectToIdp = o.Events.OnRedirectToIdentityProvider;
 
 				o.Events.OnRedirectToIdentityProvider = context =>
 				{
-					context.Response.Headers.Remove("content-security-policy");
-					return onRedirectToIdentityProvider(context);
+#if NETCORE2
+					context.ProtocolMessage = new ExtendedOidcMessage(context.ProtocolMessage);
+#else
+					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
+#endif
+
+					return onRedirectToIdp != null ? onRedirectToIdp(context) : Task.CompletedTask;
+				};
+
+				var onRedirectToIdpSignOut = o.Events.OnRedirectToIdentityProviderForSignOut;
+
+				o.Events.OnRedirectToIdentityProviderForSignOut = context =>
+				{
+#if NETCORE2
+					context.ProtocolMessage = new ExtendedOidcMessage(context.ProtocolMessage);
+#else
+					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
+#endif
+
+					return onRedirectToIdpSignOut != null ? onRedirectToIdpSignOut(context) : Task.CompletedTask;
 				};
 			}
 		}
-		#endregion
 
-		#region AddDistributedTokenCache
+#endregion
+
+#region AddDistributedTokenCache
 		public static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheSetupAction = null)
 		{
 			services.AddDataProtection();
@@ -282,12 +300,14 @@ namespace DNVGL.OAuth.Web
 			services.AddOAuthCore(cacheSetupAction)
 				.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
 				{
-					var previous = o.Events.OnAuthorizationCodeReceived;
+					var handler = o.Events.OnAuthorizationCodeReceived;
 
 					o.Events.OnAuthorizationCodeReceived = async context =>
 					{
-						await OnCodeReceived(context);
-						await previous(context);
+						await OnCodeReceived(context).ConfigureAwait(false);
+
+						if (handler != null)
+							await handler(context).ConfigureAwait(false);
 					};
 				});
 
@@ -305,6 +325,6 @@ namespace DNVGL.OAuth.Web
 
 			return services;
 		}
-		#endregion
+#endregion
 	}
 }
