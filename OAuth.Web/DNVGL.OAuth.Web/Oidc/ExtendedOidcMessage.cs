@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace DNVGL.OAuth.Web.Extensions
+namespace DNVGL.OAuth.Web.Oidc
 {
 #if NETCORE2
 	internal class ExtendedOidcMessage: OpenIdConnectMessage

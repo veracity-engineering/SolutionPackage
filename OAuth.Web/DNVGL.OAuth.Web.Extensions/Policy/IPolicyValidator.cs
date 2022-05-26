@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 
-namespace DNV.OAuth.Web.Extensions.Veracity
+namespace DNV.OAuth.Web.Extensions.Policy
 {
 	public interface IPolicyValidator
 	{

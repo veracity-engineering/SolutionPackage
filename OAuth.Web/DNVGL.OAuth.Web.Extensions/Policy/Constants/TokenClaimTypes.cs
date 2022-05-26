@@ -1,4 +1,4 @@
-﻿namespace DNV.OAuth.Web.Extensions.Veracity.Constants
+﻿namespace DNV.OAuth.Web.Extensions.Policy.Constants
 {
 	public class TokenClaimTypes
 	{

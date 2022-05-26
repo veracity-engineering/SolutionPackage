@@ -3,13 +3,13 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using DNV.OAuth.Web.Extensions.Veracity.Constants;
+using DNV.OAuth.Web.Extensions.Policy.Constants;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace DNV.OAuth.Web.Extensions.Veracity.Validator
+namespace DNV.OAuth.Web.Extensions.Policy.Validator
 {
 	internal class PolicyValidator : IPolicyValidator
 	{

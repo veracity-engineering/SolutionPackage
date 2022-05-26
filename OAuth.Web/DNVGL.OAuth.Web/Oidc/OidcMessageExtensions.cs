@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.IdentityModel.Protocols;
 
-namespace DNVGL.OAuth.Web.Extensions
+namespace DNVGL.OAuth.Web.Oidc
 {
 	public static class OidcMessageExtensions
 	{
