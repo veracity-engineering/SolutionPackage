@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 
 namespace DNVGL.Veracity.Services.Api.Directory.Extensions
 {
@@ -12,17 +13,17 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
     {
 		public static IServiceCollection AddCompanyDirectory(this IServiceCollection services, string clientConfigurationName = "company-directory-api")
 		{
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            services.AddCompanyDirectory(option);
+            services.AddApiV3<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
 		}
 
 		public static IServiceCollection AddCompanyDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<ICompanyDirectory>(option
-                                                , s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
@@ -30,17 +31,17 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
 
         public static IServiceCollection AddServiceDirectory(this IServiceCollection services, string clientConfigurationName = "service-directory-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            services.AddServiceDirectory(option);
+            services.AddApiV3<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
 
         public static IServiceCollection AddServiceDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IServiceDirectory>(option
-                                                , s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
@@ -48,15 +49,17 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
 
         public static IServiceCollection AddUserDirectory(this IServiceCollection services, string clientConfigurationName = "user-directory-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddUserDirectory(option);            
+            services.AddApiV3<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+
+            return services;    
         }
 
         public static IServiceCollection AddUserDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IUserDirectory>(option
-                                                , s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }

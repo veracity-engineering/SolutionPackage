@@ -1,4 +1,5 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +11,16 @@ namespace DNVGL.Veracity.Services.Api.My.Extensions
     {
         public static IServiceCollection AddMyCompanies(this IServiceCollection services, string clientConfigurationName = "companies-my-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddMyCompanies(option);
+            return services.AddApiV3<IMyCompanies>(s => new MyCompanies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
         }
 
 
         public static IServiceCollection AddMyCompanies(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IMyCompanies>(option
-                                                , s => new MyCompanies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IMyCompanies>(s => new MyCompanies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
@@ -27,15 +28,17 @@ namespace DNVGL.Veracity.Services.Api.My.Extensions
 
         public static IServiceCollection AddMyMessages(this IServiceCollection services, string clientConfigurationName = "messages-my-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddMyMessages(option);
+            services.AddApiV3<IMyMessages>(s => new MyMessages(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+
+            return services;
         }
 
         public static IServiceCollection AddMyMessages(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IMyMessages>(option
-                                                , s => new MyMessages(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IMyMessages>(s => new MyMessages(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
@@ -43,46 +46,51 @@ namespace DNVGL.Veracity.Services.Api.My.Extensions
 
         public static IServiceCollection AddMyPolicies(this IServiceCollection services, string clientConfigurationName = "policies-my-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddMyPolicies(option);
+            services.AddApiV3<IMyPolicies>(s => new MyPolicies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+
+            return services;
         }
-
 
         public static IServiceCollection AddMyPolicies(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IMyPolicies>(option
-                                                , s => new MyPolicies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IMyPolicies>(s => new MyPolicies(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
 
         public static IServiceCollection AddMyProfile(this IServiceCollection services, string clientConfigurationName = "profile-my-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddMyProfile(option);
+            services.AddApiV3<IMyProfile>(s => new MyProfile(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+
+            return services;
         }
 
         public static IServiceCollection AddMyProfile(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IMyProfile>(option
-                                                , s => new MyProfile(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IMyProfile>(s => new MyProfile(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }
 
         public static IServiceCollection AddMyServices(this IServiceCollection services, string clientConfigurationName = "services-my-api")
         {
-            var option = services.GetApiV3OauthClientOption(clientConfigurationName);
+            var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            return services.AddMyServices(option);
+            services.AddApiV3<IMyServices>(s => new MyServices(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+
+            return services;
         }
 
         public static IServiceCollection AddMyServices(this IServiceCollection services, OAuthHttpClientOptions option)
         {
-            services.AddApiV3<IMyServices>(option
-                                                , s => new MyServices(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddOAuthHttpClient(option);
+            services.AddApiV3<IMyServices>(s => new MyServices(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
         }

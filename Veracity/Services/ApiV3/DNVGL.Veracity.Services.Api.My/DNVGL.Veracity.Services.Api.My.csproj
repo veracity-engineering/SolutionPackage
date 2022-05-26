@@ -10,7 +10,7 @@
 			Allows fetching information and making requests for the authenticated user.
 		</Description>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.2.0</Version>
+		<Version>1.1.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

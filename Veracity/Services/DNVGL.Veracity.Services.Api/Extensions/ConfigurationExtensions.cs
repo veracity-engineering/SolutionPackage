@@ -27,41 +27,15 @@ namespace DNVGL.Veracity.Services.Api.Extensions
         }
 
 
-        public static IServiceCollection AddApiV3<TInterface>(this IServiceCollection services, OAuthHttpClientOptions option, Func<IServiceProvider, TInterface> implementationFactory)
+        public static IServiceCollection AddApiV3<TInterface>(this IServiceCollection services, Func<IServiceProvider, TInterface> implementationFactory)
         {
             if (null == implementationFactory)
                 throw new ArgumentNullException("implementationFactory");
 
             services.AddSerializer();
-            services.AddOAuthHttpClient(option);
 
             services.AddSingleton(typeof(TInterface), sp=> implementationFactory.Invoke(sp));
             return services;
-        }
-
-
-        public static IServiceCollection AddApiV3OauthClientOptions(this IServiceCollection services, IEnumerable<OAuthHttpClientOptions> options)
-        {
-            services.AddOptions<ApiV3OAuthHttpClientOptions>()
-                .Configure(o =>
-                {
-                    o.Options = options;
-                });           
-
-            return services;
-        }
-
-
-        public static OAuthHttpClientOptions GetApiV3OauthClientOption(this IServiceCollection services, string name)
-        {
-            var apiV3OauthClientOptions = services.BuildServiceProvider().GetRequiredService<IOptions<ApiV3OAuthHttpClientOptions>>().Value;
-
-            var options = apiV3OauthClientOptions.Options.Where(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-            if (options == null)
-                throw new System.ArgumentException($"{name} not exist!");
-
-            return options;
-        }
-    }
+        }		
+	}
 }
