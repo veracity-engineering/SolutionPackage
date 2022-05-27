@@ -13,30 +13,24 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
     {
 		public static IServiceCollection AddCompanyDirectory(this IServiceCollection services, string clientConfigurationName = "company-directory-api")
 		{
-            var option = services.GetOauthClientOptions(clientConfigurationName);
-
             services.AddSerializer();
-            services.AddSingleton<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddSingleton<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetOauthClientOptions(clientConfigurationName)));
 
             return services;
 		}	
 
         public static IServiceCollection AddServiceDirectory(this IServiceCollection services, string clientConfigurationName = "service-directory-api")
         {
-            var option = services.GetOauthClientOptions(clientConfigurationName);
-
             services.AddSerializer();
-            services.AddSingleton<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddSingleton<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetOauthClientOptions(clientConfigurationName)));
          
             return services;
         }
 
         public static IServiceCollection AddUserDirectory(this IServiceCollection services, string clientConfigurationName = "user-directory-api")
         {
-            var option = services.GetOauthClientOptions(clientConfigurationName);
-
             services.AddSerializer();
-            services.AddSingleton<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddSingleton<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetOauthClientOptions(clientConfigurationName)));
            
             return services;    
         }        

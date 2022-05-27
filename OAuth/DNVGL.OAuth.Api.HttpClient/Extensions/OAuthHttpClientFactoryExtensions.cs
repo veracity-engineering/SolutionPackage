@@ -47,9 +47,9 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
             return services;
         }
 
-        public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceCollection services, string name)
+        public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
         {
-            var oauthClientOptions = services.BuildServiceProvider().GetRequiredService<IOptions<OAuthHttpClientOptionsCollection>>().Value;
+            var oauthClientOptions = serviceProvider.GetRequiredService<IOptions<OAuthHttpClientOptionsCollection>>().Value;
 
             var options = oauthClientOptions.Where(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 

@@ -42,6 +42,7 @@ namespace DNV.Veracity.Services.Api.This.Test
         public async Task AddThisUser_WitOptonhName_OldOptionsType()
         {
             _services.AddDistributedMemoryCache();
+            _services.AddDataProtection();//for register IDataProtectionProvider
 
             _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
             {
