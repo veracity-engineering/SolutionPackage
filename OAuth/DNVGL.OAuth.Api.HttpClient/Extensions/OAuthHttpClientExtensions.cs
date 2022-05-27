@@ -4,9 +4,9 @@ using System.Linq;
 using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core;
 using DNVGL.OAuth.Api.HttpClient.HttpClientHandlers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.AspNetCore.Http;
 
 namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
@@ -67,7 +67,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 		/// <returns></returns>
 		public static IServiceCollection AddOAuthHttpClient(this IServiceCollection services, 
 			OAuthHttpClientOptions option, 
-			Action<IHttpClientBuilder>? configBuilderAction = null, 
+			Action<IHttpClientBuilder> configBuilderAction = null, 
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
@@ -117,7 +117,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 		}
 
 		private static IServiceCollection AddMandatoryDependencies(this IServiceCollection services,
-			Action<DistributedCacheEntryOptions>? cacheConfigAction)
+			Action<DistributedCacheEntryOptions> cacheConfigAction)
 		{
 			return services.AddHttpContextAccessor()
 				.AddOAuthCore(cacheConfigAction);

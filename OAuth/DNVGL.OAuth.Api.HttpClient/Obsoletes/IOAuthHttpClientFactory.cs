@@ -17,7 +17,7 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// <returns>Instance of <see cref="System.Net.Http.HttpClient"/> which can make authenticated requests.</returns>
         /// <exception cref="Exceptions.ClientConfigurationNotFoundException" />
         /// <exception cref="Exceptions.InvalidCredentialFlowException" />
-        System.Net.Http.HttpClient Create(Func<OAuthHttpClientFactoryOptions, bool> configPredict, Action<OAuthHttpClientFactoryOptions>? configOverride = null);
+        System.Net.Http.HttpClient Create(Func<OAuthHttpClientFactoryOptions, bool> configPredict, Action<OAuthHttpClientFactoryOptions> configOverride = null);
 
         /// <summary>
         /// Creates an instance of <see cref="T:System.Net.Http.HttpClient"/> which will make authenticated requests according to

@@ -98,7 +98,7 @@ namespace DNVGL.OAuth.Web
 
 						o.SecurityTokenValidators.Clear();
 						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ??
-						                              new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
+													  new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
 					});
 					schemeNames.Add(schemeName);
 				}
@@ -112,11 +112,11 @@ namespace DNVGL.OAuth.Web
 							o.Authority = aut.Authority;
 							o.Audience = jwtOptions.ClientId;
 
-							if (jwtOptions.TokenValidationParameters != null) 
+							if (jwtOptions.TokenValidationParameters != null)
 								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-							if (jwtOptions.Events != null)  
-								o.Events = jwtOptions.Events; 
+							if (jwtOptions.Events != null)
+								o.Events = jwtOptions.Events;
 
 							o.SecurityTokenValidators.Clear();
 							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
@@ -148,6 +148,7 @@ namespace DNVGL.OAuth.Web
 		{
 			if (oidcSetupAction == null)
 			{
+				services.AddHttpContextAccessor();
 				throw new ArgumentNullException(nameof(oidcSetupAction));
 			}
 
@@ -209,12 +210,12 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(oidcOptions));
 			}
 
-			builder = cookieSetupAction != null ? 
-				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, 
-					o => cookieSetupAction(o)): 
+			builder = cookieSetupAction != null ?
+				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+					o => cookieSetupAction(o)) :
 				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
-			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, 
+			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme,
 				o =>
 				{
 					o.Authority = oidcOptions.Authority;
@@ -223,9 +224,9 @@ namespace DNVGL.OAuth.Web
 					o.CallbackPath = oidcOptions.CallbackPath;
 					o.ResponseType = oidcOptions.ResponseType;
 					o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
-	#if NETCORE3
+#if NETCORE3
 					o.UsePkce = true;
-	#endif
+#endif
 
 					ConfigureScopes(oidcOptions, o);
 					ConfigureSecurityTokenValidator(oidcOptions, o);
@@ -290,9 +291,9 @@ namespace DNVGL.OAuth.Web
 			}
 		}
 
-#endregion
+		#endregion
 
-#region AddDistributedTokenCache
+		#region AddDistributedTokenCache
 		private static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheConfigAction = null)
 		{
 			services.AddDataProtection();
@@ -313,7 +314,7 @@ namespace DNVGL.OAuth.Web
 
 			async Task OnCodeReceived(AuthorizationCodeReceivedContext context)
 			{
-				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier"); 
+				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier");
 				var authCode = context.TokenEndpointRequest.Code;
 				var clientAppBuilder = context.HttpContext.RequestServices.GetRequiredService<IClientAppBuilder>();
 				var clientApp = clientAppBuilder.Build(oidcOptions);
@@ -325,6 +326,6 @@ namespace DNVGL.OAuth.Web
 
 			return services;
 		}
-#endregion
+		#endregion
 	}
 }

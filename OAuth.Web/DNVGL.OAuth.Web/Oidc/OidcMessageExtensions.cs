@@ -15,7 +15,7 @@ namespace DNVGL.OAuth.Web.Oidc
 		internal const string FormPostScript = "<script language=\"javascript\">" +
 		                              "window.setTimeout(function() { document.forms[0].submit(); }, 0);" +
 		                              "</script>";
-#if NETCORE3
+#if !NETCORE2
 		internal static void EnsureCspForOidcFormPostBehavior(this AuthenticationProtocolMessage message)
 		{
 			var scriptField = typeof(AuthenticationProtocolMessage)

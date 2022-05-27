@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net6.0</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
@@ -8,15 +8,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Version>1.2.0</Version>
 	</PropertyGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
-		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.22" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\..\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
 		<ProjectReference Include="..\..\Veracity\Services\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
@@ -26,10 +18,16 @@
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
 		<DefineConstants>NETCORE2</DefineConstants>
 	</PropertyGroup>
+
 	<PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
 		<DefineConstants>NETCORE3</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0'">
+		<DefineConstants>NET6</DefineConstants>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile></DocumentationFile>
 		<NoWarn>1701;1702;S101</NoWarn>
 	</PropertyGroup>
