@@ -15,53 +15,30 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
 		{
             var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            services.AddApiV3<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+            services.AddSerializer();
+            services.AddSingleton<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
 
             return services;
-		}
-
-		public static IServiceCollection AddCompanyDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
-        {
-            services.AddOAuthHttpClient(option);
-            services.AddApiV3<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
-
-            return services;
-        }
-
+		}	
 
         public static IServiceCollection AddServiceDirectory(this IServiceCollection services, string clientConfigurationName = "service-directory-api")
         {
             var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            services.AddApiV3<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
-
+            services.AddSerializer();
+            services.AddSingleton<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+         
             return services;
         }
-
-        public static IServiceCollection AddServiceDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
-        {
-            services.AddOAuthHttpClient(option);
-            services.AddApiV3<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
-
-            return services;
-        }
-
 
         public static IServiceCollection AddUserDirectory(this IServiceCollection services, string clientConfigurationName = "user-directory-api")
         {
             var option = services.GetOauthClientOptions(clientConfigurationName);
 
-            services.AddApiV3<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
-
+            services.AddSerializer();
+            services.AddSingleton<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
+           
             return services;    
-        }
-
-        public static IServiceCollection AddUserDirectory(this IServiceCollection services, OAuthHttpClientOptions option)
-        {
-            services.AddOAuthHttpClient(option);
-            services.AddApiV3<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), option));
-
-            return services;
-        }
+        }        
     }
 }

@@ -24,18 +24,6 @@ namespace DNVGL.Veracity.Services.Api.Extensions
 	        services.TryAddTransient<ISerializer, JsonSerializer>();
 
             return services;
-        }
-
-
-        public static IServiceCollection AddApiV3<TInterface>(this IServiceCollection services, Func<IServiceProvider, TInterface> implementationFactory)
-        {
-            if (null == implementationFactory)
-                throw new ArgumentNullException("implementationFactory");
-
-            services.AddSerializer();
-
-            services.AddSingleton(typeof(TInterface), sp=> implementationFactory.Invoke(sp));
-            return services;
-        }		
+        }        	
 	}
 }
