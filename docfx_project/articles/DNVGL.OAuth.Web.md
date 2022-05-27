@@ -34,11 +34,11 @@ public void ConfigureServices(IServiceCollection services)
 	...
 	services.AddOidc(o =>
 	{
-		o.TenantId = "<TenantId>";
-		o.SignInPolicy = "b2c_1a_signinwithadfsidp";
+		o.Authority = "<Authority>";
 		o.ClientId = "<ClientId>";
+		o.ClientSecret = "<ClientSecret>";
+		o.Resource = "<Resource>";
 		o.Scopes = new[] { "<Scope>" };
-		o.CallbackPath = "/signin-oidc";
 	});
 	...
 }
@@ -74,12 +74,11 @@ public void ConfigureServices(IServiceCollection services)
 	...
 	var oidcOptions = new OidcOptions
 	{
-		TenantId = "<TenantId>",
-		SignInPolicy = "b2c_1a_signinwithadfsidp",
+		Authority = "<Authority>",
 		ClientId = "<ClientId>",
 		ClientSecret = "<ClientSecret>",
+		Resource = "<Resource>",
 		Scopes = new[] { "<Scope>", "offline_access" },	// offline_access is required to retrieve refresh_token.
-		CallbackPath = "/signin-oidc",
 		ResponseType = OpenIdConnectResponseType.Code
 	};
 	...

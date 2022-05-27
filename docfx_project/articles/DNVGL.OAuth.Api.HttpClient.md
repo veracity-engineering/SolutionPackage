@@ -78,12 +78,11 @@ public void ConfigureService(IServiceCollection services)
   ...
   var oidcOptions = new OidcOptions
   {
-	  TenantId = "<TenantId>",
-	  SignInPolicy = "b2c_1a_signinwithadfsidp",
+    Authority = "<Authority>",
 	  ClientId = "<ClientId>",
 	  ClientSecret = "<ClientSecret>",
+		Resource = "<Resource>",
 	  Scopes = new[] { "<Scope>", "offline_access" },
-	  CallbackPath = "/signin-oidc",
 	  ResponseType = OpenIdConnectResponseType.Code
   };
   services.AddOidc(oidcOptions);
