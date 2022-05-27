@@ -32,26 +32,15 @@ namespace DNV.OAuth.Core
 		/// Register OAuthCore required services to DI container.
 		/// </summary>
 		/// <param name="services"></param>
-		/// <param name="cacheSetupAction"></param>
-		public static IServiceCollection AddOAuthCore(this IServiceCollection services, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
+		/// <param name="configAction"></param>
+		public static IServiceCollection AddOAuthCore(this IServiceCollection services, Action<DistributedCacheEntryOptions>? configAction = null)
 		{
-			services.TryAddSingleton<ITokenCacheProvider>(p =>
-			{
-				var cache = p.GetRequiredService<IDistributedCache>();
-				var cacheOptions = new DistributedCacheEntryOptions
-					{ AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60) };
-				cacheSetupAction?.Invoke(cacheOptions);
-				var dataProtectionProvider = p.GetService<IDataProtectionProvider>();
-				var provider = new TokenCacheProvider(cache, cacheOptions, dataProtectionProvider);
-				return provider;
-			});
+			if (configAction != null)
+				services.Configure(nameof(TokenCacheProvider), configAction);
+			
+            services.TryAddSingleton<ITokenCacheProvider, TokenCacheProvider>();
 
-			services.TryAddSingleton<IClientAppBuilder>(p =>
-			{
-				var tokenCacheProvider = p.GetRequiredService<ITokenCacheProvider>();
-				var appBuilder = new MsalClientAppBuilder(tokenCacheProvider);
-				return appBuilder;
-			});
+            services.TryAddSingleton<IClientAppBuilder, MsalClientAppBuilder>();
 
 			return services;
 		}
