@@ -36,7 +36,11 @@ namespace DNVGL.Veracity.Services.Api.My
 		/// <returns></returns>
 		public Task<int> GetUnreadCount() =>
 			GetResource<int>(MyMessagesUrls.UnreadCount, false);
-    }
+
+
+		public Task MarkAllMessagesAsRead() =>
+			PatchResource(MyMessagesUrls.Root);
+	}
 
     internal static class MyMessagesUrls
     {

@@ -67,6 +67,16 @@ namespace DNVGL.Veracity.Services.Api
 		protected Task DeleteResource(string requestUri) =>
 			ToResourceResult(new HttpRequestMessage(HttpMethod.Delete, requestUri));
 
+#if NETSTANDARD2_0
+		protected Task PatchResource(string requestUri) =>
+			ToResourceResult(new HttpRequestMessage(new HttpMethod("Patch"), requestUri));
+#endif
+
+#if NETSTANDARD2_1_OR_GREATER
+		protected Task PatchResource(string requestUri) =>
+			ToResourceResult(new HttpRequestMessage(HttpMethod.Patch, requestUri));
+#endif
+
 		protected async Task<T> ToResourceResult<T>(HttpRequestMessage request, bool isNotFoundNull = false)
 		{
 			var result =  await DoCallApi<T>(() => Client.SendAsync(request), isNotFoundNull);

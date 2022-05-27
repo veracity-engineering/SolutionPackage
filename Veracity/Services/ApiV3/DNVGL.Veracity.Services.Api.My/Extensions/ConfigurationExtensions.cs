@@ -48,5 +48,13 @@ namespace DNVGL.Veracity.Services.Api.My.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddMyWidgets(this IServiceCollection services, string clientConfigurationName = "widgets-my-api")
+        {
+            services.AddSerializer();
+            services.AddSingleton<IMyWidgets>(s => new MyWidgets(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetOauthClientOptions(clientConfigurationName)));
+
+            return services;
+        }
     }
 }

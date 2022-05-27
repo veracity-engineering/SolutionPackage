@@ -12,17 +12,26 @@ namespace DNVGL.Veracity.Services.Api.My
         {
         }
 
-
         /// <summary>
         /// Retrieves the user profile for the authenticated user.
         /// </summary>
         /// <returns></returns>
         public Task<Profile> Get() =>
-			GetResource<Profile>(MyProfileUrls.Root);
+			GetResource<Profile>(MyProfileUrls.Profile);
+
+        /// <summary>
+		/// Retreives the profile picture of the current logegd in user if one is set, otherwise a 404 is returned
+		/// </summary>
+		/// <returns></returns>
+		public Task<ProfilePicture> GetProfilePicture() =>
+            GetResource<ProfilePicture>(MyProfileUrls.ProfilePicture);
     }
 
     internal static class MyProfileUrls
     {
-        public static string Root => "/veracity/services/v3/my/profile";
+        public static string Root => "/veracity/services/v3/my";
+
+        public static string Profile => $"{Root}/profile";
+        public static string ProfilePicture => $"{Root}/profile";
     }
 }
