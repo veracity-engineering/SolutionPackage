@@ -107,7 +107,7 @@ namespace DNVGL.OAuth.Web
 				if (jwtOptions.Authorities.Any())
 					jwtOptions.Authorities.ForEach(aut =>
 					{
-						var schemeName = $"{schemaOption.Key}{aut.SchemePostfix}";
+						var schemeName = $"{schemaOption.Key}.{aut.SchemePostfix}";
 						builder.AddJwtBearer(schemeName, o =>
 						{
 							o.Authority = aut.Authority;
@@ -116,7 +116,7 @@ namespace DNVGL.OAuth.Web
 							if (jwtOptions.TokenValidationParameters != null) 
 								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-							if (jwtOptions.Events != null)  
+							if (jwtOptions.Events != null)
 								o.Events = jwtOptions.Events; 
 
 							o.SecurityTokenValidators.Clear();
