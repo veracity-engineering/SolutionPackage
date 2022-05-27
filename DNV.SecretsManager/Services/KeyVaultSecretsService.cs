@@ -97,10 +97,36 @@ namespace DNV.SecretsManager.Services
 			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
 			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
 			//await Task.WhenAll(tasks);
+
+			var recoveredSecrets = new Dictionary<string,string>();
+
 			foreach (var secret in secrets)
 			{
-				Console.WriteLine($"Updating secret: '{secret.Key}'");
-				await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				try
+				{
+					Console.WriteLine($"Updating secret: '{secret.Key}'");
+					await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				}
+				catch (KeyVaultErrorException ex)
+				{
+					if (ex.Response.StatusCode == System.Net.HttpStatusCode.Conflict)
+					{
+						Console.WriteLine($"Failed to update deleted secret: '{secret.Key}', recovering secret...");
+						var result = await keyVaultClient.RecoverDeletedSecretAsync(source, secret.Key);
+						recoveredSecrets.Add(secret.Key, secret.Value);
+						continue;
+					}
+					throw ex;
+				}
+			}
+			if (recoveredSecrets.Any())
+			{
+				Console.WriteLine($"Update recovered secrets...");
+				foreach (var secret in recoveredSecrets)
+				{
+					Console.WriteLine($"Updating recovered secret: '{secret.Key}'");
+					await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				}
 			}
 		}
 
@@ -120,7 +146,7 @@ namespace DNV.SecretsManager.Services
 			foreach (var secretKey in secretKeys)
 			{
 				Console.WriteLine($"Deleting secret: '{secretKey}'");
-				await keyVaultClient.DeleteSecretAsync(source, secretKey);
+				var result = await keyVaultClient.DeleteSecretAsync(source, secretKey);
 				deletedCount++;
 			}
 			return deletedCount;
@@ -131,6 +157,11 @@ namespace DNV.SecretsManager.Services
 			var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
 			var results = await Task.WhenAll(tasks);
 			return results.Select(r => r.SecretIdentifier.Name);
+		}
+
+		private bool IsCertificate(SecretItem secret)
+		{
+			return secret.ContentType.Equals("application/x-pkcs12");
 		}
 
 		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
