@@ -66,6 +66,8 @@ namespace DNV.SecretsManager.Services
 			var secrets = await keyVaultClient.GetSecretsAsync(source);
 			foreach (var secret in secrets)
 			{
+				if (IsCertificate(secret))
+					continue;
 				var key = secret.Identifier.Name;
 				var value = (await keyVaultClient.GetSecretAsync(secret.Identifier.Identifier)).Value;
 				secretsDict.Add(key, value);
@@ -74,20 +76,22 @@ namespace DNV.SecretsManager.Services
 			while (!string.IsNullOrEmpty(secrets.NextPageLink))
 			{
 				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
+				/*
 				var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
 				var results = await Task.WhenAll(tasks);
 				foreach (var secretValue in results)
 				{
 					secretsDict.Add(secretValue.SecretIdentifier.Name, secretValue.Value);
 				}
-				/*
+				*/
 				foreach (var secret in secrets)
 				{
+					if (IsCertificate(secret))
+						continue;
 					var key = secret.Identifier.Name;
 					var value = (await keyVaultClient.GetSecretAsync(secret.Identifier.Identifier)).Value;
 					secretsDict.Add(key, value);
 				}
-				*/
 			}
 			return secretsDict;
 		}
@@ -98,8 +102,7 @@ namespace DNV.SecretsManager.Services
 			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
 			//await Task.WhenAll(tasks);
 
-			var recoveredSecrets = new Dictionary<string,string>();
-
+			var recoveredSecrets = new Dictionary<string, string>();
 			foreach (var secret in secrets)
 			{
 				try
@@ -154,15 +157,13 @@ namespace DNV.SecretsManager.Services
 
 		private static async Task<IEnumerable<string>> GetSecretKeys(KeyVaultClient keyVaultClient, IPage<SecretItem> secrets)
 		{
-			var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
+			var tasks = secrets.Where(s => !IsCertificate(s)).Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
 			var results = await Task.WhenAll(tasks);
 			return results.Select(r => r.SecretIdentifier.Name);
 		}
 
-		private bool IsCertificate(SecretItem secret)
-		{
-			return secret.ContentType.Equals("application/x-pkcs12");
-		}
+		private static bool IsCertificate(SecretItem secret) =>
+			secret.ContentType.Equals("application/x-pkcs12");
 
 		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
 		{
