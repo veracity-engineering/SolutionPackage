@@ -100,7 +100,6 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				var result = await ClearKeyVaultSecrets(Url);
 				Console.WriteLine($"Clear complete.  Cleared {result.Count:n0} secrets in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
-
 			}
 			DisplayHelp();
 		}

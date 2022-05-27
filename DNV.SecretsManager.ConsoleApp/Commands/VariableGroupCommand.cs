@@ -19,6 +19,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			new ConsoleOption { Name = "help", Abbreviation = 'h', IsFlag = true, IsOptional = true },
 			new ConsoleOption { Name = "download", Abbreviation = 'd', IsFlag = true },
 			new ConsoleOption { Name = "upload", Abbreviation = 'u', IsFlag = true },
+			new ConsoleOption { Name = "clear", Abbreviation = 'c', IsFlag = true },
 			new ConsoleOption { Name = "base-url", Abbreviation = 's' },
 			new ConsoleOption { Name = "organization", Abbreviation  ='o' },
 			new ConsoleOption { Name = "pat", Abbreviation = 'p' },
@@ -57,6 +58,8 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				Type = CommandType.Download;
 			if (options.ContainsKey("upload"))
 				Type = CommandType.Upload;
+			if (options.ContainsKey("clear"))
+				Type = CommandType.Clear;
 
 			if (options.ContainsKey("base-url"))
 				BaseUrl = options["base-url"].ToString();
@@ -127,6 +130,13 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				Console.WriteLine($"Upload complete. Uploaded {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
 				return;
 			}
+			if (Type == CommandType.Clear)
+			{
+				Console.WriteLine($"Clearing all variables in Variable Group '{GroupId}'...");
+				var result = await ClearKeyVaultSecrets(GroupId);
+				Console.WriteLine($"Clear complete.  Cleared {result.Count:n0} variables in {result.ElapsedTime.TotalSeconds:f2}s.");
+				return;
+			}
 			DisplayHelp();
 		}
 
@@ -156,6 +166,19 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			return new CommandResult
 			{
 				Count = secrets.Count,
+				ElapsedTime = stopwatch.Elapsed
+			};
+		}
+
+		private async Task<CommandResult> ClearKeyVaultSecrets(string variableGroupId)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			var secretsService = new VariableGroupSecretsService(ToConfiguration(this));
+			var deletedCount = await secretsService.ClearSecrets(variableGroupId);
+			stopwatch.Stop();
+			return new CommandResult
+			{
+				Count = deletedCount,
 				ElapsedTime = stopwatch.Elapsed
 			};
 		}

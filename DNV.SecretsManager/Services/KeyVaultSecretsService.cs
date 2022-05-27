@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using System;
+using Microsoft.Azure.KeyVault.Models;
+using Microsoft.Rest.Azure;
 
 namespace DNV.SecretsManager.Services
 {
@@ -105,17 +107,13 @@ namespace DNV.SecretsManager.Services
 		public override async Task<int> ClearSecrets(string source)
 		{
 			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
-			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
-			//await Task.WhenAll(tasks);
-
 			var secretKeys = new List<string>();
 			var secrets = await keyVaultClient.GetSecretsAsync(source);
+			secretKeys.AddRange(await GetSecretKeys(keyVaultClient, secrets));
 			while (!string.IsNullOrEmpty(secrets.NextPageLink))
 			{
 				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
-				var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
-				var results = await Task.WhenAll(tasks);
-				secretKeys.AddRange(results.Select(r => r.SecretIdentifier.Name));
+				secretKeys.AddRange(await GetSecretKeys(keyVaultClient, secrets));
 			}
 
 			var deletedCount = 0;
@@ -126,6 +124,13 @@ namespace DNV.SecretsManager.Services
 				deletedCount++;
 			}
 			return deletedCount;
+		}
+
+		private static async Task<IEnumerable<string>> GetSecretKeys(KeyVaultClient keyVaultClient, IPage<SecretItem> secrets)
+		{
+			var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
+			var results = await Task.WhenAll(tasks);
+			return results.Select(r => r.SecretIdentifier.Name);
 		}
 
 		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
