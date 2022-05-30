@@ -24,7 +24,7 @@ namespace DNVGL.Veracity.Services.Api.My
 		/// </summary>
 		/// <returns></returns>
 		public Task<ProfilePicture> GetProfilePicture() =>
-            GetResource<ProfilePicture>(MyProfileUrls.ProfilePicture);
+            GetResource<ProfilePicture>(MyProfileUrls.ProfilePicture, isNotFoundNull: true);
     }
 
     internal static class MyProfileUrls
@@ -32,6 +32,6 @@ namespace DNVGL.Veracity.Services.Api.My
         public static string Root => "/veracity/services/v3/my";
 
         public static string Profile => $"{Root}/profile";
-        public static string ProfilePicture => $"{Root}/profile";
+        public static string ProfilePicture => $"{Root}/picture";
     }
 }

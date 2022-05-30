@@ -129,7 +129,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
 		public Task<ProfilePicture> GetProfilePicture(string serviceId, string userId) =>
-		 GetResource<ProfilePicture>(ThisServicesUrls.GetProfilePicture(serviceId, userId));
+		 GetResource<ProfilePicture>(ThisServicesUrls.GetProfilePicture(serviceId, userId), isNotFoundNull: true);
 	}
 
     internal static class ThisServicesUrls
