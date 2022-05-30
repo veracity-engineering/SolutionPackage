@@ -88,9 +88,9 @@ namespace DNV.OAuth.Core.TokenValidator
 			else
 			{
 				identity.AddClaim(new Claim(TokenClaimTypes.FlowType, FlowTypeClaimValues.UserFlow));
-				var subClaim = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Sub);
-				if (subClaim != null)
-					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, subClaim.Value));
+				var userIdClaim = identity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+				if (userIdClaim != null)
+					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, userIdClaim.Value));
 			}
 		}
 
