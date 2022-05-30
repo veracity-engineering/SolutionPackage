@@ -14,7 +14,7 @@ namespace DNVGL.OAuth.Web.Swagger
 {
 	public static class SwaggerExtensions
 	{
-		public static IServiceCollection AddSwagger(this IServiceCollection services, Action<SwaggerOptions> setupAction = null)
+		public static IServiceCollection AddSwagger(this IServiceCollection services, Action<SwaggerOptions> setupAction)
 		{
 			var options = new SwaggerOptions { Enabled = true };
 
@@ -59,7 +59,7 @@ namespace DNVGL.OAuth.Web.Swagger
 					ReverseScopes(oauth2Scheme.Flows.ClientCredentials);
 					oauth2Scheme.Flows.ClientCredentials.TokenUrl = new Uri("/swagger/token", UriKind.Relative);
 				}
-
+				
 				o.AddSecurityDefinition(oauth2Scheme.Reference.Id, oauth2Scheme);
 				o.AddSecurityRequirement(new OpenApiSecurityRequirement { { oauth2Scheme, new string[0] } });
 
@@ -86,6 +86,8 @@ namespace DNVGL.OAuth.Web.Swagger
 				});
 
 				o.OrderActionsBy(d => d.RelativePath);
+
+				options.PostConfigure?.Invoke(o);
 			});
 
 			return services;
@@ -116,6 +118,8 @@ namespace DNVGL.OAuth.Web.Swagger
 
 					o.DisplayOperationId();
 					o.EnableFilter();
+
+					o.DocumentTitle = options.DocumentTitle;
 
 					o.ConfigObject.AdditionalItems.Add("syntaxHighlight", false);
 				});

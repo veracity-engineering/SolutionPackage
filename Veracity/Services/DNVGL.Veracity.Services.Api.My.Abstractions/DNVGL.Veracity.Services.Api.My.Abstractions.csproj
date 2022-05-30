@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
-    <Company>DNVGL</Company>
-    <AssemblyName>DNVGL.Veracity.Services.Api.My.Abstractions</AssemblyName>
-	  <Description>Abstractions supporting the DNVGL.Veracity.Services.Api.My package.</Description>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
+		<Company>DNVGL</Company>
+		<AssemblyName>DNVGL.Veracity.Services.Api.My.Abstractions</AssemblyName>
+		<Description>Abstractions supporting the DNVGL.Veracity.Services.Api.My package.</Description>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Version>1.1.1</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
+	</ItemGroup>
 
 </Project>

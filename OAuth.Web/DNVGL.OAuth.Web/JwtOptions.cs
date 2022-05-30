@@ -6,6 +6,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DNVGL.OAuth.Web
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	public class AuthorityItem
+	{
+		public string SchemePostfix { get; set; }
+
+		public string Authority { get; set; }
+	}
+	
 	public class JwtOptions
 	{
 		public string ClientId { get; set; }
@@ -36,6 +46,6 @@ namespace DNVGL.OAuth.Web
 		/// <summary>
 		/// Multiple Authorities
 		/// </summary>
-		public List<(string SchemePostfix, string Authority)> Authorities { get; set; } = new List<(string, string)>();
+		public List<AuthorityItem> Authorities { get; set; } = new List<AuthorityItem>();
 	}
 }

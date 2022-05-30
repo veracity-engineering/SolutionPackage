@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Web.Security", "DNVGL.Web.Security\DNVGL.Web.Security.csproj", "{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Web.Security.Tests", "DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{CA220DA8-71AC-4BA1-809B-6C073F7FF468}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Veracity", "Veracity", "{CE000EEA-07FE-4095-8AA0-6369B09B3E3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{7E7B2247-DB4F-46CA-81F3-6D5A995622C6}"
@@ -15,17 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiV3", "ApiV3", "{FB9BE59A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authorization", "Authorization", "{2E985B44-D129-41BC-8CA8-7AC4975CFE61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web", "DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web", "Authorization\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj", "{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.Abstraction", "DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.Abstraction", "Authorization\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj", "{6E4F4EB6-5270-41D3-89FE-85F5B6995B48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web.Tests", "DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.Web.Tests", "Authorization\DNVGL.Authorization.Web.Tests\DNVGL.Authorization.Web.Tests.csproj", "{DB5F8CF6-F721-4CB0-86E3-6997F45FA24A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore", "DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj", "{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore", "Authorization\DNVGL.Authorization.UserManagement.EFCore\DNVGL.Authorization.UserManagement.EFCore.csproj", "{6BD407FB-9DAA-4C71-AF67-3511982DFF0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.ApiControllers", "DNVGL.Authorization.UserManagement.ApiControllers\DNVGL.Authorization.UserManagement.ApiControllers.csproj", "{E1083941-EBD5-43FF-ADD7-FDA087FF9900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.ApiControllers", "Authorization\DNVGL.Authorization.UserManagement.ApiControllers\DNVGL.Authorization.UserManagement.ApiControllers.csproj", "{E1083941-EBD5-43FF-ADD7-FDA087FF9900}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore.Tests", "DNVGL.Authorization.UserManagement.EFCore.Tests\DNVGL.Authorization.UserManagement.EFCore.Tests.csproj", "{06A08091-8196-4629-A907-08C251BFD6A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Authorization.UserManagement.EFCore.Tests", "Authorization\DNVGL.Authorization.UserManagement.EFCore.Tests\DNVGL.Authorization.UserManagement.EFCore.Tests.csproj", "{06A08091-8196-4629-A907-08C251BFD6A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DDD", "DDD", "{896376C3-33A0-4A46-B33E-ACE7229F5452}"
 EndProject
@@ -38,10 +34,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth", "OAuth", "{275F235F-1574-4E5C-9A2E-066D505B4C9B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecretsManager", "SecretsManager", "{561EA555-4BD3-4100-B8CD-8A5C315F718C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "DNV.SecretsManager\DNV.SecretsManager.csproj", "{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{BFF10B2A-1525-49F1-A76C-E222CBAB046E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.Application.Abstractions", "DDD\DNV.Application.Abstractions\DNV.Application.Abstractions.csproj", "{B0DFAC17-6613-43A5-997E-4FB2062E614D}"
 EndProject
@@ -89,7 +81,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.Context.Abstractions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.Context.AspNet", "Context\DNV.Context.AspNet\DNV.Context.AspNet.csproj", "{A7A9DC16-E8DE-4141-A64C-8C3600CBD67D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Context.HttpClient", "Context\DNV.Context.HttpClient\DNV.Context.HttpClient.csproj", "{27B33462-2D11-4D71-862F-9F229025D6CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.Context.HttpClient", "Context\DNV.Context.HttpClient\DNV.Context.HttpClient.csproj", "{27B33462-2D11-4D71-862F-9F229025D6CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Web.Security", "Web.Security\DNVGL.Web.Security\DNVGL.Web.Security.csproj", "{77DC0C66-1E0D-4055-8122-F4A0A26D8546}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.Web.Security.Tests", "Web.Security\DNVGL.Web.Security.Tests\DNVGL.Web.Security.Tests.csproj", "{AE746792-098C-4C0F-9A09-28870EFD7232}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "SecretsManager\DNV.SecretsManager\DNV.SecretsManager.csproj", "{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "SecretsManager\DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{091A95DA-8C6B-429B-A088-335F44622559}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,14 +97,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA220DA8-71AC-4BA1-809B-6C073F7FF468}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABAAB75F-C40D-4517-B909-A4D84BB56B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -129,14 +121,6 @@ Global
 		{06A08091-8196-4629-A907-08C251BFD6A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06A08091-8196-4629-A907-08C251BFD6A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06A08091-8196-4629-A907-08C251BFD6A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFF10B2A-1525-49F1-A76C-E222CBAB046E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B0DFAC17-6613-43A5-997E-4FB2062E614D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0DFAC17-6613-43A5-997E-4FB2062E614D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0DFAC17-6613-43A5-997E-4FB2062E614D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -229,13 +213,27 @@ Global
 		{27B33462-2D11-4D71-862F-9F229025D6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27B33462-2D11-4D71-862F-9F229025D6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27B33462-2D11-4D71-862F-9F229025D6CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77DC0C66-1E0D-4055-8122-F4A0A26D8546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77DC0C66-1E0D-4055-8122-F4A0A26D8546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77DC0C66-1E0D-4055-8122-F4A0A26D8546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77DC0C66-1E0D-4055-8122-F4A0A26D8546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE746792-098C-4C0F-9A09-28870EFD7232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE746792-098C-4C0F-9A09-28870EFD7232}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE746792-098C-4C0F-9A09-28870EFD7232}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE746792-098C-4C0F-9A09-28870EFD7232}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{091A95DA-8C6B-429B-A088-335F44622559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{091A95DA-8C6B-429B-A088-335F44622559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{091A95DA-8C6B-429B-A088-335F44622559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{091A95DA-8C6B-429B-A088-335F44622559}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F541C5D2-3A48-440D-B1CA-4EA9F78ED4EB} = {216D65B7-5E26-41CA-B28F-3F6CE5295673}
-		{CA220DA8-71AC-4BA1-809B-6C073F7FF468} = {216D65B7-5E26-41CA-B28F-3F6CE5295673}
 		{7E7B2247-DB4F-46CA-81F3-6D5A995622C6} = {CE000EEA-07FE-4095-8AA0-6369B09B3E3F}
 		{FB9BE59A-BF23-4BBA-81F4-887B29EF78E9} = {7E7B2247-DB4F-46CA-81F3-6D5A995622C6}
 		{ABAAB75F-C40D-4517-B909-A4D84BB56B8B} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
@@ -244,8 +242,6 @@ Global
 		{6BD407FB-9DAA-4C71-AF67-3511982DFF0B} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 		{E1083941-EBD5-43FF-ADD7-FDA087FF9900} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
 		{06A08091-8196-4629-A907-08C251BFD6A3} = {2E985B44-D129-41BC-8CA8-7AC4975CFE61}
-		{F825E66E-D7A8-41C3-95B8-CC1CC11186C8} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
-		{BFF10B2A-1525-49F1-A76C-E222CBAB046E} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 		{B0DFAC17-6613-43A5-997E-4FB2062E614D} = {896376C3-33A0-4A46-B33E-ACE7229F5452}
 		{665C8402-18E3-4225-8B88-A80D31270FDD} = {896376C3-33A0-4A46-B33E-ACE7229F5452}
 		{85870439-D763-4898-84D0-5D853878CC21} = {896376C3-33A0-4A46-B33E-ACE7229F5452}
@@ -269,6 +265,10 @@ Global
 		{A54E70D8-F0C0-4863-9150-581868190D40} = {E000F5D6-2922-4385-99B1-205F1C492F7C}
 		{A7A9DC16-E8DE-4141-A64C-8C3600CBD67D} = {E000F5D6-2922-4385-99B1-205F1C492F7C}
 		{27B33462-2D11-4D71-862F-9F229025D6CB} = {E000F5D6-2922-4385-99B1-205F1C492F7C}
+		{77DC0C66-1E0D-4055-8122-F4A0A26D8546} = {216D65B7-5E26-41CA-B28F-3F6CE5295673}
+		{AE746792-098C-4C0F-9A09-28870EFD7232} = {216D65B7-5E26-41CA-B28F-3F6CE5295673}
+		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
+		{091A95DA-8C6B-429B-A088-335F44622559} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

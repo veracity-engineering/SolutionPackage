@@ -5,12 +5,17 @@
 		<Nullable>enable</Nullable>
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Version>1.2.0</Version>
 	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.1.2" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
 		<PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.22" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
