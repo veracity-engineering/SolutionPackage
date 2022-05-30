@@ -20,7 +20,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <returns></returns>
 		public Task<Service> Get(string serviceId) =>
 			GetResource<Service>(ServiceDirectoryUrls.Service(serviceId));
-
+		
 		/// <summary>
 		/// Retrieves a paginated collection of user references of users subscribed to a service.
 		/// </summary>
@@ -30,6 +30,13 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> ListUsers(string serviceId, int page = 1, int pageSize = 20) =>
 			GetResource<IEnumerable<UserReference>>(ServiceDirectoryUrls.ServiceUsers(serviceId, page, pageSize), false);
+
+
+		public Task<IEnumerable<Subscription>> GetServiceSubscriptions(string serviceId, string filter, string pageNo) =>
+			GetResource<IEnumerable<Subscription>>(ServiceDirectoryUrls.GetServiceSubscriptions(serviceId, filter, pageNo), false);
+
+		public Task<bool> IsAdmin(string serviceId, string userId)
+			=> GetResource<bool>(ServiceDirectoryUrls.IsAdmin(serviceId, userId), false);
 	}
 
 	internal static class ServiceDirectoryUrls
@@ -39,5 +46,11 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		public static string Service(string serviceId) => $"{Root}/{serviceId}";
 
 		public static string ServiceUsers(string serviceId, int page, int pageSize) => $"{Service(serviceId)}/users?page={page}&pageSize={pageSize}";
+
+
+		public static string GetServiceSubscriptions(string serviceId,string filter,string pageNo) => $"{Root}/{serviceId}/subscribers?filter={filter}&pageNo={pageNo}";
+
+		public static string IsAdmin(string serviceId,string userId) => $"{Root}/{serviceId}/administrators/{userId}";
+
 	}
 }

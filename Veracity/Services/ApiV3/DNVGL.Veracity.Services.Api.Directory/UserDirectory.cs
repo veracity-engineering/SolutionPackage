@@ -79,5 +79,21 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		public static string UsersServices(string userId, int page, int pageSize) => $"{User(userId)}/services?page={page}&pageSize={pageSize}";
 
 		public static string UsersServiceSubscription(string userId, string serviceId) => $"{User(userId)}/services/{serviceId}";
+
+
+
+		public static string AcceptTerms => $"{Root}/me/accept/terms";
+		public static string ActivateUserAccount => $"{Root}/me/activate";
+		public static string DeleteUser(string userId) => $"{Root}/{userId}";
+		public static string ExchangeOtpCode => $"{Root}/me/exchange/otp";
+		public static string GetPendingUserActivation => $"{Root}/me/pending/activation";
+		public static string GetUserResyncData(string userId) => $"{Root}/{userId}/resync/all";		
+		public static string UpdateCurrentUser => $"{Root}/me/edit";
+		public static string UpdateCurrentUsersEmailOrPhone(string type) => $"{Root}/me/change/{type}";
+		public static string UpdateCurrentUsersPassword => $"{Root}/me/change/password";
+		public static string UpdateUserEmail(string userId) => $"{Root}/{userId}/change/email";
+		public static string ValidateEmailOrPhone(string type) => $"{Root}/me/change/{type}/verify";
+
+
 	}
 }
