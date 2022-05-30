@@ -13,9 +13,9 @@ namespace DNVGL.Veracity.Services.Api.This
     {
         private const string HttpClientConfigurationName = "services-this-api";
 
-        public ThisServices(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName = HttpClientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
-        {
-        }
+		public ThisServices(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		{
+		}
 
 		/// <summary>
 		/// Add a subscription to the authenticated service or nested services.

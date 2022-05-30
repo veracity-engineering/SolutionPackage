@@ -91,6 +91,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "Secre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "SecretsManager\DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{091A95DA-8C6B-429B-A088-335F44622559}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Veracity.Services.Api.This.Test", "DNV.Veracity.Services.Api.This.Test\DNV.Veracity.Services.Api.This.Test.csproj", "{9C0817F9-9049-4218-9923-CE2A450FA08B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -229,6 +231,10 @@ Global
 		{091A95DA-8C6B-429B-A088-335F44622559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{091A95DA-8C6B-429B-A088-335F44622559}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{091A95DA-8C6B-429B-A088-335F44622559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -269,6 +275,7 @@ Global
 		{AE746792-098C-4C0F-9A09-28870EFD7232} = {216D65B7-5E26-41CA-B28F-3F6CE5295673}
 		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 		{091A95DA-8C6B-429B-A088-335F44622559} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
+		{9C0817F9-9049-4218-9923-CE2A450FA08B} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

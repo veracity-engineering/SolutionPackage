@@ -2,13 +2,14 @@
 using DNVGL.Veracity.Services.Api.Directory.Abstractions;
 using DNVGL.Veracity.Services.Api.Models;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory
 {
 	public class CompanyDirectory : ApiResourceClient, ICompanyDirectory
 	{
-		public CompanyDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		public CompanyDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
 		{
 		}
 

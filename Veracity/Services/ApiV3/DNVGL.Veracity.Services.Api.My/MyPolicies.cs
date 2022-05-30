@@ -10,11 +10,11 @@ namespace DNVGL.Veracity.Services.Api.My
 {
 	public class MyPolicies : ApiResourceClient, IMyPolicies
 	{
-		public MyPolicies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		public MyPolicies(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
 		{
 		}
 
-        protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
+		protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
         {
             if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotAcceptable)
             {

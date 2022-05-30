@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DNVGL.Common.Core.JsonOptions;
+using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.OAuth.Api.HttpClient.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -22,6 +24,6 @@ namespace DNVGL.Veracity.Services.Api.Extensions
 	        services.TryAddTransient<ISerializer, JsonSerializer>();
 
             return services;
-        }
-    }
+        }        	
+	}
 }

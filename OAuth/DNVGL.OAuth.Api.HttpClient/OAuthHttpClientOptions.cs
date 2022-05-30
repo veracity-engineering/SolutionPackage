@@ -1,4 +1,6 @@
 ﻿using DNV.OAuth.Abstractions;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
@@ -30,4 +32,11 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// </summary>
         public OAuth2Options OAuthClientOptions { get; set; }
     }
+
+
+	public class OAuthHttpClientOptionsCollection : List<OAuthHttpClientOptions>
+	{
+		
+	}
+
 }

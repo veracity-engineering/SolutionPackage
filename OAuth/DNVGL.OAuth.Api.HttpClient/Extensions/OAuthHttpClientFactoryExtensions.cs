@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
@@ -33,15 +34,29 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         /// <returns></returns>
         public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, IEnumerable<OAuthHttpClientFactoryOptions> options, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
         {
-            var optionList = options.ToList();
+            var optionList = options.ToList<OAuthHttpClientOptions>();
 
-            services.AddOAuthHttpClients(optionList, cacheConfigAction: cacheSetupAction)
-#pragma warning disable CS0618
-                .AddSingleton<IOAuthHttpClientFactory>(sp =>
-#pragma warning restore CS0618
-                    new OAuthHttpClientFactory(sp.GetRequiredService<IHttpClientFactory>(), optionList));
+            services.AddOptions<OAuthHttpClientOptionsCollection>()
+                .Configure(o =>
+                {
+                    o.AddRange(optionList);
+                });
+
+            services.AddOAuthHttpClients(optionList, cacheConfigAction: cacheSetupAction);
 
             return services;
+        }
+
+        public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
+        {
+            var oauthClientOptions = serviceProvider.GetRequiredService<IOptions<OAuthHttpClientOptionsCollection>>().Value;
+
+            var options = oauthClientOptions.Where(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+            if (options == null)
+                throw new System.ArgumentException($"{name} not exist!");
+
+            return options;
         }
 
         /// <summary>
