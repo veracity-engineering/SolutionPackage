@@ -11,22 +11,42 @@ namespace DNVGL.OAuth.Web
 	/// </summary>
 	public class AuthorityItem
 	{
-		public string SchemePostfix { get; set; }
+		public string? SchemePostfix { get; set; }
 
-		public string Authority { get; set; }
+		public string? Authority { get; set; }
 	}
 	
 	public class JwtOptions
 	{
-		public string ClientId { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public const string JwtDefaultPolicy = nameof(JwtDefaultPolicy);
 
-		public TokenValidationParameters TokenValidationParameters { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public string? ClientId { get; set; }
 
-		public JwtBearerEvents Events { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public TokenValidationParameters? TokenValidationParameters { get; set; }
 
-		public Func<IEnumerable<Claim>, (bool Succeeded, string FailedReason)> CustomClaimsValidator { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public JwtBearerEvents? Events { get; set; }
 
-		public ISecurityTokenValidator SecurityTokenValidator { get; set; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public Func<IEnumerable<Claim>, (bool Succeeded, string FailedReason)>? CustomClaimsValidator { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ISecurityTokenValidator? SecurityTokenValidator { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Authority to use when making OpenIdConnect calls.
@@ -41,11 +61,21 @@ namespace DNVGL.OAuth.Web
 		/// 
 		/// path segment 'tfp' is required for MSAL, it is obsoleted and might be removed in the future.
 		/// </remarks>
-		public string Authority { get; set; }
+		public string? Authority { get; set; }
 
 		/// <summary>
 		/// Multiple Authorities
 		/// </summary>
 		public List<AuthorityItem> Authorities { get; set; } = new List<AuthorityItem>();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string AuthorizationPolicyName { get; set; } = JwtDefaultPolicy;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool AddAsDefault { get; set; } = true;
 	}
 }
