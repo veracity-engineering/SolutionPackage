@@ -33,16 +33,8 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
         /// <returns></returns>
         public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, IEnumerable<OAuthHttpClientFactoryOptions> options, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
-        {
-            var optionList = options.ToList<OAuthHttpClientOptions>();
-
-            services.AddOptions<OAuthHttpClientOptionsCollection>()
-                .Configure(o =>
-                {
-                    o.AddRange(optionList);
-                });
-
-            services.AddOAuthHttpClients(optionList, cacheConfigAction: cacheSetupAction);
+        { 
+            services.AddOAuthHttpClients(options, cacheConfigAction: cacheSetupAction);
 
             return services;
         }
