@@ -42,13 +42,15 @@ namespace DNV.Veracity.Services.Api.This.Test
         public async Task AddThisUser_WitOptonhName_OldOptionsType()
         {
             _services.AddDistributedMemoryCache();
-            _services.AddDataProtection();//for register IDataProtectionProvider
+            //_services.AddDataProtection();//for register IDataProtectionProvider
 
             _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
             {
                 _options1,
+                _options1,
                 new OAuthHttpClientFactoryOptions(){
-                     Name = "faketest"
+                     Name = "faketest",
+                      Flow = OAuthCredentialFlow.ClientCredentials
                 }
             });
 

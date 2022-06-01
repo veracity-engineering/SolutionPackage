@@ -39,17 +39,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
             return services;
         }
 
-        public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
-        {
-            var oauthClientOptions = serviceProvider.GetRequiredService<IOptions<OAuthHttpClientOptionsCollection>>().Value;
-
-            var options = oauthClientOptions.Where(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-            if (options == null)
-                throw new System.ArgumentException($"{name} not exist!");
-
-            return options;
-        }
+        
 
         /// <summary>
         /// 

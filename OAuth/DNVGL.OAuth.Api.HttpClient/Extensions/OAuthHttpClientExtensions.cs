@@ -7,6 +7,7 @@ using DNVGL.OAuth.Api.HttpClient.HttpClientHandlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 
 namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
@@ -71,12 +72,15 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
-			services.AddOptions<OAuthHttpClientOptionsCollection>()
-			   .Configure(o =>
-			   {
-				   if (!o.Any(x => x.Name.Equals(option.Name, StringComparison.OrdinalIgnoreCase)))
-					   o.Add(option);
-			   });
+			services.Configure<OAuthHttpClientOptions>($"{option.Name}", o =>
+			{//add this named option with "Name" for compatible with old apiv3 implmentation
+				o.Bind(option);
+			});
+
+			services.Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
+			{
+				o.Bind(option);		
+			});
 
 			var builder = services.AddHttpClient($"{option.Name}:{option.Flow}", 
 				clientConfigAction ?? ((_, clt) => clt.BaseAddress = new Uri(option.BaseUri)));
@@ -86,6 +90,20 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			configBuilderAction?.Invoke(builder);
 
 			return services;
+		}
+
+		public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		{
+			var oauthClientOptions = serviceProvider.GetService<IOptionsMonitor<OAuthHttpClientOptions>>();
+
+			var options = oauthClientOptions.Get(name);
+			if (options == null
+				|| string.IsNullOrEmpty(options.Name))
+			{
+				throw new System.ArgumentException($"Configuration: {name} does not exist!");
+			}
+
+			return options;
 		}
 
 		/// <summary>
