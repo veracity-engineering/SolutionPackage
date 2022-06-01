@@ -39,16 +39,16 @@ namespace DNV.Veracity.Services.Api.This.Test
         }  
 
         [TestMethod]
-        public async Task AddThisUser_WitOptonhName_OldOptionsType()
+        public async Task AddThisUser_With_AddOAuthHttpClientFactory()
         {
-            _services.AddDistributedMemoryCache();
-            _services.AddDataProtection();//for register IDataProtectionProvider
-         
+            _services.AddDistributedMemoryCache();           
+
             _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
-            {
+            {               
                 _options1,
                 new OAuthHttpClientFactoryOptions(){
-                     Name = "faketest"
+                     Name = "faketest",
+                      Flow = OAuthCredentialFlow.ClientCredentials
                 }
             });
 
@@ -62,6 +62,56 @@ namespace DNV.Veracity.Services.Api.This.Test
 
 
         [TestMethod]
+        public async Task AddThisUser_With_AddOAuthHttpClients()
+        {
+            _services.AddDistributedMemoryCache();           
+
+            _services.AddOAuthHttpClients(new List<OAuthHttpClientOptions>()
+            {
+                (OAuthHttpClientOptions)_options1,
+                new OAuthHttpClientOptions(){
+                     Name = "faketest",
+                      Flow = OAuthCredentialFlow.ClientCredentials
+                }
+            });
+
+            _services.AddThisUsers("test-config-name");
+
+            var r = _services.BuildServiceProvider().GetRequiredService<IThisUsers>();
+            var r2 = await r.Resolve("ming.ming.tim.tu@dnv.com");
+
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public async Task AddThisUser_With_AddOAuthHttpClients_WrongConfigName()
+        {
+            _services.AddDistributedMemoryCache();
+
+            _services.AddOAuthHttpClients(new List<OAuthHttpClientOptions>()
+            {
+                (OAuthHttpClientOptions)_options1,
+                new OAuthHttpClientOptions(){
+                     Name = "faketest",
+                      Flow = OAuthCredentialFlow.ClientCredentials
+                }
+            });
+
+            _services.AddThisUsers("test-config-name:testfake");
+
+            try
+            {
+                var r = _services.BuildServiceProvider().GetRequiredService<IThisUsers>();
+                var r2 = await r.Resolve("ming.ming.tim.tu@dnv.com");
+            }
+            catch (System.ArgumentException)
+            {
+                Assert.IsTrue(true);
+            }
+              
+        }
+
+        [TestMethod]
         public async Task GetProfilePicture_Test()
         {
             _services.AddDistributedMemoryCache();
@@ -69,7 +119,7 @@ namespace DNV.Veracity.Services.Api.This.Test
 
             _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
             {
-                _options1               
+                _options1
             });
 
             _services.AddThisServices("test-config-name");
