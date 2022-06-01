@@ -16,10 +16,11 @@ using DNVGL.OAuth.Web.Oidc;
 
 namespace DNVGL.OAuth.Web
 {
-	public static class AuthenticationExtensions
+	/// <summary>
+	/// 
+	/// </summary>
+	public static class OAuthExtensions
 	{
-		private const string DefaultJwtAuthorizationPolicy = nameof(DefaultJwtAuthorizationPolicy);
-
 		#region AddJwt for Web Api
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IEnumerable<IConfigurationSection> sections)
 		{
@@ -69,17 +70,23 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IDictionary<string, JwtOptions> schemaOptions, bool populateAuthorizationPolicy = true)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="schemaOptions"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IDictionary<string, JwtOptions> schemaOptions)
 		{
 			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
 
-			var schemeNames = new List<string>();
-
 			foreach (var schemaOption in schemaOptions)
 			{
+				var schemeNames = new List<string>();
 				var jwtOptions = schemaOption.Value;
 
 				if (!string.IsNullOrEmpty(jwtOptions.Authority))
@@ -106,7 +113,7 @@ namespace DNVGL.OAuth.Web
 				if (jwtOptions.Authorities.Any())
 					jwtOptions.Authorities.ForEach(aut =>
 					{
-						var schemeName = $"{schemaOption.Key}{aut.SchemePostfix}";
+						var schemeName = $"{schemaOption.Key}.{aut.SchemePostfix}";
 						builder.AddJwtBearer(schemeName, o =>
 						{
 							o.Authority = aut.Authority;
@@ -115,7 +122,7 @@ namespace DNVGL.OAuth.Web
 							if (jwtOptions.TokenValidationParameters != null) 
 								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
-							if (jwtOptions.Events != null)  
+							if (jwtOptions.Events != null)
 								o.Events = jwtOptions.Events; 
 
 							o.SecurityTokenValidators.Clear();
@@ -124,18 +131,32 @@ namespace DNVGL.OAuth.Web
 
 						schemeNames.Add(schemeName);
 					});
-			}
 
-			if (populateAuthorizationPolicy && schemeNames.Any())
-				builder.Services.AddAuthorization(o =>
-				{
-					o.AddPolicy(DefaultJwtAuthorizationPolicy,
-						p => { p.AddAuthenticationSchemes(schemeNames.ToArray()).RequireAuthenticatedUser(); });
-					o.DefaultPolicy = o.GetPolicy(DefaultJwtAuthorizationPolicy);
-				});
+				if (schemeNames.Any())
+					builder.Services.AddAuthorization(o =>
+					{
+						var policy = o.GetPolicy(jwtOptions.AuthorizationPolicyName);
+
+						o.AddPolicy(jwtOptions.AuthorizationPolicyName,
+							p =>
+							{
+								if (policy != null)
+									p = p.Combine(policy);
+
+								if (jwtOptions.AddAsDefault && o.DefaultPolicy != policy)
+									p = p.Combine(o.DefaultPolicy);
+
+								p.AddAuthenticationSchemes(schemeNames.ToArray()).RequireAuthenticatedUser();
+							});
+
+						if (jwtOptions.AddAsDefault)
+							o.DefaultPolicy = o.GetPolicy(jwtOptions.AuthorizationPolicyName);
+					});
+			}
 
 			return builder;
 		}
+
 		#endregion
 
 		#region AddOidc for Web App
