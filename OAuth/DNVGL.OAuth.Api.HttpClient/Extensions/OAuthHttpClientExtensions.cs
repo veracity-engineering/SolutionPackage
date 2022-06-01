@@ -7,6 +7,7 @@ using DNVGL.OAuth.Api.HttpClient.HttpClientHandlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 
 namespace DNVGL.OAuth.Api.HttpClient.Extensions
 {
@@ -71,6 +72,11 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
+			services.Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
+			{
+				o.Bind(option);		
+			});
+
 			var builder = services.AddHttpClient($"{option.Name}:{option.Flow}", 
 				clientConfigAction ?? ((_, clt) => clt.BaseAddress = new Uri(option.BaseUri)));
 
@@ -79,6 +85,45 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			configBuilderAction?.Invoke(builder);
 
 			return services;
+		}
+
+		public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		{
+			var optionList = serviceProvider.GetAllOauthClientOptions(name);
+			if (optionList == null || !optionList.Any())
+			{
+				throw new System.ArgumentException($"Configuration: {name} does not exist!");
+			}
+
+			return optionList.First();
+		}
+
+		public static IEnumerable<OAuthHttpClientOptions> GetAllOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		{
+			var optionList = new List<OAuthHttpClientOptions>(); 
+
+			var oauthClientOptions = serviceProvider.GetService<IOptionsMonitor<OAuthHttpClientOptions>>();
+
+			var options = oauthClientOptions.Get(name);
+			if (options == null
+				|| string.IsNullOrEmpty(options.Name))
+			{
+				foreach (var flowName in Enum.GetNames(typeof(OAuthCredentialFlow)))
+				{
+					string subOptionsName = $"{name}:{flowName}";
+					var subOptions = oauthClientOptions.Get(subOptionsName);
+					if (subOptions != null && !string.IsNullOrEmpty(subOptions.Name))
+					{
+						optionList.Add(subOptions);
+					}
+				}
+			}
+			else
+			{
+				optionList.Add(options);
+			}
+
+			return optionList;
 		}
 
 		/// <summary>

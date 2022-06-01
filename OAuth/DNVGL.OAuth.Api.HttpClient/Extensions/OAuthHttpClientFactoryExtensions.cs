@@ -34,30 +34,12 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         /// <returns></returns>
         public static IServiceCollection AddOAuthHttpClientFactory(this IServiceCollection services, IEnumerable<OAuthHttpClientOptions> options, Action<DistributedCacheEntryOptions>? cacheSetupAction = null)
         {
-            var optionList = options.ToList<OAuthHttpClientOptions>();
-
-            services.AddOptions<OAuthHttpClientOptionsCollection>()
-                .Configure(o =>
-                {
-                    o.AddRange(optionList);
-                });
-
-            services.AddOAuthHttpClients(optionList, cacheConfigAction: cacheSetupAction);
+            services.AddOAuthHttpClients(options, cacheConfigAction: cacheSetupAction);
 
             return services;
         }
 
-        public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
-        {
-            var oauthClientOptions = serviceProvider.GetRequiredService<IOptions<OAuthHttpClientOptionsCollection>>().Value;
-
-            var options = oauthClientOptions.Where(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-            if (options == null)
-                throw new System.ArgumentException($"{name} not exist!");
-
-            return options;
-        }
+        
 
         /// <summary>
         /// 
