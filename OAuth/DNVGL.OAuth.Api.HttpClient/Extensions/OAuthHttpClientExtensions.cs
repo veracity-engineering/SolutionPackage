@@ -72,11 +72,6 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
-			services.Configure<OAuthHttpClientOptions>($"{option.Name}", o =>
-			{//add this named option with "Name" for compatible with old apiv3 implmentation
-				o.Bind(option);
-			});
-
 			services.Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
 			{
 				o.Bind(option);		
@@ -94,16 +89,41 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 
 		public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
 		{
+			var optionList = serviceProvider.GetAllOauthClientOptions(name);
+			if (optionList == null || !optionList.Any())
+			{
+				throw new System.ArgumentException($"Configuration: {name} does not exist!");
+			}
+
+			return optionList.First();
+		}
+
+		public static IEnumerable<OAuthHttpClientOptions> GetAllOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		{
+			var optionList = new List<OAuthHttpClientOptions>(); 
+
 			var oauthClientOptions = serviceProvider.GetService<IOptionsMonitor<OAuthHttpClientOptions>>();
 
 			var options = oauthClientOptions.Get(name);
 			if (options == null
 				|| string.IsNullOrEmpty(options.Name))
 			{
-				throw new System.ArgumentException($"Configuration: {name} does not exist!");
+				foreach (var flowName in Enum.GetNames(typeof(OAuthCredentialFlow)))
+				{
+					string clientOptionName = $"{name}:{flowName}";
+					var subOptions = oauthClientOptions.Get(clientOptionName);
+					if (subOptions != null && !string.IsNullOrEmpty(subOptions.Name))
+					{
+						optionList.Add(subOptions);
+					}
+				}
+			}
+			else
+			{
+				optionList.Add(options);
 			}
 
-			return options;
+			return optionList;
 		}
 
 		/// <summary>

@@ -82,5 +82,33 @@ namespace DNV.Veracity.Services.Api.This.Test
 
             Assert.IsTrue(true);
         }
+
+        [TestMethod]
+        public async Task AddThisUser_With_AddOAuthHttpClients_WrongConfigName()
+        {
+            _services.AddDistributedMemoryCache();
+
+            _services.AddOAuthHttpClients(new List<OAuthHttpClientOptions>()
+            {
+                (OAuthHttpClientOptions)_options1,
+                new OAuthHttpClientOptions(){
+                     Name = "faketest",
+                      Flow = OAuthCredentialFlow.ClientCredentials
+                }
+            });
+
+            _services.AddThisUsers("test-config-name:testfake");
+
+            try
+            {
+                var r = _services.BuildServiceProvider().GetRequiredService<IThisUsers>();
+                var r2 = await r.Resolve("ming.ming.tim.tu@dnv.com");
+            }
+            catch (System.ArgumentException)
+            {
+                Assert.IsTrue(true);
+            }
+              
+        }
     }
 }
