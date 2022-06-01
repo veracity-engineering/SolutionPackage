@@ -25,9 +25,9 @@ namespace DNV.OAuth.Core.TokenCache
 		protected override DistributedCacheEntryOptions CacheOptions { get; }
 
 		protected override byte[]? Protect(byte[]? bytes) =>
-			bytes != null ? DataProtector?.Protect(bytes) : bytes;
+			bytes != null && DataProtector != null ? DataProtector.Protect(bytes) : bytes;
 
 		protected override byte[]? Unprotect(byte[]? bytes) => 
-			bytes != null ? DataProtector?.Unprotect(bytes) : bytes;
+			bytes != null && DataProtector != null ? DataProtector.Unprotect(bytes) : bytes;
 	}
 }
