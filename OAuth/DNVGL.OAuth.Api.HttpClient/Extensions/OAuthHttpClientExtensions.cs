@@ -110,8 +110,8 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			{
 				foreach (var flowName in Enum.GetNames(typeof(OAuthCredentialFlow)))
 				{
-					string clientOptionName = $"{name}:{flowName}";
-					var subOptions = oauthClientOptions.Get(clientOptionName);
+					string subOptionsName = $"{name}:{flowName}";
+					var subOptions = oauthClientOptions.Get(subOptionsName);
 					if (subOptions != null && !string.IsNullOrEmpty(subOptions.Name))
 					{
 						optionList.Add(subOptions);
