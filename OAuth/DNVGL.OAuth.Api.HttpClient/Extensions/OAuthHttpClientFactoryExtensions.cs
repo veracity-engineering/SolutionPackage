@@ -36,11 +36,11 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
         {
             var optionList = options.ToList<OAuthHttpClientOptions>();
 
-            services.AddOptions<OAuthHttpClientOptionsCollection>()
-                .Configure(o =>
-                {
-                    o.AddRange(optionList);
-                });
+            //services.AddOptions<OAuthHttpClientOptionsCollection>()
+            //    .Configure(o =>
+            //    {
+            //        o.AddRange(optionList);
+            //    });
 
             services.AddOAuthHttpClients(optionList, cacheConfigAction: cacheSetupAction);
 

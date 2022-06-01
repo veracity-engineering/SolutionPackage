@@ -43,7 +43,7 @@ namespace DNV.Veracity.Services.Api.This.Test
         {
             _services.AddDistributedMemoryCache();
             _services.AddDataProtection();//for register IDataProtectionProvider
-
+         
             _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
             {
                 _options1,
