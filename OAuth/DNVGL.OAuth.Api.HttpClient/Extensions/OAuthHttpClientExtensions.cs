@@ -72,7 +72,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
-			services.Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
+			services.AddOptions().Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
 			{
 				o.Bind(option);		
 			});
