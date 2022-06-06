@@ -11,7 +11,6 @@
 	
 	<ItemGroup>
 		<ProjectReference Include="..\..\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.My\DNVGL.Veracity.Services.Api.My.csproj" />
-		<ProjectReference Include="..\..\Veracity\Services\DNVGL.Veracity.Services.Api.My.Abstractions\DNVGL.Veracity.Services.Api.My.Abstractions.csproj" />
 		<ProjectReference Include="..\DNVGL.OAuth.Web\DNVGL.OAuth.Web.csproj" />
 	</ItemGroup>
 

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.ObjectPool;
+using System;
 using System.Security.Cryptography;
-using System.Text;
-using Microsoft.Extensions.ObjectPool;
 
 namespace DNVGL.Common.Core.Hash
 {
-    public static class HashExtension
+	public static class HashExtension
     {
-        private static readonly ObjectPool<SHA1CryptoServiceProvider> HasherPool = ObjectPool.Create(new DefaultPooledObjectPolicy<SHA1CryptoServiceProvider>());
+        private static readonly ObjectPool<SHA1CryptoServiceProvider> HasherPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SHA1CryptoServiceProvider>());
         
         public static long GetLongHashCode(this Guid key)
         {
