@@ -4,6 +4,7 @@
 	{
 		None,
 		Download,
-		Upload
+		Upload,
+		Clear
 	}
 }

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using System;
+using Microsoft.Azure.KeyVault.Models;
+using Microsoft.Rest.Azure;
 
 namespace DNV.SecretsManager.Services
 {
@@ -64,6 +66,8 @@ namespace DNV.SecretsManager.Services
 			var secrets = await keyVaultClient.GetSecretsAsync(source);
 			foreach (var secret in secrets)
 			{
+				if (IsCertificate(secret))
+					continue;
 				var key = secret.Identifier.Name;
 				var value = (await keyVaultClient.GetSecretAsync(secret.Identifier.Identifier)).Value;
 				secretsDict.Add(key, value);
@@ -72,20 +76,22 @@ namespace DNV.SecretsManager.Services
 			while (!string.IsNullOrEmpty(secrets.NextPageLink))
 			{
 				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
+				/*
 				var tasks = secrets.Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
 				var results = await Task.WhenAll(tasks);
 				foreach (var secretValue in results)
 				{
 					secretsDict.Add(secretValue.SecretIdentifier.Name, secretValue.Value);
 				}
-				/*
+				*/
 				foreach (var secret in secrets)
 				{
+					if (IsCertificate(secret))
+						continue;
 					var key = secret.Identifier.Name;
 					var value = (await keyVaultClient.GetSecretAsync(secret.Identifier.Identifier)).Value;
 					secretsDict.Add(key, value);
 				}
-				*/
 			}
 			return secretsDict;
 		}
@@ -95,12 +101,69 @@ namespace DNV.SecretsManager.Services
 			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
 			//var tasks = secrets.Select(s => keyVaultClient.SetSecretAsync(vaultBaseUrl, s.Key, secrets[s.Key], contentType: "text/plain"));
 			//await Task.WhenAll(tasks);
+
+			var recoveredSecrets = new Dictionary<string, string>();
 			foreach (var secret in secrets)
 			{
-				Console.WriteLine($"Updating secret: '{secret.Key}'");
-				await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				try
+				{
+					Console.WriteLine($"Updating secret: '{secret.Key}'");
+					await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				}
+				catch (KeyVaultErrorException ex)
+				{
+					if (ex.Response.StatusCode == System.Net.HttpStatusCode.Conflict)
+					{
+						Console.WriteLine($"Failed to update deleted secret: '{secret.Key}', recovering secret...");
+						var result = await keyVaultClient.RecoverDeletedSecretAsync(source, secret.Key);
+						recoveredSecrets.Add(secret.Key, secret.Value);
+						continue;
+					}
+					throw ex;
+				}
+			}
+			if (recoveredSecrets.Any())
+			{
+				Console.WriteLine($"Update recovered secrets...");
+				foreach (var secret in recoveredSecrets)
+				{
+					Console.WriteLine($"Updating recovered secret: '{secret.Key}'");
+					await keyVaultClient.SetSecretAsync(source, secret.Key, secrets[secret.Key], contentType: "text/plain");
+				}
 			}
 		}
+
+		public override async Task<int> ClearSecrets(string source)
+		{
+			var keyVaultClient = new KeyVaultClient(await GetKeyVaultCredentials());
+			var secretKeys = new List<string>();
+			var secrets = await keyVaultClient.GetSecretsAsync(source);
+			secretKeys.AddRange(await GetSecretKeys(keyVaultClient, secrets));
+			while (!string.IsNullOrEmpty(secrets.NextPageLink))
+			{
+				secrets = await keyVaultClient.GetSecretsNextAsync(secrets.NextPageLink);
+				secretKeys.AddRange(await GetSecretKeys(keyVaultClient, secrets));
+			}
+
+			var deletedCount = 0;
+			foreach (var secretKey in secretKeys)
+			{
+				Console.WriteLine($"Deleting secret: '{secretKey}'");
+				var result = await keyVaultClient.DeleteSecretAsync(source, secretKey);
+				deletedCount++;
+			}
+			return deletedCount;
+		}
+
+		private static async Task<IEnumerable<string>> GetSecretKeys(KeyVaultClient keyVaultClient, IPage<SecretItem> secrets)
+		{
+			var tasks = secrets.Where(s => !IsCertificate(s)).Select(s => keyVaultClient.GetSecretAsync(s.Identifier.Identifier));
+			var results = await Task.WhenAll(tasks);
+			return results.Select(r => r.SecretIdentifier.Name);
+		}
+
+		private static bool IsCertificate(SecretItem secret) =>
+			secret.ContentType.Equals("application/x-pkcs12");
 
 		public virtual async Task<ServiceClientCredentials> GetManagementCredentials()
 		{

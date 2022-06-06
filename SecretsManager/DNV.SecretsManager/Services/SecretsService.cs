@@ -17,6 +17,8 @@ namespace DNV.SecretsManager.Services
 
 		public abstract Task SetSecretsFromDictionary(string vaultBaseUrl, Dictionary<string, string> secrets);
 
+		public abstract Task<int> ClearSecrets(string source);
+
 		public string ToJson(Dictionary<string, string> secrets) =>
 			JsonConvert.SerializeObject(JsonFlattener.Unflatten(secrets), Formatting.Indented);
 

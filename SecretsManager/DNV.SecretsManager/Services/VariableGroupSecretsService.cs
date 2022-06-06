@@ -42,5 +42,15 @@ namespace DNV.SecretsManager.Services
 			});
 			await _client.SetVariableGroup(source, group);
 		}
+
+		public override async Task<int> ClearSecrets(string source)
+		{
+			var group = await _client.GetVariableGroup(source);
+			var delectedCount = group.Variables.Count();
+			group.Variables.Clear();
+			// TODO: Verify this works!
+			await _client.SetVariableGroup(source, group);
+			return delectedCount;
+		}
 	}
 }

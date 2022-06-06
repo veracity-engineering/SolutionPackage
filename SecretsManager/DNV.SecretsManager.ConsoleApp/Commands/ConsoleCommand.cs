@@ -45,15 +45,16 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 			return options;
 		}
 
-		public static CommandType GetCommandTypeOrInvalid(CommandType value, ConsoleOption downloadOption, ConsoleOption uploadOption)
+		public static CommandType GetCommandTypeOrInvalid(CommandType value, ConsoleOption downloadOption, ConsoleOption uploadOption, ConsoleOption clearOption)
 		{
 			var _commandTypes = new Dictionary<char, CommandType>
 			{
 				{ downloadOption.Abbreviation, CommandType.Download },
-				{ uploadOption.Abbreviation, CommandType.Upload }
+				{ uploadOption.Abbreviation, CommandType.Upload },
+				{ clearOption.Abbreviation, CommandType.Clear }
 			};
 			if (value == CommandType.None)
-				Console.WriteLine($"What would you like to do? (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
+				Console.WriteLine($"What would you like to do? (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}], Clear: [{clearOption.Abbreviation}])");
 			while (value == CommandType.None)
 			{
 				var commandTypeChoice = $"{Console.ReadKey().Key}".ToLowerInvariant()[0];
@@ -64,7 +65,7 @@ namespace DNV.SecretsManager.ConsoleApp.Commands
 				}
 				else
 				{
-					Console.WriteLine($"Invalid option '{commandTypeChoice}'. Please enter a valid option (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}])");
+					Console.WriteLine($"Invalid option '{commandTypeChoice}'. Please enter a valid option (Download: [{downloadOption.Abbreviation}], Upload: [{uploadOption.Abbreviation}]), Clear: [{clearOption.Abbreviation}])");
 				}
 			}
 			return value;
