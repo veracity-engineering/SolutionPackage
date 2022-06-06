@@ -77,22 +77,28 @@ namespace DNV.OAuth.Web.Extensions.Policy
 
 			return services;
 		}
-
-
+		
 		private static IServiceCollection AddAuthorizationPolicy(this IServiceCollection services, string policyName, bool addAsDefault)
 		{
-			return services.AddAuthorization(opt =>
+			return services.AddAuthorization(o =>
 			{
-				opt.AddPolicy(policyName,
-					pb =>
-					{
-						if (addAsDefault)
-							pb = pb.Combine(opt.DefaultPolicy);
-						pb.RequireClaim(TokenClaimTypes.VeracityPolicyValidated);
-					});
+				var policy = o.GetPolicy(policyName);
 				
+				o.AddPolicy(policyName,
+					p =>
+					{
+
+						if (policy != null)
+							p = p.Combine(policy);
+
+						if (addAsDefault && o.DefaultPolicy != policy)
+							p = p.Combine(o.DefaultPolicy);
+
+						p.RequireClaim(TokenClaimTypes.VeracityPolicyValidated);
+					});
+
 				if (addAsDefault)
-					opt.DefaultPolicy = opt.GetPolicy(policyName);
+					o.DefaultPolicy = o.GetPolicy(policyName);
 			});
 		}
 		

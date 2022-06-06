@@ -24,10 +24,10 @@ Setup API http client configuration in `appsettings.json` file:
 
 ```js
   {
-    "ApiHttpClientOptions":[
+    "ApiHttpClientOptions": [
       {
         "Name": "userCredentialsClient",
-        "Flow":"user-credentials",
+        "Flow": "user-credentials",
         "BaseUri": "<BaseUri>",
         "SubscriptionKey": "<SubscriptionKey>"
       },
@@ -36,16 +36,16 @@ Setup API http client configuration in `appsettings.json` file:
         "Flow":"client-credentials",
         "BaseUri": "<BaseUri>",
         "SubscriptionKey": "<SubscriptionKey>"
-        "OpenIdConnectOptions": {
-          "TenantId": "<TenantId>",
+        "OAuthClientOptions": {
+          "Authority": "<Authority>",
           "ClientId": "<ClientId>",
           "ClientSecret": "<ClientSecret>",
+          "Resource": "<Resource>",
           "Scopes": [ "<Scope>", "offline_access" ],
-          "SignInPolicy": "B2C_1A_SignInWithADFSIdp"
+          "CallbackPath": "<CallbackPath>"
         }
       }
     ]
-
   }
 
 ```
@@ -63,7 +63,7 @@ The below code is retrieving the configuration from the `"ApiHttpClientOptions"`
 public void ConfigureService(IServiceCollection services)
 {
   ...
-  services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+  services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientOptions>>());
   ...
 }
 ```
@@ -88,7 +88,7 @@ public void ConfigureService(IServiceCollection services)
   };
   services.AddOidc(oidcOptions);
   ...
-  services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+  services.AddOAuthHttpClientFactory(Congiuration.GetSection("ApiHttpClientOptions").Get<IEnumerable<OAuthHttpClientOptions>>());
   ...
 }
 ```

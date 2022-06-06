@@ -1,4 +1,6 @@
 ﻿using DNV.OAuth.Abstractions;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DNVGL.OAuth.Api.HttpClient
 {
@@ -29,5 +31,16 @@ namespace DNVGL.OAuth.Api.HttpClient
         /// Gets or sets the Open Id Connect options to apply to authentication by the HTTP client instance.
         /// </summary>
         public OAuth2Options OAuthClientOptions { get; set; }
+
+
+        public void Bind(OAuthHttpClientOptions options)
+        {
+            Flow = options.Flow;
+            SubscriptionKey = options.SubscriptionKey;
+            BaseUri = options.BaseUri;
+            OAuthClientOptions = options.OAuthClientOptions;
+            SubscriptionKey = options.SubscriptionKey;
+            Name = options.Name;
+        }
     }
 }

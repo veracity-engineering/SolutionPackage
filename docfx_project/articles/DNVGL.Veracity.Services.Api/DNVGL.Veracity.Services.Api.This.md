@@ -20,7 +20,7 @@ PM> `Install-Package DNVGL.Veracity.Services.Api.This`
 With the nuget package installed, services for each resource may be individually configured, injected and requested inside your solution.
 
 ## 1. Configuration
-To configure a resource service, introduce configuration in the form of `OAuthHttpClientFactoryOptions`:
+To configure a resource service, introduce configuration in the form of `OAuthHttpClientOptions`:
 
  `appsettings.json`
  > The `This` view point only supports Client Credential Flow.
@@ -33,7 +33,7 @@ To configure a resource service, introduce configuration in the form of `OAuthHt
 			"Flow": "ClientCredentials",
 			"BaseUri": <BaseUri>,
 			"SubscriptionKey": <SubscriptionKey>,
-			"OpenIdConnectOptions": {
+			"OAuthClientOptions": {
 				"Authority": <Authority>,
 				"ClientId": <ClientId>,
 				"ClientSecret": <ClientSecret>,
@@ -55,7 +55,7 @@ Register the service or services using extensions methods available from the `DN
 public void ConfigureServices(IServiceCollection services)
 {
 	...
-	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientFactoryOptions>>());
+	services.AddOAuthHttpClientFactory(Congiuration.GetSection("OAuthHttpClients").Get<IEnumerable<OAuthHttpClientOptions>>());
 	...
 	services.AddThisSubscribers("this-subscribers")
 	...

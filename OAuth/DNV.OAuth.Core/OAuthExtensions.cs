@@ -36,7 +36,7 @@ namespace DNV.OAuth.Core
 		public static IServiceCollection AddOAuthCore(this IServiceCollection services, Action<DistributedCacheEntryOptions>? configAction = null)
 		{
 			if (configAction != null)
-				services.Configure<TokenCacheOptions>(nameof(TokenCacheProvider), configAction);
+				services.AddOptions().Configure(nameof(TokenCacheProvider), configAction);
 			
             services.TryAddSingleton<ITokenCacheProvider, TokenCacheProvider>();
 

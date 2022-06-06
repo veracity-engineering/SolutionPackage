@@ -2,13 +2,14 @@
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
 	public class MyServices : ApiResourceClient, IMyServices
 	{
-		public MyServices(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		public MyServices(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
 		{
 		}
 

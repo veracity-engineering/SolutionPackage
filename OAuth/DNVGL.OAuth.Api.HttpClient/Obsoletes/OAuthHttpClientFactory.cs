@@ -1,7 +1,4 @@
 ﻿using DNVGL.OAuth.Api.HttpClient.Exceptions;
-#if NETCORE2
-using Microsoft.AspNetCore.Http;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +10,17 @@ namespace DNVGL.OAuth.Api.HttpClient
 	public class OAuthHttpClientFactory : IOAuthHttpClientFactory
 	{
 		private readonly IHttpClientFactory _httpClientFactory;
-		private readonly IReadOnlyList<OAuthHttpClientFactoryOptions> _options;
+		private readonly IReadOnlyList<OAuthHttpClientOptions> _options;
 
-		public OAuthHttpClientFactory(IHttpClientFactory httpClientFactory, IEnumerable<OAuthHttpClientFactoryOptions> options)
+		public OAuthHttpClientFactory(IHttpClientFactory httpClientFactory, IEnumerable<OAuthHttpClientOptions> options)
 		{
 			_httpClientFactory = httpClientFactory;
 			_options = options.ToList();
 		}
 
-		public IEnumerable<OAuthHttpClientFactoryOptions> ClientOptions => _options;
+		public IEnumerable<OAuthHttpClientOptions> ClientOptions => _options;
 
-		public System.Net.Http.HttpClient Create(Func<OAuthHttpClientFactoryOptions, bool> configPredict, Action<OAuthHttpClientFactoryOptions>? configOverride = null)
+		public System.Net.Http.HttpClient Create(Func<OAuthHttpClientOptions, bool> configPredict, Action<OAuthHttpClientOptions>? configOverride = null)
 		{
 			var option = ClientOptions.FirstOrDefault(configPredict);
 
@@ -43,7 +40,7 @@ namespace DNVGL.OAuth.Api.HttpClient
 			return Create(option);
 		}
 
-		private System.Net.Http.HttpClient Create(OAuthHttpClientFactoryOptions option)
+		private System.Net.Http.HttpClient Create(OAuthHttpClientOptions option)
 		{
 			return _httpClientFactory.CreateClient($"{option.Name}:{option.Flow}");
 		}

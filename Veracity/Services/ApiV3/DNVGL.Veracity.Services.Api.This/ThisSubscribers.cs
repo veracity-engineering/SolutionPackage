@@ -10,9 +10,9 @@ namespace DNVGL.Veracity.Services.Api.This
 {
     public class ThisSubscribers : ApiResourceClient, IThisSubscribers
     {
-        public ThisSubscribers(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
-        {
-        }
+		public ThisSubscribers(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		{
+		}
 
 		/// <summary>
 		/// Add a subscription to the authenticated service for a specified user.

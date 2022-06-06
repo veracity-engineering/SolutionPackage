@@ -12,20 +12,19 @@ using System.Threading.Tasks;
 namespace DNVGL.Veracity.Services.Api
 {
 	public abstract class ApiResourceClient
-	{
-		private readonly IOAuthHttpClientFactory _httpClientFactory;
-		private readonly ISerializer _serializer;
-		private readonly string _httpClientConfigurationName;
+	{		
+		private readonly ISerializer _serializer;		
 		private readonly Lazy<HttpClient> _client;
 
-		protected ApiResourceClient(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName)
+		private readonly IHttpClientFactory _httpClientFactory;
+
+		protected ApiResourceClient(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option)
 		{
-			_httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-			_serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-			_httpClientConfigurationName = clientConfigurationName;
+			_httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));						
+			_serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));			
 			_client = new Lazy<HttpClient>(() =>
 				{
-					var clt = CreateClient(_httpClientFactory, _httpClientConfigurationName);
+					var clt = CreateClient(_httpClientFactory, option);
 					clt.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ToAcceptMediaType(_serializer.DataFormat)));
 					return clt;
 				},
@@ -33,16 +32,11 @@ namespace DNVGL.Veracity.Services.Api
 		}
 
 		protected HttpClient Client => _client.Value;
+				
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="configurationName"></param>
-		/// <returns></returns>
-		protected virtual HttpClient CreateClient(IOAuthHttpClientFactory factory, string configurationName)
+		protected virtual HttpClient CreateClient(IHttpClientFactory factory, OAuthHttpClientOptions option)
 		{
-			return factory.Create(c => c.Name == configurationName);
+			return factory.CreateClient($"{option.Name}:{option.Flow}");
 		}
 
 		protected virtual string ToAcceptMediaType(DataFormat dataFormat)

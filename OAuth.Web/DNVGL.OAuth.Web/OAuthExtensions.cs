@@ -16,10 +16,11 @@ using DNVGL.OAuth.Web.Oidc;
 
 namespace DNVGL.OAuth.Web
 {
-	public static class AuthenticationExtensions
+	/// <summary>
+	/// 
+	/// </summary>
+	public static class OAuthExtensions
 	{
-		private const string DefaultJwtAuthorizationPolicy = nameof(DefaultJwtAuthorizationPolicy);
-
 		#region AddJwt for Web Api
 		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IEnumerable<IConfigurationSection> sections)
 		{
@@ -69,17 +70,23 @@ namespace DNVGL.OAuth.Web
 			return builder.AddJwt(sections);
 		}
 
-		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IDictionary<string, JwtOptions> schemaOptions, bool populateAuthorizationPolicy = true)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="schemaOptions"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public static AuthenticationBuilder AddJwt(this AuthenticationBuilder builder, IDictionary<string, JwtOptions> schemaOptions)
 		{
 			if (schemaOptions == null || !schemaOptions.Any())
 			{
 				throw new ArgumentNullException(nameof(schemaOptions));
 			}
 
-			var schemeNames = new List<string>();
-
 			foreach (var schemaOption in schemaOptions)
 			{
+				var schemeNames = new List<string>();
 				var jwtOptions = schemaOption.Value;
 
 				if (!string.IsNullOrEmpty(jwtOptions.Authority))
@@ -98,7 +105,7 @@ namespace DNVGL.OAuth.Web
 
 						o.SecurityTokenValidators.Clear();
 						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ??
-													  new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
+						                              new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
 					});
 					schemeNames.Add(schemeName);
 				}
@@ -106,17 +113,17 @@ namespace DNVGL.OAuth.Web
 				if (jwtOptions.Authorities.Any())
 					jwtOptions.Authorities.ForEach(aut =>
 					{
-						var schemeName = $"{schemaOption.Key}{aut.SchemePostfix}";
+						var schemeName = $"{schemaOption.Key}.{aut.SchemePostfix}";
 						builder.AddJwtBearer(schemeName, o =>
 						{
 							o.Authority = aut.Authority;
 							o.Audience = jwtOptions.ClientId;
 
-							if (jwtOptions.TokenValidationParameters != null)
+							if (jwtOptions.TokenValidationParameters != null) 
 								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
 							if (jwtOptions.Events != null)
-								o.Events = jwtOptions.Events;
+								o.Events = jwtOptions.Events; 
 
 							o.SecurityTokenValidators.Clear();
 							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
@@ -124,18 +131,32 @@ namespace DNVGL.OAuth.Web
 
 						schemeNames.Add(schemeName);
 					});
-			}
 
-			if (populateAuthorizationPolicy && schemeNames.Any())
-				builder.Services.AddAuthorization(o =>
-				{
-					o.AddPolicy(DefaultJwtAuthorizationPolicy,
-						p => { p.AddAuthenticationSchemes(schemeNames.ToArray()).RequireAuthenticatedUser(); });
-					o.DefaultPolicy = o.GetPolicy(DefaultJwtAuthorizationPolicy);
-				});
+				if (schemeNames.Any())
+					builder.Services.AddAuthorization(o =>
+					{
+						var policy = o.GetPolicy(jwtOptions.AuthorizationPolicyName);
+
+						o.AddPolicy(jwtOptions.AuthorizationPolicyName,
+							p =>
+							{
+								if (policy != null)
+									p = p.Combine(policy);
+
+								if (jwtOptions.AddAsDefault && o.DefaultPolicy != policy)
+									p = p.Combine(o.DefaultPolicy);
+
+								p.AddAuthenticationSchemes(schemeNames.ToArray()).RequireAuthenticatedUser();
+							});
+
+						if (jwtOptions.AddAsDefault)
+							o.DefaultPolicy = o.GetPolicy(jwtOptions.AuthorizationPolicyName);
+					});
+			}
 
 			return builder;
 		}
+
 		#endregion
 
 		#region AddOidc for Web App
@@ -148,7 +169,6 @@ namespace DNVGL.OAuth.Web
 		{
 			if (oidcSetupAction == null)
 			{
-				services.AddHttpContextAccessor();
 				throw new ArgumentNullException(nameof(oidcSetupAction));
 			}
 
@@ -210,12 +230,12 @@ namespace DNVGL.OAuth.Web
 				throw new ArgumentNullException(nameof(oidcOptions));
 			}
 
-			builder = cookieSetupAction != null ?
-				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-					o => cookieSetupAction(o)) :
+			builder = cookieSetupAction != null ? 
+				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, 
+					o => cookieSetupAction(o)): 
 				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
-			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme,
+			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, 
 				o =>
 				{
 					o.Authority = oidcOptions.Authority;
@@ -224,9 +244,9 @@ namespace DNVGL.OAuth.Web
 					o.CallbackPath = oidcOptions.CallbackPath;
 					o.ResponseType = oidcOptions.ResponseType;
 					o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
-#if NETCORE3
+	#if NETCORE3
 					o.UsePkce = true;
-#endif
+	#endif
 
 					ConfigureScopes(oidcOptions, o);
 					ConfigureSecurityTokenValidator(oidcOptions, o);
@@ -291,9 +311,9 @@ namespace DNVGL.OAuth.Web
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region AddDistributedTokenCache
+#region AddDistributedTokenCache
 		private static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheConfigAction = null)
 		{
 			services.AddDataProtection();
@@ -314,7 +334,7 @@ namespace DNVGL.OAuth.Web
 
 			async Task OnCodeReceived(AuthorizationCodeReceivedContext context)
 			{
-				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier");
+				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier"); 
 				var authCode = context.TokenEndpointRequest.Code;
 				var clientAppBuilder = context.HttpContext.RequestServices.GetRequiredService<IClientAppBuilder>();
 				var clientApp = clientAppBuilder.Build(oidcOptions);
@@ -326,6 +346,6 @@ namespace DNVGL.OAuth.Web
 
 			return services;
 		}
-		#endregion
+#endregion
 	}
 }

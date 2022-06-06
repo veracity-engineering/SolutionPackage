@@ -2,21 +2,22 @@
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
     public class MyCompanies : ApiResourceClient, IMyCompanies
     {
-        public MyCompanies(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+        public MyCompanies(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
         {
         }
 
-		/// <summary>
-		/// Retrieves a collection of company references for the authenticated user.
-		/// </summary>
-		/// <returns></returns>
-		public Task<IEnumerable<CompanyReference>> List() =>
+        /// <summary>
+        /// Retrieves a collection of company references for the authenticated user.
+        /// </summary>
+        /// <returns></returns>
+        public Task<IEnumerable<CompanyReference>> List() =>
 			GetResource<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
     }
 

@@ -2,6 +2,7 @@
 using DNVGL.Veracity.Services.Api.Directory.Abstractions;
 using DNVGL.Veracity.Services.Api.Models;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -9,7 +10,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 {
 	public class UserDirectory : ApiResourceClient, IUserDirectory
 	{
-		public UserDirectory(IOAuthHttpClientFactory httpClientFactory, ISerializer serializer, string clientConfigurationName) : base(httpClientFactory, serializer, clientConfigurationName)
+		public UserDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
 		{
 		}
 
