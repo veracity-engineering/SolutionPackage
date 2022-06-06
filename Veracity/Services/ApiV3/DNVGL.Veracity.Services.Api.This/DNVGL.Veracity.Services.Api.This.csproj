@@ -10,7 +10,7 @@
 			Allows manipulation and retrival of information related to a service.
 		</Description>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.1.2</Version>
+		<Version>1.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

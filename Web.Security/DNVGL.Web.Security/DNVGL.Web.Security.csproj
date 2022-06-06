@@ -5,7 +5,7 @@
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
