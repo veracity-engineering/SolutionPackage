@@ -91,7 +91,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager", "Secre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleApp", "SecretsManager\DNV.SecretsManager.ConsoleApp\DNV.SecretsManager.ConsoleApp.csproj", "{091A95DA-8C6B-429B-A088-335F44622559}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Veracity.Services.Api.This.Test", "DNV.Veracity.Services.Api.This.Test\DNV.Veracity.Services.Api.This.Test.csproj", "{9C0817F9-9049-4218-9923-CE2A450FA08B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Veracity.Services.Api.This.Test", "Veracity\Services\ApiV3\DNV.Veracity.Services.Api.This.Test\DNV.Veracity.Services.Api.This.Test.csproj", "{9C0817F9-9049-4218-9923-CE2A450FA08B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

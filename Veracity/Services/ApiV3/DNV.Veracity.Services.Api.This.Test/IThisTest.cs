@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.OAuth.Api.HttpClient.Extensions;
 
-namespace DNV.Veracity.Services.Api.This.Test
+namespace DNV.Veracity.Services.Api.This.Tests
 {
     [TestClass]
     public class IThisTest
