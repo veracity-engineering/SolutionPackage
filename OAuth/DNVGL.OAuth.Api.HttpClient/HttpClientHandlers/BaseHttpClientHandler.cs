@@ -37,7 +37,7 @@ namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 			request.Headers.Add("Authorization", $"Bearer {accessToken}");
 		}
 
-		protected string? SubscriptionKey => _option.SubscriptionKey;
+		protected string SubscriptionKey => _option.SubscriptionKey;
 
 		protected virtual void PopulateSubKeyHeader(HttpRequestMessage request)
 		{

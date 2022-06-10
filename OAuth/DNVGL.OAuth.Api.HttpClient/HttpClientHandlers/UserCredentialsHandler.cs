@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DNV.OAuth.Abstractions;
 using Microsoft.AspNetCore.Http;
 
+
 namespace DNVGL.OAuth.Api.HttpClient.HttpClientHandlers
 {
     internal class UserCredentialsHandler : BaseHttpClientHandler

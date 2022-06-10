@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
 		<Company>DNVGL</Company>
 		<AssemblyName>DNVGL.Veracity.Services.Api.Directory.Abstractions</AssemblyName>
 		<Description>Abstractions supporting the DNVGL.Veracity.Services.Api.Directory package.</Description>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

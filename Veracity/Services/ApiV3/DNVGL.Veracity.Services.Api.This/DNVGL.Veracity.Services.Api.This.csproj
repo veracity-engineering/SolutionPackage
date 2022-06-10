@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnvgl.com&gt;</Authors>
 		<Company>DNVGL</Company>
 		<AssemblyName>DNVGL.Veracity.Services.Api.This</AssemblyName>
@@ -10,13 +10,11 @@
 			Allows manipulation and retrival of information related to a service.
 		</Description>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.1.2</Version>
+		<Version>1.1.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
-		<ProjectReference Include="..\..\DNVGL.Veracity.Services.Api\DNVGL.Veracity.Services.Api.csproj" />
+		<ProjectReference Include="..\..\DNVGL.Veracity.Services.Api.This.Abstractions\DNVGL.Veracity.Services.Api.This.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>
