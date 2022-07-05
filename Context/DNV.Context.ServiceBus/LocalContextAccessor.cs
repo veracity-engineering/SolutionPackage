@@ -37,7 +37,8 @@ namespace DNV.Context.ServiceBus
 
         }
 
-        internal (T? payload, string? correlationId, IDictionary<object, object>? items)? ParseContextFromMessage(ServiceBusReceivedMessage serviceBusMessage, JsonSerializerOptions? jsonSerializerOptions = null)
+        internal (T? payload, string? correlationId, IDictionary<object, object>? items)? ParseContextFromMessage(ServiceBusReceivedMessage serviceBusMessage
+            , JsonSerializerOptions? jsonSerializerOptions = null)
         {
 
             if (serviceBusMessage.ApplicationProperties.TryGetValue(HeaderKey, out var ctxJsonStr))
