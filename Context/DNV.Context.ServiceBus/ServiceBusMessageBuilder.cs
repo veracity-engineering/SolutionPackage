@@ -59,7 +59,7 @@ namespace DNV.Context.ServiceBus
 			return SerializeContextToMessage(new ServiceBusMessage(body));
 		}
 
-		private ServiceBusMessage SerializeContextToMessage(ServiceBusMessage message)
+		internal ServiceBusMessage SerializeContextToMessage(ServiceBusMessage message)
 		{
 			if (_contextAccessor.Context == null)
 				return message;
