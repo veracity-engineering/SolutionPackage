@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DNV.Context.Abstractions;
-using Microsoft.AspNetCore.Http;
 
-namespace DNV.Context.AspNet
+namespace DNV.Context.Abstractions
 {
-	internal class AsyncLocalContext<T> : IAmbientContext<T> where T : class
+	public class AsyncLocalContext<T> : IAmbientContext<T> where T : class
 	{
-		internal record ContextHolder
+		public record ContextHolder
 		{
 			public T? Payload { get; set; }
 
