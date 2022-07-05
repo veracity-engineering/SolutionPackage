@@ -67,6 +67,7 @@ namespace DNV.Context.ServiceBus
 
 			var json = JsonSerializer.Serialize(_contextAccessor.Context, _jsonSerializerOptions);
 
+			message.CorrelationId = _contextAccessor.Context.CorrelationId;
 			message.ApplicationProperties.Add(LocalContextAccessor<T>.HeaderKey, json);
 
 			return message;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DNV.Context.AspNet
 {
-    public class AspNetContextAccessor<T>: IContextAccessor<T> where T: class
+    public class AspNetContextAccessor<T>: IContextAccessor<T>, IContextCreator<T> where T: class
     {
 	    public static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
 
@@ -46,5 +46,12 @@ namespace DNV.Context.AspNet
 				_asyncLocalContext.CreateContext(payload, httpContext.TraceIdentifier);
 	        }
         }
-    }
+
+		public void InitializeContext(T? payload, string? correlationId, IDictionary<object, object>? items = null)
+		{
+			if (Initialized) return;
+
+			_asyncLocalContext.CreateContext(payload, correlationId, items);
+		}
+	}
 }
