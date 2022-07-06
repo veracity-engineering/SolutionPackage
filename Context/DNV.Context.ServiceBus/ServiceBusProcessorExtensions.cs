@@ -14,7 +14,7 @@ namespace DNV.Context.ServiceBus
         public static Func<ProcessMessageEventArgs, Task> InitializeContext<T>(this Func<ProcessMessageEventArgs, Task> messageHandler
             , IContextCreator<T> contextCreator
             , Func<ServiceBusReceivedMessage, (bool succeeded, T? context)> ctxCreator
-            , JsonSerializerOptions? jsonSerializerOptions) where T : class
+            , JsonSerializerOptions? jsonSerializerOptions = null) where T : class
         {
             return (ProcessMessageEventArgs args) =>
             {
@@ -26,7 +26,7 @@ namespace DNV.Context.ServiceBus
         public static Func<ProcessSessionMessageEventArgs, Task> InitializeContext<T>(this Func<ProcessSessionMessageEventArgs, Task> messageHandler
             , IContextCreator<T> contextCreator
             , Func<ServiceBusReceivedMessage, (bool succeeded, T? context)> ctxCreator
-            , JsonSerializerOptions? jsonSerializerOptions) where T : class
+            , JsonSerializerOptions? jsonSerializerOptions = null) where T : class
         {
             return (ProcessSessionMessageEventArgs args) =>
             {
@@ -38,7 +38,7 @@ namespace DNV.Context.ServiceBus
         private static void InitializeContext<T>(ServiceBusReceivedMessage message
             , IContextCreator<T> contextCreator
             , Func<ServiceBusReceivedMessage, (bool succeeded, T? context)> ctxCreator
-            , JsonSerializerOptions? jsonSerializerOptions) where T : class
+            , JsonSerializerOptions? jsonSerializerOptions = null) where T : class
         {
             var localContextAccessor = new LocalContextAccessor<T>(ctxCreator);
             var contextFromMessage = localContextAccessor.ParseContextFromMessage(message, jsonSerializerOptions);
