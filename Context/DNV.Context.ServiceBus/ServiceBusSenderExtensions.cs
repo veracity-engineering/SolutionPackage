@@ -31,5 +31,28 @@ namespace DNV.Context.ServiceBus
             var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
             await serviceBusSender.SendMessagesAsync(messages?.Select(msg => serviceBusMessageBuilder.SerializeContextToMessage(msg)), cancellationToken);
         }
+
+        public static async Task<long> ScheduleMessageAsync<T>(this ServiceBusSender serviceBusSender
+            , ServiceBusMessage message
+            , DateTimeOffset scheduledEnqueueTime
+            , IContextAccessor<T> contextAccessor
+            , JsonSerializerOptions? jsonSerializerOptions
+            , CancellationToken cancellationToken = default) where T : class
+        {
+            var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
+            return await serviceBusSender.ScheduleMessageAsync(serviceBusMessageBuilder.SerializeContextToMessage(message), scheduledEnqueueTime, cancellationToken);
+        }
+
+        public static async Task<IReadOnlyList<long>> ScheduleMessagesAsync<T>(this ServiceBusSender serviceBusSender
+            , IEnumerable<ServiceBusMessage> messages
+            , DateTimeOffset scheduledEnqueueTime
+            , IContextAccessor<T> contextAccessor
+            , JsonSerializerOptions? jsonSerializerOptions
+            , CancellationToken cancellationToken = default) where T : class
+        {
+            var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
+            return await serviceBusSender.ScheduleMessagesAsync(messages?.Select(msg => serviceBusMessageBuilder.SerializeContextToMessage(msg)), scheduledEnqueueTime, cancellationToken);
+        }
+
     }
 }
