@@ -37,12 +37,15 @@ namespace DNV.Context.ServiceBus
 
         }
 
-        internal (T? payload, string? correlationId, IDictionary<object, object>? items)? ParseContextFromMessage(ServiceBusReceivedMessage serviceBusMessage
+        internal (T? payload, string? correlationId, IDictionary<string, object>? items)? ParseContextFromMessage(ServiceBusReceivedMessage serviceBusMessage
             , JsonSerializerOptions? jsonSerializerOptions = null)
         {
 
             if (serviceBusMessage.ApplicationProperties.TryGetValue(HeaderKey, out var ctxJsonStr))
             {
+                if(jsonSerializerOptions==null) jsonSerializerOptions = new JsonSerializerOptions();
+                jsonSerializerOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+
                 var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr.ToString(), jsonSerializerOptions);
 
                 if (ctx?.Payload == null) return null;
@@ -59,7 +62,7 @@ namespace DNV.Context.ServiceBus
             }
         }
 
-        public void InitializeContext(T? payload, string? correlationId, IDictionary<object, object>? items = null)
+        public void InitializeContext(T? payload, string? correlationId, IDictionary<string, object>? items = null)
         {
             if (Initialized) return;
 

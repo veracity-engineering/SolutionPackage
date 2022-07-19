@@ -3,12 +3,14 @@ using DNV.Context.Abstractions;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Xunit.Abstractions;
 
 namespace DNV.Context.ServiceBus.Tests
 {
     public class ContextMessagingTest
     {
+#if DEBUG
         private const string QUEUE = "unittest";
 
         public IConfigurationRoot _configuration;
@@ -19,7 +21,7 @@ namespace DNV.Context.ServiceBus.Tests
 
         private readonly UnitTestContext _expectedUnitTestContext;
         private readonly string _expectedCorrelationId;
-        private readonly IDictionary<object, object> _expectedContextItems;
+        private readonly IDictionary<string, object> _expectedContextItems;
 
 
         public ContextMessagingTest(ITestOutputHelper testOutputHelper)
@@ -41,7 +43,7 @@ namespace DNV.Context.ServiceBus.Tests
 
             _expectedUnitTestContext = new UnitTestContext { Purpose = "ut" };
             _expectedCorrelationId = Guid.NewGuid().ToString();
-            _expectedContextItems = new Dictionary<object, object>();
+            _expectedContextItems = new Dictionary<string, object>();
             _expectedContextItems.Add("who", "DNV");
             _expectedContextItems.Add("where", "CN");
 
@@ -58,48 +60,57 @@ namespace DNV.Context.ServiceBus.Tests
 
             var message = new ServiceBusMessage("Message unittest");
 
-            await sender.SendMessageAsync(message, _contextAccessor,null);
+            await sender.SendMessageAsync(message, _contextAccessor);
 
 
             var processor = client.CreateProcessor(QUEUE, new ServiceBusProcessorOptions());
 
-            Func<ProcessMessageEventArgs, Task> messageHandler = args =>
-            {
-                _testOutputHelper.WriteLine(args.Message.Body.ToString());
 
-                return Task.CompletedTask;
-            };
 
             var localContextAccessor = new LocalContextAccessor<UnitTestContext>((args) =>
             {
                 return (false, null);
             });
 
-			processor.ProcessMessageAsync += messageHandler.InitializeContext(localContextAccessor, (args) =>
-            {
-                return (false, null);
-            },null);
+            //processor.ProcessMessageAsync += ServiceBusProcessorExtensions.InitializeContext(Processor_ProcessMessageAsync, localContextAccessor, (args) =>
+            //{
+            //    return (false, null);
+            //}, null);
 
-			processor.ProcessErrorAsync += Processor_ProcessErrorAsync;
+            Func<ProcessMessageEventArgs, Task> messageHandler = args =>
+            {
+                Assert.Equal(_expectedCorrelationId, localContextAccessor.Context.CorrelationId);
+                Assert.Equal(_expectedUnitTestContext.Purpose, localContextAccessor.Context.Payload.Purpose);
+                Assert.Equal(_expectedContextItems["who"], localContextAccessor.Context.Items["who"]);
+
+                _testOutputHelper.WriteLine(args.Message.Body.ToString());
+                _testOutputHelper.WriteLine(Thread.CurrentThread.ManagedThreadId.ToString());
+                return Task.CompletedTask;
+            };
+
+            processor.ProcessMessageAsync += messageHandler.InitializeContext(localContextAccessor, (args) =>
+			{
+				return (false, null);
+			}, null);
+
+            processor.ProcessErrorAsync += Processor_ProcessErrorAsync;
 
             await processor.StartProcessingAsync();
             Thread.Sleep(2000);
+
+
+            _testOutputHelper.WriteLine(Thread.CurrentThread.ManagedThreadId.ToString());
             await processor.StopProcessingAsync();
-
-
-            Assert.Equal(_expectedCorrelationId, localContextAccessor.Context.CorrelationId);
-            Assert.Equal(_expectedUnitTestContext.Purpose, localContextAccessor.Context.Payload.Purpose);
-            Assert.Equal(_expectedContextItems["who"], localContextAccessor.Context.Items["who"]);
-
-            //https://www.thecodebuzz.com/system-text-json-create-dictionary-converter-json-serialization/
-
         }
 
 		[Fact]
 		public void Deserialization()
 		{
-            JsonSerializerOptions jsonSerializerOptions = null;
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
+            jsonSerializerOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
             var jsonStr = "{\"CorrelationId\":\"94ae27d3-3189-43ac-b276-86df4b41c195\",\"Payload\":{\"Purpose\":\"ut\"},\"Items\":{\"who\":\"DNV\",\"where\":\"CN\"}}";
+
+
             var ctx = JsonSerializer.Deserialize<AsyncLocalContext<UnitTestContext>.ContextHolder>(jsonStr, jsonSerializerOptions);
             Assert.NotNull(ctx);
         }
@@ -112,9 +123,12 @@ namespace DNV.Context.ServiceBus.Tests
 
 		private Task Processor_ProcessMessageAsync(ProcessMessageEventArgs arg)
 		{
-			throw new NotImplementedException();
-		}
-	}
+            _testOutputHelper.WriteLine("1");
+            return Task.CompletedTask;
+
+        }
+#endif
+    }
 
     public class UnitTestContext
 	{

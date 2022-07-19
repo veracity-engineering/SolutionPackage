@@ -6,6 +6,6 @@ namespace DNV.Context.Abstractions
 {
 	public interface IContextCreator<T>
 	{
-		void InitializeContext(T? payload, string? correlationId, IDictionary<object, object>? items = null);
+		void InitializeContext(T? payload, string? correlationId, IDictionary<string, object>? items = null);
 	}
 }

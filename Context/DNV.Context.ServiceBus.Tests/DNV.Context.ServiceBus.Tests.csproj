@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\DNVGL.Common.Core\DNVGL.Common.Core.csproj" />
     <ProjectReference Include="..\DNV.Context.Abstractions\DNV.Context.Abstractions.csproj" />
     <ProjectReference Include="..\DNV.Context.ServiceBus\DNV.Context.ServiceBus.csproj" />
   </ItemGroup>

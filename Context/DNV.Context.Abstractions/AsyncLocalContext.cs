@@ -15,7 +15,7 @@ namespace DNV.Context.Abstractions
 
 			public string? CorrelationId { get; set; }
 
-			public ConcurrentDictionary<object, object>? Items { get; set; }
+			public Dictionary<string, object>? Items { get; set; }
 		}
 
 		private readonly AsyncLocal<ContextHolder> _contextHolder;
@@ -27,13 +27,13 @@ namespace DNV.Context.Abstractions
 
 		public bool HasValue => _contextHolder.Value != null;
 
-		public void CreateContext(T? payload, string? correlationId, IDictionary<object, object>? items = null)
+		public void CreateContext(T? payload, string? correlationId, IDictionary<string, object>? items = null)
 		{
 			_contextHolder.Value = new ContextHolder
 			{
 				Payload = payload,
 				CorrelationId = correlationId,
-				Items = new ConcurrentDictionary<object, object>(items ?? Enumerable.Empty<KeyValuePair<object, object>>())
+				Items = new Dictionary<string, object>(items)
 			};
 		}
 
@@ -41,6 +41,6 @@ namespace DNV.Context.Abstractions
 
 		public string? CorrelationId => _contextHolder.Value?.CorrelationId;
 
-		public IDictionary<object, object>? Items => _contextHolder.Value?.Items;
+		public IDictionary<string, object>? Items => _contextHolder.Value?.Items;
 	}
 }

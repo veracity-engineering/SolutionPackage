@@ -31,7 +31,10 @@ namespace DNV.Context.AspNet
 
 	        if (httpContext.Request.Headers.TryGetValue(HeaderKey, out var ctxJsonStr))
 	        {
-		        var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
+				if (jsonSerializerOptions == null) jsonSerializerOptions = new JsonSerializerOptions();
+				jsonSerializerOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+
+				var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
 
 				if (ctx?.Payload == null) return;
 
@@ -47,7 +50,7 @@ namespace DNV.Context.AspNet
 	        }
         }
 
-		public void InitializeContext(T? payload, string? correlationId, IDictionary<object, object>? items = null)
+		public void InitializeContext(T? payload, string? correlationId, IDictionary<string, object>? items = null)
 		{
 			if (Initialized) return;
 

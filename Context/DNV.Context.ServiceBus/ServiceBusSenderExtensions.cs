@@ -15,7 +15,7 @@ namespace DNV.Context.ServiceBus
         public static async Task SendMessageAsync<T>(this ServiceBusSender serviceBusSender
             , ServiceBusMessage message
             , IContextAccessor<T> contextAccessor
-            , JsonSerializerOptions? jsonSerializerOptions
+            , JsonSerializerOptions? jsonSerializerOptions = null
             , CancellationToken cancellationToken = default) where T : class
         {
             var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
@@ -25,7 +25,7 @@ namespace DNV.Context.ServiceBus
         public static async Task SendMessagesAsync<T>(this ServiceBusSender serviceBusSender
             , IEnumerable<ServiceBusMessage> messages
             , IContextAccessor<T> contextAccessor
-            , JsonSerializerOptions? jsonSerializerOptions
+            , JsonSerializerOptions? jsonSerializerOptions = null
             , CancellationToken cancellationToken = default) where T : class
         {
             var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
@@ -36,7 +36,7 @@ namespace DNV.Context.ServiceBus
             , ServiceBusMessage message
             , DateTimeOffset scheduledEnqueueTime
             , IContextAccessor<T> contextAccessor
-            , JsonSerializerOptions? jsonSerializerOptions
+            , JsonSerializerOptions? jsonSerializerOptions = null
             , CancellationToken cancellationToken = default) where T : class
         {
             var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
@@ -47,7 +47,7 @@ namespace DNV.Context.ServiceBus
             , IEnumerable<ServiceBusMessage> messages
             , DateTimeOffset scheduledEnqueueTime
             , IContextAccessor<T> contextAccessor
-            , JsonSerializerOptions? jsonSerializerOptions
+            , JsonSerializerOptions? jsonSerializerOptions = null
             , CancellationToken cancellationToken = default) where T : class
         {
             var serviceBusMessageBuilder = new ServiceBusMessageBuilder<T>(contextAccessor, jsonSerializerOptions);
