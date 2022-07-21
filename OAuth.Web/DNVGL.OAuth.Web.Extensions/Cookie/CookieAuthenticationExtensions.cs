@@ -13,25 +13,6 @@ namespace DNV.OAuth.Web.Extensions.Cookie
 	/// </summary>
 	public static class CookieAuthenticationExtensions
 	{
-		private const string RequestedWithHeader = "X-Requested-With";
-		private const string XmlHttpRequest = "XMLHttpRequest";
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		public static bool IsAjaxRequest(this HttpRequest request)
-		{
-			if (request == null)
-			{
-				throw new ArgumentNullException(nameof(request));
-			}
-
-			return request.Headers[RequestedWithHeader] == XmlHttpRequest;
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -50,7 +31,7 @@ namespace DNV.OAuth.Web.Extensions.Cookie
 			var previous1 = options.Events.OnRedirectToAccessDenied;
 			options.Events.OnRedirectToAccessDenied = async ctx =>
 			{
-				if (ctx.Request.IsAjaxRequest() && (apiPredicate?.Invoke(ctx.Request) ?? true) &&
+				if (apiPredicate?.Invoke(ctx.Request) ?? true &&
 				    ctx.Response.StatusCode == StatusCodes.Status200OK)
 				{
 					ctx.Response.Clear();
@@ -65,7 +46,7 @@ namespace DNV.OAuth.Web.Extensions.Cookie
 			var previous2 = options.Events.OnRedirectToLogin;
 			options.Events.OnRedirectToLogin = async ctx =>
 			{
-				if (ctx.Request.IsAjaxRequest() && (apiPredicate?.Invoke(ctx.Request) ?? true) &&
+				if (apiPredicate?.Invoke(ctx.Request) ?? true &&
 				    ctx.Response.StatusCode == StatusCodes.Status200OK)
 				{
 					ctx.Response.Clear();
