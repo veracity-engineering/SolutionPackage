@@ -34,10 +34,8 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="userId"></param>
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
-        public Task<AdministratorReference> GetAdministrator(string serviceId, string userId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<Administrator> GetAdministrator(string serviceId, string userId)
+			=> GetResource<Administrator>(ThisServicesUrls.GetAdmin(serviceId, userId));		
 
 		/// <summary>
 		/// Retrieve an individual user reference to a user which has a subscription to a specified service.
@@ -65,10 +63,8 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
-        public Task<IEnumerable<AdministratorReference>> ListAdministrators(string serviceId, int page, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<IEnumerable<AdministratorReference>> ListAdministrators(string serviceId, int page, int pageSize) =>
+			GetResource<IEnumerable<AdministratorReference>>(ThisServicesUrls.GetAdmins(serviceId, page, pageSize), false);
 
 		/// <summary>
 		/// Retrieve a collection of user references of users subscribed to a specified service.
@@ -84,13 +80,21 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// Send a notification to users subscribed to the authenticated service or nested service.
 		/// </summary>
 		/// <param name="serviceId"></param>
+		/// <param name="channelId"></param>
 		/// <param name="options"></param>
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
-        public Task NotifySubscribers(string serviceId, NotificationOptions options)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task NotifySubscribers(string serviceId, string channelId, NotificationOptions options)
+		{
+			var request = new HttpRequestMessage(HttpMethod.Post, ThisServicesUrls.Notify(serviceId)) { 
+				 Content = ToJsonContent(options)
+			};
+
+			if (!string.IsNullOrEmpty(channelId))
+				request.Headers.Add("returnUrl", channelId);
+
+			await ToResourceResult(request);
+		}
 
 		/// <summary>
 		/// Remove a user subscription for a user and the authenticated service or a nested service.
@@ -100,7 +104,33 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <returns></returns>
 		public Task RemoveSubscription(string serviceId, string userId) =>
 			DeleteResource(ThisServicesUrls.ServiceSubscriber(serviceId, userId));
-    }
+
+		/// <summary>
+		///		verify policy
+		/// </summary>
+		/// <param name="serviceId"></param>
+		/// <param name="userId"></param>
+		/// <param name="returnUrl"></param>
+		/// <returns></returns>
+		public async Task<PolicyValidationResult> VerifySubscriberPolicy(string serviceId, string userId, string returnUrl = null)
+		{
+			var request = new HttpRequestMessage(HttpMethod.Get, ThisServicesUrls.VerifySubscriberPolicy(serviceId, userId));
+			if (!string.IsNullOrEmpty(returnUrl))
+				request.Headers.Add("returnUrl", returnUrl);
+
+			return await ToResourceResult<PolicyValidationResult>(request);
+		}
+
+		/// <summary>
+		///		Get user picture
+		/// </summary>
+		/// <param name="serviceId"></param>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		public Task<ProfilePicture> GetProfilePicture(string serviceId, string userId) =>
+		 GetResource<ProfilePicture>(ThisServicesUrls.GetProfilePicture(serviceId, userId), isNotFoundNull: true);
+	}
 
     internal static class ThisServicesUrls
     {
@@ -113,5 +143,15 @@ namespace DNVGL.Veracity.Services.Api.This
         public static string ServiceSubscriber(string serviceId, string userId) => $"{Root}/{serviceId}/subscribers/{userId}";
 
         public static string Notify(string serviceId) => $"{Root}/{serviceId}/notification";
-    }
+
+		public static string VerifySubscriberPolicy(string serviceId, string userId) => $"{Root}/{serviceId}/subscribers/{userId}/policy/validate()";
+
+
+		public static string GetAdmin(string serviceId, string userId) => $"{Root}/{serviceId}/administrators/{userId}";
+
+		public static string GetAdmins(string serviceId,int page, int pageSize) => $"{Root}/{serviceId}/administrators?page={page}&pageSize={pageSize}";
+
+		public static string GetProfilePicture(string serviceId, string userId) => $"{Root}/{serviceId}/subscribers/{userId}/picture";
+
+	}
 }

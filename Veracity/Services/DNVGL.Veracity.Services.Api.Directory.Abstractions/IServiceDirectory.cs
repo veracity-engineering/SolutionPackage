@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 {
+	/// <summary>
+	/// APIV3: Services Directory
+	/// </summary>
     public interface IServiceDirectory
     {
 		/// <summary>
@@ -21,5 +24,12 @@ namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		Task<IEnumerable<UserReference>> ListUsers(string serviceId, int page = 1, int pageSize = 20);
-    }
+
+
+
+		Task<IEnumerable<Subscription>> GetServiceSubscriptions(string serviceId, string filter, string pageNo);
+
+		Task<bool> IsAdmin(string serviceId, string userId);
+
+	}
 }

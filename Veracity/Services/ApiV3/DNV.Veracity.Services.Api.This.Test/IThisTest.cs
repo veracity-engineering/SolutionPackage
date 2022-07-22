@@ -110,5 +110,25 @@ namespace DNV.Veracity.Services.Api.This.Test
             }
               
         }
+
+        [TestMethod]
+        public async Task GetProfilePicture_Test()
+        {
+            _services.AddDistributedMemoryCache();
+            _services.AddDataProtection();//for register IDataProtectionProvider
+
+            _services.AddOAuthHttpClientFactory(new List<OAuthHttpClientFactoryOptions>()
+            {
+                _options1
+            });
+
+            _services.AddThisServices("test-config-name");
+
+            var thisServices = _services.BuildServiceProvider().GetRequiredService<IThisServices>();
+
+            var r = await thisServices.GetProfilePicture("8e80488d-9101-4dc7-a845-bff491147f47", "c94e947e-86fe-480f-9bee-ba32dced6136");
+
+            Assert.IsTrue(true);
+        }
     }
 }

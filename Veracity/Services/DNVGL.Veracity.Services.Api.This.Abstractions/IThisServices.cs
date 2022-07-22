@@ -52,8 +52,13 @@ namespace DNVGL.Veracity.Services.Api.This.Abstractions
 
 		Task<IEnumerable<AdministratorReference>> ListAdministrators(string serviceId, int page, int pageSize);
 
-		Task<AdministratorReference> GetAdministrator(string serviceId, string userId);
+		Task<Administrator> GetAdministrator(string serviceId, string userId);
 
-		Task NotifySubscribers(string serviceId, NotificationOptions options);
+		Task NotifySubscribers(string serviceId, string channelId, NotificationOptions options);
+
+		Task<PolicyValidationResult> VerifySubscriberPolicy(string serviceId, string userId, string returnUrl = null);
+
+
+		Task<ProfilePicture> GetProfilePicture(string serviceId, string userId);
 	}
 }

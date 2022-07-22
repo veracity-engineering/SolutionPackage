@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 {
-    public interface IUserDirectory
+	/// <summary>
+	/// APIV3: User Directory 
+	/// </summary>
+	public interface IUserDirectory
     {
 		/// <summary>
 		/// Returns the user by user id.
@@ -49,6 +52,7 @@ namespace DNVGL.Veracity.Services.Api.Directory.Abstractions
 		/// <param name="userId"></param>
 		/// <param name="serviceId"></param>
 		/// <returns></returns>
-		Task<Subscription> GetSubscription(string userId, string serviceId);
-    }
+		Task<Subscription> GetSubscription(string userId, string serviceId);		
+	}
 }
+;

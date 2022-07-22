@@ -18,6 +18,7 @@ namespace DNVGL.Veracity.Services.Api.My.Abstractions
 		/// </summary>
 		/// <param name="messageId"></param>
 		/// <returns></returns>
+		[System.Obsolete("This endpoint is hidden")]
 		Task<Message> Get(string messageId);
 
 		/// <summary>
@@ -25,5 +26,12 @@ namespace DNVGL.Veracity.Services.Api.My.Abstractions
 		/// </summary>
 		/// <returns></returns>
 		Task<int> GetUnreadCount();
-    }
+
+		/// <summary>
+		/// Marks all unread messages as read
+		/// </summary>
+		/// <returns></returns>
+		Task MarkAllMessagesAsRead();
+
+	}
 }
