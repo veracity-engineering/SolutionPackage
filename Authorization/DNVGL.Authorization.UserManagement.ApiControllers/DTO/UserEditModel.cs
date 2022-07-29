@@ -1,9 +1,8 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 using System.Collections.Generic;
-using DNVGL.Authorization.UserManagement.Abstraction.Entity;
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
 {
@@ -70,25 +69,82 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers.DTO
     /// <summary>
     /// Represents user information for a user view record.
     /// </summary>
-    public class UserViewModel:User
+    public class UserViewModel
     {
-        [JsonIgnore]
-        public override string CompanyIds { get; set; }
 
-        [JsonIgnore]
-        public override string RoleIds { get; set; }
+        /// <summary>
+        /// Gets or sets the primary key for this user.
+        /// </summary>
+        public string Id { get; set; }
 
-        [JsonIgnore]
-        public override IReadOnlyList<string> RoleIdList { get;  }
+        /// <summary>
+        /// Gets or sets the email for this user.
+        /// </summary>
+        public string Email { get; set; }
 
-        [JsonIgnore]
-        public override IReadOnlyList<string> CompanyIdList { get;}
+        /// <summary>
+        /// Gets or sets the first name for this user.
+        /// </summary>
+        public string FirstName { get; set; }
 
-        [JsonIgnore]
-        public override IReadOnlyList<Role> RoleList { get; set; }
+        /// <summary>
+        /// Gets or sets the last name for this user.
+        /// </summary>
+        public string LastName { get; set; }
 
-        [JsonIgnore]
-        public override IReadOnlyList<Company> CompanyList { get; set; }
+        /// <summary>
+        /// Gets or sets the identity id for this user.
+        /// </summary>
+        /// <remarks>
+        /// It is an id provided by identity provider. 
+        /// </remarks>
+        public string VeracityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description for this user.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag indicating if this user is active or not.
+        /// </summary>
+        /// <value>True if this user is active, otherwise false.</value>
+        public bool Active { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag indicating if this user is super admin or not.
+        /// </summary>
+        /// <value>True if this user is super admin, otherwise false.</value>
+        public bool SuperAdmin { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flag indicating if this user is deleted or not.
+        /// </summary>
+        /// <remarks>
+        /// This property is not being used by in the package now. it will be used to support soft delete in future release.
+        /// </remarks>
+        public bool Deleted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of user who created this user.
+        /// </summary>
+        public string CreatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UTC date that this user is created.
+        /// </summary>
+        public DateTime CreatedOnUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of user who updated this user last time.
+        /// </summary>
+        public string UpdatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UTC date that this user is updated last time.
+        /// </summary>
+        public DateTime UpdatedOnUtc { get; set; }
+
 
         /// <summary>
         /// Get the list of roles which this user has.

@@ -56,7 +56,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (t.PermissionKeys != null)
                 {
-                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                    dto.Permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
                 }
 
                 return dto;
@@ -83,7 +83,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var company = await _companyRepository.Read(companyId);
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return result;
         }
@@ -98,7 +98,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var company = await _companyRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return result;
         }
@@ -136,7 +136,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return Ok(result);
 

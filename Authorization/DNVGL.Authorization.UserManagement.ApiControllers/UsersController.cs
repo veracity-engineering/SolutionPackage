@@ -725,7 +725,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                               if (r.PermissionKeys != null)
                               {
-                                  RoleViewDto.permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                                  RoleViewDto.Permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
                               }
 
                               return RoleViewDto;
@@ -767,7 +767,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                     if (c.PermissionKeys != null)
                     {
-                        CompanyViewDto.permissions = allPermissions.Where(p => c.PermissionKeys.Contains(p.Key));
+                        CompanyViewDto.Permissions = allPermissions.Where(p => c.PermissionKeys.Contains(p.Key));
                     }
 
                     return CompanyViewDto;

@@ -206,9 +206,69 @@
             Represents company information for a company view record.
             </summary>
         </member>
-        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.permissions">
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Id">
+            <summary>
+            Gets or sets the primary key for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Name">
+            <summary>
+            Gets or sets the company name for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Description">
+            <summary>
+            Gets or sets the description name for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.ServiceId">
+            <summary>
+            Gets or sets the service id for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.DomainUrl">
+            <summary>
+            Gets or sets the company domain or sub domain name for this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Permissions">
             <summary>
             Gets or sets the company permissions for this company.
+            </summary>
+            <value>Permissions are combined as a string which use semicolon(;) as a delimiter.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Active">
+            <summary>
+            Gets or sets a flag indicating if this company is active or not.
+            </summary>
+            <value>True if this company is active, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.Deleted">
+            <summary>
+            Gets or sets a flag indicating if this company is deleted or not.
+            </summary>
+            <remarks>
+            This property is not being used by in the package now. it will be used to support soft delete in future release.
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.CreatedBy">
+            <summary>
+            Gets or sets the name of user who created this company.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.CreatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this company is created.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.UpdatedBy">
+            <summary>
+            Gets or sets the name of user who updated this company last time.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.CompanyViewDto.UpdatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this company is updated.
             </summary>
         </member>
         <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleEditModel">
@@ -242,9 +302,68 @@
             Represents role information for a role view record..
             </summary>
         </member>
-        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.permissions">
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Id">
             <summary>
-            Gets the company permission list for this role.
+            Gets or sets the primary key for this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Name">
+            <summary>
+            Gets or sets the role name for this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Description">
+            <summary>
+            Gets or sets the description for this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Active">
+            <summary>
+            Gets or sets a flag indicating if this role is active or not.
+            </summary>
+            <value>True if this role is active, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Deleted">
+            <summary>
+            Gets or sets a flag indicating if this role is deleted or not.
+            </summary>
+            <remarks>
+            This property is not being used by in the package now. it will be used to support soft delete in future release.
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Permissions">
+            <summary>
+            Gets or sets the role permissions for this role.
+            </summary>
+            <value>Permissions are combined as a string which use semicolon(;) as a delimiter.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.Company">
+            <summary>
+            Gets the company to which this role belongs.
+            </summary>
+            <remarks>
+            <para>Do not set this property to change a role's company. Instead, set <see cref="!:CompanyId"/>.</para>
+            <para>It is null if it is a global role.</para>
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.CreatedBy">
+            <summary>
+            Gets or sets the name of user who created this role.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.CreatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this role is created.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.UpdatedBy">
+            <summary>
+            Gets or sets the name of user who updated this role last time.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.RoleViewDto.UpdatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this role is updated last time.
             </summary>
         </member>
         <member name="T:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserEditModel">
@@ -309,12 +428,85 @@
             Represents user information for a user view record.
             </summary>
         </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Id">
+            <summary>
+            Gets or sets the primary key for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Email">
+            <summary>
+            Gets or sets the email for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.FirstName">
+            <summary>
+            Gets or sets the first name for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.LastName">
+            <summary>
+            Gets or sets the last name for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.VeracityId">
+            <summary>
+            Gets or sets the identity id for this user.
+            </summary>
+            <remarks>
+            It is an id provided by identity provider. 
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Description">
+            <summary>
+            Gets or sets the description for this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Active">
+            <summary>
+            Gets or sets a flag indicating if this user is active or not.
+            </summary>
+            <value>True if this user is active, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.SuperAdmin">
+            <summary>
+            Gets or sets a flag indicating if this user is super admin or not.
+            </summary>
+            <value>True if this user is super admin, otherwise false.</value>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Deleted">
+            <summary>
+            Gets or sets a flag indicating if this user is deleted or not.
+            </summary>
+            <remarks>
+            This property is not being used by in the package now. it will be used to support soft delete in future release.
+            </remarks>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.CreatedBy">
+            <summary>
+            Gets or sets the name of user who created this user.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.CreatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this user is created.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.UpdatedBy">
+            <summary>
+            Gets or sets the name of user who updated this user last time.
+            </summary>
+        </member>
+        <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.UpdatedOnUtc">
+            <summary>
+            Gets or sets the UTC date that this user is updated last time.
+            </summary>
+        </member>
         <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Roles">
             <summary>
             Get the list of roles which this user has.
             </summary>
             <remarks>
-            <para>Do not set this property to change a user's role. Instead, set <see cref="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.RoleIds"/>.</para>
+            <para>Do not set this property to change a user's role. Instead, set <see cref="!:RoleIds"/>.</para>
             </remarks>
         </member>
         <member name="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.Companies">
@@ -322,7 +514,7 @@
             Get the list of companys to which this user belongs.
             </summary>
             <remarks>
-            <para>Do not set this property to change a user's company. Instead, set <see cref="P:DNVGL.Authorization.UserManagement.ApiControllers.DTO.UserViewModel.CompanyIds"/>.</para>
+            <para>Do not set this property to change a user's company. Instead, set <see cref="!:CompanyIds"/>.</para>
             </remarks>
         </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalRolesController`2.GetRoles">
