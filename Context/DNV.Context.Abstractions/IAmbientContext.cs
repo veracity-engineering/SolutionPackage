@@ -8,6 +8,6 @@ namespace DNV.Context.Abstractions
 
 		T? Payload { get; }
 
-		IDictionary<object, object>? Items { get; }
+		IDictionary<string, object>? Items { get; }
 	}
 }

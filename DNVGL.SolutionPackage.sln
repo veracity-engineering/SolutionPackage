@@ -93,6 +93,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.SecretsManager.ConsoleA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Veracity.Services.Api.This.Test", "Veracity\Services\ApiV3\DNV.Veracity.Services.Api.This.Test\DNV.Veracity.Services.Api.This.Test.csproj", "{9C0817F9-9049-4218-9923-CE2A450FA08B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.Context.ServiceBus", "Context\DNV.Context.ServiceBus\DNV.Context.ServiceBus.csproj", "{738163A1-F116-49C1-BF95-F7F03D5DE562}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Context.ServiceBus.Tests", "Context\DNV.Context.ServiceBus.Tests\DNV.Context.ServiceBus.Tests.csproj", "{188A563E-AFA6-452B-9AA0-881B6F4354B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -235,6 +239,14 @@ Global
 		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C0817F9-9049-4218-9923-CE2A450FA08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{738163A1-F116-49C1-BF95-F7F03D5DE562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{738163A1-F116-49C1-BF95-F7F03D5DE562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{738163A1-F116-49C1-BF95-F7F03D5DE562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{738163A1-F116-49C1-BF95-F7F03D5DE562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{188A563E-AFA6-452B-9AA0-881B6F4354B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{188A563E-AFA6-452B-9AA0-881B6F4354B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{188A563E-AFA6-452B-9AA0-881B6F4354B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{188A563E-AFA6-452B-9AA0-881B6F4354B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -277,6 +289,8 @@ Global
 		{A9FA5243-4DFF-49FC-B3AD-0927DB264BF5} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 		{091A95DA-8C6B-429B-A088-335F44622559} = {561EA555-4BD3-4100-B8CD-8A5C315F718C}
 		{9C0817F9-9049-4218-9923-CE2A450FA08B} = {FB9BE59A-BF23-4BBA-81F4-887B29EF78E9}
+		{738163A1-F116-49C1-BF95-F7F03D5DE562} = {E000F5D6-2922-4385-99B1-205F1C492F7C}
+		{188A563E-AFA6-452B-9AA0-881B6F4354B7} = {E000F5D6-2922-4385-99B1-205F1C492F7C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

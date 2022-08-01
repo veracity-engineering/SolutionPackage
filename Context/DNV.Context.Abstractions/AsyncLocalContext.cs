@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DNV.Context.Abstractions;
-using Microsoft.AspNetCore.Http;
 
-namespace DNV.Context.AspNet
+namespace DNV.Context.Abstractions
 {
-	internal class AsyncLocalContext<T> : IAmbientContext<T> where T : class
+	public class AsyncLocalContext<T> : IAmbientContext<T> where T : class
 	{
-		internal record ContextHolder
+		public record ContextHolder
 		{
 			public T? Payload { get; set; }
 
 			public string? CorrelationId { get; set; }
 
-			public ConcurrentDictionary<object, object>? Items { get; set; }
+			public Dictionary<string, object>? Items { get; set; }
 		}
 
 		private readonly AsyncLocal<ContextHolder> _contextHolder;
@@ -28,13 +27,13 @@ namespace DNV.Context.AspNet
 
 		public bool HasValue => _contextHolder.Value != null;
 
-		public void CreateContext(T? payload, string? correlationId, IDictionary<object, object>? items = null)
+		public void CreateContext(T? payload, string? correlationId, IDictionary<string, object>? items = null)
 		{
 			_contextHolder.Value = new ContextHolder
 			{
 				Payload = payload,
 				CorrelationId = correlationId,
-				Items = new ConcurrentDictionary<object, object>(items ?? Enumerable.Empty<KeyValuePair<object, object>>())
+				Items = new Dictionary<string, object>(items)
 			};
 		}
 
@@ -42,6 +41,6 @@ namespace DNV.Context.AspNet
 
 		public string? CorrelationId => _contextHolder.Value?.CorrelationId;
 
-		public IDictionary<object, object>? Items => _contextHolder.Value?.Items;
+		public IDictionary<string, object>? Items => _contextHolder.Value?.Items;
 	}
 }

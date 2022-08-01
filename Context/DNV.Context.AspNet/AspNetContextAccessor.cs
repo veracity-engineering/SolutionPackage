@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DNV.Context.AspNet
 {
-    public class AspNetContextAccessor<T>: IContextAccessor<T> where T: class
+    public class AspNetContextAccessor<T>: IContextAccessor<T>, IContextCreator<T> where T: class
     {
 	    public static readonly string HeaderKey = $"X-Ambient-Context-{typeof(T).Name}";
 
@@ -31,7 +31,10 @@ namespace DNV.Context.AspNet
 
 	        if (httpContext.Request.Headers.TryGetValue(HeaderKey, out var ctxJsonStr))
 	        {
-		        var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
+				if (jsonSerializerOptions == null) jsonSerializerOptions = new JsonSerializerOptions();
+				jsonSerializerOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+
+				var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
 
 				if (ctx?.Payload == null) return;
 
@@ -46,5 +49,12 @@ namespace DNV.Context.AspNet
 				_asyncLocalContext.CreateContext(payload, httpContext.TraceIdentifier);
 	        }
         }
-    }
+
+		public void InitializeContext(T? payload, string? correlationId, IDictionary<string, object>? items = null)
+		{
+			if (Initialized) return;
+
+			_asyncLocalContext.CreateContext(payload, correlationId, items);
+		}
+	}
 }

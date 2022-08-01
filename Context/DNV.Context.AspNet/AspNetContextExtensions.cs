@@ -10,23 +10,24 @@ using Microsoft.Extensions.Options;
 
 namespace DNV.Context.AspNet
 {
-	public static class AspNetContextExtensions
-	{
-		public static IApplicationBuilder UseAspNetContext<T>(this IApplicationBuilder builder) where T : class
-		{
-			return builder.UseMiddleware<AspNetContextMiddleware<T>>(builder.ApplicationServices.GetService<IOptions<JsonSerializerOptions>>());
-		}
+    public static class AspNetContextExtensions
+    {
+        public static IApplicationBuilder UseAspNetContext<T>(this IApplicationBuilder builder) where T : class
+        {
+            return builder.UseMiddleware<AspNetContextMiddleware<T>>(builder.ApplicationServices.GetService<IOptions<JsonSerializerOptions>>());
+        }
 
-		public static IServiceCollection AddAspNetContext<T>(this IServiceCollection services, Func<HttpContext, (bool succeeded, T? context)> ctxCreator, Action<JsonSerializerOptions>? jsonOptionsSetup = null) where T : class
-		{
-			if (jsonOptionsSetup == null)
-				services.AddWebDefaultJsonOptions();
-			else
-				services.AddOptions().Configure(jsonOptionsSetup);
+        public static IServiceCollection AddAspNetContext<T>(this IServiceCollection services, Func<HttpContext, (bool succeeded, T? context)> ctxCreator, Action<JsonSerializerOptions>? jsonOptionsSetup = null) where T : class
+        {
+            if (jsonOptionsSetup == null)
+                services.AddWebDefaultJsonOptions();
+            else
+                services.AddOptions().Configure(jsonOptionsSetup);
 
-			services.TryAddSingleton(_ => new AspNetContextAccessor<T>(ctxCreator));
+            services.TryAddSingleton(_ => new AspNetContextAccessor<T>(ctxCreator));
 
-			return services.AddSingleton(sp => sp.GetRequiredService<AspNetContextAccessor<T>>() as IContextAccessor<T>);
-		}
-	}
+            return services.AddSingleton(sp => sp.GetRequiredService<AspNetContextAccessor<T>>() as IContextAccessor<T>)
+                .AddSingleton(sp => sp.GetRequiredService<AspNetContextAccessor<T>>() as IContextCreator<T>);
+        }
+    }
 }
