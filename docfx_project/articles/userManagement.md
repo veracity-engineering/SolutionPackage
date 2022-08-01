@@ -27,13 +27,14 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.SqlServer`
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //...
-            //Put UseRouting before UseAuthentication and UseAuthorization
+            //Put UseRouting or MapControllers before UseAuthentication and UseAuthorization
+            //app.MapControllers();
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthentication().UseAuthorization();
             //...
 
             //...
+            //The following code is required if app.UseRouting() is used instead of app.MapControllers();
             app.UseEndpoints(endpoints =>
             {
                 //...
