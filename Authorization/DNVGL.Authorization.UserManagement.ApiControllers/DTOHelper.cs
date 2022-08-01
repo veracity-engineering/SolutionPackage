@@ -16,12 +16,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 return default;
 
             Type type = typeof(R);
-            Type declaringType = obj.GetType();
+            PropertyInfo[] declaringPropertyInfo = obj.GetType().GetProperties();
             PropertyInfo[] PropertyInfo = type.GetProperties();
             R result = new R();
-            foreach (PropertyInfo item in PropertyInfo.Where(t => t.DeclaringType == declaringType))
+            foreach (PropertyInfo item in PropertyInfo)
             {
-                item.SetValue(result, item.GetValue(obj));
+
+                var propertyInSource = declaringPropertyInfo.FirstOrDefault(p => p.Name == item.Name && p.PropertyType == item.PropertyType);
+                if(propertyInSource != null)
+				{
+                    item.SetValue(result, propertyInSource.GetValue(obj));
+                }
             }
 
             return result;
