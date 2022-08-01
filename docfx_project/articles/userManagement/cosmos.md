@@ -26,6 +26,9 @@ PM> `Install-Package Microsoft.EntityFrameworkCore.Cosmos`
 
 ## Create a super admin in database. 
 The following is a user record template. Replace `"***"` with the real value. `Id` is the primary key and unique. 
+
+> Create a container with the partition key set to ["__partitionKey"](https://docs.microsoft.com/en-us/ef/core/providers/cosmos/?tabs=dotnet-core-cli#partition-keys) in Azure Cosmos DB. 
+
 > **_NOTE:_**  `Discriminator` and `id` are two field managed by EF Core. `id` is a string in the format of `[Discriminator]|[Id]`. For user record, `Discriminator` is a constant -  "User". 
 ```json
 {
