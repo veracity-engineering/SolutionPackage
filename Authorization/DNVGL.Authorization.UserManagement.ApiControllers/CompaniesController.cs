@@ -226,7 +226,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 ServiceId = model.ServiceId,
                 Name = model.Name,
                 Active = model.Active,
-                Permissions = string.Join(';', model.PermissionKeys),
+                Permissions = model.PermissionKeys.JoinList(";"),
                 DomainUrl = model.DomainUrl,
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}"
             };
@@ -322,7 +322,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             company.Description = model.Description;
             company.ServiceId = model.ServiceId;
             company.Name = model.Name;
-            company.Permissions = string.Join(';', model.PermissionKeys);
+            company.Permissions = model.PermissionKeys.JoinList(";");
             company.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _companyRepository.Update(company);
 

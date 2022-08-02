@@ -17,8 +17,21 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// <param name="delimiter">The character delimit the string.</param>
         /// <returns></returns>
         public static List<string> SplitToList(this string source,char delimiter)
+		{
+			if (source != null)
+				return source.Split(delimiter).ToList();
+			return new List<string>();
+		}
+
+        /// <summary>
+		/// Join a list to a string
+		/// </summary>
+		/// <param name="source">The source list to join</param>
+		/// <param name="delimiter">The character delimit the string.</param>
+		/// <returns></returns>
+        public static string JoinList(this IEnumerable<string> source, string delimiter)
         {
-            return source.Split(delimiter).ToList();
+            return source?.Any() ?? false ? string.Join(delimiter, source) : null;
         }
     }
 }
