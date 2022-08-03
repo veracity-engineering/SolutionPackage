@@ -25,7 +25,8 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="options"></param>
 		/// <returns></returns>
 		public Task AddSubscription(string serviceId, string userId, SubscriptionOptions options) =>
-			PutResource(ThisServicesUrls.ServiceSubscriber(serviceId, userId), new StringContent(Serialize(options)));
+			PutResource(ThisServicesUrls.ServiceSubscriber(serviceId, userId), ToJsonContent(options));
+				
 
 		/// <summary>
 		/// Retrieve an individual administrator reference to a administrator of the authenticated service or nested services.

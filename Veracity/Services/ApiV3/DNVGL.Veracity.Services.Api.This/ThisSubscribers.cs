@@ -21,7 +21,8 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="options"></param>
 		/// <returns></returns>
 		public Task Add(string userId, SubscriptionOptions options) =>
-			PutResource(ThisSubscribersUrls.Subscriber(userId), new StringContent(Serialize(options)));
+			PutResource(ThisSubscribersUrls.Subscriber(userId), ToJsonContent(options));
+				
 
 		/// <summary>
 		/// Retrieve a user reference for a user subscribed to the authenticated service.
