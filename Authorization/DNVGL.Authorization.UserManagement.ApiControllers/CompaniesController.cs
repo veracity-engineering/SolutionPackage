@@ -56,7 +56,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (t.PermissionKeys != null)
                 {
-                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                    dto.Permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
                 }
 
                 return dto;
@@ -83,7 +83,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var company = await _companyRepository.Read(companyId);
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return result;
         }
@@ -98,7 +98,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var company = await _companyRepository.Read(id);
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return result;
         }
@@ -136,7 +136,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             var allPermissions = await _permissionRepository.GetAll();
             var result = company.ToViewDto<CompanyViewDto>();
-            result.permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
+            result.Permissions = allPermissions.Where(p => company.PermissionKeys.Contains(p.Key));
 
             return Ok(result);
 
@@ -226,7 +226,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 ServiceId = model.ServiceId,
                 Name = model.Name,
                 Active = model.Active,
-                Permissions = string.Join(';', model.PermissionKeys),
+                Permissions = model.PermissionKeys.JoinList(";"),
                 DomainUrl = model.DomainUrl,
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}"
             };
@@ -322,7 +322,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             company.Description = model.Description;
             company.ServiceId = model.ServiceId;
             company.Name = model.Name;
-            company.Permissions = string.Join(';', model.PermissionKeys);
+            company.Permissions = model.PermissionKeys.JoinList(";");
             company.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _companyRepository.Update(company);
 

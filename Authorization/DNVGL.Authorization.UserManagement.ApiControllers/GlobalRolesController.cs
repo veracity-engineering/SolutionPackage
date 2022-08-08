@@ -122,7 +122,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Description = model.Description,
                 Name = model.Name,
                 Active = model.Active,
-                Permissions = string.Join(';', model.PermissionKeys),
+                Permissions = model.PermissionKeys.JoinList(";"),
                 CreatedBy = $"{user.FirstName} {user.LastName}"
             };
             role = await _roleRepository.Create(role);
@@ -190,7 +190,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             role.Active = model.Active;
             role.Description = model.Description;
             role.Name = model.Name;
-            role.Permissions = string.Join(';', model.PermissionKeys);
+            role.Permissions = model.PermissionKeys.JoinList(";");
             role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _roleRepository.Update(role);
         }

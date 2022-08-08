@@ -23,12 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Text.Json" Version="5.0.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference
-			Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
+		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
 	</ItemGroup>
 

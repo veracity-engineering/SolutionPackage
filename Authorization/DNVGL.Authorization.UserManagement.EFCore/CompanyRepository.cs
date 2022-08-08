@@ -40,7 +40,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             {
                 company.Id = Guid.NewGuid().ToString();
             }
-            company.UpdatedOnUtc = DateTime.UtcNow;
+            company.CreatedOnUtc = DateTime.UtcNow;
             var item = (await _context.AddAsync(company)).Entity;
 
             await _context.SaveChangesAsync();

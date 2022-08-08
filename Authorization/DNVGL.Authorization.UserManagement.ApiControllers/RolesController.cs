@@ -119,7 +119,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var user = await GetCurrentUser();
             var permissionKeys = await PrunePermissions(companyId, model.Permissions.SplitToList(';'));
-            model.Permissions = string.Join(';', permissionKeys);
+            model.Permissions = permissionKeys.JoinList(";"); 
             model.CreatedBy = $"{user.FirstName} {user.LastName}";
             model.CompanyId = companyId;
             model = await _roleRepository.Create(model);
@@ -163,7 +163,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Name = model.Name,
                 Active = model.Active,
                 CompanyId = companyId,
-                Permissions = string.Join(';', permissionKeys),
+                Permissions = permissionKeys.JoinList(";"),
                 CreatedBy = $"{user.FirstName} {user.LastName}"
             };
             role = await _roleRepository.Create(role);
@@ -209,7 +209,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
                 model.Id = role.Id;
                 model.CompanyId = companyId;
-                model.Permissions = string.Join(';', permissionKeys);
+                model.Permissions = permissionKeys.JoinList(";");
                 model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(model);
             }
@@ -256,7 +256,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 role.Description = model.Description;
                 role.Name = model.Name;
                 role.CompanyId = companyId;
-                role.Permissions = string.Join(';', permissionKeys);
+                role.Permissions = permissionKeys.JoinList(";");
                 role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
                 await _roleRepository.Update(role);
             }
@@ -332,7 +332,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
             var currentUser = await GetCurrentUser();
-            model.Permissions = string.Join(';', permissionKeys);
+            model.Permissions = permissionKeys.JoinList(";");
             model.CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
 
             model = await _roleRepository.Create(model);
@@ -355,7 +355,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 Name = model.Name,
                 Active = model.Active,
                 CompanyId = companyId,
-                Permissions = string.Join(';', permissionKeys),
+                Permissions = permissionKeys.JoinList(";"),
                 CreatedBy = $"{currentUser.FirstName} {currentUser.LastName}",
             };
             role = await _roleRepository.Create(role);
@@ -373,7 +373,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var role = await _roleRepository.Read(id);
             var permissionKeys = await PrunePermissions(model.CompanyId, model.Permissions.SplitToList(';'));
             model.Id = role.Id;
-            model.Permissions = string.Join(';', permissionKeys);
+            model.Permissions = permissionKeys.JoinList(";");
             model.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _roleRepository.Update(model);
         }
@@ -391,7 +391,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             role.Description = model.Description;
             role.Active = model.Active;
             role.Name = model.Name;
-            role.Permissions = string.Join(';', permissionKeys);
+            role.Permissions = permissionKeys.JoinList(";");
             role.CompanyId = companyId;
             role.UpdatedBy = $"{currentUser.FirstName} {currentUser.LastName}";
             await _roleRepository.Update(role);
@@ -408,6 +408,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<IList<string>> PrunePermissions(string companyId, IList<string> sourcePermissionKeys)
         {
+            if (sourcePermissionKeys == null || sourcePermissionKeys.Count == 0)
+                return null;
+
             var company = await _companyRepository.Read(companyId);
             return sourcePermissionKeys.Where(t => company.PermissionKeys.Any(f => f == t)).ToList();
         }
@@ -424,7 +427,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
                 if (t.PermissionKeys != null)
                 {
-                    dto.permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
+                    dto.Permissions = allPermissions.Where(p => t.PermissionKeys.Contains(p.Key));
                 }
 
                 return dto;
