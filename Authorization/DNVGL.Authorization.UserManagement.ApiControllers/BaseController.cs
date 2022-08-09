@@ -80,9 +80,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return userViewModel;
         }
 
-        protected async Task<IEnumerable<UserViewModel>> GetAllUsers(IUser<TUser> userRepository, IPermissionRepository permissionRepository)
+        protected async Task<IEnumerable<UserViewModel>> GetAllUsers(IUser<TUser> userRepository, IPermissionRepository permissionRepository, int page = 0, int size = 0)
         {
-            var users = await userRepository.All();
+            var users = await userRepository.All(page,size);
             var allPermissions = await permissionRepository.GetAll();
 
             var result = users.Select(t =>

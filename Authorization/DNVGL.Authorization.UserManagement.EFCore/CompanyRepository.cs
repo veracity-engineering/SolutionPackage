@@ -60,7 +60,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             return await _context.Companys.Where(t => Ids.Contains(t.Id)).ToListAsync();
         }
 
-        public async Task<TCompany> Read(string Id)
+		public IQueryable<TCompany> QueryCompanys()
+		{
+            return _context.Companys.AsQueryable();
+        }
+
+		public async Task<TCompany> Read(string Id)
         {
             return await _context.Companys.SingleOrDefaultAsync(t => t.Id == Id);
         }

@@ -1,6 +1,10 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
@@ -50,8 +54,10 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// <summary>
         /// Get a list of all user as an asynchronous operation. 
         /// </summary>
+        /// <param name="page">The page index, starting from 1</param>
+        /// <param name="size">the page size</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the user list.</returns>
-        Task<IEnumerable<TUser>> All();
+        Task<IEnumerable<TUser>> All(int page = 0, int size = 0);
 
         /// <summary>
         /// Get a user list of a role
@@ -64,7 +70,22 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// Get a user list of a company.
         /// </summary>
         /// <param name="companyId">The company ID to look for.</param>
+        /// <param name="page">The page index, starting from 1</param>
+        /// <param name="size">the page size</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the user list.</returns>
-        Task<IEnumerable<TUser>> GetUsersOfCompany(string companyId);
+        Task<IEnumerable<TUser>> GetUsersOfCompany(string companyId, int page=0, int size=0);
+
+        /// <summary>
+		/// Get a user list by matching email.
+		/// </summary>
+		/// <param name="email">The email address to look for.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the user list.</returns>
+        Task<TUser> GetUserByEmail(string email);
+
+        /// <summary>
+		/// Return a querable user dataset.
+		/// </summary>
+		/// <returns></returns>
+        IQueryable<TUser> QueryUsers();
     }
 }

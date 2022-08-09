@@ -1,6 +1,10 @@
 ﻿// Copyright (c) DNV. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 
@@ -59,5 +63,11 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// </summary>
         /// <returns>A <see cref="Task{TResult}"/> that represents the company list.</returns>
         Task<IEnumerable<TCompany>> All();
+
+        /// <summary>
+		/// Return a querable company dataset.
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<TCompany> QueryCompanys();
     }
 }

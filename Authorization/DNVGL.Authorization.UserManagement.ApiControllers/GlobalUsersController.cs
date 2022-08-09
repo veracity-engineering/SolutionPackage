@@ -49,6 +49,23 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
+        /// Get all users, grouping large sets of data into pages.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser
+        /// </remarks>
+        /// <param name="page">The page index, starting from 1</param>
+        /// <param name="size">the page size</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{page:int}/{size:int}")]
+        [PermissionAuthorize(Premissions.ViewUser)]
+        public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
+        {
+            return await GetAllUsers(_userRepository, _permissionRepository);
+        }
+
+        /// <summary>
         /// Get a user by user id
         /// </summary>
         /// <remarks>
@@ -64,6 +81,26 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var user = await _userRepository.Read(id);
             return await PopulateUserInfo(user);
         }
+
+        /// <summary>
+        /// Get a user by user email
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser
+        /// </remarks>
+        /// <param name="email">User email</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("email/{email}")]
+        [PermissionAuthorize(Premissions.ViewUser)]
+        public async Task<UserViewModel> GetUserByEmail([FromRoute] string email)
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+
+            return await PopulateUserInfo(user);
+        }
+
+
 
         /// <summary>
         /// Update a user using custom model. Only if custom user model is used.
@@ -277,6 +314,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<UserViewModel> PopulateUserInfo(TUser user)
         {
+            if(user == null) return null;
             var allPermissions = await _permissionRepository.GetAll();
             var result = user.ToViewDto<UserViewModel>();
             result = PopulateUserRoleInfo(user, result, allPermissions);

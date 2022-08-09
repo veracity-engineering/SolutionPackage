@@ -61,6 +61,28 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
+        /// Get all user of a company, grouping large sets of data into pages.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="page">The page index, starting from 1</param>
+        /// <param name="size">the page size</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{page:int}/{size:int}")]
+        [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
+        public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] string companyId, [FromRoute] int page = 0, [FromRoute] int size = 0)
+        {
+            return await GetUsersOfCompany(companyId,page,size);
+        }
+
+        /// <summary>
         /// Get user info by user id
         /// </summary>
         /// <remarks>
@@ -90,6 +112,38 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
             return null;
         }
+
+        /// <summary>
+        /// Get user info by user email
+        /// </summary>
+        /// <remarks>
+        /// Required Permission for user in the this company: ViewUser 
+        /// 
+        /// Required Permission for user not in this company: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="email">User email</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("email/{email}")]
+        [PermissionAuthorize(Premissions.ViewUser)]
+        [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
+        [AccessibleCompanyFilter]
+        public async Task<UserViewModel> GetUserByEmail([FromRoute] string companyId, [FromRoute] string email)
+        {
+            var user = await GetUserByEmail(email);
+
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
+                user = PruneUserInfo(user, companyId);
+            else
+                user = PruneUserCompanyInfo(user, companyId);
+
+            if (user != null && user.Companies.Any(t => t.Id == companyId))
+                return user;
+
+            return null;
+        }
+
 
         /// <summary>
         /// Update a user using custom model. Only if custom user model is used.
@@ -456,6 +510,24 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return await GetAllUsers(_userRepository, _permissionRepository);
         }
 
+        /// <summary>
+        /// Get all users, grouping large sets of data into pages.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="page">The page index, starting from 1</param>
+        /// <param name="size">the page size</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("~/api/admin/users/{page:int}/{size:int}")]
+        [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
+        public async Task<IEnumerable<UserViewModel>> GetCrossCompanyUsersGetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
+        {
+            return await GetAllUsers(_userRepository, _permissionRepository,page,size);
+        }
+
+
         [HttpGet]
         [Route("~/api/admin/{companyid}/users")]
         [ObsoleteAttribute("It's an obsoleted end point. not suggest to use.", true)]
@@ -480,6 +552,23 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         {
             return await GetUserById(id);
         }
+
+        /// <summary>
+        /// Get a user's info. Only using it if user's company is unknown.
+        /// </summary>
+        /// <remarks>
+        /// Required Permission: ViewUser,ViewCompany
+        /// </remarks>
+        /// <param name="email">User Email</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("~/api/admin/users/email/{email}")]
+        [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
+        public async Task<UserViewModel> GetCrossCompanyUserByEmail([FromRoute] string email)
+        {
+            return await GetUserByEmail(email);
+        }
+
 
 
         /// <summary>
@@ -708,9 +797,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
         }
 
-        private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId)
+        private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId, int page = 0, int size = 0)
         {
-            var users = await _userRepository.GetUsersOfCompany(companyId);
+            var users = await _userRepository.GetUsersOfCompany(companyId,page,size);
             var allPermissions = await _permissionRepository.GetAll();
 
             var result = users.Select(t =>
@@ -750,6 +839,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             var user = await _userRepository.Read(userId);
             return await PopulateUserInfo(user);
         }
+
+        private async Task<UserViewModel> GetUserByEmail(string email)
+        {
+            var userEntity = await _userRepository.GetUserByEmail(email);
+            return await PopulateUserInfo(userEntity);
+        }
+
+
 
         private async Task<UserViewModel> PopulateUserInfo(TUser user)
         {
