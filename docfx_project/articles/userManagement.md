@@ -106,7 +106,7 @@ The following is sample.
                 });
 
                 var xmlFile = $"DNVGL.Authorization.UserManagement.ApiControllers.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, "apidocs", xmlFile);
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 if (File.Exists(xmlPath))
                     c.IncludeXmlComments(xmlPath);
             });

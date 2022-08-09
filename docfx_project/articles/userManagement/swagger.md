@@ -55,7 +55,7 @@ It will serperate User Management APIs from your project APIs.
                 });
 
                 var xmlFile = $"DNVGL.Authorization.UserManagement.ApiControllers.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, "apidocs", xmlFile);
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 if (File.Exists(xmlPath))
                     c.IncludeXmlComments(xmlPath);
             });
