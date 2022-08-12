@@ -112,7 +112,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<TUser> ReadByIdentityId(string IdentityId)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId == IdentityId);
+            var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId.ToLower() == IdentityId.ToLower());
 
             return await FetchUserCompanyRole(user);
         }

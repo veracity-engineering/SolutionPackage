@@ -39,7 +39,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
         public async Task<IEnumerable<PermissionEntity>> GetPermissions(string identity, string companyId)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId == identity || p.Id == identity);
+            var user = await _context.Users.SingleOrDefaultAsync(p => p.VeracityId.ToLower() == identity.ToLower() || p.Id == identity);
 
             if (user == null)
                 return null;
