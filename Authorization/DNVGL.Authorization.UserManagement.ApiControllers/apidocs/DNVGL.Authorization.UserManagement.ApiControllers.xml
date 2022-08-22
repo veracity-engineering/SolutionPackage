@@ -637,6 +637,17 @@
             </remarks>
             <returns></returns>
         </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUsersPaged(System.Int32,System.Int32)">
+            <summary>
+            Get all users, grouping large sets of data into pages.
+            </summary>
+            <remarks>
+            Required Permission: ViewUser
+            </remarks>
+            <param name="page">The page index, starting from 1</param>
+            <param name="size">the page size</param>
+            <returns></returns>
+        </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUser(System.String)">
             <summary>
             Get a user by user id
@@ -645,6 +656,16 @@
             Required Permission: ViewUser
             </remarks>
             <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.GetUserByEmail(System.String)">
+            <summary>
+            Get a user by user email
+            </summary>
+            <remarks>
+            Required Permission: ViewUser
+            </remarks>
+            <param name="email">User email</param>
             <returns></returns>
         </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.GlobalUsersController`1.UpdateUserFromCustomModel(System.String,`0)">
@@ -1055,6 +1076,20 @@
             <param name="companyId">Company Id</param>
             <returns></returns>
         </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUsersPaged(System.String,System.Int32,System.Int32)">
+            <summary>
+            Get all user of a company, grouping large sets of data into pages.
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="page">The page index, starting from 1</param>
+            <param name="size">the page size</param>
+            <returns></returns>
+        </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUser(System.String,System.String)">
             <summary>
             Get user info by user id
@@ -1066,6 +1101,19 @@
             </remarks>
             <param name="companyId">Company Id</param>
             <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUserByEmail(System.String,System.String)">
+            <summary>
+            Get user info by user email
+            </summary>
+            <remarks>
+            Required Permission for user in the this company: ViewUser 
+            
+            Required Permission for user not in this company: ViewUser,ViewCompany
+            </remarks>
+            <param name="companyId">Company Id</param>
+            <param name="email">User email</param>
             <returns></returns>
         </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.UpdateUserFromCustomModel(System.String,System.String,`1)">
@@ -1248,6 +1296,17 @@
             </remarks>
             <returns></returns>
         </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCrossCompanyUsersGetUsersPaged(System.Int32,System.Int32)">
+            <summary>
+            Get all users, grouping large sets of data into pages.
+            </summary>
+            <remarks>
+            Required Permission: ViewUser,ViewCompany
+            </remarks>
+            <param name="page">The page index, starting from 1</param>
+            <param name="size">the page size</param>
+            <returns></returns>
+        </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCrossCompanyUser(System.String)">
             <summary>
             Get a user's info. Only using it if user's company is unknown.
@@ -1256,6 +1315,16 @@
             Required Permission: ViewUser,ViewCompany
             </remarks>
             <param name="id">User Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetCrossCompanyUserByEmail(System.String)">
+            <summary>
+            Get a user's info. Only using it if user's company is unknown.
+            </summary>
+            <remarks>
+            Required Permission: ViewUser,ViewCompany
+            </remarks>
+            <param name="email">User Email</param>
             <returns></returns>
         </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.CreateCrossCompanyUserFromCustomModel(`1)">

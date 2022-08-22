@@ -88,5 +88,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             _context.Roles.Update(role);
             await _context.SaveChangesAsync();
         }
+
+		public IQueryable<TRole> QueryRoles()
+		{
+            return _context.Roles.AsQueryable();
+        }
     }
 }
