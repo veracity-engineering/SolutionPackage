@@ -789,12 +789,17 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         private async Task<IList<string>> PruneRoles(IList<string> companyIds, IList<string> sourceRoleIds)
         {
-            var roles = new List<TRole>();
-            foreach (var companyId in companyIds)
+            if (_userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
             {
-                roles.AddRange(await _roleRepository.GetRolesOfCompany(companyId));
+                var roles = new List<TRole>();
+                foreach (var companyId in companyIds)
+                {
+                    roles.AddRange(await _roleRepository.GetRolesOfCompany(companyId));
+                }
+                return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
             }
-            return sourceRoleIds.Where(t => roles.Any(f => f.Id == t)).ToList();
+            else
+                return sourceRoleIds;
         }
 
         private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId, int page = 0, int size = 0)
