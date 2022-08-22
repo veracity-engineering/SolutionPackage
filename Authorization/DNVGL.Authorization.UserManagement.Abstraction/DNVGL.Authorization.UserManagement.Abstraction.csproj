@@ -10,7 +10,7 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 		<RepositoryUrl>https://dev.azure.com/dnvgl-one/Innersource/_git/DNVGL.SolutionPackage</RepositoryUrl>
 		<PackageIcon>user.png</PackageIcon>
-
+    <Version>1.1.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
