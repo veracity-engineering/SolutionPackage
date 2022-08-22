@@ -54,7 +54,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             if (string.IsNullOrEmpty(user.RoleIds))
                 return null;
 
-            var role = await _context.Roles.Where(t => user.RoleIds.Contains(t.Id)).ToListAsync();
+            var role = await _context.Roles.Where(t => t.Active && user.RoleIds.Contains(t.Id)).ToListAsync();
 
             if (!string.IsNullOrEmpty(companyId) && _userManagementSettings.Mode == UserManagementMode.Company_CompanyRole_User)
                 role = role.Where(t => t.CompanyId == companyId).ToList();

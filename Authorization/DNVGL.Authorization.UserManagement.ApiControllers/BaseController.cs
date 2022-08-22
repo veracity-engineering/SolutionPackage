@@ -82,7 +82,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
 
         protected async Task<IEnumerable<UserViewModel>> GetAllUsers(IUser<TUser> userRepository, IPermissionRepository permissionRepository, int page = 0, int size = 0)
         {
-            var users = await userRepository.All(page,size);
+            var users = await userRepository.All(page, size);
             var allPermissions = await permissionRepository.GetAll();
 
             var result = users.Select(t =>
@@ -93,15 +93,30 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 {
                     dto.Roles = t.RoleList.Select(r =>
                     {
-                        var RoleViewDto = r.ToViewDto<RoleViewDto>();
+                        var roleViewDto = r.ToViewDto<RoleViewDto>();
 
                         if (r.PermissionKeys != null)
                         {
-                            RoleViewDto.Permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
+                            roleViewDto.Permissions = allPermissions.Where(p => r.PermissionKeys.Contains(p.Key));
                         }
 
-                        return RoleViewDto;
+                        return roleViewDto;
                     });
+                }
+
+                if (t.CompanyList != null)
+                {
+                    dto.Companies = t.CompanyList.Select(c =>
+                    {
+                        var companyViewDto = c.ToViewDto<CompanyViewDto>();
+
+                        if (c.PermissionKeys != null)
+                        {
+                            companyViewDto.Permissions = allPermissions.Where(p => c.PermissionKeys.Contains(p.Key));
+                        }
+                        return companyViewDto;
+                    }
+                        );
                 }
 
                 return dto;

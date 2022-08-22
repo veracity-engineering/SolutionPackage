@@ -36,6 +36,12 @@ namespace DNVGL.Authorization.UserManagement.EFCore
             users.ForEach(t => t.RoleList = roles.Where(r => t.RoleIdList!=null && t.RoleIdList.Contains(r.Id)).ToList());
         }
 
+        private async Task FetchCompanyForUsers(List<TUser> users)
+        {
+            var companies = await _context.Set<TCompany>().ToListAsync();
+            users.ForEach(t => t.CompanyList = companies.Where(r => t.CompanyIdList != null && t.CompanyIdList.Contains(r.Id)).ToList());
+        }
+
         public async Task<IEnumerable<TUser>> All(int page = 0, int size = 0)
         {
             List<TUser> users;
@@ -51,6 +57,7 @@ namespace DNVGL.Authorization.UserManagement.EFCore
 
      
             await FetchRoleForUsers(users);
+            await FetchCompanyForUsers(users);
             return users;
         }
 

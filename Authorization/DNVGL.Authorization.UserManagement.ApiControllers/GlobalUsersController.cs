@@ -62,7 +62,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewUser)]
         public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
         {
-            return await GetAllUsers(_userRepository, _permissionRepository);
+            return await GetAllUsers(_userRepository, _permissionRepository, page, size);
         }
 
         /// <summary>
@@ -307,7 +307,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<IEnumerable<string>> GetUserCorssCompanyPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return user.RoleList.SelectMany(t => t.PermissionKeys);
+            if (user.SuperAdmin)
+            {
+                return (await _permissionRepository.GetAll()).Select(t => t.Key);
+            }
+            return user.RoleList.Where(t=>t.Active).SelectMany(t => t.PermissionKeys);
         }
 
 
