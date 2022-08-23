@@ -1277,7 +1277,7 @@
         </member>
         <member name="M:DNVGL.Authorization.UserManagement.ApiControllers.UsersController`2.GetUserCorssCompanyPermissions(System.String)">
             <summary>
-            Get a user's all permissions.
+            Get a user's all permissions. This API should only be used in Company_GlobalRole_User mode
             </summary>
             <remarks>
             Required Permission for user in the this company: ViewUser 

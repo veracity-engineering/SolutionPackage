@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DNVGL.Authorization.UserManagement.Abstraction.Entity;
+using DNVGL.Common.Core.Pagination;
 
 namespace DNVGL.Authorization.UserManagement.Abstraction
 {
@@ -54,10 +55,9 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// <summary>
         /// Get a list of all user as an asynchronous operation. 
         /// </summary>
-        /// <param name="page">The page index, starting from 1</param>
-        /// <param name="size">the page size</param>
+        /// <param name="pageParam">The page index and size <see cref="PageParam"/>, starting from 1</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the user list.</returns>
-        Task<IEnumerable<TUser>> All(int page = 0, int size = 0);
+        Task<PaginatedResult<TUser>> All(PageParam pageParam = null);
 
         /// <summary>
         /// Get a user list of a role
@@ -70,10 +70,9 @@ namespace DNVGL.Authorization.UserManagement.Abstraction
         /// Get a user list of a company.
         /// </summary>
         /// <param name="companyId">The company ID to look for.</param>
-        /// <param name="page">The page index, starting from 1</param>
-        /// <param name="size">the page size</param>
+        /// <param name="pageParam">The page index and size <see cref="PageParam"/>, starting from 1</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the user list.</returns>
-        Task<IEnumerable<TUser>> GetUsersOfCompany(string companyId, int page=0, int size=0);
+        Task<PaginatedResult<TUser>> GetUsersOfCompany(string companyId, PageParam pageParam = null);
 
         /// <summary>
 		/// Get a user list by matching email.

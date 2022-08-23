@@ -8,6 +8,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
+using DNVGL.Common.Core.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
@@ -60,9 +61,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{page:int}/{size:int}")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
+        public async Task<PaginatedResultViewModel<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
         {
-            return await GetAllUsers(_userRepository, _permissionRepository, page, size);
+            var result = await GetAllUsers(_userRepository, _permissionRepository, new PageParam(page, size));
+            return new PaginatedResultViewModel<UserViewModel>(result);
         }
 
         /// <summary>

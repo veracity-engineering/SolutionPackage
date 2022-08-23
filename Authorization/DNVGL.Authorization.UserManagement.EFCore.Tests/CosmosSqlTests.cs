@@ -187,10 +187,10 @@ namespace DNVGL.Authorization.UserManagement.EFCore.Tests
                 var users = await userRepository.GetUsersOfCompany("ut1");
                 Assert.Equal("ut1", users.First().Id);
 
-                users = await userRepository.GetUsersOfRole("ut1");
+                var users2 = await userRepository.GetUsersOfRole("ut1");
                 Assert.Equal("ut1", users.First().Id);
 
-                users = await userRepository.GetUsersOfRole("ut2");
+                var users3 = await userRepository.GetUsersOfRole("ut2");
                 Assert.Equal("ut1", users.First().Id);
 
                 var user = await userRepository.Read("ut1");

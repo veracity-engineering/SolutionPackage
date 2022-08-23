@@ -23,6 +23,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\DNVGL.Authorization.UserManagement.Abstraction\DNVGL.Authorization.UserManagement.Abstraction.csproj" />
 		<ProjectReference Include="..\DNVGL.Authorization.Web\DNVGL.Authorization.Web.csproj" />
 	</ItemGroup>

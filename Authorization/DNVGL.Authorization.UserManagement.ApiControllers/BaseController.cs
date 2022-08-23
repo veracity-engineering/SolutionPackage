@@ -8,6 +8,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
+using DNVGL.Common.Core.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DNVGL.Authorization.UserManagement.ApiControllers
@@ -80,9 +81,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             return userViewModel;
         }
 
-        protected async Task<IEnumerable<UserViewModel>> GetAllUsers(IUser<TUser> userRepository, IPermissionRepository permissionRepository, int page = 0, int size = 0)
+        protected async Task<PaginatedResult<UserViewModel>> GetAllUsers(IUser<TUser> userRepository, IPermissionRepository permissionRepository, PageParam pageParam = null)
         {
-            var users = await userRepository.All(page, size);
+            var users = await userRepository.All(pageParam);
             var allPermissions = await permissionRepository.GetAll();
 
             var result = users.Select(t =>
@@ -123,7 +124,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
             });
 
 
-            return result;
+            var pagedResult = new PaginatedResult<UserViewModel>(result, users.PageIndex, users.PageSize, users.TotalCount);
+            return pagedResult;
         }
 
         protected async Task<IEnumerable<RoleViewDto>> GetAllRoles<TRole>(IRole<TRole> roleRepository, IPermissionRepository permissionRepository) where TRole : Role, new()

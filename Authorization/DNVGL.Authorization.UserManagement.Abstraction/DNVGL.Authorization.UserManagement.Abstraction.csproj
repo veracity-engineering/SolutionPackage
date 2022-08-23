@@ -14,6 +14,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Common\DNVGL.Common.Core\DNVGL.Common.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="user.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
