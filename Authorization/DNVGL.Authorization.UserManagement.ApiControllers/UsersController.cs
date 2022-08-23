@@ -8,6 +8,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
+using DNVGL.Common.Core.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -77,9 +78,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [PermissionAuthorize(Premissions.ViewUser)]
         [AccessCrossCompanyPermissionFilter(Premissions.ViewCompany)]
         [AccessibleCompanyFilter]
-        public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] string companyId, [FromRoute] int page = 0, [FromRoute] int size = 0)
+        public async Task<PaginatedResultViewModel<UserViewModel>> GetUsersPaged([FromRoute] string companyId, [FromRoute] int page = 0, [FromRoute] int size = 0)
         {
-            return await GetUsersOfCompany(companyId,page,size);
+
+            var result = await GetUsersOfCompany(companyId, new PageParam(page, size));
+            return new PaginatedResultViewModel<UserViewModel>(result);
         }
 
         /// <summary>
@@ -457,7 +460,14 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<IEnumerable<string>> GetUserPermissions([FromRoute] string companyId, [FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return user.RoleList.Where(t => t.CompanyId == companyId).SelectMany(t => t.PermissionKeys);
+
+            if (user.SuperAdmin)
+            {
+                return (await _permissionRepository.GetAll()).Select(t => t.Key);
+            }
+
+
+            return user.RoleList.Where(t => t.Active && t.CompanyId == companyId).SelectMany(t => t.PermissionKeys);
         }
 
         /// <summary>
@@ -476,7 +486,7 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         }
 
         /// <summary>
-        /// Get a user's all permissions.
+        /// Get a user's all permissions. This API should only be used in Company_GlobalRole_User mode
         /// </summary>
         /// <remarks>
         /// Required Permission for user in the this company: ViewUser 
@@ -492,7 +502,12 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<IEnumerable<string>> GetUserCorssCompanyPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return user.RoleList.SelectMany(t => t.PermissionKeys);
+
+            if (user.SuperAdmin)
+            {
+                return (await _permissionRepository.GetAll()).Select(t=>t.Key);
+            }
+            return user.RoleList.Where(t=>t.Active).SelectMany(t => t.PermissionKeys);
         }
 
         /// <summary>
@@ -522,9 +537,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("~/api/admin/users/{page:int}/{size:int}")]
         [PermissionAuthorize(Premissions.ViewUser, Premissions.ViewCompany)]
-        public async Task<IEnumerable<UserViewModel>> GetCrossCompanyUsersGetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
+        public async Task<PaginatedResultViewModel<UserViewModel>> GetCrossCompanyUsersGetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
         {
-            return await GetAllUsers(_userRepository, _permissionRepository,page,size);
+            var result = await GetAllUsers(_userRepository, _permissionRepository, new PageParam(page, size));
+            return new PaginatedResultViewModel<UserViewModel>(result);
         }
 
 
@@ -802,9 +818,9 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 return sourceRoleIds;
         }
 
-        private async Task<IEnumerable<UserViewModel>> GetUsersOfCompany(string companyId, int page = 0, int size = 0)
+        private async Task<PaginatedResult<UserViewModel>> GetUsersOfCompany(string companyId, PageParam pageParam = null)
         {
-            var users = await _userRepository.GetUsersOfCompany(companyId,page,size);
+            var users = await _userRepository.GetUsersOfCompany(companyId, pageParam);
             var allPermissions = await _permissionRepository.GetAll();
 
             var result = users.Select(t =>
@@ -829,8 +845,8 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
                 return dto;
             });
 
-
-            return result;
+            var pagedResult = new PaginatedResult<UserViewModel>(result, users.PageIndex, users.PageSize, users.TotalCount);
+            return pagedResult;
         }
 
         private async Task<UserViewModel> GetUserByIdentityId(string varacityId)

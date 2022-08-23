@@ -8,6 +8,7 @@ using DNVGL.Authorization.UserManagement.Abstraction.Entity;
 using DNVGL.Authorization.UserManagement.ApiControllers.DTO;
 using DNVGL.Authorization.Web;
 using DNVGL.Authorization.Web.Abstraction;
+using DNVGL.Common.Core.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static DNVGL.Authorization.Web.PermissionMatrix;
@@ -60,9 +61,10 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         [HttpGet]
         [Route("{page:int}/{size:int}")]
         [PermissionAuthorize(Premissions.ViewUser)]
-        public async Task<IEnumerable<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
+        public async Task<PaginatedResultViewModel<UserViewModel>> GetUsersPaged([FromRoute] int page = 0, [FromRoute] int size = 0)
         {
-            return await GetAllUsers(_userRepository, _permissionRepository);
+            var result = await GetAllUsers(_userRepository, _permissionRepository, new PageParam(page, size));
+            return new PaginatedResultViewModel<UserViewModel>(result);
         }
 
         /// <summary>
@@ -307,7 +309,11 @@ namespace DNVGL.Authorization.UserManagement.ApiControllers
         public async Task<IEnumerable<string>> GetUserCorssCompanyPermissions([FromRoute] string id)
         {
             var user = await _userRepository.Read(id);
-            return user.RoleList.SelectMany(t => t.PermissionKeys);
+            if (user.SuperAdmin)
+            {
+                return (await _permissionRepository.GetAll()).Select(t => t.Key);
+            }
+            return user.RoleList.Where(t=>t.Active).SelectMany(t => t.PermissionKeys);
         }
 
 
