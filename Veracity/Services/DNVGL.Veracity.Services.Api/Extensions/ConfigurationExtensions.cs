@@ -24,6 +24,11 @@ namespace DNVGL.Veracity.Services.Api.Extensions
 	        services.TryAddTransient<ISerializer, JsonSerializer>();
 
             return services;
-        }        	
+        }
+
+		//public static IServiceCollection AddApiResourceClientBuilder(this IServiceCollection services)
+		//{
+		//	return services.AddTransient<IApiResourceClientBuilder, ApiResourceClientBuilder>();			              
+		//}
 	}
 }
