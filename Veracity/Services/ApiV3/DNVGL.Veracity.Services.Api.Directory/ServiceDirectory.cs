@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory
 {
-	public class ServiceDirectory : ApiResourceClient, IServiceDirectory
+	public class ServiceDirectory :ApiClientBase, IServiceDirectory
 	{
-		public ServiceDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		public ServiceDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+		   : base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		/// <summary>
@@ -19,8 +21,8 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <param name="serviceId"></param>
 		/// <returns></returns>
 		public Task<Service> Get(string serviceId) =>
-			GetResource<Service>(ServiceDirectoryUrls.Service(serviceId));
-		
+			base.GetClient().GetResource<Service>(ServiceDirectoryUrls.Service(serviceId));
+
 		/// <summary>
 		/// Retrieves a paginated collection of user references of users subscribed to a service.
 		/// </summary>
@@ -29,14 +31,14 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> ListUsers(string serviceId, int page = 1, int pageSize = 20) =>
-			GetResource<IEnumerable<UserReference>>(ServiceDirectoryUrls.ServiceUsers(serviceId, page, pageSize), false);
-
+			base.GetClient().GetResource<IEnumerable<UserReference>>(ServiceDirectoryUrls.ServiceUsers(serviceId, page, pageSize), false);
 
 		public Task<IEnumerable<Subscription>> GetServiceSubscriptions(string serviceId, string filter, string pageNo) =>
-			GetResource<IEnumerable<Subscription>>(ServiceDirectoryUrls.GetServiceSubscriptions(serviceId, filter, pageNo), false);
+			base.GetClient().GetResource<IEnumerable<Subscription>>(ServiceDirectoryUrls.GetServiceSubscriptions(serviceId, filter, pageNo), false);
 
 		public Task<bool> IsAdmin(string serviceId, string userId)
-			=> GetResource<bool>(ServiceDirectoryUrls.IsAdmin(serviceId, userId), false);
+			=> base.GetClient().GetResource<bool>(ServiceDirectoryUrls.IsAdmin(serviceId, userId), false);
+			
 	}
 
 	internal static class ServiceDirectoryUrls

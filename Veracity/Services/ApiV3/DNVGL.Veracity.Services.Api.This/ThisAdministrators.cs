@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-	public class ThisAdministrators : ApiResourceClient, IThisAdministrators
+	public class ThisAdministrators : ApiClientBase, IThisAdministrators
 	{
-		public ThisAdministrators(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		public ThisAdministrators(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+			: base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		/// <summary>
@@ -20,7 +22,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="userId"></param>
 		/// <returns></returns>
 		public Task<Administrator> Get(string userId) =>
-			GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
+			base.GetClient().GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
 
 		/// <summary>
 		/// Retrieves a collection of administrator references for the authenticated service.
@@ -29,7 +31,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<AdministratorReference>> List(int page, int pageSize) =>
-			GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
+			base.GetClient().GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
 	}
 
 	internal static class ThisAdministratorsUrls

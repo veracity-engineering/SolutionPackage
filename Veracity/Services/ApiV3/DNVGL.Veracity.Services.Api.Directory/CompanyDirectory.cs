@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.Directory
 {
-	public class CompanyDirectory : ApiResourceClient, ICompanyDirectory
+	public class CompanyDirectory :ApiClientBase,  ICompanyDirectory
 	{
-		public CompanyDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		public CompanyDirectory(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+		   : base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		/// <summary>
@@ -19,7 +21,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <param name="companyId"></param>
 		/// <returns></returns>
 		public Task<Company> Get(string companyId) =>
-			GetResource<Company>(CompanyDirectoryUrls.Company(companyId));
+			base.GetClient().GetResource<Company>(CompanyDirectoryUrls.Company(companyId));
 
 		/// <summary>
 		/// Retrieves a paginated collection of user references of users affiliated with a company.
@@ -29,7 +31,7 @@ namespace DNVGL.Veracity.Services.Api.Directory
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> ListUsers(string companyId, int page = 1, int pageSize = 20) =>
-			GetResource<IEnumerable<UserReference>>(CompanyDirectoryUrls.CompanyUsers(companyId, page, pageSize), false);
+			base.GetClient().GetResource<IEnumerable<UserReference>>(CompanyDirectoryUrls.CompanyUsers(companyId, page, pageSize), false);
 	}
 
 	internal static class CompanyDirectoryUrls

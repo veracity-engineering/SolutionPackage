@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-    public class ThisSubscribers : ApiResourceClient, IThisSubscribers
+    public class ThisSubscribers : ApiClientBase, IThisSubscribers
     {
-		public ThisSubscribers(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		public ThisSubscribers(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+			: base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		/// <summary>
@@ -20,9 +22,12 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="userId"></param>
 		/// <param name="options"></param>
 		/// <returns></returns>
-		public Task Add(string userId, SubscriptionOptions options) =>
-			PutResource(ThisSubscribersUrls.Subscriber(userId), ToJsonContent(options));
-				
+		public async Task Add(string userId, SubscriptionOptions options)
+		{
+			var client = base.GetClient();
+			await client.PutResource(ThisSubscribersUrls.Subscriber(userId), client.ToJsonContent(options));
+		}
+			
 
 		/// <summary>
 		/// Retrieve a user reference for a user subscribed to the authenticated service.
@@ -30,7 +35,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="userId"></param>
 		/// <returns></returns>
 		public Task<UserReference> Get(string userId) =>
-			GetResource<UserReference>(ThisSubscribersUrls.Subscriber(userId));
+			base.GetClient().GetResource<UserReference>(ThisSubscribersUrls.Subscriber(userId));
 
 		/// <summary>
 		/// Retrieve a collection of user references to users subscribed to the authenticated service.
@@ -39,7 +44,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> List(int page, int pageSize) =>
-			GetResource<IEnumerable<UserReference>>(ThisSubscribersUrls.List(page, pageSize));
+			base.GetClient().GetResource<IEnumerable<UserReference>>(ThisSubscribersUrls.List(page, pageSize));
 
 		/// <summary>
 		/// Remove a user subscription to the authenticated service by specified user.
@@ -47,7 +52,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="userId"></param>
 		/// <returns></returns>
 		public Task Remove(string userId) =>
-			DeleteResource(ThisSubscribersUrls.Subscriber(userId));
+			base.GetClient().DeleteResource(ThisSubscribersUrls.Subscriber(userId));
     }
 
     internal static class ThisSubscribersUrls

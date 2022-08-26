@@ -5,13 +5,16 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DNVGL.Veracity.Services.Api.Exceptions;
 using DNVGL.Veracity.Services.Api.Models;
+using System.Collections.Generic;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-	public class MyPolicies : ApiResourceClient, IMyPolicies
+	public class MyPolicies : ApiClientBase, IMyPolicies
 	{
-		public MyPolicies(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+		public MyPolicies(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+			: base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
@@ -29,7 +32,7 @@ namespace DNVGL.Veracity.Services.Api.My
         {
 			var result = default (T);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
-                result = await DeserializeFromStream<T>(
+                result = await base.GetClient().DeserializeFromStream<T>(
 		                await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false);
             else if (response.IsSuccessStatusCode)
             {
@@ -51,7 +54,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
 
-			return await ToResourceResult<PolicyValidationResult>(request);
+			return await base.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 
 		/// <summary>
@@ -68,7 +71,7 @@ namespace DNVGL.Veracity.Services.Api.My
 				request.Headers.Add("returnUrl", returnUrl);
 			if (!string.IsNullOrEmpty(skipSubscriptionCheck))
 				request.Headers.Add("skipSubscriptionCheck", skipSubscriptionCheck);
-			return await ToResourceResult<PolicyValidationResult>(request);
+			return await base.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 	}
 

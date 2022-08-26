@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-	public class MyServices : ApiResourceClient, IMyServices
-	{
-		public MyServices(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+	public class MyServices : ApiClientBase, IMyServices
+	{		
+		public MyServices(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+			: base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		/// <summary>
@@ -18,7 +20,7 @@ namespace DNVGL.Veracity.Services.Api.My
 		/// </summary>
 		/// <returns></returns>
 		public Task<IEnumerable<MyServiceReference>> List() =>
-			GetResource<IEnumerable<MyServiceReference>>(MyServicesUrls.Root, false);
+			base.GetClient().GetResource<IEnumerable<MyServiceReference>>(MyServicesUrls.Root, false);
 	}
 
 	internal static class MyServicesUrls

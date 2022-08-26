@@ -25,10 +25,6 @@ namespace DNVGL.Veracity.Services.Api.Extensions
 
             return services;
         }
-
-		//public static IServiceCollection AddApiResourceClientBuilder(this IServiceCollection services)
-		//{
-		//	return services.AddTransient<IApiResourceClientBuilder, ApiResourceClientBuilder>();			              
-		//}
+		
 	}
 }

@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-	internal class MyWidgets : ApiResourceClient, IMyWidgets
-	{
-		public MyWidgets(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+	internal class MyWidgets : ApiClientBase, IMyWidgets
+	{	
+		public MyWidgets(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
+			: base(optionsList, httpClientFactory, serializer)
 		{
+
 		}
 
 		public Task<IEnumerable<Widget>> Get()=>
-			GetResource<IEnumerable<Widget>>(MyWidgetsUrls.Root);
+			base.GetClient().GetResource<IEnumerable<Widget>>(MyWidgetsUrls.Root);
 
 		internal static class MyWidgetsUrls
 		{
