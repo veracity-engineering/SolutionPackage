@@ -42,5 +42,9 @@ namespace DNVGL.OAuth.Api.HttpClient
             SubscriptionKey = options.SubscriptionKey;
             Name = options.Name;
         }
+        public string GetHttpClientName()
+        {
+            return $"{this.Name}:{this.Flow}";
+        }
     }
 }

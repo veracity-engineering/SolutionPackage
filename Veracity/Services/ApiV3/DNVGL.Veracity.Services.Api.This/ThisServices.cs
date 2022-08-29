@@ -1,4 +1,5 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
+using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.This.Abstractions;
 using DNVGL.Veracity.Services.Api.This.Abstractions.Models;
@@ -98,7 +99,7 @@ namespace DNVGL.Veracity.Services.Api.This
 			};
 
 			if (!string.IsNullOrEmpty(channelId))
-				request.Headers.Add("returnUrl", channelId);
+				request.Headers.Add("channelId", channelId);
 
 			await client.ToResourceResult(request);
 		}

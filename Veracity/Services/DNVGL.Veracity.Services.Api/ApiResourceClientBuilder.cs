@@ -1,23 +1,12 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 
 namespace DNVGL.Veracity.Services.Api
 {
 	public class ApiResourceClientBuilder
 	{
-		//private readonly IHttpClientFactory _httpClientFactory;
-	 //   private readonly ISerializer _serializer;
-
-		//public ApiResourceClientBuilder(IHttpClientFactory httpClientFactory, ISerializer serializer)
-		//{
-		//	_httpClientFactory = httpClientFactory;
-		//	_serializer = serializer;
-		//}
-
 		private readonly ApiResourceClientConfiguration _config; 
 
 		internal ApiResourceClientBuilder(ApiResourceClientConfiguration config)
@@ -31,6 +20,7 @@ namespace DNVGL.Veracity.Services.Api
 			{
 				OAuthClientOptions = options
 			};
+			
 			return new ApiResourceClientBuilder(config);
 		}
 

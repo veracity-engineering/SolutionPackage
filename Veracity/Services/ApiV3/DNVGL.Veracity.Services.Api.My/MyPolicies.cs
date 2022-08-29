@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DNVGL.Veracity.Services.Api.Exceptions;
 using DNVGL.Veracity.Services.Api.Models;
 using System.Collections.Generic;
+using DNVGL.Veracity.Services.Api.Extensions;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
@@ -17,7 +18,7 @@ namespace DNVGL.Veracity.Services.Api.My
 
 		}
 
-		protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
+		protected async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
         {
             if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotAcceptable)
             {
@@ -28,7 +29,7 @@ namespace DNVGL.Veracity.Services.Api.My
             }
         }
 
-        protected override async Task<T> BuildResult<T>(HttpResponseMessage response)
+        protected async Task<T> BuildResult<T>(HttpResponseMessage response)
         {
 			var result = default (T);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
@@ -39,7 +40,7 @@ namespace DNVGL.Veracity.Services.Api.My
                 var r = new PolicyValidationResult { StatusCode = (int)response.StatusCode };
                 result = (T)(object)r;
             }
-
+			
             return result;
         }
 

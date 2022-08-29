@@ -2,53 +2,48 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 
 namespace DNVGL.Veracity.Services.Api
 {
-	public abstract class ApiClientBase //: ISwtichFlow
+	public abstract class ApiClientBase
 	{
-		//private readonly object _syncObj = new object();
+		private IApiResourceClient _apiResourceClientForSingleFlow;
 
-		protected readonly IEnumerable<OAuthHttpClientOptions> _optionsList;
-		
-		//protected IApiResourceClient Client;
-		//protected OAuthHttpClientOptions CurrentOptions;
-
+		internal protected readonly IEnumerable<OAuthHttpClientOptions> _optionsList;
 
 		protected readonly IHttpClientFactory _httpClientFactory;
 		protected readonly ISerializer _serializer;
 
 		public ApiClientBase(IEnumerable<OAuthHttpClientOptions> optionsList, IHttpClientFactory httpClientFactory, ISerializer serializer)
-		{			
+		{	
+
+			if(optionsList == null || !optionsList.Any()) 
+			  throw new System.ArgumentException(nameof(optionsList));
+
 			_optionsList = optionsList;
 
 			_httpClientFactory = httpClientFactory;
-			_serializer = serializer;
-
-			//var options = optionsList.First(); //get the 1st item by default 
-			//Client = ApiResourceClientBuilder.CreateWithOAuthClientOptions(CurrentOptions).WithHttpFactory(httpClientFactory).WithSerializer(serializer).WithDataFormat(DataFormat.Json).Build();
+			_serializer = serializer;		
 		}
 
 		public virtual IApiResourceClient GetClient(OAuthCredentialFlow? flow = null)
 		{
-			var options  = flow == null? _optionsList.First(): _optionsList.First(o => o.Flow == flow);			
+			if (_optionsList.Count() == 1)
+			{
+				if (_apiResourceClientForSingleFlow == null)
+				{
+					Interlocked.CompareExchange(ref _apiResourceClientForSingleFlow, ApiResourceClientBuilder.CreateWithOAuthClientOptions(_optionsList.First()).WithHttpFactory(_httpClientFactory).WithSerializer(_serializer).WithDataFormat(DataFormat.Json).Build(), null);
+				}
 
-			return ApiResourceClientBuilder.CreateWithOAuthClientOptions(options).WithHttpFactory(_httpClientFactory).WithSerializer(_serializer).WithDataFormat(DataFormat.Json).Build();
-		}
+				return _apiResourceClientForSingleFlow;
+			}
+			else
+			{
+				var options = flow == null ? _optionsList.First() : _optionsList.First(o => o.Flow == flow);
 
-		//public virtual void Switch(OAuthCredentialFlow flow)
-		//{
-		//	if (CurrentOptions.Flow != flow)
-		//	{
-		//		lock (_syncObj)
-		//		{
-		//			if (CurrentOptions.Flow != flow)
-		//			{
-		//				CurrentOptions = _optionsList.First(o => o.Flow == flow);
-		//				Client = ApiResourceClientBuilder.CreateWithOAuthClientOptions(CurrentOptions).WithHttpFactory(_httpClientFactory).WithSerializer(_serializer).WithDataFormat(DataFormat.Json).Build();
-		//			}
-		//		}
-		//	}
-		//}
+				return ApiResourceClientBuilder.CreateWithOAuthClientOptions(options).WithHttpFactory(_httpClientFactory).WithSerializer(_serializer).WithDataFormat(DataFormat.Json).Build();
+			}
+		}		
 	}
 }
