@@ -72,12 +72,12 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
-			services.AddOptions().Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
+			services.AddOptions().Configure<OAuthHttpClientOptions>(option.GetHttpClientName(), o=>
 			{
 				o.Bind(option);		
 			});
 
-			var builder = services.AddHttpClient($"{option.Name}:{option.Flow}", 
+			var builder = services.AddHttpClient(option.GetHttpClientName(), 
 				clientConfigAction ?? ((_, clt) => clt.BaseAddress = new Uri(option.BaseUri)));
 
 			builder.AddOAuthHttpClientHandler(option, cacheConfigAction);

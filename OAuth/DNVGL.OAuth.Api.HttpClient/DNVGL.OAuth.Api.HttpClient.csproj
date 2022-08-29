@@ -7,7 +7,7 @@
 		<Company>DNVGL</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Description>Provides a factory for producing authenticated HttpClients for API integration via OAuth.</Description>
-		<Version>1.1.4</Version>
+		<Version>1.1.5</Version>
 	</PropertyGroup>
 	
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
