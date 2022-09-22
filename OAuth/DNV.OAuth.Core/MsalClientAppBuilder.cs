@@ -36,10 +36,10 @@ namespace DNV.OAuth.Core
 			_tokenCacheProvider.InitializeAsync(clientApp.UserTokenCache);
 			_tokenCacheProvider.InitializeAsync(clientApp.AppTokenCache);
 
-			if (options.Scopes == null || !options.Scopes.Any())
+			if (string.IsNullOrWhiteSpace(options.Scope))
 				throw new MissingScopeException();
 
-			return new MsalClientApp(clientApp, options.Scopes);
+			return new MsalClientApp(clientApp, options.Scope);
 		}
 	}
 }

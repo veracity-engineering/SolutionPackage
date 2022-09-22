@@ -31,7 +31,7 @@ namespace DNV.Veracity.Services.Api.This.Tests
                 OAuthClientOptions = new OAuth.Abstractions.OAuth2Options()
                 {
                     Authority = "https://login.microsoftonline.com/dnvglb2ctest.onmicrosoft.com/v2.0",
-                    Scopes = new[] { "https://dnvglb2ctest.onmicrosoft.com/efb3e529-2f80-458b-aedf-7f4c8c794b45/.default" },
+                    Scope = "https://dnvglb2ctest.onmicrosoft.com/efb3e529-2f80-458b-aedf-7f4c8c794b45/.default",
                     ClientId = "6f0bb6fa-e604-43cd-9414-42def1ac7deb",
                     ClientSecret = "8PXnw5bo.aQ95GOKs-RyErokg_ooifcCK."
                 }

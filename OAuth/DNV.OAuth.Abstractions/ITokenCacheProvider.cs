@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Identity.Client;
+﻿using Microsoft.Identity.Client;
+using System.Threading.Tasks;
 
 namespace DNV.OAuth.Abstractions
 {

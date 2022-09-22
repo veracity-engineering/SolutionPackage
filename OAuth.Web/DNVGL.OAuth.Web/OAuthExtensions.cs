@@ -1,18 +1,23 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using DNV.OAuth.Abstractions;
+using DNV.OAuth.Core;
+using DNV.OAuth.Core.TokenCache;
+using DNV.OAuth.Core.TokenValidator;
+using DNVGL.OAuth.Web.Oidc;
+using DNVGL.OAuth.Web.TokenCache;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Session;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DNV.OAuth.Abstractions;
-using DNV.OAuth.Core;
-using DNV.OAuth.Core.TokenValidator;
-using DNVGL.OAuth.Web.Oidc;
 
 namespace DNVGL.OAuth.Web
 {
@@ -105,7 +110,7 @@ namespace DNVGL.OAuth.Web
 
 						o.SecurityTokenValidators.Clear();
 						o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ??
-						                              new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
+													  new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
 					});
 					schemeNames.Add(schemeName);
 				}
@@ -119,11 +124,11 @@ namespace DNVGL.OAuth.Web
 							o.Authority = aut.Authority;
 							o.Audience = jwtOptions.ClientId;
 
-							if (jwtOptions.TokenValidationParameters != null) 
+							if (jwtOptions.TokenValidationParameters != null)
 								o.TokenValidationParameters = jwtOptions.TokenValidationParameters;
 
 							if (jwtOptions.Events != null)
-								o.Events = jwtOptions.Events; 
+								o.Events = jwtOptions.Events;
 
 							o.SecurityTokenValidators.Clear();
 							o.SecurityTokenValidators.Add(jwtOptions.SecurityTokenValidator ?? new DNVTokenValidator(jwtOptions.CustomClaimsValidator));
@@ -225,17 +230,15 @@ namespace DNVGL.OAuth.Web
 			Action<DistributedCacheEntryOptions> cacheSetupAction = null
 		)
 		{
-			if (oidcOptions == null)
-			{
-				throw new ArgumentNullException(nameof(oidcOptions));
-			}
+			if (oidcOptions == null) throw new ArgumentNullException(nameof(oidcOptions));
 
-			builder = cookieSetupAction != null ? 
-				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, 
-					o => cookieSetupAction(o)): 
-				builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+			var services = builder.Services;
+			services.AddSingleton<OAuth2Options>(oidcOptions);
+			oidcOptions.Initialize();
 
-			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, 
+			builder.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, cookieSetupAction);
+
+			builder.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme,
 				o =>
 				{
 					o.Authority = oidcOptions.Authority;
@@ -244,32 +247,16 @@ namespace DNVGL.OAuth.Web
 					o.CallbackPath = oidcOptions.CallbackPath;
 					o.ResponseType = oidcOptions.ResponseType;
 					o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
-	#if NETCORE3
+#if !NETCORE2
 					o.UsePkce = true;
-	#endif
+#endif
 
-					ConfigureScopes(oidcOptions, o);
+					o.Scope.Add(oidcOptions.Scope);
 					ConfigureSecurityTokenValidator(oidcOptions, o);
 					ConfigureEvents(oidcOptions, o);
 				});
 
-			// switch to authorization code flow.
-			if (oidcOptions.ResponseType.Split(' ').Contains(OpenIdConnectResponseType.Code))
-			{
-				AddDistributedTokenCache(builder.Services, oidcOptions, cacheSetupAction);
-			}
-
 			return builder;
-		}
-
-		private static void ConfigureScopes(OidcOptions oidcOptions, OpenIdConnectOptions o)
-		{
-			if (oidcOptions.Scopes == null || !oidcOptions.Scopes.Any())
-			{
-				oidcOptions.Scopes = new string[] { oidcOptions.ClientId };
-			}
-
-			foreach (var scope in oidcOptions.Scopes) o.Scope.Add(scope);
 		}
 
 		private static void ConfigureSecurityTokenValidator(OidcOptions oidcOptions, OpenIdConnectOptions o)
@@ -311,41 +298,115 @@ namespace DNVGL.OAuth.Web
 			}
 		}
 
-#endregion
+		#endregion
 
-#region AddDistributedTokenCache
-		private static IServiceCollection AddDistributedTokenCache(this IServiceCollection services, OidcOptions oidcOptions, Action<DistributedCacheEntryOptions> cacheConfigAction = null)
+		#region Add token cache
+
+		/// <summary>
+		/// Add session token caches.
+		/// </summary>
+		/// <param name="app"></param>
+		/// <param name="useDataProtection"></param>
+		/// <returns></returns>
+		/// <remarks>Ensure to add <seealso cref="SessionMiddlewareExtensions.UseSession(IApplicationBuilder)"/> before <see cref="AuthAppBuilderExtensions.UseAuthentication"/>.</remarks>
+		public static AuthenticationBuilder AddSessionTokenCaches(this AuthenticationBuilder app, bool useDataProtection = true)
 		{
-			services.AddDataProtection();
+			var services = app.Services;
 
-			services.AddOAuthCore(cacheConfigAction)
-				.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
-				{
-					var handler = o.Events.OnAuthorizationCodeReceived;
+			var sessionService = services.FirstOrDefault(s => s.ServiceType.Name == nameof(ISessionStore));
 
-					o.Events.OnAuthorizationCodeReceived = async context =>
-					{
-						await OnCodeReceived(context).ConfigureAwait(false);
+			if (sessionService == null) services.AddSession(o => o.Cookie.IsEssential = true);
+			else services.Configure<SessionOptions>(o => o.Cookie.IsEssential = true);
 
-						if (handler != null)
-							await handler(context).ConfigureAwait(false);
-					};
-				});
+			services.AddSession();
+			services.AddHttpContextAccessor();
+			services.TryAddSingleton<ICacheStorage, SessionCacheStorage>();
+			services.SetupTokenCaches(useDataProtection);
+			return app;
+		}
 
-			async Task OnCodeReceived(AuthorizationCodeReceivedContext context)
+		/// <summary>
+		/// Adds in memory token caches
+		/// </summary>
+		/// <param name="app"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <param name="useDataProtection"></param>
+		/// <returns></returns>
+		public static AuthenticationBuilder AddInMemoryTokenCaches(this AuthenticationBuilder app, Action<MemoryCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
+		{
+			var services = app.Services;
+			services.AddMemoryCache();
+
+			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
+
+			services.TryAddSingleton<ICacheStorage, MemoryCacheStorage>();
+			services.SetupTokenCaches(useDataProtection);
+			return app;
+		}
+
+		/// <summary>
+		/// Adds distributed token caches
+		/// </summary>
+		/// <param name="app"></param>
+		/// <param name="cacheConfigAction"></param>
+		/// <param name="useDataProtection"></param>
+		/// <returns></returns>
+		public static AuthenticationBuilder AddDistributedTokenCaches(this AuthenticationBuilder app, Action<DistributedCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
+		{
+			var services = app.Services;
+			services.AddDistributedMemoryCache();
+
+			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
+
+			services.TryAddSingleton<ICacheStorage, DistributedCacheStorage>();
+			services.SetupTokenCaches(useDataProtection);
+			return app;
+		}
+
+		private static void SetupTokenCaches(this IServiceCollection services, bool useDataProtection = true)
+		{
+			if (useDataProtection) services.AddDataProtection();
+
+			services.TryAddSingleton<ITokenCacheProvider>(p =>
 			{
-				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier"); 
-				var authCode = context.TokenEndpointRequest.Code;
-				var clientAppBuilder = context.HttpContext.RequestServices.GetRequiredService<IClientAppBuilder>();
-				var clientApp = clientAppBuilder.Build(oidcOptions);
+				var tokenCacheProvider = ActivatorUtilities.CreateInstance<TokenCacheProvider>(p);
+				tokenCacheProvider.UseDataProtection = useDataProtection;
+				return tokenCacheProvider;
+			});
+
+			services.TryAddSingleton<IClientAppFactory>(p =>
+			{
+				var oauth2Options = p.GetRequiredService<OAuth2Options>();
+				return ActivatorUtilities.CreateInstance<MsalClientAppFactory>(p, oauth2Options);
+			});
+
+			services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
+			{
+				var handler = o.Events.OnAuthorizationCodeReceived;
+
+				o.Events.OnAuthorizationCodeReceived = async context =>
+				{
+					await OnCodeReceived(context).ConfigureAwait(false);
+					handler?.Invoke(context).ConfigureAwait(false);
+				};
+			});
+
+			static async Task OnCodeReceived(AuthorizationCodeReceivedContext context)
+			{
+				var serviceProvider = context.HttpContext.RequestServices;
+				var oauth2Options = serviceProvider.GetRequiredService<OAuth2Options>();
+
+				var codeVerifier = context.TokenEndpointRequest?.GetParameter("code_verifier");
+				var authCode = context.TokenEndpointRequest?.Code;
+				var clientAppFactory = serviceProvider.GetRequiredService<IClientAppFactory>();
+				var clientApp = clientAppFactory.CreateForUser(oauth2Options.Scope);
 
 				context.HandleCodeRedemption();
 				var result = await clientApp.AcquireTokenByAuthorizationCode(authCode, codeVerifier);
 				context.HandleCodeRedemption(result.AccessToken, result.IdToken);
 			}
-
-			return services;
 		}
-#endregion
+
+		#endregion
 	}
 }
