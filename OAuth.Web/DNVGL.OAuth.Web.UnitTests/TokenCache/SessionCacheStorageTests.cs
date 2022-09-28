@@ -17,7 +17,7 @@ namespace DNVGL.OAuth.Web.TokenCache.UnitTests
 		private static byte[]? BytesValue;
 
 		[Fact()]
-		public async void GetTest()
+		public async void SessionCacheStorageTest()
 		{
 			var (key1, value1) = ("item1", RandomNumberGenerator.GetBytes(10));
 			var (key2, value2) = ("item2", RandomNumberGenerator.GetBytes(10));

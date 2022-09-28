@@ -73,7 +73,6 @@ namespace DNVGL.OAuth.Web
 		/// <param name="builder"></param>
 		/// <param name="oidcOptions"></param>
 		/// <param name="cookieSetupAction"></param>
-		/// <param name="cacheSetupAction"></param>
 		/// <returns></returns>
 		public static AuthenticationBuilder AddOidc(
 			this AuthenticationBuilder builder,
@@ -166,7 +165,8 @@ namespace DNVGL.OAuth.Web
 			services.AddSession(o => o.Cookie.IsEssential = true);
 			services.AddHttpContextAccessor();
 			services.TryAddSingleton<ICacheStorage, SessionCacheStorage>();
-			services.SetupTokenCaches(useDataProtection);
+			services.AddTokenCaches(useDataProtection);
+			services.HandleAuthorizationCode();
 			return app;
 		}
 
@@ -180,12 +180,8 @@ namespace DNVGL.OAuth.Web
 		public static AuthenticationBuilder AddInMemoryTokenCaches(this AuthenticationBuilder app, Action<MemoryCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
 		{
 			var services = app.Services;
-			services.AddMemoryCache();
-
-			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
-
-			services.TryAddSingleton<ICacheStorage, MemoryCacheStorage>();
-			services.SetupTokenCaches(useDataProtection);
+			services.AddInMemoryTokenCaches(cacheConfigAction, useDataProtection);
+			services.HandleAuthorizationCode();
 			return app;
 		}
 
@@ -199,26 +195,13 @@ namespace DNVGL.OAuth.Web
 		public static AuthenticationBuilder AddDistributedTokenCaches(this AuthenticationBuilder app, Action<DistributedCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
 		{
 			var services = app.Services;
-			services.AddDistributedMemoryCache();
-
-			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
-
-			services.TryAddSingleton<ICacheStorage, DistributedCacheStorage>();
-			services.SetupTokenCaches(useDataProtection);
+			services.AddDistributedTokenCaches(cacheConfigAction, useDataProtection);
+			services.HandleAuthorizationCode();
 			return app;
 		}
 
-		private static void SetupTokenCaches(this IServiceCollection services, bool useDataProtection = true)
+		private static void HandleAuthorizationCode(this IServiceCollection services)
 		{
-			if (useDataProtection) services.AddDataProtection();
-
-			services.TryAddSingleton<ITokenCacheProvider>(p =>
-			{
-				var tokenCacheProvider = ActivatorUtilities.CreateInstance<TokenCacheProvider>(p);
-				tokenCacheProvider.UseDataProtection = useDataProtection;
-				return tokenCacheProvider;
-			});
-
 			services.TryAddSingleton<IClientAppFactory>(p =>
 			{
 				var oauth2Options = p.GetRequiredService<OAuth2Options>();

@@ -12,7 +12,7 @@ namespace DNV.OAuth.Core.TokenCache
 		private readonly IMemoryCache _cache;
 		private readonly MemoryCacheEntryOptions _options;
 
-		public MemoryCacheStorage(IMemoryCache cache, IOptions<MemoryCacheEntryOptions> options) : this(cache, options?.Value) { }
+		public MemoryCacheStorage(IMemoryCache cache, IOptions<MemoryCacheEntryOptions>? options) : this(cache, options?.Value) { }
 
 		public MemoryCacheStorage(IMemoryCache cache, MemoryCacheEntryOptions? options)
 		{

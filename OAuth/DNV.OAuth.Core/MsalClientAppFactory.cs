@@ -13,7 +13,7 @@ namespace DNV.OAuth.Core
 		private readonly VeracityClientOptions _options;
 		private readonly ITokenCacheProvider? _tokenCacheProvider;
 
-		public MsalClientAppFactory(VeracityClientOptions options, ITokenCacheProvider? tokenCacheProvider = null)
+		public MsalClientAppFactory(VeracityClientOptions? options, ITokenCacheProvider? tokenCacheProvider = null)
 		{
 			_options = options ?? throw new ArgumentNullException(nameof(options));
 			_tokenCacheProvider = tokenCacheProvider;
@@ -25,12 +25,12 @@ namespace DNV.OAuth.Core
 		/// <param name="scope">A scope uri or an app/client Id</param>
 		/// <returns></returns>
 		/// <exception cref="MissingScopeException"></exception>
-		public IClientApp CreateForUser(string? scope = null)
+		public IClientApp CreateForUser(string? scope)
 		{
 			if (string.IsNullOrWhiteSpace(scope)) throw new MissingScopeException();
 
 			var authority = _options.VeracityOptions.B2CAuthorityV2;
-			scope = _options.VeracityOptions.GetB2CScope(scope ?? _options.ClientId);
+			scope = _options.VeracityOptions.GetB2CScope(scope);
 			var clientApp = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
 				.WithAuthority(new Uri(authority))
 				.WithClientSecret(_options.ClientSecret)
@@ -46,12 +46,12 @@ namespace DNV.OAuth.Core
 		/// <param name="scope">A scope uri or an app/client Id</param>
 		/// <returns></returns>
 		/// <exception cref="MissingScopeException"></exception>
-		public IClientApp CreateForClient(string scope)
+		public IClientApp CreateForClient(string? scope)
 		{
 			if (string.IsNullOrWhiteSpace(scope)) throw new MissingScopeException();
 
 			var authority = _options.VeracityOptions.AADAuthorityV2;
-			scope = _options.VeracityOptions.GetAADScope(scope ?? _options.ClientId);
+			scope = _options.VeracityOptions.GetAADScope(scope);
 			var clientApp = ConfidentialClientApplicationBuilder.Create(_options.ClientId)
 				.WithAuthority(new Uri(authority))
 				.WithClientSecret(_options.ClientSecret)

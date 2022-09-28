@@ -22,7 +22,7 @@ namespace DNV.OAuth.Core
 		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
 		{
 			var objectId = claimsPrincipal.FindFirst(ObjectId);
-			var policy = claimsPrincipal.FindFirst(Policy)?.Value;
+			var policy = claimsPrincipal.FindFirst(Policy).Value;
 			var tenantId = objectId.Issuer.Split('/')[3];
 			var msalAccountId = $"{objectId.Value}-{policy}.{tenantId}";
 			return msalAccountId.ToLower();
@@ -32,17 +32,20 @@ namespace DNV.OAuth.Core
 		/// Register OAuthCore required services to DI container.
 		/// </summary>
 		/// <param name="services"></param>
-		/// <param name="configAction"></param>
 		public static IServiceCollection AddOAuthCore(this IServiceCollection services)
 		{
-			services.TryAddSingleton<IClientAppBuilder, MsalClientAppBuilder>();
+			services.TryAddSingleton<IClientAppBuilder>(p =>
+			{
+				var tokenCacheProvider = p.GetService<ITokenCacheProvider>();
+				return new MsalClientAppBuilder(tokenCacheProvider);
+			});
 			return services;
 		}
 
 		/// <summary>
 		/// Adds in memory token caches
 		/// </summary>
-		/// <param name="app"></param>
+		/// <param name="services"></param>
 		/// <param name="cacheConfigAction"></param>
 		/// <param name="useDataProtection"></param>
 		/// <returns></returns>
@@ -50,15 +53,16 @@ namespace DNV.OAuth.Core
 		{
 			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
 
+			services.AddMemoryCache();
 			services.TryAddSingleton<ICacheStorage, MemoryCacheStorage>();
-			services.SetupTokenCaches(useDataProtection);
+			services.AddTokenCaches(useDataProtection);
 			return services;
 		}
 
 		/// <summary>
 		/// Adds distributed token caches
 		/// </summary>
-		/// <param name="app"></param>
+		/// <param name="services"></param>
 		/// <param name="cacheConfigAction"></param>
 		/// <param name="useDataProtection"></param>
 		/// <returns></returns>
@@ -66,12 +70,13 @@ namespace DNV.OAuth.Core
 		{
 			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
 
+			services.AddDistributedMemoryCache();
 			services.TryAddSingleton<ICacheStorage, DistributedCacheStorage>();
-			services.SetupTokenCaches(useDataProtection);
+			services.AddTokenCaches(useDataProtection);
 			return services;
 		}
 
-		private static void SetupTokenCaches(this IServiceCollection services, bool useDataProtection = true)
+		public static void AddTokenCaches(this IServiceCollection services, bool useDataProtection = true)
 		{
 			services.TryAddSingleton<ITokenCacheProvider>(p =>
 			{

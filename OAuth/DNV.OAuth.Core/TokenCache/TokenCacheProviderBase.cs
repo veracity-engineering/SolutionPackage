@@ -14,7 +14,7 @@ namespace DNV.OAuth.Core.TokenCache
 			this.CacheStorage = cacheStorage;
 		}
 
-		public virtual Task InitializeAsync(ITokenCache tokenCache)
+		public virtual Task InitializeAsync(ITokenCache? tokenCache)
 		{
 			if (tokenCache == null) throw new ArgumentNullException(nameof(tokenCache));
 

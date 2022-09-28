@@ -11,7 +11,7 @@ namespace DNV.OAuth.Core.TokenCache
 		private readonly IDistributedCache _cache;
 		private readonly DistributedCacheEntryOptions _options;
 
-		public DistributedCacheStorage(IDistributedCache cache, IOptions<DistributedCacheEntryOptions> options) : this(cache, options?.Value) { }
+		public DistributedCacheStorage(IDistributedCache cache, IOptions<DistributedCacheEntryOptions>? options) : this(cache, options?.Value) { }
 
 		public DistributedCacheStorage(IDistributedCache cache, DistributedCacheEntryOptions? options)
 		{

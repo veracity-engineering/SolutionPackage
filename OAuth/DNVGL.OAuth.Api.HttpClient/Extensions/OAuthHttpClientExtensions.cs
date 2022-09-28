@@ -165,8 +165,8 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<DistributedCacheEntryOptions>? cacheConfigAction)
 		{
 			return services.AddHttpContextAccessor()
-				.AddOAuthCore()
-				.AddDistributedTokenCaches(cacheConfigAction);
+				.AddDistributedTokenCaches(cacheConfigAction)
+				.AddOAuthCore();
 		}
 	}
 }

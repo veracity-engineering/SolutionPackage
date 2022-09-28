@@ -8,6 +8,7 @@
 						<ModulePaths>
 							<Include>
 								<ModulePath>.*DNVGL.OAuth.Web.dll$</ModulePath>
+								<ModulePath>.*DNV.OAuth.Core.dll$</ModulePath>
 							</Include>
 						</ModulePaths>
 						<Functions>
