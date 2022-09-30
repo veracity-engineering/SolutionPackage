@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -12,14 +12,17 @@ namespace DNV.Security.DataProtection
 	{
 		private readonly SymmetricAlgorithm _cipher;
 
-		public PasskeyXmlCipher(IServiceProvider services)
+		public PasskeyXmlCipher(IOptions<PasskeyXmlCipherOptions> options) : this(options.Value) { }
+
+		public PasskeyXmlCipher(PasskeyXmlCipherOptions? options)
 		{
-			var options = services.GetRequiredService<PasskeyXmlCipherOptions>();
+			if (options == null) throw new ArgumentNullException(nameof(options));
 
 			if (string.IsNullOrEmpty(options.Passkey))
 			{
-				throw new ArgumentException("options");
+				throw new ArgumentNullException(nameof(options.Passkey));
 			}
+
 			_cipher = CreateCipher(options.Passkey);
 		}
 

@@ -108,7 +108,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{92C3B301
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNVGL.OAuth.Web.UnitTests", "OAuth.Web\DNVGL.OAuth.Web.UnitTests\DNVGL.OAuth.Web.UnitTests.csproj", "{E489C2E8-D408-499B-8B25-EDA7B48E49CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.OAuth.Core.UnitTests", "OAuth\DNV.OAuth.Core.UnitTests\DNV.OAuth.Core.UnitTests.csproj", "{C268BEAC-1553-4C55-9DC0-A45A340C0223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNV.OAuth.Core.UnitTests", "OAuth\DNV.OAuth.Core.UnitTests\DNV.OAuth.Core.UnitTests.csproj", "{C268BEAC-1553-4C55-9DC0-A45A340C0223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Security.DataProtection.UnitTests", "Common\DNV.Security.DataProtection.UnitTests\DNV.Security.DataProtection.UnitTests.csproj", "{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNV.Security.DataProtection.KeyVault.UnitTests", "Common\DNV.Security.DataProtection.KeyVault.UnitTests\DNV.Security.DataProtection.KeyVault.UnitTests.csproj", "{042C3937-0BF0-4084-8458-AFC2C172EF22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -276,6 +280,14 @@ Global
 		{C268BEAC-1553-4C55-9DC0-A45A340C0223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C268BEAC-1553-4C55-9DC0-A45A340C0223}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C268BEAC-1553-4C55-9DC0-A45A340C0223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042C3937-0BF0-4084-8458-AFC2C172EF22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042C3937-0BF0-4084-8458-AFC2C172EF22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042C3937-0BF0-4084-8458-AFC2C172EF22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042C3937-0BF0-4084-8458-AFC2C172EF22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,6 +335,8 @@ Global
 		{94CDB762-4ADA-4FE0-B7E0-501908E1FC69} = {6421F528-1439-44E6-B936-8067DF5F8E43}
 		{E489C2E8-D408-499B-8B25-EDA7B48E49CD} = {92C3B301-D170-42A8-89D5-01934BF95FA7}
 		{C268BEAC-1553-4C55-9DC0-A45A340C0223} = {92C3B301-D170-42A8-89D5-01934BF95FA7}
+		{FA1A48A9-BEBA-45F4-B133-5AD6E9C21E80} = {92C3B301-D170-42A8-89D5-01934BF95FA7}
+		{042C3937-0BF0-4084-8458-AFC2C172EF22} = {92C3B301-D170-42A8-89D5-01934BF95FA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15ADBA9F-D243-4825-8C28-EBB708F2364A}

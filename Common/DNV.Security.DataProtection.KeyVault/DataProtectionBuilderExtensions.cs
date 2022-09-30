@@ -1,9 +1,10 @@
 ﻿using Azure.Core;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -30,14 +31,23 @@ namespace DNV.Security.DataProtection.KeyVault
 			TokenCredential tokenCredential
 		)
 		{
-			builder.Services.AddSingleton(p =>
+			builder.Services.AddAzureClients(b =>
 			{
-				return new ConfigureOptions<KeyManagementOptions>(o =>
-				{
-					var loggerFactory = p.GetService<ILoggerFactory>() ?? NullLoggerFactory.Instance;
-					o.XmlRepository = new AzureKeyVaultXmlRepository(vaultUri, secretName, tokenCredential);
-				});
+				b.UseCredential(tokenCredential);
+				b.AddSecretClient(vaultUri)
+					.WithName(nameof(AzureKeyVaultXmlRepository));
 			});
+
+			builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(
+				p =>
+				{
+					var loggerFactory = p.GetService<ILoggerFactory>();
+					var secretClientFactory = p.GetService<IAzureClientFactory<SecretClient>>();
+					var xmlRepository = new AzureKeyVaultXmlRepository(loggerFactory, secretClientFactory, vaultUri, secretName, tokenCredential);
+					return new ConfigureOptions<KeyManagementOptions>(o => o.XmlRepository =
+					xmlRepository);
+				}
+			);
 			return builder;
 		}
 	}

@@ -9,6 +9,9 @@
 							<Include>
 								<ModulePath>.*DNVGL.OAuth.Web.dll$</ModulePath>
 								<ModulePath>.*DNV.OAuth.Core.dll$</ModulePath>
+								<ModulePath>.*DNV.OAuth.Abstractions.dll$</ModulePath>
+								<ModulePath>.*DNV.Security.DataProtection.dll$</ModulePath>
+								<ModulePath>.*DNV.Security.DataProtection.KeyVault.dll$</ModulePath>
 							</Include>
 						</ModulePaths>
 						<Functions>

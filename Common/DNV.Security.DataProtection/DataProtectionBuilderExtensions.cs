@@ -12,11 +12,13 @@ namespace DNV.Security.DataProtection
 			var services = builder.Services;
 
 			services.AddSingleton<PasskeyXmlCipher>()
-				.AddSingleton(new PasskeyXmlCipherOptions { Passkey = passkey })
-				.AddSingleton(p =>
-					new ConfigureOptions<KeyManagementOptions>(o =>
-						o.XmlEncryptor = p.GetRequiredService<PasskeyXmlCipher>()
-					)
+				.Configure<PasskeyXmlCipherOptions>(o => o.Passkey = passkey)
+				.AddSingleton<IConfigureOptions<KeyManagementOptions>>(
+					p =>
+					{
+						var xmlEncryptor = p.GetRequiredService<PasskeyXmlCipher>();
+						return new ConfigureOptions<KeyManagementOptions>(o => o.XmlEncryptor = xmlEncryptor);
+					}
 				);
 			return builder;
 		}

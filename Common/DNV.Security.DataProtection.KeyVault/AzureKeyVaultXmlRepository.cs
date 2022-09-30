@@ -5,19 +5,27 @@ using System;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Logging;
+using Azure;
+using System.Net;
 
 namespace DNV.Security.DataProtection.KeyVault
 {
 	public class AzureKeyVaultXmlRepository : IXmlRepository
 	{
+		private const int MaximumKeyAge = 14;
+
+		private readonly ILogger _logger;
+		private readonly SecretClient _secretClient;
 		private readonly Uri _vaultUri;
-
 		private readonly string _secretName;
-
 		private readonly TokenCredential _tokenCredential;
 
-		public AzureKeyVaultXmlRepository(Uri vaultUri, string secretName, TokenCredential tokenCredential)
+		public AzureKeyVaultXmlRepository(ILoggerFactory loggerFactory, IAzureClientFactory<SecretClient> secretClientFactory, Uri vaultUri, string secretName, TokenCredential tokenCredential)
 		{
+			_logger = loggerFactory.CreateLogger<AzureKeyVaultXmlRepository>();
+			_secretClient = secretClientFactory.CreateClient(nameof(AzureKeyVaultXmlRepository));
 			_vaultUri = vaultUri;
 			_secretName = secretName;
 			_tokenCredential = tokenCredential;
@@ -25,43 +33,61 @@ namespace DNV.Security.DataProtection.KeyVault
 
 		public IReadOnlyCollection<XElement> GetAllElements()
 		{
-			var client = new SecretClient(_vaultUri, _tokenCredential);
-
 			try
 			{
-				var secret = client.GetSecret(_secretName).Value;
+				var secret = _secretClient.GetSecret(_secretName).Value;
 				var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(secret.Value));
 				var xml = XDocument.Parse(decoded);
 				var entries = new List<XElement>();
 
-				foreach (XElement node in xml.Root!.Elements())
+				foreach (XElement node in xml.Root.Elements())
 				{
-					string text = node.Name.ToString();
-					string text2 = text;
+					var name = node.Name.ToString();
 
-					if (!(text2 == "keys"))
+					switch (name)
 					{
-						if (text2 == "revocation")
-						{
-							var revocationDate = DateTime.Parse(node.Element("revocationDate")!.Value);
+						case "key":
+							var created = DateTime.Parse(node.Element("creationDate").Value);
+							var keyAge = (DateTime.Now - created).Days;
+
+							if (keyAge <= MaximumKeyAge) entries.Add(node);
+							else
+							{
+								var keyId = node.Attribute("id").Value;
+								_logger.LogCritical("Skip retired key {keyId}", keyId);
+							}
+
+							break;
+						case "revocation":
+							var revocationDate = DateTime.Parse(node.Element("revocationDate").Value);
 							var revocationAge = (DateTime.Now - revocationDate).Days;
 
-							if (revocationAge < 14) entries.Add(node);
-						}
-						else entries.Add(node);
-					}
-					else
-					{
-						var created = DateTime.Parse(node.Element("creationDate")!.Value);
-						var keyAge = (DateTime.Now - created).Days;
+							if (revocationAge < MaximumKeyAge) entries.Add(node);
 
-						if (keyAge <= 14) entries.Add(node);
+							break;
+						default:
+							_logger.LogCritical("Unexpected element {name}", name);
+							break;
 					}
 				}
 
 				return entries;
 			}
-			catch { }
+			catch (RequestFailedException ex)
+			{
+				if (ex.Status == (int)HttpStatusCode.NotFound)
+				{
+					_logger.LogWarning("Keyring file '{secretName}' was not found, a new one will be created", _secretName, ex.Message);
+				}
+				else
+				{
+					_logger.LogCritical("Unexpected error", ex.Message);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogCritical("Unexpected error", ex.Message);
+			}
 
 			return new List<XElement>();
 		}
@@ -70,19 +96,9 @@ namespace DNV.Security.DataProtection.KeyVault
 		{
 			var keys = (IList<XElement>)GetAllElements();
 			keys.Add(element);
-			var xml = new XDocument(new XElement("keys"));
-
-			foreach (XElement key in keys)
-			{
-				xml.Root!.Add(key);
-			}
-
+			var xml = new XDocument(new XElement("keys", keys));
 			var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(xml.ToString()));
-			var client = new SecretClient(_vaultUri, _tokenCredential);
-			var keyVaultSecret = new KeyVaultSecret(_secretName, encoded);
-			keyVaultSecret.Properties.ContentType = "text/plain";
-			var secret = keyVaultSecret;
-			client.SetSecret(secret);
+			_secretClient.SetSecret(_secretName, encoded);
 		}
 	}
 
