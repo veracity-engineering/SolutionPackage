@@ -1,4 +1,5 @@
 ﻿using DNVGL.OAuth.Api.HttpClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,28 +7,42 @@ using System.Threading;
 
 namespace DNVGL.Veracity.Services.Api
 {
-	public abstract class ApiClientBase
+	public class ApiClientFactory
 	{
-		private IApiResourceClient _apiResourceClientForSingleFlow;
+		private IApiClient _apiResourceClientForSingleFlow;
 
 		internal protected readonly IEnumerable<OAuthHttpClientOptions> _optionsList;
 
 		protected readonly IHttpClientFactory _httpClientFactory;
 		protected readonly ISerializer _serializer;
 
-		public ApiClientBase(IEnumerable<OAuthHttpClientOptions> optionsList, IHttpClientFactory httpClientFactory, ISerializer serializer)
-		{	
+		public ApiClientFactory(IEnumerable<OAuthHttpClientOptions> optionsList, IHttpClientFactory httpClientFactory, ISerializer serializer)
+		{
+			if (optionsList == null || !optionsList.Any())
+			{
+				throw new System.ArgumentNullException(nameof(optionsList));
+			}
 
-			if(optionsList == null || !optionsList.Any()) 
-			  throw new System.ArgumentException(nameof(optionsList));
+			if (optionsList.Select(o => o.Name.ToLower()).Distinct().Count() > 1)
+			{
+				throw new System.ArgumentException("Optionslist does not support the nodes with different configuration name!");
+			}
 
-			_optionsList = optionsList;
+			foreach (OAuthCredentialFlow flow in Enum.GetValues(typeof(OAuthCredentialFlow)))
+			{
+				if (optionsList.Count(options => options.Flow == flow) > 1)
+				{
+                    throw new System.ArgumentException($"Optionslist cannot have same OAuthCredentialFlow: !{flow}");
+                }
+			}
+
+            _optionsList = optionsList;
 
 			_httpClientFactory = httpClientFactory;
 			_serializer = serializer;		
 		}
 
-		public virtual IApiResourceClient GetClient(OAuthCredentialFlow? flow = null)
+		public IApiClient GetClient(OAuthCredentialFlow? flow = null)
 		{
 			if (_optionsList.Count() == 1)
 			{

@@ -1,29 +1,26 @@
-﻿using DNVGL.OAuth.Api.HttpClient;
-using DNVGL.Veracity.Services.Api.Extensions;
+﻿using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.This.Abstractions;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-	public class ThisAdministrators : ApiClientBase, IThisAdministrators
+	public class ThisAdministrators : IThisAdministrators
 	{
-		public ThisAdministrators(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
-			: base(optionsList, httpClientFactory, serializer)
-		{
+        private readonly ApiClientFactory _apiClientFactory;
+        public ThisAdministrators(ApiClientFactory apiClientFactory)
+        {
+            _apiClientFactory = apiClientFactory;
+        }
 
-		}
-
-		/// <summary>
-		/// Retrieves an individual administrator for the authenticated service.
-		/// </summary>
-		/// <param name="userId"></param>
-		/// <returns></returns>
-		public Task<Administrator> Get(string userId) =>
-			base.GetClient().GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
+        /// <summary>
+        /// Retrieves an individual administrator for the authenticated service.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public Task<Administrator> Get(string userId) =>
+            _apiClientFactory.GetClient().GetResource<Administrator>(ThisAdministratorsUrls.Administrator(userId));
 
 		/// <summary>
 		/// Retrieves a collection of administrator references for the authenticated service.
@@ -32,7 +29,7 @@ namespace DNVGL.Veracity.Services.Api.This
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<AdministratorReference>> List(int page, int pageSize) =>
-			base.GetClient().GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
+            _apiClientFactory.GetClient().GetResource<IEnumerable<AdministratorReference>>(ThisAdministratorsUrls.List(page, pageSize));
 	}
 
 	internal static class ThisAdministratorsUrls

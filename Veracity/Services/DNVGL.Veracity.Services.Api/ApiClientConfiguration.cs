@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DNVGL.Veracity.Services.Api
 {
-	internal class ApiResourceClientConfiguration
+	internal class ApiClientConfiguration
 	{
 		public OAuthHttpClientOptions OAuthClientOptions { get; set; }
 		

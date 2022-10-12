@@ -1,24 +1,22 @@
-﻿using System.Net;
-using DNVGL.OAuth.Api.HttpClient;
+﻿using DNVGL.Veracity.Services.Api.Exceptions;
+using DNVGL.Veracity.Services.Api.Extensions;
+using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DNVGL.Veracity.Services.Api.Exceptions;
-using DNVGL.Veracity.Services.Api.Models;
-using System.Collections.Generic;
-using DNVGL.Veracity.Services.Api.Extensions;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-	public class MyPolicies : ApiClientBase, IMyPolicies
+	public class MyPolicies :  IMyPolicies
 	{
-		public MyPolicies(IHttpClientFactory httpClientFactory, ISerializer serializer, IEnumerable<OAuthHttpClientOptions> optionsList)
-			: base(optionsList, httpClientFactory, serializer)
-		{
+        private readonly ApiClientFactory _apiClientFactory;
+        public MyPolicies(ApiClientFactory apiClientFactory)
+        {
+            _apiClientFactory = apiClientFactory;
+        }
 
-		}
-
-		protected async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
+        protected async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
         {
             if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotAcceptable)
             {
@@ -33,7 +31,7 @@ namespace DNVGL.Veracity.Services.Api.My
         {
 			var result = default (T);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
-                result = await base.GetClient().DeserializeFromStream<T>(
+                result = await _apiClientFactory.GetClient().DeserializeFromStream<T>(
 		                await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false);
             else if (response.IsSuccessStatusCode)
             {
@@ -55,7 +53,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
 
-			return await base.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
+			return await _apiClientFactory.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 
 		/// <summary>
@@ -72,7 +70,7 @@ namespace DNVGL.Veracity.Services.Api.My
 				request.Headers.Add("returnUrl", returnUrl);
 			if (!string.IsNullOrEmpty(skipSubscriptionCheck))
 				request.Headers.Add("skipSubscriptionCheck", skipSubscriptionCheck);
-			return await base.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
+			return await _apiClientFactory.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 	}
 

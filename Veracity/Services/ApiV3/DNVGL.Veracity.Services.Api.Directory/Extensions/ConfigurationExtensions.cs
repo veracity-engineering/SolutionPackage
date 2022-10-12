@@ -13,25 +13,25 @@ namespace DNVGL.Veracity.Services.Api.Directory.Extensions
     {
 		public static IServiceCollection AddCompanyDirectory(this IServiceCollection services, string clientConfigurationName = "company-directory-api")
 		{
-            services.AddSerializer();          
-            services.AddSingleton<ICompanyDirectory>(s => new CompanyDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetAllOAuthClientOptions(clientConfigurationName)));
+            services.AddSerializer();
+            services.AddSingleton<ICompanyDirectory>(s => new CompanyDirectory(new ApiClientFactory(s.GetAllOAuthClientOptions(clientConfigurationName), s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>())));
 
             return services;
 		}	
 
         public static IServiceCollection AddServiceDirectory(this IServiceCollection services, string clientConfigurationName = "service-directory-api")
         {
-            services.AddSerializer();          
-            services.AddSingleton<IServiceDirectory>(s => new ServiceDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetAllOAuthClientOptions(clientConfigurationName)));
-         
+            services.AddSerializer();
+            services.AddSingleton<IServiceDirectory>(s => new ServiceDirectory(new ApiClientFactory(s.GetAllOAuthClientOptions(clientConfigurationName), s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>())));
+
             return services;
         }
 
         public static IServiceCollection AddUserDirectory(this IServiceCollection services, string clientConfigurationName = "user-directory-api")
         {
-            services.AddSerializer();           
-            services.AddSingleton<IUserDirectory>(s => new UserDirectory(s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>(), s.GetAllOAuthClientOptions(clientConfigurationName)));
-           
+            services.AddSerializer();  
+            services.AddSingleton<IUserDirectory>(s => new UserDirectory(new ApiClientFactory(s.GetAllOAuthClientOptions(clientConfigurationName), s.GetRequiredService<IHttpClientFactory>(), s.GetRequiredService<ISerializer>())));
+
             return services;    
         }        
     }

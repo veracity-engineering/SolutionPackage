@@ -7,16 +7,16 @@ namespace DNVGL.Veracity.Services.Api
 {
 	public class ApiResourceClientBuilder
 	{
-		private readonly ApiResourceClientConfiguration _config; 
+		private readonly ApiClientConfiguration _config; 
 
-		internal ApiResourceClientBuilder(ApiResourceClientConfiguration config)
+		internal ApiResourceClientBuilder(ApiClientConfiguration config)
 		{
 			_config = config;
 		}
 
 		public static ApiResourceClientBuilder CreateWithOAuthClientOptions(OAuthHttpClientOptions options)
 		{
-			var config = new ApiResourceClientConfiguration
+			var config = new ApiClientConfiguration
 			{
 				OAuthClientOptions = options
 			};
@@ -48,10 +48,10 @@ namespace DNVGL.Veracity.Services.Api
 			return this;
 		}
 
-		public IApiResourceClient Build()
+		public IApiClient Build()
 		{
 			if (_config.HttpClientFactory == null || _config.Serializer == null || _config.OAuthClientOptions == null)
-				throw new ArgumentNullException("Missing httpclientfactory, serializer for oauthclientoptions!");
+				throw new ArgumentNullException("Missing httpclientfactory, serializer or oauthclientoptions!");
 
 			var client = _config.HttpClientFactory.CreateClient(_config.OAuthClientOptions.GetHttpClientName());
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ToAcceptMediaType(_config.AccepHeaderDataFormat ?? _config.Serializer.DataFormat)));
@@ -61,7 +61,7 @@ namespace DNVGL.Veracity.Services.Api
 				client.Timeout = _config.Timeout.Value;
 			}
 
-			return new ApiResourceClient(client, _config.Serializer);			
+			return new ApiClient(client, _config.Serializer);			
 		}
 
 		protected string ToAcceptMediaType(DataFormat dataFormat)

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api
 {
-	class ApiResourceClient : IApiResourceClient
+	class ApiClient : IApiClient
 	{
 		private readonly ISerializer _serializer;
 		private readonly HttpClient _httpClient;
@@ -12,7 +12,7 @@ namespace DNVGL.Veracity.Services.Api
 
 		public ISerializer Serializer => _serializer;
 
-		public ApiResourceClient(HttpClient client, ISerializer serializer)
+		public ApiClient(HttpClient client, ISerializer serializer)
 		{
 			_httpClient = client;
 			_serializer = serializer;
