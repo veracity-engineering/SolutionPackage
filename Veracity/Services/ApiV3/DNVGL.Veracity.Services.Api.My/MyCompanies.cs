@@ -1,16 +1,17 @@
-﻿using DNVGL.OAuth.Api.HttpClient;
+﻿using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-    public class MyCompanies : ApiResourceClient, IMyCompanies
+    public class MyCompanies :  IMyCompanies
     {
-        public MyCompanies(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+        private readonly ApiClientFactory _apiClientFactory;
+        public MyCompanies(ApiClientFactory apiClientFactory)
         {
+            _apiClientFactory = apiClientFactory;
         }
 
         /// <summary>
@@ -18,7 +19,7 @@ namespace DNVGL.Veracity.Services.Api.My
         /// </summary>
         /// <returns></returns>
         public Task<IEnumerable<CompanyReference>> List() =>
-			GetResource<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
+            _apiClientFactory.GetClient().GetResource<IEnumerable<CompanyReference>>(MyCompaniesUrls.Root, false);
     }
 
     internal static class MyCompaniesUrls

@@ -103,12 +103,11 @@ namespace DNV.Veracity.Services.Api.This.Tests
             {
                 var r = _services.BuildServiceProvider().GetRequiredService<IThisUsers>();
                 var r2 = await r.Resolve("ming.ming.tim.tu@dnv.com");
-            }
+            }            
             catch (System.ArgumentException)
             {
                 Assert.IsTrue(true);
-            }
-              
+            }              
         }
 
         [TestMethod]

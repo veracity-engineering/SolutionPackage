@@ -72,12 +72,12 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			Action<IServiceProvider, System.Net.Http.HttpClient>? clientConfigAction = null, 
 			Action<DistributedCacheEntryOptions>? cacheConfigAction = null)
 		{
-			services.AddOptions().Configure<OAuthHttpClientOptions>($"{option.Name}:{ option.Flow}", o=>
+			services.AddOptions().Configure<OAuthHttpClientOptions>(option.GetHttpClientName(), o=>
 			{
 				o.Bind(option);		
 			});
 
-			var builder = services.AddHttpClient($"{option.Name}:{option.Flow}", 
+			var builder = services.AddHttpClient(option.GetHttpClientName(), 
 				clientConfigAction ?? ((_, clt) => clt.BaseAddress = new Uri(option.BaseUri)));
 
 			builder.AddOAuthHttpClientHandler(option, cacheConfigAction);
@@ -87,9 +87,9 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			return services;
 		}
 
-		public static OAuthHttpClientOptions GetOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		public static OAuthHttpClientOptions GetOAuthClientOptions(this IServiceProvider serviceProvider, string name)
 		{
-			var optionList = serviceProvider.GetAllOauthClientOptions(name);
+			var optionList = serviceProvider.GetAllOAuthClientOptions(name);
 			if (optionList == null || !optionList.Any())
 			{
 				throw new System.ArgumentException($"Configuration: {name} does not exist!");
@@ -98,7 +98,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Extensions
 			return optionList.First();
 		}
 
-		public static IEnumerable<OAuthHttpClientOptions> GetAllOauthClientOptions(this IServiceProvider serviceProvider, string name)
+		public static IEnumerable<OAuthHttpClientOptions> GetAllOAuthClientOptions(this IServiceProvider serviceProvider, string name)
 		{
 			var optionList = new List<OAuthHttpClientOptions>(); 
 

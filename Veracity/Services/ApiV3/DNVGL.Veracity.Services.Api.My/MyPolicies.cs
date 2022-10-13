@@ -1,20 +1,22 @@
-﻿using System.Net;
-using DNVGL.OAuth.Api.HttpClient;
+﻿using DNVGL.Veracity.Services.Api.Exceptions;
+using DNVGL.Veracity.Services.Api.Extensions;
+using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DNVGL.Veracity.Services.Api.Exceptions;
-using DNVGL.Veracity.Services.Api.Models;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-	public class MyPolicies : ApiResourceClient, IMyPolicies
+	public class MyPolicies :  IMyPolicies
 	{
-		public MyPolicies(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
-		{
-		}
+        private readonly ApiClientFactory _apiClientFactory;
+        public MyPolicies(ApiClientFactory apiClientFactory)
+        {
+            _apiClientFactory = apiClientFactory;
+        }
 
-		protected override async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
+        protected async Task CheckResponse(HttpResponseMessage response, bool ignoreNotFound = false)
         {
             if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NotAcceptable)
             {
@@ -25,18 +27,18 @@ namespace DNVGL.Veracity.Services.Api.My
             }
         }
 
-        protected override async Task<T> BuildResult<T>(HttpResponseMessage response)
+        protected async Task<T> BuildResult<T>(HttpResponseMessage response)
         {
 			var result = default (T);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
-                result = await DeserializeFromStream<T>(
+                result = await _apiClientFactory.GetClient().DeserializeFromStream<T>(
 		                await response.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false);
             else if (response.IsSuccessStatusCode)
             {
                 var r = new PolicyValidationResult { StatusCode = (int)response.StatusCode };
                 result = (T)(object)r;
             }
-
+			
             return result;
         }
 
@@ -51,7 +53,7 @@ namespace DNVGL.Veracity.Services.Api.My
 			if (!string.IsNullOrEmpty(returnUrl))
 				request.Headers.Add("returnUrl", returnUrl);
 
-			return await ToResourceResult<PolicyValidationResult>(request);
+			return await _apiClientFactory.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 
 		/// <summary>
@@ -68,7 +70,7 @@ namespace DNVGL.Veracity.Services.Api.My
 				request.Headers.Add("returnUrl", returnUrl);
 			if (!string.IsNullOrEmpty(skipSubscriptionCheck))
 				request.Headers.Add("skipSubscriptionCheck", skipSubscriptionCheck);
-			return await ToResourceResult<PolicyValidationResult>(request);
+			return await _apiClientFactory.GetClient().ToResourceResult<PolicyValidationResult>(request, isNotFoundNull: false, buildResult: async resp => { return await BuildResult<PolicyValidationResult>(resp); }, checkResponse: async (resp, ignoreNotFound) => { await CheckResponse(resp, ignoreNotFound); });
 		}
 	}
 
