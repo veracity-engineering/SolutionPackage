@@ -33,7 +33,7 @@ namespace DNVGL.OAuth.Api.HttpClient
 
 		public System.Net.Http.HttpClient Create(string apiName)
 		{
-			var option = ClientOptions.FirstOrDefault(o => apiName == $"{o.Name}:{o.Flow}") ?? ClientOptions.FirstOrDefault(o => apiName == o.Name);
+			var option = ClientOptions.FirstOrDefault(o => apiName == o.GetHttpClientName()) ?? ClientOptions.FirstOrDefault(o => apiName == o.Name);
 
 			if (option == null) throw new ClientConfigurationNotFoundException();
 
@@ -42,7 +42,7 @@ namespace DNVGL.OAuth.Api.HttpClient
 
 		private System.Net.Http.HttpClient Create(OAuthHttpClientOptions option)
 		{
-			return _httpClientFactory.CreateClient($"{option.Name}:{option.Flow}");
+			return _httpClientFactory.CreateClient(option.GetHttpClientName());
 		}
 
 		// private readonly Func<OAuthHttpClientFactoryOptions, DelegatingHandler>[] _handlerCreators;

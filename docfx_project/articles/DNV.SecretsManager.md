@@ -83,7 +83,7 @@ Commands:
 
 ```
 secretsmanager keyvault			[-h | --help]
-						 		-d | --download -u | --upload
+						 		-d | --download -u | --upload | -c | --clear
 						 		-s | --url <url>
 						 		-f | --filename <filename>
 ```
@@ -101,6 +101,10 @@ Requests the secrets to be downloaded from the specified source to a JSON file.
 
 Requests that a provided JSON file be uploaded to a specified source.
 
+`-c | --clear`
+
+Deletes all secrets from the specified source.
+
 `-s | --url <url>`
 
 Provide the URL to the keyvault.
@@ -114,7 +118,7 @@ Specify the file to which you would like to download to or upload from.
 ## Variable group command
 ```
 secretsmanager variablegroup	[-h | --help]
-								-d | --download -u | --upload
+								-d | --download -u | --upload | -c | --clear
 								-s | --base-url <base-url>
 								-o | --organization <organization>
 								-p | --pat <pat>
@@ -133,6 +137,10 @@ Requests the secrets to be downloaded from the specified source to a JSON file.
 `-u | --upload`
 
 Requests that a provided JSON file be uploaded to a specified source.
+
+`-c | --clear`
+
+Deletes all secrets from the specified source.
 
 `-s | --base-url <base-url>`
 

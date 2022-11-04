@@ -1,15 +1,16 @@
-﻿using DNVGL.OAuth.Api.HttpClient;
+﻿using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.My.Abstractions;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DNVGL.Veracity.Services.Api.My
 {
-    public class MyProfile : ApiResourceClient, IMyProfile
+    public class MyProfile : IMyProfile 
     {
-        public MyProfile(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+        private readonly ApiClientFactory _apiClientFactory;
+        public MyProfile(ApiClientFactory apiClientFactory)
         {
+            _apiClientFactory = apiClientFactory;
         }
 
         /// <summary>
@@ -17,14 +18,15 @@ namespace DNVGL.Veracity.Services.Api.My
         /// </summary>
         /// <returns></returns>
         public Task<Profile> Get() =>
-			GetResource<Profile>(MyProfileUrls.Profile);
+            _apiClientFactory.GetClient().GetResource<Profile>(MyProfileUrls.Root);		
 
         /// <summary>
 		/// Retreives the profile picture of the current logegd in user if one is set, otherwise a 404 is returned
 		/// </summary>
 		/// <returns></returns>
 		public Task<ProfilePicture> GetProfilePicture() =>
-            GetResource<ProfilePicture>(MyProfileUrls.ProfilePicture, isNotFoundNull: true);
+            _apiClientFactory.GetClient().GetResource<ProfilePicture>(MyProfileUrls.ProfilePicture, isNotFoundNull: true);
+        
     }
 
     internal static class MyProfileUrls

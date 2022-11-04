@@ -1,43 +1,48 @@
-﻿using DNVGL.OAuth.Api.HttpClient;
+﻿using DNVGL.Veracity.Services.Api.Extensions;
 using DNVGL.Veracity.Services.Api.Models;
 using DNVGL.Veracity.Services.Api.This.Abstractions;
 using DNVGL.Veracity.Services.Api.This.Abstractions.Models;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace DNVGL.Veracity.Services.Api.This
 {
-	public class ThisUsers : ApiResourceClient, IThisUsers
+	public class ThisUsers :  IThisUsers
     {
-		public ThisUsers(IHttpClientFactory httpClientFactory, ISerializer serializer, OAuthHttpClientOptions option) : base(httpClientFactory, serializer, option)
+        private readonly ApiClientFactory _apiClientFactory;
+        public ThisUsers(ApiClientFactory apiClientFactory)
+        {
+            _apiClientFactory = apiClientFactory;
+        }
+
+        /// <summary>
+        /// Create a new user.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public async Task<CreateUserReference> Create(CreateUserOptions options)
 		{
+			var client = _apiClientFactory.GetClient();
+			return await client.PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, client.ToJsonContent(options));
 		}
-
-		/// <summary>
-		/// Create a new user.
-		/// </summary>
-		/// <param name="options"></param>
-		/// <returns></returns>
-		public Task<CreateUserReference> Create(CreateUserOptions options) =>
-			PostResource<CreateUserReference>(ThisUsersUrls.UserRoot, ToJsonContent(options));
-
 		/// <summary>
 		/// Create a collection of new users.
 		/// </summary>
 		/// <param name="options"></param>
 		/// <returns></returns>
-		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options) =>
-			PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, ToJsonContent(options));
-
+		public Task<IEnumerable<CreateUserReference>> Create(params CreateUserOptions[] options)
+		{
+			var client = _apiClientFactory.GetClient();
+			return client.PostResource<IEnumerable<CreateUserReference>>(ThisUsersUrls.UsersRoot, client.ToJsonContent(options));
+		}
 		/// <summary>
 		/// Retrieves a collection of user references for users with a specified email value.
 		/// </summary>
 		/// <param name="email"></param>
 		/// <returns></returns>
 		public Task<IEnumerable<UserReference>> Resolve(string email) =>
-			GetResource<IEnumerable<UserReference>>(ThisUsersUrls.Resolve(email));
+            _apiClientFactory.GetClient().GetResource<IEnumerable<UserReference>>(ThisUsersUrls.Resolve(email));
     }
 
     internal static class ThisUsersUrls
