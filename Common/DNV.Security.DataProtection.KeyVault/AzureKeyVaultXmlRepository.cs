@@ -14,7 +14,7 @@ namespace DNV.Security.DataProtection.KeyVault
 {
 	public class AzureKeyVaultXmlRepository : IXmlRepository
 	{
-		private const int MaximumKeyAge = 14;
+		private const int MaximumKeyAge = 90;
 
 		private readonly ILogger _logger;
 		private readonly SecretClient _secretClient;
@@ -22,7 +22,13 @@ namespace DNV.Security.DataProtection.KeyVault
 		private readonly string _secretName;
 		private readonly TokenCredential _tokenCredential;
 
-		public AzureKeyVaultXmlRepository(ILoggerFactory loggerFactory, IAzureClientFactory<SecretClient> secretClientFactory, Uri vaultUri, string secretName, TokenCredential tokenCredential)
+		public AzureKeyVaultXmlRepository(
+			ILoggerFactory loggerFactory,
+			IAzureClientFactory<SecretClient> secretClientFactory,
+			Uri vaultUri,
+			string secretName,
+			TokenCredential tokenCredential
+		)
 		{
 			_logger = loggerFactory.CreateLogger<AzureKeyVaultXmlRepository>();
 			_secretClient = secretClientFactory.CreateClient(nameof(AzureKeyVaultXmlRepository));

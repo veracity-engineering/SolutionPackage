@@ -38,16 +38,14 @@ namespace DNV.Security.DataProtection.KeyVault
 					.WithName(nameof(AzureKeyVaultXmlRepository));
 			});
 
-			builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(
-				p =>
-				{
-					var loggerFactory = p.GetService<ILoggerFactory>();
-					var secretClientFactory = p.GetService<IAzureClientFactory<SecretClient>>();
-					var xmlRepository = new AzureKeyVaultXmlRepository(loggerFactory, secretClientFactory, vaultUri, secretName, tokenCredential);
-					return new ConfigureOptions<KeyManagementOptions>(o => o.XmlRepository =
-					xmlRepository);
-				}
-			);
+			builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(p =>
+			{
+				var loggerFactory = p.GetRequiredService<ILoggerFactory>();
+				var secretClientFactory = p.GetRequiredService<IAzureClientFactory<SecretClient>>();
+				var xmlRepository = new AzureKeyVaultXmlRepository(loggerFactory, secretClientFactory, vaultUri, secretName, tokenCredential);
+				return new ConfigureOptions<KeyManagementOptions>(o => o.XmlRepository =
+				xmlRepository);
+			});
 			return builder;
 		}
 	}

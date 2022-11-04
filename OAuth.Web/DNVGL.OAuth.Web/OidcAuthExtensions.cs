@@ -97,10 +97,7 @@ namespace DNVGL.OAuth.Web
 					o.CallbackPath = oidcOptions.CallbackPath;
 					o.ResponseType = oidcOptions.ResponseType;
 					o.AuthenticationMethod = oidcOptions.AuthenticationMethod;
-#if !NETCORE2
 					o.UsePkce = true;
-#endif
-
 					o.Scope.Add(oidcOptions.Scope);
 					ConfigureSecurityTokenValidator(oidcOptions, o);
 					ConfigureEvents(oidcOptions, o);
@@ -124,12 +121,7 @@ namespace DNVGL.OAuth.Web
 
 				o.Events.OnRedirectToIdentityProvider = context =>
 				{
-#if NETCORE2
-					context.ProtocolMessage = new ExtendedOidcMessage(context.ProtocolMessage);
-#else
 					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
-#endif
-
 					return onRedirectToIdp != null ? onRedirectToIdp(context) : Task.CompletedTask;
 				};
 
@@ -137,12 +129,7 @@ namespace DNVGL.OAuth.Web
 
 				o.Events.OnRedirectToIdentityProviderForSignOut = context =>
 				{
-#if NETCORE2
-					context.ProtocolMessage = new ExtendedOidcMessage(context.ProtocolMessage);
-#else
 					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
-#endif
-
 					return onRedirectToIdpSignOut != null ? onRedirectToIdpSignOut(context) : Task.CompletedTask;
 				};
 			}

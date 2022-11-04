@@ -42,7 +42,7 @@ namespace DNV.Security.DataProtection
 
 		public XElement Decrypt(XElement encryptedElement)
 		{
-			var encryptedData = Convert.FromBase64String(encryptedElement.Element((XName?)"value")!.Value);
+			var encryptedData = Convert.FromBase64String(encryptedElement.Element("value")!.Value);
 			var decryptedData = _cipher.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
 			using var ms = new MemoryStream(decryptedData);
 			return XElement.Load(ms);

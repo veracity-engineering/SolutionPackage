@@ -1,4 +1,5 @@
-﻿using DNV.OAuth.Abstractions;
+﻿using Castle.Core.Configuration;
+using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core.TokenCache;
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
@@ -7,12 +8,20 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Session;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Xunit;
+using Microsoft.AspNetCore.Hosting;
 
 namespace DNVGL.OAuth.Web.UnitTests
 {
@@ -28,7 +37,6 @@ namespace DNVGL.OAuth.Web.UnitTests
 			var oidcOptions = new OidcOptions();
 			configuration.GetSection("OidcAuthOptions").Bind(oidcOptions);
 			oidcOptions.Events = new OpenIdConnectEvents();
-
 			services.AddOidc(oidcOptions);
 			serviceProvider = services.BuildServiceProvider();
 
@@ -115,7 +123,7 @@ namespace DNVGL.OAuth.Web.UnitTests
 			var cache = serviceProvider.GetService<IMemoryCache>();
 			var cacheStorage = serviceProvider.GetService<ICacheStorage>();
 			var memoryCacheEntryOptions = serviceProvider.GetService<IOptions<MemoryCacheEntryOptions>>();
-			 
+
 			Assert.NotNull(clientAppFactory);
 			Assert.NotNull(tokenCacheProvider);
 			Assert.NotNull(cache);
@@ -154,8 +162,13 @@ namespace DNVGL.OAuth.Web.UnitTests
 		private static IServiceCollection CreateServiceCollection()
 		{
 			var services = new ServiceCollection()
-				.AddLogging();
+				.AddLogging()
+				.AddSingleton(CreateConfiguration());
+			return services;
+		}
 
+		private static IConfigurationRoot CreateConfiguration()
+		{
 			var settings = new Dictionary<string, string>
 			{
 				{ "OidcAuthOptions:Environment", VeracityEnvironment.Production.ToString() },
@@ -167,9 +180,121 @@ namespace DNVGL.OAuth.Web.UnitTests
 			var configuration = new ConfigurationBuilder()
 				.AddInMemoryCollection(settings)
 				.Build();
-			services.AddSingleton(configuration);
+			return configuration;
+		}
 
-			return services;
+		private TestServer CreateServer()
+		{
+			var host = new HostBuilder()
+				.ConfigureWebHost(b => b.UseTestServer()
+					.ConfigureServices(services =>
+					{
+						var configuration = CreateConfiguration();
+						b.ConfigureAppConfiguration((_, c) => c.AddConfiguration(configuration));
+						var oidcOptions = new OidcOptions();
+						configuration.GetSection("OidcAuthOptions").Bind(oidcOptions);
+
+						services.AddOidc(oidcOptions);
+
+						services.Configure<OpenIdConnectOptions>(o => {
+							o.GetClaimsFromUserInfoEndpoint = true;
+							o.Configuration = new OpenIdConnectConfiguration()
+							{
+								TokenEndpoint = "http://testhost/tokens",
+								UserInfoEndpoint = "http://testhost/user",
+								EndSessionEndpoint = "http://testhost/end"
+							};
+							o.StateDataFormat = new TestStateDataFormat();
+							o.SecurityTokenValidator = new TestTokenValidator();
+							o.ProtocolValidator = new TestProtocolValidator();
+							o.BackchannelHttpHandler = new TestBackchannel();
+						});
+					})
+					.Configure(app =>
+					{
+						app.UseAuthentication();
+						app.Run(context => context.Response.WriteAsync(context.Request.Path));
+					}))
+				.Build();
+
+			host.Start();
+			return host.GetTestServer();
+		}
+	}
+
+	internal class TestStateDataFormat : ISecureDataFormat<AuthenticationProperties>
+	{
+		public string Protect(AuthenticationProperties data) => "protected_state";
+
+		public string Protect(AuthenticationProperties data, string purpose) => throw new NotImplementedException();
+
+		public AuthenticationProperties Unprotect(string protectedText)
+		{
+			Assert.Equal("protected_state", protectedText);
+			var items = new Dictionary<string, string?>()
+			{
+				{ ".xsrf", "correlationId" },
+				{ OpenIdConnectDefaults.RedirectUriForCodePropertiesKey, "redirect_uri" },
+				{ "testkey", "testvalue" }
+			};
+			var properties = new AuthenticationProperties(items)
+			{
+				RedirectUri = "http://testhost/redirect"
+			};
+			return properties;
+		}
+
+		public AuthenticationProperties Unprotect(string protectedText, string purpose) => throw new NotImplementedException();
+	}
+
+	internal class TestTokenValidator : ISecurityTokenValidator
+	{
+		public bool CanValidateToken => true;
+
+		public int MaximumTokenSizeInBytes
+		{
+			get { return 1024; }
+			set { throw new NotImplementedException(); }
+		}
+
+		public bool CanReadToken(string securityToken)
+		{
+			Assert.Equal("my_id_token", securityToken);
+			return true;
+		}
+
+		public ClaimsPrincipal ValidateToken(string securityToken, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
+		{
+			Assert.Equal("my_id_token", securityToken);
+			validatedToken = new JwtSecurityToken();
+			return new ClaimsPrincipal(new ClaimsIdentity("customAuthType"));
+		}
+	}
+
+	internal class TestProtocolValidator : OpenIdConnectProtocolValidator
+	{
+		public override void ValidateAuthenticationResponse(OpenIdConnectProtocolValidationContext validationContext) { }
+		public override void ValidateTokenResponse(OpenIdConnectProtocolValidationContext validationContext) { }
+		public override void ValidateUserInfoResponse(OpenIdConnectProtocolValidationContext validationContext) { }
+	}
+
+	internal class TestBackchannel : HttpMessageHandler
+	{
+		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		{
+			if (string.Equals("/tokens", request.RequestUri?.AbsolutePath, StringComparison.Ordinal))
+			{
+				return Task.FromResult(new HttpResponseMessage()
+				{
+					Content = new StringContent("{ \"id_token\": \"my_id_token\", \"access_token\": \"my_access_token\" }", Encoding.ASCII, "application/json")
+				});
+			}
+			if (string.Equals("/user", request.RequestUri?.AbsolutePath, StringComparison.Ordinal))
+			{
+				return Task.FromResult(new HttpResponseMessage() { Content = new StringContent("{ }", Encoding.ASCII, "application/json") });
+			}
+
+			throw new NotImplementedException(request.RequestUri.ToString());
 		}
 	}
 }
