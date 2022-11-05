@@ -1,6 +1,5 @@
 ﻿using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core;
-using DNV.OAuth.Core.TokenCache;
 using DNV.OAuth.Core.TokenValidator;
 using DNVGL.OAuth.Web.Oidc;
 using DNVGL.OAuth.Web.TokenCache;
@@ -19,41 +18,23 @@ namespace DNVGL.OAuth.Web
 {
 	public static class OidcAuthExtensions
 	{
+
 		#region AddOidc for Web App
 		public static AuthenticationBuilder AddOidc(
 			this IServiceCollection services,
 			Action<OidcOptions>? oidcSetupAction,
 			Action<CookieAuthenticationOptions>? cookieSetupAction = null
-		)
-		{
-			if (oidcSetupAction == null)
-			{
-				throw new ArgumentNullException(nameof(oidcSetupAction));
-			}
-
-			var oidcOptions = new OidcOptions();
-			oidcSetupAction(oidcOptions);
-			return services.AddOidc(oidcOptions, cookieSetupAction);
-		}
+		) => services.AddDefaultAuthentication().AddOidc(oidcSetupAction, cookieSetupAction);
 
 		public static AuthenticationBuilder AddOidc(
 			this IServiceCollection services,
-			OidcOptions oidcOptions,
+			OidcOptions? oidcOptions,
 			Action<CookieAuthenticationOptions>? cookieSetupAction = null
-		)
-		{
-			var builder = services.AddAuthentication(o =>
-			{
-				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-			});
-
-			return builder.AddOidc(oidcOptions, cookieSetupAction);
-		}
+		) => services.AddDefaultAuthentication().AddOidc(oidcOptions, cookieSetupAction);
 
 		public static AuthenticationBuilder AddOidc(
 			this AuthenticationBuilder builder,
-			Action<OidcOptions> oidcSetupAction,
+			Action<OidcOptions>? oidcSetupAction,
 			Action<CookieAuthenticationOptions>? cookieSetupAction = null
 		)
 		{
@@ -76,7 +57,7 @@ namespace DNVGL.OAuth.Web
 		/// <returns></returns>
 		public static AuthenticationBuilder AddOidc(
 			this AuthenticationBuilder builder,
-			OidcOptions oidcOptions,
+			OidcOptions? oidcOptions,
 			Action<CookieAuthenticationOptions>? cookieSetupAction = null
 		)
 		{
@@ -106,6 +87,13 @@ namespace DNVGL.OAuth.Web
 			return builder;
 		}
 
+		private static AuthenticationBuilder AddDefaultAuthentication(this IServiceCollection services) =>
+			services.AddAuthentication(o =>
+			{
+				o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+			});
+
 		private static void ConfigureSecurityTokenValidator(OidcOptions oidcOptions, OpenIdConnectOptions o)
 		{
 			o.SecurityTokenValidator = oidcOptions.SecurityTokenValidator ?? new DNVTokenValidator();
@@ -122,7 +110,7 @@ namespace DNVGL.OAuth.Web
 				o.Events.OnRedirectToIdentityProvider = context =>
 				{
 					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
-					return onRedirectToIdp != null ? onRedirectToIdp(context) : Task.CompletedTask;
+					return onRedirectToIdp(context);
 				};
 
 				var onRedirectToIdpSignOut = o.Events.OnRedirectToIdentityProviderForSignOut;
@@ -130,7 +118,7 @@ namespace DNVGL.OAuth.Web
 				o.Events.OnRedirectToIdentityProviderForSignOut = context =>
 				{
 					context.ProtocolMessage.EnsureCspForOidcFormPostBehavior();
-					return onRedirectToIdpSignOut != null ? onRedirectToIdpSignOut(context) : Task.CompletedTask;
+					return onRedirectToIdpSignOut(context);
 				};
 			}
 		}
@@ -164,7 +152,11 @@ namespace DNVGL.OAuth.Web
 		/// <param name="cacheConfigAction"></param>
 		/// <param name="useDataProtection"></param>
 		/// <returns></returns>
-		public static AuthenticationBuilder AddInMemoryTokenCaches(this AuthenticationBuilder app, Action<MemoryCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
+		public static AuthenticationBuilder AddInMemoryTokenCaches(
+			this AuthenticationBuilder app,
+			Action<MemoryCacheEntryOptions>? cacheConfigAction = null,
+			bool useDataProtection = true
+		)
 		{
 			var services = app.Services;
 			services.AddInMemoryTokenCaches(cacheConfigAction, useDataProtection);
@@ -179,7 +171,11 @@ namespace DNVGL.OAuth.Web
 		/// <param name="cacheConfigAction"></param>
 		/// <param name="useDataProtection"></param>
 		/// <returns></returns>
-		public static AuthenticationBuilder AddDistributedTokenCaches(this AuthenticationBuilder app, Action<DistributedCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
+		public static AuthenticationBuilder AddDistributedTokenCaches(
+			this AuthenticationBuilder app,
+			Action<DistributedCacheEntryOptions>? cacheConfigAction = null,
+			bool useDataProtection = true
+		)
 		{
 			var services = app.Services;
 			services.AddDistributedTokenCaches(cacheConfigAction, useDataProtection);
@@ -192,7 +188,8 @@ namespace DNVGL.OAuth.Web
 			services.TryAddSingleton<IClientAppFactory>(p =>
 			{
 				var oauth2Options = p.GetRequiredService<OAuth2Options>();
-				return ActivatorUtilities.CreateInstance<MsalClientAppFactory>(p, oauth2Options);
+				var tokenCacheProvider = p.GetRequiredService<ITokenCacheProvider>();
+				return new MsalClientAppFactory(oauth2Options, tokenCacheProvider);
 			});
 
 			services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, o =>
@@ -202,7 +199,7 @@ namespace DNVGL.OAuth.Web
 				o.Events.OnAuthorizationCodeReceived = async context =>
 				{
 					await OnCodeReceived(context).ConfigureAwait(false);
-					handler?.Invoke(context).ConfigureAwait(false);
+					await handler(context).ConfigureAwait(false);
 				};
 			});
 
@@ -211,8 +208,8 @@ namespace DNVGL.OAuth.Web
 				var serviceProvider = context.HttpContext.RequestServices;
 				var oauth2Options = serviceProvider.GetRequiredService<OAuth2Options>();
 
-				var codeVerifier = context.TokenEndpointRequest?.GetParameter("code_verifier");
-				var authCode = context.TokenEndpointRequest?.Code;
+				var codeVerifier = context.TokenEndpointRequest.GetParameter("code_verifier");
+				var authCode = context.TokenEndpointRequest.Code;
 				var clientAppFactory = serviceProvider.GetRequiredService<IClientAppFactory>();
 				var clientApp = clientAppFactory.CreateForUser(oauth2Options.Scope);
 

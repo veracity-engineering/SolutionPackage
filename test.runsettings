@@ -13,6 +13,9 @@
 								<ModulePath>.*DNV.Security.DataProtection.dll$</ModulePath>
 								<ModulePath>.*DNV.Security.DataProtection.KeyVault.dll$</ModulePath>
 							</Include>
+							<Exclude>
+								<ModulePath>.*DNV.Context.ServiceBus.dll$</ModulePath>
+							</Exclude>
 						</ModulePaths>
 						<Functions>
 							<Exclude>

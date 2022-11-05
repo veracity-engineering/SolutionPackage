@@ -1,11 +1,12 @@
-﻿using Castle.Core.Configuration;
-using DNV.OAuth.Abstractions;
+﻿using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core.TokenCache;
+using DNV.OAuth.Core.TokenValidator;
 using DNVGL.OAuth.Web.TokenCache;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.TestHost;
@@ -13,31 +14,37 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using Moq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Xunit;
-using Microsoft.AspNetCore.Hosting;
 
 namespace DNVGL.OAuth.Web.UnitTests
 {
 	public class OidcAuthExtensionsTests
 	{
-		[Fact()]
-		public void AddOidcTest()
+		[Fact]
+		public async Task AddOidcTest()
 		{
 			var services = CreateServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();
 			var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 
+			Action<IConfiguration, OidcOptions> bindOptions = (c, o) =>
+			{
+				c.GetSection("OidcAuthOptions").Bind(o);
+				o.Events = new OpenIdConnectEvents();
+			};
 			var oidcOptions = new OidcOptions();
-			configuration.GetSection("OidcAuthOptions").Bind(oidcOptions);
-			oidcOptions.Events = new OpenIdConnectEvents();
-			services.AddOidc(oidcOptions);
+			bindOptions(configuration, oidcOptions);
+			services.AddOidc(o => bindOptions(configuration, o));
 			serviceProvider = services.BuildServiceProvider();
 
 			var authenticationOptions = serviceProvider.GetService<IOptions<AuthenticationOptions>>()?.Value;
@@ -59,8 +66,20 @@ namespace DNVGL.OAuth.Web.UnitTests
 			Assert.Equal(oidcOptions.ResponseType, openIdConnectOptions.ResponseType);
 			Assert.True(openIdConnectOptions.UsePkce);
 			Assert.Contains(oauth2Options.Scope, openIdConnectOptions.Scope);
-			Assert.IsType<DNV.OAuth.Core.TokenValidator.DNVTokenValidator>(openIdConnectOptions.SecurityTokenValidator);
-			Assert.Equal(oidcOptions.Events, openIdConnectOptions.Events);
+			Assert.IsType<DNVTokenValidator>(openIdConnectOptions.SecurityTokenValidator);
+
+			var events = openIdConnectOptions.Events;
+			var httpContext = new DefaultHttpContext();
+			var authenticationScheme = new AuthenticationScheme(string.Empty, string.Empty, typeof(IAuthenticationHandler));
+			var authenticationProperties = new AuthenticationProperties();
+			var redirectContext = new RedirectContext(
+				httpContext,
+				authenticationScheme,
+				openIdConnectOptions,
+				authenticationProperties
+			);
+			await events.OnRedirectToIdentityProvider(redirectContext);
+			await events.OnRedirectToIdentityProviderForSignOut(redirectContext);
 		}
 
 		[Fact()]
@@ -71,8 +90,13 @@ namespace DNVGL.OAuth.Web.UnitTests
 			var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 
 			Action<OidcOptions>? oidcSetupAction = null;
-			AuthenticationBuilder func() => services.AddOidc(oidcSetupAction);
+			var func = () => services.AddOidc(oidcSetupAction);
+			Assert.Throws<ArgumentNullException>(func);
 
+			func = () => services.AddAuthentication().AddOidc(oidcSetupAction);
+			Assert.Throws<ArgumentNullException>(func);
+
+			func = () => services.AddAuthentication().AddOidc(null as OidcOptions);
 			Assert.Throws<ArgumentNullException>(func);
 		}
 
@@ -106,7 +130,7 @@ namespace DNVGL.OAuth.Web.UnitTests
 		}
 
 		[Fact()]
-		public void AddInMemoryTokenCachesTest()
+		public async Task AddInMemoryTokenCachesTest()
 		{
 			var slidingExpiration = TimeSpan.FromHours(8);
 
@@ -114,7 +138,24 @@ namespace DNVGL.OAuth.Web.UnitTests
 			var serviceProvider = services.BuildServiceProvider();
 			var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 
-			services.AddOidc(o => configuration.GetSection("OidcAuthOptions").Bind(o))
+			services.TryAddSingleton<IClientAppFactory>(p =>
+			{
+				var oauth2Options = p.GetRequiredService<OAuth2Options>();
+				var tokenCacheProvider = p.GetRequiredService<ITokenCacheProvider>();
+
+				var clientApp = new Mock<IClientApp>();
+				clientApp.Setup(x => x.AcquireTokenByAuthorizationCode(It.IsAny<string>(), It.IsAny<string>()))
+					.ReturnsAsync(Mock.Of<AuthenticationResult>());
+				var clientAppFactory = new Mock<IClientAppFactory>();
+				clientAppFactory.Setup(x => x.CreateForUser(It.IsAny<string>()))
+					.Returns(clientApp.Object);
+				return clientAppFactory.Object;
+			});
+
+			var oidcOptions = new OidcOptions();
+			configuration.GetSection("OidcAuthOptions").Bind(oidcOptions);
+			oidcOptions.Events = new OpenIdConnectEvents();
+			services.AddOidc(oidcOptions)
 				.AddInMemoryTokenCaches(o => o.SetSlidingExpiration(slidingExpiration));
 			serviceProvider = services.BuildServiceProvider();
 
@@ -130,6 +171,27 @@ namespace DNVGL.OAuth.Web.UnitTests
 			Assert.NotNull(cacheStorage);
 			Assert.IsType<MemoryCacheStorage>(cacheStorage);
 			Assert.Equal(slidingExpiration, memoryCacheEntryOptions?.Value?.SlidingExpiration);
+
+			var openIdConnectOptions = serviceProvider.GetService<IOptionsMonitor<OpenIdConnectOptions>>()?.Get(OpenIdConnectDefaults.AuthenticationScheme);
+			Assert.NotNull(openIdConnectOptions);
+
+			var events = openIdConnectOptions.Events;
+			var httpContext = new DefaultHttpContext
+			{
+				RequestServices = serviceProvider
+			};
+			var authenticationScheme = new AuthenticationScheme(string.Empty, string.Empty, typeof(IAuthenticationHandler));
+			var authenticationProperties = new AuthenticationProperties();
+			var acrContext = new AuthorizationCodeReceivedContext(
+				httpContext,
+				authenticationScheme,
+				openIdConnectOptions,
+				authenticationProperties
+			)
+			{
+				TokenEndpointRequest = new OpenIdConnectMessage("{ \"code\": \"123123\", \"code_verifier\": \"321321\" }")
+			};
+			await events.OnAuthorizationCodeReceived(acrContext);
 		}
 
 		[Fact()]
@@ -196,7 +258,8 @@ namespace DNVGL.OAuth.Web.UnitTests
 
 						services.AddOidc(oidcOptions);
 
-						services.Configure<OpenIdConnectOptions>(o => {
+						services.Configure<OpenIdConnectOptions>(o =>
+						{
 							o.GetClaimsFromUserInfoEndpoint = true;
 							o.Configuration = new OpenIdConnectConfiguration()
 							{
