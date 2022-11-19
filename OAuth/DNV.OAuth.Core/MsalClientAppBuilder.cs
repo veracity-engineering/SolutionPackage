@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
-using DNV.OAuth.Abstractions;
+﻿using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core.Exceptions;
 using Microsoft.Identity.Client;
+using System;
 
 namespace DNV.OAuth.Core
 {
@@ -13,7 +12,7 @@ namespace DNV.OAuth.Core
 	{
 		private readonly ITokenCacheProvider _tokenCacheProvider;
 
-		public MsalClientAppBuilder(ITokenCacheProvider tokenCacheProvider)
+		public MsalClientAppBuilder(ITokenCacheProvider? tokenCacheProvider)
 		{
 			_tokenCacheProvider = tokenCacheProvider;
 		}
@@ -25,6 +24,9 @@ namespace DNV.OAuth.Core
 		/// <returns></returns>
 		public IClientApp Build(OAuth2Options options)
 		{
+			if (string.IsNullOrWhiteSpace(options.Scope))
+				throw new MissingScopeException();
+
 			var builder = ConfidentialClientApplicationBuilder.Create(options.ClientId)
 				.WithAuthority(new Uri(options.Authority));
 
@@ -33,13 +35,10 @@ namespace DNV.OAuth.Core
 
 			var clientApp = builder.Build();
 
-			_tokenCacheProvider.InitializeAsync(clientApp.UserTokenCache);
-			_tokenCacheProvider.InitializeAsync(clientApp.AppTokenCache);
+			_tokenCacheProvider?.InitializeAsync(clientApp.UserTokenCache);
+			_tokenCacheProvider?.InitializeAsync(clientApp.AppTokenCache);
 
-			if (options.Scopes == null || !options.Scopes.Any())
-				throw new MissingScopeException();
-
-			return new MsalClientApp(clientApp, options.Scopes);
+			return new MsalClientApp(clientApp, options.Scope);
 		}
 	}
 }

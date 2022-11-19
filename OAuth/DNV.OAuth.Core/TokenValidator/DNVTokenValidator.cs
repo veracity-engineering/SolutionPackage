@@ -1,10 +1,9 @@
-﻿using System;
+﻿using DNV.OAuth.Abstractions.Constants;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using DNV.OAuth.Abstractions.Constants;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DNV.OAuth.Core.TokenValidator
 {
@@ -72,47 +71,47 @@ namespace DNV.OAuth.Core.TokenValidator
 		private static bool IsVersion1(ClaimsIdentity identity)
 		{
 			var verClaim = identity.FindFirst(c => c.Type == TokenClaimTypes.Version);
-
 			return verClaim is { Value: "1.0" };
 		}
 
 		private static void ExtendVersion1(ClaimsIdentity identity)
 		{
-			var appIdClaim = identity.FindFirst(c => c.Type == TokenClaimTypes.AppId);
+			var appId = identity.FindFirst(c => c.Type == TokenClaimTypes.AppId)?.Value;
 
-			if (appIdClaim != null)
+			if (appId != null)
 			{
 				identity.AddClaim(new Claim(TokenClaimTypes.FlowType, FlowTypeClaimValues.ClientFlow));
-				identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, appIdClaim.Value));
+				identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, appId));
 			}
 			else
 			{
 				identity.AddClaim(new Claim(TokenClaimTypes.FlowType, FlowTypeClaimValues.UserFlow));
-				var userIdClaim = identity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
-				if (userIdClaim != null)
-					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, userIdClaim.Value));
+				var userId = identity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+				if (userId != null)
+					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, userId));
 			}
 		}
 
 		private static void ExtendVersion2(ClaimsIdentity identity)
 		{
-			var azpClaim = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Azp);
-			var audClaim = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Aud);
+			var azp = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Azp)?.Value;
+			var aud = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Aud)?.Value;
 
-			if (azpClaim != null 
-			    && audClaim != null
-				&& string.Equals(azpClaim.Value, audClaim.Value, StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(azp, aud, StringComparison.OrdinalIgnoreCase))
 			{
 				identity.AddClaim(new Claim(TokenClaimTypes.FlowType, FlowTypeClaimValues.UserFlow));
-				var subClaim = identity.FindFirst(c => c.Type == JwtRegisteredClaimNames.Sub);
-				if (subClaim != null)
-					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, subClaim.Value));
+				var userId = identity.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+				if (userId != null)
+					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, userId));
 			}
 			else
 			{
 				identity.AddClaim(new Claim(TokenClaimTypes.FlowType, FlowTypeClaimValues.ClientFlow));
-				if (azpClaim != null)
-					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, azpClaim.Value));
+
+				if (azp != null)
+					identity.AddClaim(new Claim(TokenClaimTypes.RequestParty, azp));
 			}
 		}
 	}
