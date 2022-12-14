@@ -38,7 +38,7 @@ namespace DNV.Context.HttpClient
 
         private void SerializeContextToHeaders(HttpRequestMessage request)
         {
-	        if (_contextAccessor.Context == null)
+	        if (!_contextAccessor.Initialized || _contextAccessor.Context == null)
 		        return;
 
 

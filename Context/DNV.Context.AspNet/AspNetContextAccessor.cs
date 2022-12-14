@@ -23,7 +23,7 @@ namespace DNV.Context.AspNet
 
 	    public bool Initialized => _asyncLocalContext.HasValue;
 
-		public IAmbientContext<T>? Context => _asyncLocalContext;
+		public IAmbientContext<T>? Context => _asyncLocalContext.HasValue? _asyncLocalContext: null;
 
         public void Initialize(HttpContext httpContext, JsonSerializerOptions? jsonSerializerOptions = null)
         {
