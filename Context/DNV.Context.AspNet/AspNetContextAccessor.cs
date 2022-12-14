@@ -31,10 +31,11 @@ namespace DNV.Context.AspNet
 
 	        if (httpContext.Request.Headers.TryGetValue(HeaderKey, out var ctxJsonStr))
 	        {
-				if (jsonSerializerOptions == null) jsonSerializerOptions = new JsonSerializerOptions();
-				jsonSerializerOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+				var jsonOptions = jsonSerializerOptions == null? new JsonSerializerOptions(): new JsonSerializerOptions(jsonSerializerOptions);
 
-				var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonSerializerOptions);
+				jsonOptions.Converters.Add(new DictionaryStringObjectJsonConverter());
+
+				var ctx = JsonSerializer.Deserialize<AsyncLocalContext<T>.ContextHolder>(ctxJsonStr, jsonOptions);
 
 				if (ctx?.Payload == null) return;
 
