@@ -6,7 +6,7 @@
 		<Authors>Steven Mark Alford &lt;steven.mark.alford@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>1.1.3</Version>
+		<Version>1.1.4</Version>
 	</PropertyGroup>
 	<PropertyGroup>
 	  <NoWarn>1701;1702;CS1591;CS8618</NoWarn>
