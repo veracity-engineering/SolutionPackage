@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<Authors>Albert Yang &lt;albert.yang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
-		<Version>1.1.9</Version>
+		<Version>1.1.10</Version>
 	</PropertyGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
