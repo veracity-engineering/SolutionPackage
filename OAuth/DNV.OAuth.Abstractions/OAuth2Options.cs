@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace DNV.OAuth.Abstractions
 {
@@ -15,12 +16,18 @@ namespace DNV.OAuth.Abstractions
 		[Obsolete]
 		public string Resource { get; set; }
 
-		/// <summary>
-		/// Gets or sets the scope for v2 only.
-		/// </summary>
-		public string Scope { get; set; }
+        /// <summary>
+        /// Obsoleted, just keep for compatible reason, will only take the first element
+        /// </summary>
+        [Obsolete]
+        public string[]? Scopes { get; set; }
 
-		/// <summary>
+        /// <summary>
+        /// Gets or sets the scope for v2 only.
+        /// </summary>
+        public string? Scope { get; set; }
+
+        /// <summary>
 		/// The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 		/// </summary>
 		public string CallbackPath { get; set; } = "/signin-oidc";
@@ -31,7 +38,9 @@ namespace DNV.OAuth.Abstractions
 		public virtual void Initialize()
 		{
 			this.Authority = this.VeracityOptions.AADAuthorityV2;
-			this.Scope = this.VeracityOptions.GetAADScope(this.Scope ?? this.ClientId);
+#pragma warning disable CS0612
+			this.Scope = this.VeracityOptions.GetAADScope(this.Scope ?? Scopes?.FirstOrDefault() ?? this.ClientId);
+#pragma warning restore CS0612
 		}
 	}
 }
