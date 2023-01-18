@@ -1,11 +1,11 @@
-﻿using DNV.OAuth.Abstractions;
+﻿using System;
+using System.Security.Claims;
+using DNV.OAuth.Abstractions;
 using DNV.OAuth.Core.TokenCache;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Security.Claims;
 
 namespace DNV.OAuth.Core
 {
@@ -19,10 +19,10 @@ namespace DNV.OAuth.Core
 		/// </summary>
 		/// <param name="claimsPrincipal"></param>
 		/// <returns></returns>
-		public static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
+		internal static string GetMsalAccountId(this ClaimsPrincipal claimsPrincipal)
 		{
 			var objectId = claimsPrincipal.FindFirst(ObjectId);
-			var policy = claimsPrincipal.FindFirst(Policy).Value;
+			var policy = claimsPrincipal.FindFirst(Policy)?.Value;
 			var tenantId = objectId.Issuer.Split('/')[3];
 			var msalAccountId = $"{objectId.Value}-{policy}.{tenantId}";
 			return msalAccountId.ToLower();
@@ -32,58 +32,17 @@ namespace DNV.OAuth.Core
 		/// Register OAuthCore required services to DI container.
 		/// </summary>
 		/// <param name="services"></param>
-		public static IServiceCollection AddOAuthCore(this IServiceCollection services)
+		/// <param name="configAction"></param>
+		public static IServiceCollection AddOAuthCore(this IServiceCollection services, Action<DistributedCacheEntryOptions>? configAction = null)
 		{
-			services.TryAddSingleton<IClientAppBuilder>(p =>
-			{
-				var tokenCacheProvider = p.GetService<ITokenCacheProvider>();
-				return new MsalClientAppBuilder(tokenCacheProvider);
-			});
+			if (configAction != null)
+				services.AddOptions().Configure(nameof(TokenCacheProvider), configAction);
+			
+            services.TryAddSingleton<ITokenCacheProvider, TokenCacheProvider>();
+
+            services.TryAddSingleton<IClientAppBuilder, MsalClientAppBuilder>();
+
 			return services;
-		}
-
-		/// <summary>
-		/// Adds in memory token caches
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="cacheConfigAction"></param>
-		/// <param name="useDataProtection"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddInMemoryTokenCaches(this IServiceCollection services, Action<MemoryCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
-		{
-			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
-
-			services.AddMemoryCache();
-			services.TryAddSingleton<ICacheStorage, MemoryCacheStorage>();
-			services.AddTokenCaches(useDataProtection);
-			return services;
-		}
-
-		/// <summary>
-		/// Adds distributed token caches
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="cacheConfigAction"></param>
-		/// <param name="useDataProtection"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddDistributedTokenCaches(this IServiceCollection services, Action<DistributedCacheEntryOptions>? cacheConfigAction = null, bool useDataProtection = true)
-		{
-			if (cacheConfigAction != null) services.Configure(cacheConfigAction);
-
-			services.AddDistributedMemoryCache();
-			services.TryAddSingleton<ICacheStorage, DistributedCacheStorage>();
-			services.AddTokenCaches(useDataProtection);
-			return services;
-		}
-
-		public static void AddTokenCaches(this IServiceCollection services, bool useDataProtection = true)
-		{
-			services.TryAddSingleton<ITokenCacheProvider>(p =>
-			{
-				var tokenCacheProvider = ActivatorUtilities.CreateInstance<TokenCacheProvider>(p);
-				tokenCacheProvider.UseDataProtection = useDataProtection;
-				return tokenCacheProvider;
-			});
 		}
 	}
 }

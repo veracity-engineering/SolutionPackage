@@ -16,14 +16,5 @@ namespace DNVGL.OAuth.Web
 		public OpenIdConnectEvents Events { get; set; }
 
 		public ISecurityTokenValidator SecurityTokenValidator { get; set; }
-
-		/// <summary>
-		/// Initializes <see cref="OidcOptions"/> by its <see cref="VeracityEnvironment"/>.
-		/// </summary>
-		public override void Initialize()
-		{
-			this.Authority = this.VeracityOptions.B2CAuthorityV2;
-			this.Scope = this.VeracityOptions.GetB2CScope(this.Scope ?? this.ClientId);
-		}
 	}
 }

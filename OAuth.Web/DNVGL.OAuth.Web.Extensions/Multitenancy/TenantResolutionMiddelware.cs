@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Cache;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -18,18 +17,18 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
     {
         private readonly RequestDelegate _next;
         private readonly OpenIdConnectOptions _oidcOptions;
-        private readonly Func<PathString, bool>? _shouldSkip;
+        private readonly Func<HttpRequest, bool> _whenToIgnore;
 
-        public TenantResolutionMiddleware(RequestDelegate next, IOptionsMonitor<OpenIdConnectOptions> oidcOptions, Func<PathString, bool>? shouldSkip = null)
+        public TenantResolutionMiddleware(RequestDelegate next, IOptionsMonitor<OpenIdConnectOptions> oidcOptions, Func<HttpRequest, bool> whenToIgnore)
         {
             _next = next;
             _oidcOptions = oidcOptions.CurrentValue;
-            _shouldSkip = shouldSkip;
+            _whenToIgnore = whenToIgnore;
         }
 
         public async Task Invoke(HttpContext context)
         {
-	        if (!(_shouldSkip?.Invoke(context.Request.Path)??false))
+	        if (!_whenToIgnore(context.Request))
 	        {
 		        var (tenantAlias, remainingPath) = await GetTenantAndPathFrom(context);
 
@@ -58,7 +57,7 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
             {
 	            var properties = await GetPropertiesFromState(context);
 
-                if (properties != null && !string.IsNullOrEmpty(properties.RedirectUri) && !(_shouldSkip?.Invoke(properties.RedirectUri)??false))
+                if (properties != null && !string.IsNullOrEmpty(properties.RedirectUri))
                 {
 	                tenantAlias = new Uri(currentUri, properties.RedirectUri)
                         .Segments

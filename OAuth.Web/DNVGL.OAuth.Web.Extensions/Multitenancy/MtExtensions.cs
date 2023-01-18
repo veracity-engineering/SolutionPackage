@@ -24,11 +24,11 @@ namespace DNV.OAuth.Web.Extensions.Multitenancy
 		/// 
 		/// </summary>
 		/// <param name="appBuilder"></param>
-		/// <param name="shouldSkip"></param>
+		/// <param name="whenToIgnore"></param>
 		/// <returns></returns>
-		public static IApplicationBuilder UseMultitenancy(this IApplicationBuilder appBuilder, Func<PathString, bool>? shouldSkip = null)
+		public static IApplicationBuilder UseMultitenancy(this IApplicationBuilder appBuilder, Func<HttpRequest, bool>? whenToIgnore = null)
 		{
-			return appBuilder.UseMiddleware<TenantResolutionMiddleware>(shouldSkip);
+			return appBuilder.UseMiddleware<TenantResolutionMiddleware>(whenToIgnore ?? (_ => false));
 		}
 
 		/// <summary>

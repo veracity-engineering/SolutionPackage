@@ -3,10 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
-	  <Nullable>enable</Nullable>
-	  <Authors>Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
-	  <Company>DNV</Company>
-	  <Version>1.0.0</Version>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

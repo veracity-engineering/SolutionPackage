@@ -31,7 +31,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Tests
                     Flow = OAuthCredentialFlow.UserCredentials,
                     OAuthClientOptions = new OAuth2Options
                     {
-                        Scope = "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation"
+                        Scopes = new []{ "https://dnvglb2ctest.onmicrosoft.com/a4a8e726-c1cc-407c-83a0-4ce37f1ce130/user_impersonation" }
                     }
                 },
                 new OAuthHttpClientFactoryOptions
@@ -41,7 +41,7 @@ namespace DNVGL.OAuth.Api.HttpClient.Tests
                     Flow = OAuthCredentialFlow.ClientCredentials,
                     OAuthClientOptions = new OAuth2Options
                     {
-                        Scope = "https://dnvglb2ctest.onmicrosoft.com/5d76a556-9394-48d4-8d11-786ddc3f54bc/.default",
+                        Scopes = new []{ "https://dnvglb2ctest.onmicrosoft.com/5d76a556-9394-48d4-8d11-786ddc3f54bc/.default" },
                         ClientId = Guid.NewGuid().ToString(),
                         ClientSecret = "none",
                         Authority = "https://logintest.veracity.com/tfp/ed815121-cdfa-4097-b524-e2b23cd36eb6/B2C_1A_SignInWithADFSIdp"

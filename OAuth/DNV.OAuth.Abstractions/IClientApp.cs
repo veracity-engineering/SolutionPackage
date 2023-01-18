@@ -12,17 +12,17 @@ namespace DNV.OAuth.Abstractions
 		/// <param name="authCode"></param>
 		/// <param name="codeVerifier"></param>
 		/// <returns>Authentication result containing a token for the requested scopes.</returns>
-		Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string? authCode, string? codeVerifier = null);
+		Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string authCode, string codeVerifier = null);
 
 		/// <summary>
-		/// Attempts to authenticate using account retrieved from the <see cref="ClaimsPrincipal"/> by calling <see cref="IConfidentialClientApplication.AcquireTokenSilent"/>.
+		/// Attempts to authenticate using account retrieved from the <see cref="ClaimsPrincipal"/> by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
 		/// </summary>
 		/// <param name="claimsPrincipal"></param>
 		/// <returns>Authentication result containing a token.</returns>
 		Task<AuthenticationResult> AcquireTokenSilent(ClaimsPrincipal claimsPrincipal);
 
 		/// <summary>
-		/// Attempts to authenticate using account by calling <see cref="IConfidentialClientApplication.AcquireTokenSilent"/>.
+		/// Attempts to authenticate using account by calling <see cref="IClientApplicationBase.AcquireTokenSilent"/>.
 		/// </summary>
 		/// <param name="account"></param>
 		/// <returns>Authentication result containing a token.</returns>

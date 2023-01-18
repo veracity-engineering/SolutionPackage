@@ -33,7 +33,7 @@ namespace DNV.Context.Abstractions
 			{
 				Payload = payload,
 				CorrelationId = correlationId,
-				Items = items == null? new Dictionary<string, object>(): new Dictionary<string, object>(items)
+				Items = new Dictionary<string, object>(items)
 			};
 		}
 

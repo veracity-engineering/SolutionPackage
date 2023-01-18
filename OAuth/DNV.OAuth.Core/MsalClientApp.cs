@@ -18,7 +18,7 @@ namespace DNV.OAuth.Core
 			_scope = scopes;
 		}
 
-		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string? authCode, string? codeVerifier = null)
+		public async Task<AuthenticationResult> AcquireTokenByAuthorizationCode(string authCode, string codeVerifier = null)
 		{
 			var builder = _clientApp.AcquireTokenByAuthorizationCode(_scope, authCode);
 
