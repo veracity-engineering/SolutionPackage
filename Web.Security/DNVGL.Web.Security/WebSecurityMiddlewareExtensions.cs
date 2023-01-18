@@ -106,16 +106,16 @@ namespace DNVGL.Web.Security
 			});
 		}
 
-		public static IApplicationBuilder UseSecutiryHeaders(this IApplicationBuilder builder, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
+		public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder builder, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
 		{
-			return builder.UseSecutiryHeaders(async (context, next, headerSetter) =>
+			return builder.UseSecurityHeaders(async (context, next, headerSetter) =>
 			{
 				headerSetter(context);
 				await next();
 			}, setupCSP, apiPredicate, exceptionPredicate);
 		}
 
-		public static IApplicationBuilder UseSecutiryHeaders(this IApplicationBuilder builder, Func<HttpContext, Func<Task>, Action<HttpContext>, Task> middleware, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
+		public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder builder, Func<HttpContext, Func<Task>, Action<HttpContext>, Task> middleware, Func<HttpContext, string> setupCSP, Func<HttpRequest, bool> apiPredicate = null, Func<HttpRequest, bool> exceptionPredicate = null)
 		{
 			return builder.Use(async (context, next) =>
 			{
