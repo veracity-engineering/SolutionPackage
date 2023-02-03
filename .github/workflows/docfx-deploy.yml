@@ -1,0 +1,28 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy docfx content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+    with:
+        dotnet-version: 6.x
+
+    - run: dotnet install -g docfx
+    - run: docfx docs/docfx.json
+
+    - name: Deploy
+    uses: peaceiris/actions-gh-pages@v3
+    with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/_site
