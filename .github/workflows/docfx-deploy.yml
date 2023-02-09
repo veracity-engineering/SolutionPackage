@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '6.x'
 
     - run: dotnet tool install -g docfx
-    - run: docfx docfx_project/docfx.json
+    - run: docfx docs/docfx.json
     
     - name: Update submodules
       run: |
@@ -32,12 +32,5 @@ jobs:
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
         git add -all
-        git commit -m "Update docfx" || echo "No change to commit"
+        git commit -m "Update docs" || echo "No change to commit"
         git push
-
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docfx_project/_site
-        allow_empty_commit: true
