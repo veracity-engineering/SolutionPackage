@@ -1,3 +1,4 @@
 [submodule "docfx_project/_site"]
 	path = docfx_project/_site
-	url = https://github.com/albert-yang/DNVGL.SolutionPackage.git
+	url = https://github.com/Veracity-Engineering-China/SolutionPackage.git
+	branch = gh-pages

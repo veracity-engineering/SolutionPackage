@@ -1,0 +1,43 @@
+name: Deploy docfx content to Pages
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+    
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.x'
+
+    - run: dotnet tool install -g docfx
+    - run: docfx docfx_project/docfx.json
+    
+    - name: Update submodules
+      run: |
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
+        
+    - name: Commit to gh-pages
+      run: |
+        git config user.email "github-actions-bot@dnv.com"
+        git config user.name "github actions boot"
+        git add -all
+        git commit -m "Update docfx" || echo "No change to commit"
+        git push
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docfx_project/_site
+        allow_empty_commit: true
