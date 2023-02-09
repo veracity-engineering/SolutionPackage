@@ -18,18 +18,20 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '6.x'
-
-    - run: dotnet tool install -g docfx
-    - run: docfx docs/docfx.json
-    
-    - name: Update submodules
-      run: |
-        git submodule update --init --recursive -- "docs/_site"
         
-    - name: Commit to gh-pages
+
+    - name: Install docfx
+      run: dotnet tool install -g docfx
+      
+    - name: Generate docs
+      run: docfx docs/docfx.json
+        
+    - name: Update submodule
       run: |
+        cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
-        git add --all
+        git pull
+        git add .
         git commit -m "Update docs" || echo "No change to commit"
         git push
