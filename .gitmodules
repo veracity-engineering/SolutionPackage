@@ -1,4 +1,4 @@
 [submodule "docfx_project/_site"]
 	path = docfx_project/_site
-	url = https://github.com/Veracity-Engineering-China/SolutionPackage.git
+	url = git@github.com:Veracity-Engineering-China/SolutionPackage.git
 	branch = gh-pages
