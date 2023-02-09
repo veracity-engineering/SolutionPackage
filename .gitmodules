@@ -1,4 +1,0 @@
-[submodule "docs/_site"]
-	path = docs/_site
-	url = git@github.com:Veracity-Engineering-China/SolutionPackage.git
-	branch = gh-pages
