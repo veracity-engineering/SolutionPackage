@@ -25,7 +25,7 @@ jobs:
       
     - name: Generate docs
         
-    - name: Generate docs & Update submodule
+    - name: Generate docs and update submodule
       run: |
         cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
