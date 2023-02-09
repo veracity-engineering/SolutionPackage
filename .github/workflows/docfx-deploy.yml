@@ -24,7 +24,7 @@ jobs:
     
     - name: Update submodules
       run: |
-        $ git submodule update --init --recursive -- "docs/_site"
+        git submodule update --init --recursive -- "docs/_site"
         
     - name: Commit to gh-pages
       run: |
