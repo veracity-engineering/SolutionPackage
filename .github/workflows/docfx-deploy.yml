@@ -33,4 +33,4 @@ jobs:
         cd _site
         git add .
         git commit -m "Update docs" || echo "No change to commit"
-        git push
+        git push origin HEAD:gh-pages
