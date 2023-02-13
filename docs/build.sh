@@ -1,3 +1,3 @@
 ﻿#!/bin/zsh
-docfx metadata --property TargetFramework=netcoreapp3.1
+docfx metadata --property TargetFramework=net6.0
 docfx build

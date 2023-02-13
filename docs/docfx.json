@@ -4,8 +4,7 @@
 			"src": [
 				{
 					"files": [
-						"DNVGL.OAuth.*/**.csproj",
-						"DNVGL.Web.*/**.csproj"
+						"**/*.csproj"
 					],
 					"exclude": [
 						"**/bin/**",
@@ -13,7 +12,7 @@
 						"*.Tests/**",
 						"*.Demo/**"
 					],
-					"src": ".."
+					"src": "../src"
 				}
 			],
 			"dest": "api"

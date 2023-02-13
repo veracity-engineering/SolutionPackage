@@ -1,2 +1,2 @@
-﻿docfx.exe metadata --property TargetFramework=netcoreapp3.1
+﻿docfx.exe metadata --property TargetFramework=net6.0
 docfx.exe build
