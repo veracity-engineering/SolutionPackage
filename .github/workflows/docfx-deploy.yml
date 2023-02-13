@@ -29,7 +29,7 @@ jobs:
         git config user.name "github actions boot"
         git pull origin gh-pages
         cd ..
-        docfx ./docfx.json
+        docfx build
         cd _site
         git add .
         git commit -m "Update docs" || echo "No change to commit"
