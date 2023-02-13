@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Web.Security\DNVGL.Web.Security.csproj" />
+    <ProjectReference Include="..\..\src\Web.Security\DNVGL.Web.Security\DNVGL.Web.Security.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNVGL.Veracity.Services.Api.This\DNVGL.Veracity.Services.Api.This.csproj" />
+    <ProjectReference Include="..\..\src\Veracity\Services\ApiV3\DNVGL.Veracity.Services.Api.This\DNVGL.Veracity.Services.Api.This.csproj" />
   </ItemGroup>
 
 </Project>

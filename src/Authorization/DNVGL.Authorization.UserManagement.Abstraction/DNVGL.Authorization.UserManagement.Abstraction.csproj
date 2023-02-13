@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<Authors>He Ke Henry Zhang &lt;he.ke.henry.zhang@dnv.com&gt;</Authors>
 		<Company>DNV</Company>
 		<Description>Provides an abstraction for user management's entities and database operations.</Description>

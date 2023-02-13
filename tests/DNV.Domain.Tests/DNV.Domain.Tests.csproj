@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNV.Application.Abstractions\DNV.Application.Abstractions.csproj" />
-    <ProjectReference Include="..\DNVGL.Domain.EventHub.MediatR\DNVGL.Domain.EventHub.MediatR.csproj" />
-    <ProjectReference Include="..\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
+    <ProjectReference Include="..\..\src\DDD\DNV.Application.Abstractions\DNV.Application.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\DDD\DNVGL.Domain.EventHub.MediatR\DNVGL.Domain.EventHub.MediatR.csproj" />
+    <ProjectReference Include="..\..\src\DDD\DNVGL.Domain.Seedwork\DNVGL.Domain.Seedwork.csproj" />
   </ItemGroup>
 
 </Project>
