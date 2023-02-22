@@ -24,11 +24,14 @@ jobs:
         
     - name: Generate docs and update submodule
       run: |
-        cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
+        cd docs/articles
+        git pull origin 
+        cd ../_site
         git pull origin gh-pages
         cd ..
+        
         docfx docfx.json
         cd _site
         git add .
