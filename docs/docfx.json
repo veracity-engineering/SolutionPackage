@@ -7,9 +7,6 @@
 					"src": "../src"
 				}
 			],
-			"properties": {
-				"TargetFramework": "net6.0"
-			},
 			"dest": "api"
 		}
 	],
@@ -21,7 +18,7 @@
 		],
 		"resource": [
 			{
-				"files": ["images/**"]
+				"files": ["images/**","articles/images/**"]
 			}
 		],
 		"dest": "_site",
