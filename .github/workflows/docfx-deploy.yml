@@ -21,16 +21,16 @@ jobs:
         dotnet-version: '6.x'        
 
     - name: Install docfx
-      run: dotnet tool install -g docfx --version 2.61.0
+      run: dotnet tool update -g docfx
         
     - name: Generate docs
       run: |
+        git submodule update --init --recursive
         git submodule update --recursive --remote
+        dotnet restore src/DNVGL.SolutionPackage.sln
+        docfx docs/docfx.json
         
-        cd docs        
-        docfx docfx.json
-        
-        cd _site
+        cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
         git add .
