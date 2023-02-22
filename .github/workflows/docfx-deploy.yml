@@ -23,8 +23,7 @@ jobs:
         
     - name: Generate docs
       run: |
-        git submodule update --init --recursive
-        git submodule update --recursive --remote
+        git pull --recurse-submodules
         dotnet restore src/DNVGL.SolutionPackage.sln
         docfx docs/docfx.json 
         
