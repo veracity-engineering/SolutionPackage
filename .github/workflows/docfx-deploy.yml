@@ -17,8 +17,6 @@ jobs:
     
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '6.x'        
 
     - name: Install docfx
       run: dotnet tool update -g docfx
@@ -28,8 +26,10 @@ jobs:
         git submodule update --init --recursive
         git submodule update --recursive --remote
         dotnet restore src/DNVGL.SolutionPackage.sln
-        docfx docs/docfx.json
+        docfx docs/docfx.json 
         
+    - name: publish gh-pages
+      run: |
         cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
