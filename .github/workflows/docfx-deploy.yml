@@ -23,17 +23,16 @@ jobs:
     - name: Install docfx
       run: dotnet tool install -g docfx
         
-    - name: Generate docs and update submodule
+    - name: Generate docs
       run: |
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
-        cd docs/articles
-        git pull origin master
-        cd ../_site
-        git pull origin gh-pages
-        cd ..
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
         
+        cd docs        
         docfx docfx.json
+        
         cd _site
         git add .
         git commit -m "Update docs" || echo "No change to commit"
