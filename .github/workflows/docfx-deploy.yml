@@ -18,15 +18,15 @@ jobs:
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.x'
-
-    - name: Install docfx
-      run: dotnet tool update -g docfx
+        dotnet-version: '6.0.x'
         
     - name: Generate docs
       run: |
         git pull --recurse-submodules
+        echo '{"sdk":{"version": "${{ steps.stepid.outputs.dotnet-version }}"}}' > ./global.json
         dotnet restore src/DNVGL.SolutionPackage.sln
+        
+        dotnet tool update -g docfx
         docfx docs/docfx.json 
         
     - name: publish gh-pages
