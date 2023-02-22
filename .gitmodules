@@ -2,3 +2,6 @@
 	path = docs/_site
 	url = git@github.com:Veracity-Engineering-China/SolutionPackage.git
 	branch = gh-pages
+[submodule "docs/articles"]
+	path = docs/articles
+	url = git@github.com:veracity-engineering/SolutionPackage.wiki.git
