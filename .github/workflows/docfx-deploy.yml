@@ -3,6 +3,7 @@ name: Deploy docfx content to Pages
 on:
   push:
     branches: ["main"]
+    paths: ["docs/**"]
   workflow_dispatch:
 
 jobs:
