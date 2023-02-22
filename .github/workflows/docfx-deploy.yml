@@ -31,7 +31,7 @@ jobs:
         git pull origin master
         cd ../_site
         git pull origin gh-pages
-        cd ../..
+        cd ..
         
         docfx docfx.json
         cd _site
