@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -18,12 +18,11 @@ jobs:
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '6.x'
         
     - name: Generate docs
       run: |
         git pull --recurse-submodules
-        echo '{"sdk":{"version": "${{ steps.stepid.outputs.dotnet-version }}"}}' > ./global.json
         dotnet restore src/DNVGL.SolutionPackage.sln
         
         dotnet tool update -g docfx
