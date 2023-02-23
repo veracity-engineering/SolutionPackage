@@ -23,13 +23,13 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore src/DNVGL.SolutionPackage.sln
       
     - name: Pack
-      run: dotnet pack --no-restore
+      run: dotnet pack src/DNVGL.SolutionPackage.sln --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test src/DNVGL.SolutionPackage.sln --no-build --verbosity normal
       
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.1.1
@@ -37,4 +37,4 @@ jobs:
         nuget-api-key: ${{ secrets.NUGET_API_KEY }}
         
     - name: Publish
-      run: nuget push **\*.nupkg -source https://api.nuget.org/v3/index.json
+      run: nuget push src/**/*.nupkg -source https://api.nuget.org/v3/index.json
