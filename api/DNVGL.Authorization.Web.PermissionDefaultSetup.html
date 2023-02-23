@@ -72,7 +72,7 @@
 
   <h1 id="DNVGL_Authorization_Web_PermissionDefaultSetup" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup" class="text-break">Class PermissionDefaultSetup
 </h1>
-  <div class="markdown level0 summary"><p>Extension methods to register permission related services to <see cref="!:IServiceCollection"></see></p>
+  <div class="markdown level0 summary"><p>Extension methods to register permission related services to <span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -114,14 +114,14 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_CookieAuthenticationEvents_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddCookieValidateHandler(CookieAuthenticationEvents)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_Microsoft_AspNetCore_Authentication_Cookies_CookieAuthenticationEvents_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddCookieValidateHandler(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L132">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L132">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddCookieValidateHandler*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_CookieAuthenticationEvents_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddCookieValidateHandler(CookieAuthenticationEvents)">AddCookieValidateHandler(CookieAuthenticationEvents)</h4>
-  <div class="markdown level1 summary"><p>Add customized CookieValidateHandler to the <see cref="!:CookieAuthenticationEvents.OnValidatePrincipal"></see>.
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_Microsoft_AspNetCore_Authentication_Cookies_CookieAuthenticationEvents_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddCookieValidateHandler(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents)">AddCookieValidateHandler(CookieAuthenticationEvents)</h4>
+  <div class="markdown level1 summary"><p>Add customized CookieValidateHandler to the <span class="xref">Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents.OnValidatePrincipal</span>.
 <example></example></p>
 <pre><code>services.AddAuthentication().AddCookie(o => o.Events.AddCookieValidateHandler(services));</code></pre>
 
@@ -142,9 +142,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CookieAuthenticationEvents</span></td>
+        <td><span class="xref">Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents</span></td>
         <td><span class="parametername">cookieEvents</span></td>
-        <td><p><see cref="!:CookieAuthenticationEvents"></see></p>
+        <td><p><span class="xref">Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents</span></p>
 </td>
       </tr>
     </tbody>
@@ -159,24 +159,24 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CookieAuthenticationEvents</span></td>
-        <td><p><see cref="!:CookieAuthenticationEvents"></see></p>
+        <td><span class="xref">Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents</span></td>
+        <td><p><span class="xref">Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents</span></p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_CookieAuthenticationEvents__remarks">Remarks</h5>
+  <h5 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddCookieValidateHandler_Microsoft_AspNetCore_Authentication_Cookies_CookieAuthenticationEvents__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Claim based authorization is enabled only if this customized CookieValidateHandler are added.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__1_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization%60%601(IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L35">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L35">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__1_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization``1(IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorization&lt;TUserPermissionReader&gt;(IServiceCollection, PermissionOptions)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorization&lt;TUserPermissionReader&gt;(IServiceCollection, PermissionOptions)</h4>
   <div class="markdown level1 summary"><p>Setup permission authorization with default <span class="xref">DNVGL.Authorization.Web.PermissionRepository</span> and customized implementation of <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IUserPermissionReader.html">IUserPermissionReader</a>.</p>
 <p>Register <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IPermissionRepository.html">IPermissionRepository</a>&apos;s default implementation <span class="xref">DNVGL.Authorization.Web.PermissionRepository</span> which fetch all permissions defined in source code.</p>
 <p>The implementation of <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IUserPermissionReader.html">IUserPermissionReader</a> must be specified to replace generic type TUserPermissionReader</p>
@@ -197,9 +197,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
       <tr>
@@ -220,8 +220,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
@@ -244,13 +244,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__2_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization%60%602(IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__2_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization%60%602(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L48">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L48">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__2_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization``2(IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorization&lt;TUserPermissionReader, TPermissionRepository&gt;(IServiceCollection, PermissionOptions)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorization__2_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorization``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorization&lt;TUserPermissionReader, TPermissionRepository&gt;(IServiceCollection, PermissionOptions)</h4>
   <div class="markdown level1 summary"><p>Setup permission authorization with customized implementation of <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IPermissionRepository.html">IPermissionRepository</a> and <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IUserPermissionReader.html">IUserPermissionReader</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -269,9 +269,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
       <tr>
@@ -292,8 +292,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
@@ -321,13 +321,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader(IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L60">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L60">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader(IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorizationWithoutUserPermissionReader(IServiceCollection, PermissionOptions)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorizationWithoutUserPermissionReader(IServiceCollection, PermissionOptions)</h4>
   <div class="markdown level1 summary"><p>Setup permission authorization with default <span class="xref">DNVGL.Authorization.Web.PermissionRepository</span>. <strong>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </strong></p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -346,9 +346,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
       <tr>
@@ -369,21 +369,21 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader__1_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader%60%601(IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CDNVGL.Authorization.Web.Abstraction.PermissionOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L86">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L86">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader__1_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader``1(IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorizationWithoutUserPermissionReader&lt;TPermissionRepository&gt;(IServiceCollection, PermissionOptions)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_AddPermissionAuthorizationWithoutUserPermissionReader__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_DNVGL_Authorization_Web_Abstraction_PermissionOptions_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.AddPermissionAuthorizationWithoutUserPermissionReader``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,DNVGL.Authorization.Web.Abstraction.PermissionOptions)">AddPermissionAuthorizationWithoutUserPermissionReader&lt;TPermissionRepository&gt;(IServiceCollection, PermissionOptions)</h4>
   <div class="markdown level1 summary"><p>Setup permission authorization with customized implementation of <a class="xref" href="DNVGL.Authorization.Web.Abstraction.IPermissionRepository.html">IPermissionRepository</a>. <strong>Additionaly,IUserPermissionReader's implementation has to be registered at other place. </strong></p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -402,9 +402,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
       <tr>
@@ -425,8 +425,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
@@ -449,13 +449,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_PouplateRoleOfPrincipal_HttpContext_System_Security_Claims_ClaimsPrincipal_System_String_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.PouplateRoleOfPrincipal(HttpContext%2CSystem.Security.Claims.ClaimsPrincipal%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_PouplateRoleOfPrincipal_Microsoft_AspNetCore_Http_HttpContext_System_Security_Claims_ClaimsPrincipal_System_String_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.PouplateRoleOfPrincipal(Microsoft.AspNetCore.Http.HttpContext%2CSystem.Security.Claims.ClaimsPrincipal%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L175">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L175">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_PouplateRoleOfPrincipal_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.PouplateRoleOfPrincipal*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_PouplateRoleOfPrincipal_HttpContext_System_Security_Claims_ClaimsPrincipal_System_String_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.PouplateRoleOfPrincipal(HttpContext,System.Security.Claims.ClaimsPrincipal,System.String)">PouplateRoleOfPrincipal(HttpContext, ClaimsPrincipal, string)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_PouplateRoleOfPrincipal_Microsoft_AspNetCore_Http_HttpContext_System_Security_Claims_ClaimsPrincipal_System_String_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.PouplateRoleOfPrincipal(Microsoft.AspNetCore.Http.HttpContext,System.Security.Claims.ClaimsPrincipal,System.String)">PouplateRoleOfPrincipal(HttpContext, ClaimsPrincipal, string)</h4>
   <div class="markdown level1 summary"><p>Populate user's permissions into Role Claims.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -474,9 +474,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">HttpContext</span></td>
+        <td><span class="xref">Microsoft.AspNetCore.Http.HttpContext</span></td>
         <td><span class="parametername">httpContext</span></td>
-        <td><p>Get injected services from <see cref="!:HttpContext"></see>'s RequestServices</p>
+        <td><p>Get injected services from <span class="xref">Microsoft.AspNetCore.Http.HttpContext</span>'s RequestServices</p>
 </td>
       </tr>
       <tr>
@@ -510,13 +510,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_UsePermissionRepository__1_IServiceCollection_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.UsePermissionRepository%60%601(IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup_UsePermissionRepository__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup.UsePermissionRepository%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L71">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L71">View Source</a>
   </span>
   <a id="DNVGL_Authorization_Web_PermissionDefaultSetup_UsePermissionRepository_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.UsePermissionRepository*"></a>
-  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_UsePermissionRepository__1_IServiceCollection_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.UsePermissionRepository``1(IServiceCollection)">UsePermissionRepository&lt;TPermissionRepository&gt;(IServiceCollection)</h4>
+  <h4 id="DNVGL_Authorization_Web_PermissionDefaultSetup_UsePermissionRepository__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DNVGL.Authorization.Web.PermissionDefaultSetup.UsePermissionRepository``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UsePermissionRepository&lt;TPermissionRepository&gt;(IServiceCollection)</h4>
   <div class="markdown level1 summary"><p>Use you own IPermissionRepository implementation to replace default built-in implementation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -535,9 +535,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
@@ -552,8 +552,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
-        <td><p><see cref="!:IServiceCollection"></see></p>
+        <td><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></td>
+        <td><p><span class="xref">Microsoft.Extensions.DependencyInjection.IServiceCollection</span></p>
 </td>
       </tr>
     </tbody>
@@ -582,10 +582,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_Web_PermissionDefaultSetup.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.Web.PermissionDefaultSetup%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.Web/PermissionDefaultSetup.cs/#L22" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

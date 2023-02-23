@@ -77,8 +77,19 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><span class="xref">object</span></div>
-    <div class="level1"><a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html">UserManagementContext</a>&lt;<a class="xref" href="DNVGL.Authorization.UserManagement.Abstraction.Entity.Company.html">Company</a>, <a class="xref" href="DNVGL.Authorization.UserManagement.Abstraction.Entity.Role.html">Role</a>, TUser&gt;</div>
-    <div class="level2"><span class="xref">UserManagementContext&lt;TUser&gt;</span></div>
+    <div class="level1"><span class="xref">Microsoft.EntityFrameworkCore.DbContext</span></div>
+    <div class="level2"><a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html">UserManagementContext</a>&lt;<a class="xref" href="DNVGL.Authorization.UserManagement.Abstraction.Entity.Company.html">Company</a>, <a class="xref" href="DNVGL.Authorization.UserManagement.Abstraction.Entity.Role.html">Role</a>, TUser&gt;</div>
+    <div class="level3"><span class="xref">UserManagementContext&lt;TUser&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">Microsoft.EntityFrameworkCore.Infrastructure.IInfrastructure&lt;T&gt;</span>&lt;<span class="xref">System.IServiceProvider</span>&gt;</div>
+    <div><span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbContextDependencies</span></div>
+    <div><span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbSetCache</span></div>
+    <div><span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbContextPoolable</span></div>
+    <div><span class="xref">System.IDisposable</span></div>
+    <div><span class="xref">System.IAsyncDisposable</span></div>
+    <div><span class="xref">Microsoft.EntityFrameworkCore.Infrastructure.IResettableService</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -98,7 +109,7 @@
       <a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html#DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_3_HardDelete">UserManagementContext&lt;Company, Role, TUser&gt;.HardDelete</a>
     </div>
     <div>
-      <a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html#DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_3_OnModelCreating_ModelBuilder_">UserManagementContext&lt;Company, Role, TUser&gt;.OnModelCreating(ModelBuilder)</a>
+      <a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html#DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_3_OnModelCreating_Microsoft_EntityFrameworkCore_ModelBuilder_">UserManagementContext&lt;Company, Role, TUser&gt;.OnModelCreating(ModelBuilder)</a>
     </div>
     <div>
       <a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html#DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_3_SaveChanges">UserManagementContext&lt;Company, Role, TUser&gt;.SaveChanges()</a>
@@ -106,12 +117,171 @@
     <div>
       <a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext-3.html#DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_3_SaveChangesAsync_System_Threading_CancellationToken_">UserManagementContext&lt;Company, Role, TUser&gt;.SaveChangesAsync(CancellationToken)</a>
     </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Set&lt;TEntity&gt;()</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Set&lt;TEntity&gt;(string)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SaveChanges()</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SaveChanges(bool)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(bool, System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Dispose()</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.DisposeAsync()</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Entry&lt;TEntity&gt;(TEntity)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Entry(object)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Add&lt;TEntity&gt;(TEntity)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddAsync&lt;TEntity&gt;(TEntity, System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Attach&lt;TEntity&gt;(TEntity)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Update&lt;TEntity&gt;(TEntity)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Remove&lt;TEntity&gt;(TEntity)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Add(object)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddAsync(object, System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Attach(object)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Update(object)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Remove(object)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddRange(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddRangeAsync(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AttachRange(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.UpdateRange(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.RemoveRange(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddRange(System.Collections.Generic.IEnumerable&lt;object&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AddRangeAsync(System.Collections.Generic.IEnumerable&lt;object&gt;, System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.AttachRange(System.Collections.Generic.IEnumerable&lt;object&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.UpdateRange(System.Collections.Generic.IEnumerable&lt;object&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.RemoveRange(System.Collections.Generic.IEnumerable&lt;object&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Find(System.Type, params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.FindAsync(System.Type, params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.FindAsync(System.Type, object[], System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Find&lt;TEntity&gt;(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.FindAsync&lt;TEntity&gt;(params object[])</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.FindAsync&lt;TEntity&gt;(object[], System.Threading.CancellationToken)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.FromExpression&lt;TResult&gt;(System.Linq.Expressions.Expression&lt;System.Func&lt;System.Linq.IQueryable&lt;TResult&gt;&gt;&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Database</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.ChangeTracker</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.Model</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.ContextId</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SavingChanges</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SavedChanges</span>
+    </div>
+    <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.DbContext.SaveChangesFailed</span>
+    </div>
+    <div>
+      <span class="xref">object.Equals(object)</span>
+    </div>
+    <div>
+      <span class="xref">object.Equals(object, object)</span>
+    </div>
+    <div>
+      <span class="xref">object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">object.ReferenceEquals(object, object)</span>
+    </div>
+    <div>
+      <span class="xref">object.ToString()</span>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <span class="xref">DNVGL</span>.<span class="xref">Authorization</span>.<span class="xref">UserManagement</span>.<a class="xref" href="DNVGL.Authorization.UserManagement.EFCore.html">EFCore</a></h6>
   <h6><strong>Assembly</strong>: DNVGL.Authorization.UserManagement.EFCore.dll</h6>
   <h5 id="DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class UserManagementContext&lt;TUser&gt; : UserManagementContext&lt;Company, Role, TUser&gt; where TUser : User</code></pre>
+    <pre><code class="lang-csharp hljs">public class UserManagementContext&lt;TUser&gt; : UserManagementContext&lt;Company, Role, TUser&gt;, IInfrastructure&lt;IServiceProvider&gt;, IDbContextDependencies, IDbSetCache, IDbContextPoolable, IDisposable, IAsyncDisposable, IResettableService where TUser : User</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -132,13 +302,13 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1__ctor_DbContextOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.UserManagement.EFCore.UserManagementContext%601.%23ctor(DbContextOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1__ctor_Microsoft_EntityFrameworkCore_DbContextOptions_.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.UserManagement.EFCore.UserManagementContext%601.%23ctor(Microsoft.EntityFrameworkCore.DbContextOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.UserManagement.EFCore/UserManagementContext.cs/#L22">View Source</a>
+    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.UserManagement.EFCore/UserManagementContext.cs/#L22">View Source</a>
   </span>
   <a id="DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1__ctor_" data-uid="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext`1.#ctor*"></a>
-  <h4 id="DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1__ctor_DbContextOptions_" data-uid="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext`1.#ctor(DbContextOptions)">UserManagementContext(DbContextOptions)</h4>
+  <h4 id="DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1__ctor_Microsoft_EntityFrameworkCore_DbContextOptions_" data-uid="DNVGL.Authorization.UserManagement.EFCore.UserManagementContext`1.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions)">UserManagementContext(DbContextOptions)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -156,12 +326,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DbContextOptions</span></td>
+        <td><span class="xref">Microsoft.EntityFrameworkCore.DbContextOptions</span></td>
         <td><span class="parametername">options</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.Infrastructure.IInfrastructure&lt;T&gt;</span>
+  </div>
+  <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbContextDependencies</span>
+  </div>
+  <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbSetCache</span>
+  </div>
+  <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.Internal.IDbContextPoolable</span>
+  </div>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+  <div>
+      <span class="xref">System.IAsyncDisposable</span>
+  </div>
+  <div>
+      <span class="xref">Microsoft.EntityFrameworkCore.Infrastructure.IResettableService</span>
+  </div>
 </article>
           </div>
 
@@ -170,10 +362,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.UserManagement.EFCore.UserManagementContext%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/veracity-engineering/SolutionPackage/new/main/apiSpec/new?filename=DNVGL_Authorization_UserManagement_EFCore_UserManagementContext_1.md&amp;value=---%0Auid%3A%20DNVGL.Authorization.UserManagement.EFCore.UserManagementContext%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.UserManagement.EFCore/UserManagementContext.cs/#L20" class="contribution-link">View Source</a>
+                    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/src/Authorization/DNVGL.Authorization.UserManagement.EFCore/UserManagementContext.cs/#L20" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

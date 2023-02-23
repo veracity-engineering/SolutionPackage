@@ -65,28 +65,964 @@
 <p>Some of the supported features include:</p>
 <h2 id="authentication">Authentication</h2>
 <ul>
-<li><p><a href="/articles/DNVGL.OAuth.Web.md">OpenId connection authentication</a></p>
+<li><h1 id="dnvgloauthweb">DNVGL.OAuth.Web</h1>
+<p>DNVGL.OAuth.Web is a .NETCore library for developers to simplify the work of setting up OpenId Connection authentication (OIDC) such as Veracity or Azure AD B2C for ASP.NET Core web project.</p>
+<hr>
+<h1 id="package-install">Package Install</h1>
+<p>Ensure you have configured to package NuGet Package Source or find the instructions <a href="/articles/PackageInstall.md">here</a>.</p>
+<p>Package Manager Console</p>
+<pre><code>PM&gt; `Install-Package DNVGL.OAuth.Web`
+</code></pre>
+<hr>
+<h1 id="basic-authentication-usage">Basic Authentication Usage</h1>
+<p>To simplify your authentication implementation of Veracity for your ASP.NET Core web project, you need to add 3 blocks of codes to <code>Startup.cs</code>.</p>
+<ol>
+<li>Add namespace reference.</li>
+</ol>
+<pre><code class="lang-csharp">using DNVGL.OAuth.Web;
+</code></pre>
+<ol start="2">
+<li>Add <code>AddOidc</code> extension method to <code>ConfigureServices</code>.</li>
+</ol>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddOidc(o =&gt;
+	{
+		o.Authority = &quot;&lt;Authority&gt;&quot;;
+		o.ClientId = &quot;&lt;ClientId&gt;&quot;;
+		o.ClientSecret = &quot;&lt;ClientSecret&gt;&quot;;
+		o.Resource = &quot;&lt;Resource&gt;&quot;;
+		o.Scopes = new[] { &quot;&lt;Scope&gt;&quot; };
+	});
+	...
+}
+</code></pre>
+<ol start="3">
+<li>Add <code>UseAuthentication</code> and <code>UseAuthorization</code> extension methods to <code>Configure</code>.</li>
+</ol>
+<pre><code class="lang-csharp">public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+	...
+	app.UseAuthentication().UseAuthorization();
+	...
+}
+</code></pre>
+<ol start="4">
+<li>Then you could launch your project and access an action in a controller that decorated with <code>[Authorize]</code>, a challenge request will be sent to IDP(Microsoft or Veracity) to start the authentication process, and the <code>HttpContext</code> will be filled with authentication result.</li>
+</ol>
+<p><img src="images/DNVGL.OAuth.Web/challenge.png" alt=""></p>
+<ol start="5">
+<li>A sample project is ready for you to try out: <a href="//SimpleOidc">SimpleOidc</a>.</li>
+</ol>
+<hr>
+<h1 id="access-token-cache-usage">Access Token Cache Usage</h1>
+<p>If you web project act as an API gateway, you will want to cache users' access tokens to prevent unnecessary token requests. The library uses <code>MSAL (Microsoft Authentication Library)</code> to manipulate tokens.</p>
+<ol>
+<li>Authorization code flow needs to be set to acquire access token, and refresh token is required for MSAL to re-acquire token from IDP if the token exceed its expiration.</li>
+</ol>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	var oidcOptions = new OidcOptions
+	{
+		Authority = &quot;&lt;Authority&gt;&quot;,
+		ClientId = &quot;&lt;ClientId&gt;&quot;,
+		ClientSecret = &quot;&lt;ClientSecret&gt;&quot;,
+		Resource = &quot;&lt;Resource&gt;&quot;,
+		Scopes = new[] { &quot;&lt;Scope&gt;&quot;, &quot;offline_access&quot; },	// offline_access is required to retrieve refresh_token.
+		ResponseType = OpenIdConnectResponseType.Code
+	};
+	...
+}
+</code></pre>
+<ol start="2">
+<li>To cache the tokens, an implementaion of <code>IDistributedCache</code> such as <code>MemoryDistributedCache</code> needs to be added.</li>
+</ol>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddDistributedMemoryCache();
+	...
+}
+</code></pre>
+<p>You can also add <code>RedisCache</code> instead.</p>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddDistributedRedisCache(o =&gt;
+	{
+		o.InstanceName = &quot;&lt;InstanceName&gt;&quot;;
+		o.Configuration = &quot;&lt;Configuration&gt;&quot;;
+	});
+	...
+}
+</code></pre>
+<ol start="3">
+<li>Calling <code>AddDistributedTokenCache</code> will have <code>IDistributedCache</code> attached to MSAL client app behind the scene, and the token acquiring process will be replaced by MSAL client app.</li>
+</ol>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddDistributedTokenCache(oidcOptions);
+	...
+}
+</code></pre>
+<ol start="4">
+<li>Don't forget to add <code>AddOidc</code> after what you did previously.</li>
+</ol>
+<pre><code class="lang-csharp">public void ConfigureServices(IServiceCollection services)
+{
+	...
+	services.AddOidc(oidcOptions);
+	...
+}
+</code></pre>
+<ol start="5">
+<li>A sample project is ready for you to try out: <a href="//TokenCacheDemo">TokenCacheDemo</a>.</li>
+</ol>
+<hr>
 </li>
-<li><p><a href="/articles/DNVGL.OAuth.Api.HttpClient.md">OAuth HTTP client factory</a></p>
+<li><h1 id="oauth-http-client-factory">OAuth HTTP Client Factory</h1>
+<p>The <code>DNVGL.OAuth.Api.HttpClient package</code> is a .NET library which provides a factory for producing authenticated HttpClients for API integration via OAuth.</p>
+<p>Developers can use this library to create HttpClient instances which will be pre-authenticated for API requests based on provided configuration.</p>
+<p>This package supports two type of credential authentication:</p>
+<ul>
+<li>User credentials - A user may authenticate by providing a username and password via a UI.</li>
+<li>Client credentials - A service or application may provide a client id and secret to silently authenticate.</li>
+</ul>
+<hr>
+<h1 id="package-install">Package Install</h1>
+<p>Ensure you have configured to package NuGet Package Source or find the instructions <a href="/articles/PackageInstall.md">here</a>.</p>
+<p>Package Manager Console</p>
+<pre><code>PM&gt; `Install-Package DNVGL.OAuth.Api.HttpClient`
+</code></pre>
+<h1 id="basic-example">Basic example</h1>
+<h2 id="1-configuration">1. Configuration</h2>
+<p>Setup API http client configuration in <code>appsettings.json</code> file:</p>
+<pre><code class="lang-js">  {
+    &quot;ApiHttpClientOptions&quot;: [
+      {
+        &quot;Name&quot;: &quot;userCredentialsClient&quot;,
+        &quot;Flow&quot;: &quot;user-credentials&quot;,
+        &quot;BaseUri&quot;: &quot;&lt;BaseUri&gt;&quot;,
+        &quot;SubscriptionKey&quot;: &quot;&lt;SubscriptionKey&gt;&quot;
+      },
+      {
+        &quot;Name&quot;: &quot;clientCredentialsClient&quot;,
+        &quot;Flow&quot;:&quot;client-credentials&quot;,
+        &quot;BaseUri&quot;: &quot;&lt;BaseUri&gt;&quot;,
+        &quot;SubscriptionKey&quot;: &quot;&lt;SubscriptionKey&gt;&quot;
+        &quot;OAuthClientOptions&quot;: {
+          &quot;Authority&quot;: &quot;&lt;Authority&gt;&quot;,
+          &quot;ClientId&quot;: &quot;&lt;ClientId&gt;&quot;,
+          &quot;ClientSecret&quot;: &quot;&lt;ClientSecret&gt;&quot;,
+          &quot;Resource&quot;: &quot;&lt;Resource&gt;&quot;,
+          &quot;Scopes&quot;: [ &quot;&lt;Scope&gt;&quot;, &quot;offline_access&quot; ],
+          &quot;CallbackPath&quot;: &quot;&lt;CallbackPath&gt;&quot;
+        }
+      }
+    ]
+  }
+
+</code></pre>
+<p>The package injects an <code>IHttpClientFactory</code> which is able to provide multiple HttpClients for different purposes.  The HttpClients may all be configured through a configuration section in which the individual client configurations are listed with a unique <code>Name</code> which is used to request HttpClients with the corresponding configurations.</p>
+<p>The configuration shown above lists 2 HttpClients.  The first with name <code>&quot;userCredentialsClient&quot;</code> is an example of a configuration which would honour the signed in user's credentials for the API for which it makes requests.  The second with name <code>&quot;clientCredentialsClient&quot;</code> provides configuration for a client which would be authenticated via the client credential flow with a client id and secret to make requests in an API.  This configuration would allow us to request either type of HttpClient by requesting it from from the HttpClientFactory by providing one of the two names: <code>&quot;userCredentialsClient&quot;</code> or <code>&quot;clientCredentialsClient&quot;</code> in the method call to the HttpClientFactory.</p>
+<h2 id="2-registration">2. Registration</h2>
+<p>Call the <code>ServiceCollection</code> extension method <code>AddOAuthHttpClientFactory</code> to register an instance of the <code>IHttpClientFactory</code> in to your project in your <code>Startup.cs</code> file.</p>
+<p>The below code is retrieving the configuration from the <code>&quot;OAuthHttpClientOptions&quot;</code> section defined in <code>apsettings.json</code> above.</p>
+<pre><code class="lang-cs">public void ConfigureService(IServiceCollection services)
+{
+  ...
+  services.AddOAuthHttpClientFactory(Congiuration.GetSection(&quot;ApiHttpClientOptions&quot;).Get&lt;IEnumerable&lt;OAuthHttpClientOptions&gt;&gt;());
+  ...
+}
+</code></pre>
+<p>If you require a HttpClient applying the user credential flow you should also include the web authentication (<code>AddOidc</code>) and token cache handling (<code>AddDistributedMemoryCache</code>) from the <a href="/articles/DNVGL.OAuth.Web.md">DNVGL.OAuth.Web</a> package.  Include the NuGet package in your project and call the required methods as below:</p>
+<pre><code class="lang-cs">public void ConfigureService(IServiceCollection services)
+{
+  ...
+  services.AddDistributedMemoryCache();
+  ...
+  var oidcOptions = new OidcOptions
+  {
+    Authority = &quot;&lt;Authority&gt;&quot;,
+	  ClientId = &quot;&lt;ClientId&gt;&quot;,
+	  ClientSecret = &quot;&lt;ClientSecret&gt;&quot;,
+		Resource = &quot;&lt;Resource&gt;&quot;,
+	  Scopes = new[] { &quot;&lt;Scope&gt;&quot;, &quot;offline_access&quot; },
+	  ResponseType = OpenIdConnectResponseType.Code
+  };
+  services.AddOidc(oidcOptions);
+  ...
+  services.AddOAuthHttpClientFactory(Congiuration.GetSection(&quot;ApiHttpClientOptions&quot;).Get&lt;IEnumerable&lt;OAuthHttpClientOptions&gt;&gt;());
+  ...
+}
+</code></pre>
+<p>If you only require HttpClients applying the client credential flow the DNVGL.OAuth.Web package is not required.</p>
+<h2 id="3-request-a-client">3. Request a client</h2>
+<p>Resolve <code>IHttpClientFactory</code> to create user-credential or client-credential <code>HttpClient</code> to access web API.</p>
+<pre><code class="lang-cs">public class TestController
+{
+  private readonly IHttpClientFactory _httpClientFactory;
+
+  public TestController(IHttpClientFactory httpClientFactory)
+  {
+    _httpClientFactory = httpClientFactory;
+  }
+
+  public User DoSomethingWithSignInUser(string id)
+  {
+    var client = _httpClientFactory.Create(&quot;userCredentialsClient&quot;);
+    ...
+  }
+
+  public Company DoSomethingWithService(string id)
+  {
+    var client = _httpClientFactory.Create(&quot;clientCredentialsClient&quot;);
+    ...
+  }
+}
+</code></pre>
 </li>
 </ul>
 <h2 id="security">Security</h2>
 <ul>
-<li><p><a href="/articles/securityHeader.md">Security headers</a></p>
+<li><h1 id="http-response-security-header">HTTP Response Security Header</h1>
+<p>DNVGL.Web.Security provides extension methods to setup http response headers for ASP.NET Core application.</p>
+<hr>
+<h1 id="package-install">Package Install</h1>
+<p>Ensure you have configured to package NuGet Package Source or find the instructions <a href="articles/PackageInstall.html">here</a>.</p>
+<p>Package Manager Console</p>
+<pre><code>PM&gt; `Install-Package DNVGL.OAuth.Web`
+</code></pre>
+<h2 id="1-basic-example">1. Basic Example</h2>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders();
+            //...
+        }
+    }
+</code></pre>
+<ul>
+<li>The package set up below default http response headers.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X-Xss-Protection</td>
+<td>1</td>
+</tr>
+<tr>
+<td>X-Frame-Options</td>
+<td>SAMEORIGIN</td>
+</tr>
+<tr>
+<td>X-Content-Type-Options</td>
+<td>no-referrer</td>
+</tr>
+<tr>
+<td>X-Permitted-Cross-Domain-Policies</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Expect-CT</td>
+<td>enforce, max-age=7776000</td>
+</tr>
+<tr>
+<td>Strict-Transport-Security</td>
+<td>max-age=15552000; includeSubDomains</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>If you have setup your own response headers before using the pacakge to setup default headers. You own reponse headers will be kept.</p>
+</blockquote>
+<ul>
+<li>The package set up below default csp rule in http response headers.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>default-src</td>
+<td>'self'</td>
+</tr>
+<tr>
+<td>object-src</td>
+<td>'self'</td>
+</tr>
+<tr>
+<td>connect-src</td>
+<td>'self' <a href="https://dc.services.visualstudio.com">https://dc.services.visualstudio.com</a></td>
+</tr>
+<tr>
+<td>script-src</td>
+<td>'self' <a href="https://www.recaptcha.net">https://www.recaptcha.net</a> <a href="https://www.gstatic.com">https://www.gstatic.com</a> <a href="https://www.gstatic.cn">https://www.gstatic.cn</a></td>
+</tr>
+<tr>
+<td>font-src</td>
+<td>'self' data: <a href="https://onedesign.azureedge.net">https://onedesign.azureedge.net</a> <a href="https://veracitycdn.azureedge.net">https://veracitycdn.azureedge.net</a></td>
+</tr>
+<tr>
+<td>media-src</td>
+<td>'self'</td>
+</tr>
+<tr>
+<td>worker-src</td>
+<td>'self' blob:</td>
+</tr>
+<tr>
+<td>img-src</td>
+<td>'self' <a href="https://onedesign.azureedge.net">https://onedesign.azureedge.net</a> <a href="https://dnvglcom.azureedge.net">https://dnvglcom.azureedge.net</a> <a href="https://cdnveracity.azureedge.net">https://cdnveracity.azureedge.net</a></td>
+</tr>
+<tr>
+<td>frame-src</td>
+<td>'self' <a href="https://www.google.com">https://www.google.com</a> <a href="https://www.recaptcha.net/">https://www.recaptcha.net/</a></td>
+</tr>
+<tr>
+<td>style-src</td>
+<td>'self' <a href="https://onedesign.azureedge.net">https://onedesign.azureedge.net</a></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>If you have setup your own CSP before using the pacakge to setup default headers. You own CSP will be kept.</p>
+</blockquote>
+<h2 id="2-customize-response-header">2. Customize Response Header</h2>
+<p>The pacakge supports to overwrite the above default setting. This is a code sample to overwrite X-Frame-Options:</p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=&gt; h.Add(&quot;X-Frame-Options&quot;, &quot;DENNY&quot;));
+            //...
+        }
+    }
+</code></pre>
+<h2 id="3-customize-csp-in-response-header">3. Customize CSP in Response Header</h2>
+<p>The pacakge supports to overwrite the above default setting. This is a code sample to overwrite styleSrc:</p>
+<pre><code class="lang-cs">    public class Startup
+   {
+       //...
+       public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+       {
+           //...
+           app.UseDefaultHeaders(h=&gt; h.ReplaceDefaultContentSecurityPolicy(styleSrc: &quot;'self' 'nonce-123456789909876543ghjklkjvcvbnm'&quot;););
+           //...
+       }
+   }
+</code></pre>
+<p>Or extend the above default setting. This is a code sample to extend styleSrc:</p>
+<pre><code class="lang-cs">    public class Startup
+   {
+       //...
+       public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+       {
+           //...
+           app.UseDefaultHeaders(h=&gt; h.ExtendDefaultContentSecurityPolicy(styleSrc: &quot;'nonce-123456789909876543ghjklkjvcvbnm'&quot;););
+           //...
+       }
+   }
+</code></pre>
+<h2 id="4-skip-csp-in-response-header-for-specific-requests">4. Skip CSP in Response Header for specific requests.</h2>
+<p>By default, The package doesn't add csp into respsone for all http requests which url contain '/swagger/'.
+It supports to overwrite the default skip logic. This is a code sample to skip all request which url contains '/nocsprequired/'.</p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=&gt; h.SkipContentSecurityPolicyForRequests((req) =&gt; req.Path.ToString().ToLowerInvariant().Contains(&quot;/nocsprequired/&quot;)));
+            //...
+        }
+    }
+</code></pre>
+<h2 id="5-permissions-policy">5. Permissions Policy</h2>
+<p>Permissions Policy HTTP Header can be provided by your web server / web application in order to improve the security of your visitors and the data they may be accessing on your site.</p>
+<p><strong>Standardized Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accelerometer</td>
+<td>The Accelerometer interface of the Sensor APIs provides on each reading the acceleration applied to the device along all three axes.</td>
+</tr>
+<tr>
+<td>ambient-light-sensor</td>
+<td>The AmbientLightSensor interface of the Sensor APIs returns the current light level or illuminance of the ambient light around the hosting device.</td>
+</tr>
+<tr>
+<td>autoplay</td>
+<td>Controls the ability to have Media (Audio or Video) elements begin playback without user interaction in the current document. When this policy is disabled and there were no user gestures, the Promise returned by HTMLMediaElement.play() will reject with a DOMException. The autoplay attribute on <code>&lt;audio&gt;</code> and <code>&lt;video&gt;</code> elements will be ignored.</td>
+</tr>
+<tr>
+<td>battery</td>
+<td>The Battery Status API can be used to defer or scale back work when the device is not charging in or is low on battery.</td>
+</tr>
+<tr>
+<td>camera</td>
+<td>Manages access to Camera interfaces (physical and virtual).</td>
+</tr>
+<tr>
+<td>cross-origin-isolated</td>
+<td>Cross-origin isolation enables a web page to use powerful features such as SharedArrayBuffer, performance.measureUserAgentSpecificMemory(), high resolution timer with better precision, or the JS Self-Profiling API. This also impacts the &quot;document-domain&quot; permission when set (see below).</td>
+</tr>
+<tr>
+<td>display-capture</td>
+<td>A document's permissions policy determines whether any content in that document is allowed to use getDisplayMedia.</td>
+</tr>
+<tr>
+<td>document-domain</td>
+<td>Provides access to the deprecated &quot;document.domain[=domain]&quot; setter. When the &quot;document-domain&quot; feature is disabled, the setter will throw a &quot;SecurityError&quot; exception. In cases where crossOriginIsolated or originAgentCluster return true, the setter will do nothing. It is recommended to avoid using the document.domain setter, instead, use postMessage() or MessageChannel objects to communicate across origins in a safe manner.</td>
+</tr>
+<tr>
+<td>encrypted-media</td>
+<td>Encrypted Media Extensions provides an API that enables web applications to interact with content protection systems, to allow playback of encrypted audio and video. Provides access to the requestMediaKeySystemAccess() method, a part of the MediaKeys object.</td>
+</tr>
+<tr>
+<td>execution-while-not-rendered</td>
+<td>Controls if tasks should execute for nested browsing contexts (eg. iframes) when it has/is not being rendered.</td>
+</tr>
+<tr>
+<td>execution-while-out-of-viewport</td>
+<td>Controls if tasks should execute for nested browsing contexts (eg. iframes) when not within the current viewport.</td>
+</tr>
+<tr>
+<td>fullscreen</td>
+<td>Determines whether any content in a document is allowed to go fullscreen. If disabled in any document, no content in the document will be allowed to use fullscreen.</td>
+</tr>
+<tr>
+<td>geolocation</td>
+<td>The Geolocation API provides access to geographical location information associated with the host device.</td>
+</tr>
+<tr>
+<td>gyroscope</td>
+<td>Gyroscope sensor interface to monitor the rate of rotation around the three local primary axes of the device.</td>
+</tr>
+<tr>
+<td>keyboard-map</td>
+<td>Controls whether the getLayoutMap() method is exposed on the &quot;Keyboard&quot; interface.</td>
+</tr>
+<tr>
+<td>magnetometer</td>
+<td>Magnetometer sensor interface to measure a magnetic field in the X, Y and Z axis.</td>
+</tr>
+<tr>
+<td>microphone</td>
+<td>Manages access to Microphone interfaces (physical and virtual).</td>
+</tr>
+<tr>
+<td>midi</td>
+<td>Musical Instrument Digital Interface (MIDI) protocol enables electronic musical instruments, controllers and computers to communicate and synchronize with each other.</td>
+</tr>
+<tr>
+<td>navigation-override</td>
+<td>Enables the page author to take control over the behavior of spatial navigation, or to cancel it outright. Spatial navigation is the ability to move around the page directionally which can be useful for a web page built using a grid-like layout, or other predominantly non linear layouts. More often this is used in browsers on devices with limited input control, such as a TV.</td>
+</tr>
+<tr>
+<td>payment</td>
+<td>Allow merchants (i.e. web sites selling physical or digital goods) to utilise one or more payment methods with minimal integration.</td>
+</tr>
+<tr>
+<td>picture-in-picture</td>
+<td>Allow websites to create a floating video window always on top of other windows so that users may continue consuming media while they interact with other content sites, or applications on their device. This item controls whether the request Picture-in-Picture algorithm may return a SecurityError and whether pictureInPictureEnabled is true or false.</td>
+</tr>
+<tr>
+<td>publickey-credentials-get</td>
+<td>Determines whether any content in the allowed documents is allowed to successfully invoke the Web Authentication API. If disabled in any document, no content in the document will be allowed to use the foregoing methods, attempting to do so will return an error.</td>
+</tr>
+<tr>
+<td>screen-wake-lock</td>
+<td>A screen wake lock prevents the screen from turning off. Only visible documents can acquire the screen wake lock.</td>
+</tr>
+<tr>
+<td>sync-xhr</td>
+<td>The sync-xhr policy controls whether synchronous requests can be made through the XMLHttpRequest API. If disallowed in a document, then calls to send() on XMLHttpRequest objects with the synchronous flag set will fail, causing a NetworkError DOMException to be thrown.</td>
+</tr>
+<tr>
+<td>usb</td>
+<td>The WebUSB API provides a way to safely expose USB device services to the web. Controls whether the usb attribute is exposed on the Navigator object.</td>
+</tr>
+<tr>
+<td>web-share</td>
+<td>Exposes the navigator.share() API where supported, which shares the current URL via user agent provided share to locations.</td>
+</tr>
+<tr>
+<td>xr-spatial-tracking</td>
+<td>The WebXR Device API provides the interfaces necessary to enable developers to build compelling, comfortable, and safe immersive applications on the web across a wide variety of hardware form factors.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Proposed Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clipboard-read</td>
+<td>Read from the device clipboard via the Clipboard API</td>
+</tr>
+<tr>
+<td>clipboard-write</td>
+<td>Write to the device clipboard via the Clipboard API</td>
+</tr>
+<tr>
+<td>gamepad</td>
+<td>Determines whether any content in that document is allowed to access getGamepads(). If disabled in any document, no content in the document will be allowed to use getGamepads(), nor will the &quot;gamepadconnected&quot; and &quot;gamepaddisconnected&quot; events fire.</td>
+</tr>
+<tr>
+<td>speaker-selection</td>
+<td>Determines whether any content in a document is allowed to use the selectAudioOutput function to prompt the user to select an audio output device, or allowed to use setSinkId to change the device through which audio output should be rendered, to a non-system-default user-permitted device.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Experimental Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>conversion-measurement</td>
+<td>Click Through Attribution Reporting. To enable this, use the Chrome command line flag --enable-blink-features=ConversionMeasurement</td>
+</tr>
+<tr>
+<td>focus-without-user-activation</td>
+<td>Helps control the use of automated focus in a main frame or <code>&lt;iframe&gt;</code>. The proposed feature provides a means for developers to block the use of automatic focus in nested contents.</td>
+</tr>
+<tr>
+<td>hid</td>
+<td>Allow a web page to communicate with HID devices (Human Interface Device)</td>
+</tr>
+<tr>
+<td>idle-detection</td>
+<td>Allow usage of the IdleDetector interface to better detect if a user is at their device, instead of trying to identify if a user has just become inactive, such as left window open, screen saver activated, screen turned off, changed tabs or changed applications.</td>
+</tr>
+<tr>
+<td>interest-cohort</td>
+<td>Federated Learning of Cohorts (FLoC) is a new way that browsers could enable interest-based advertising on the web. A site should be able to declare that it does not want to be included in the user's list of sites for cohort calculation.</td>
+</tr>
+<tr>
+<td>serial</td>
+<td>Provide direct communication between a web site and the device that it is controlling via a Serial port. To enable this, use the Chrome command line flag --enable-blink-features=Serial</td>
+</tr>
+<tr>
+<td>sync-script</td>
+<td>Unknown - No information currently available. To enable this, use the Chrome command line flag --enable-blink-features=ExperimentalProductivityFeatures.</td>
+</tr>
+<tr>
+<td>trust-token-redemption</td>
+<td>This API proposes a new per-origin storage area for “Privacy Pass” style cryptographic tokens, which are accessible in third party contexts. These tokens are non-personalized and cannot be used to track users, but are cryptographically signed so they cannot be forged.</td>
+</tr>
+<tr>
+<td>window-placement</td>
+<td>Proposal to provide additional informatiion for Multi-Screen Window Placement.</td>
+</tr>
+<tr>
+<td>vertical-scroll</td>
+<td>Vertical scroll policy is a feature introduced to assist websites in blocking certain embedded contents from interfering with vertical scrolling. Stopping a user from vertically scrolling the page might be a frustrating experience.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="51-customize-permissions-policy">5.1 Customize Permissions Policy</h3>
+<p>Customize Permissions Policy in HTTP Header</p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=&gt; {
+                var policy = new PermissionsPolicy();
+                
+                policy.Feature(FeatureNames.Camera).Disable();
+            	policy.Feature(FeatureNames.Fullscreen).Enable();
+            	policy.Feature(FeatureNames.Geolocation).Enable().Self();
+            	policy.Feature(FeatureNames.Usb).Enable().Custom(&quot;https://www.dnv.com&quot;);
+            	policy.Feature(FeatureNames.Microphone).Enable().Self().Custom(&quot;https://www.google.com&quot;);
+                
+                h.Add(PermissionsPolicy.Key, policy.ToString());
+            });
+            //...
+        }
+    }
+</code></pre>
+<h3 id="52-enable-all-permissions-policy">5.2 Enable all Permissions Policy</h3>
+<p>Enable all Permissions Policy in HTTP Header</p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=&gt; h.EnableAllPermissionsPolicyForSelf());
+            //...
+        }
+    }
+</code></pre>
+<h3 id="53-disable-all-permissions-policy">5.3 Disable all Permissions Policy</h3>
+<p>Disable all Permissions Policy in HTTP Header</p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseDefaultHeaders(h=&gt; h.DisableAllPermissionsPolicy());
+            //...
+        }
+    }
+</code></pre>
 </li>
-<li><p><a href="/articles/userManagement.md">User management</a></p>
+<li><h1 id="user-management-and-authorization">User Management and Authorization</h1>
+<p>DNVGL.Authorization.UserManagement.ApiControllers provides restAPIs to manage user, role and company. It also provides mechanisms to authorize API endpoints. Go through <a href="/articles/userManagement/overview">Overview</a> to understand the logic behind the package. Check out <a href="https://github.com/HK-Zhang/DNV_UserManagement_Demo">Demo Projects</a>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>PM&gt; <code>Install-Package DNVGL.Authorization.UserManagement.ApiControllers</code></p>
+<p>PM&gt; <code>Install-Package DNVGL.Authorization.UserManagement.EFCore</code></p>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>This simple example will show you the minimum steps to setup user management and authorization in a ASP.NET Core project. The example uses SQL Server as database and Veracity authentication (Azure AD B2C).</p>
+<h3 id="1-register-user-management-module-in-aspnet-core-project">1. register user management module in ASP.NET core project.</h3>
+<p>PM&gt; <code>Install-Package Microsoft.EntityFrameworkCore.SqlServer</code></p>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddUserManagement().UseEFCore(new EFCoreOptions
+                {
+                    DbContextOptionsBuilder = options =&gt; options.UseSqlServer(@&quot;Data Source=.\SQLEXPRESS;Initial Catalog=UserManagement;Trusted_Connection=Yes;&quot;)
+                });
+            //...
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            //Put UseRouting or MapControllers before UseAuthentication and UseAuthorization
+            //app.MapControllers();
+            app.UseRouting();
+            app.UseAuthentication().UseAuthorization();
+            //...
+
+            //...
+            //The following code is required if app.UseRouting() is used instead of app.MapControllers();
+            app.UseEndpoints(endpoints =&gt;
+            {
+                //...
+                endpoints.MapDefaultControllerRoute();
+            });
+
+            //...
+        }
+    }
+</code></pre>
+<h3 id="2-create-tables-in-database">2. Create tables in database</h3>
+<p>Find and execute <code>NewTableScript.sql</code> which is located at the content directory once you imported the package in your project.</p>
+<h3 id="3-create-a-super-admin-in-table---users">3. Create a super admin in Table - <code>Users</code>.</h3>
+<p>The following is sample.
+| Id | Email | FirstName | LastName | VeracityId | SuperAdmin | Active | Deleted |
+|--|--|--|--|--|--|--|--|
+| <em>1</em> | <em>email</em> | <em>first name</em> | <em>last name</em> | <em>veracity id</em> | 1 | 1 | 0</p>
+<h3 id="4-generate-swagger-api-documentation-optional">4. Generate Swagger api documentation (Optional)</h3>
+<blockquote>
+<p><strong><em>NOTE:</em></strong>  This step is optional. You can generate API docs in your own way. The following code has dependency on Nuget package - <code>Swashbuckle.AspNetCore</code>. Additionaly, you will get more explanation if you set <code>apidocs/DNVGL.Authorization.UserManagement.ApiControllers.xml</code>'s <em>Copy to Output Directory</em> as <strong>Copy Always</strong>.</p>
+</blockquote>
+<pre><code class="lang-cs">    public class Startup
+    {
+        //...
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //...
+            services.AddControllers();
+            services.AddSwaggerGen(c =&gt;
+            {
+                // swagger documentaion group for User Management.
+                c.SwaggerDoc(&quot;UserManagement&quot;, new OpenApiInfo
+                {
+                    Title = &quot;User Management&quot;,
+                    Version = &quot;v1&quot;
+                });
+
+                // swagger documentaion group for your system.
+                c.SwaggerDoc(&quot;WebAPI&quot;, new OpenApiInfo
+                {
+                    Title = &quot;Web API&quot;,
+                    Version = &quot;v1&quot;
+                });
+
+                c.TagActionsBy(api =&gt;
+                {
+                    if (api.GroupName != null)
+                    {
+                        return new[] { api.GroupName };
+                    }
+
+                    var controllerActionDescriptor = api.ActionDescriptor as ControllerActionDescriptor;
+                    if (controllerActionDescriptor != null)
+                    {
+                        return new[] { controllerActionDescriptor.ControllerName };
+                    }
+
+                    throw new InvalidOperationException(&quot;Unable to determine tag for endpoint.&quot;);
+                });
+
+                c.DocInclusionPredicate((name, api) =&gt;
+                {
+                    if (name == &quot;UserManagement&quot;)
+                        return api.GroupName != null &amp;&amp; api.GroupName.StartsWith(&quot;UserManagement&quot;);
+                    else
+                        return api.GroupName == null;
+                });
+
+                var xmlFile = $&quot;DNVGL.Authorization.UserManagement.ApiControllers.xml&quot;;
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                    c.IncludeXmlComments(xmlPath);
+            });
+            //...
+        }
+
+        //...
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            //...
+            app.UseSwagger();
+            app.UseSwaggerUI(c =&gt;
+            {
+                c.SwaggerEndpoint(&quot;/swagger/UserManagement/swagger.json&quot;, &quot;User Management API v1&quot;);
+                c.SwaggerEndpoint(&quot;/swagger/WebAPI/swagger.json&quot;, &quot;Web API v1&quot;);
+            });
+            //...
+        }
+    }
+</code></pre>
+<h3 id="5-explore-user-management-apis">5. Explore user management APIs</h3>
+<h4 id="build-and-run-your-project">Build and Run your project.</h4>
+<h4 id="open-swagger-in-browser">Open swagger in Browser</h4>
+<p><img src="images/userManagement/swagger01.png" alt="image.png"></p>
+<h3 id="6-define-permissions">6. Define permissions</h3>
+<p>Define permissions by implementing interface - <code>IPermissionMatrix</code>. The following code defined two permissions.</p>
+<pre><code class="lang-cs">    public class PermissionBook : IPermissionMatrix
+    {
+        public enum WeatherPermission
+        {
+            //...
+
+            [PermissionValue(id: &quot;8&quot;, key: &quot;ReadWeather&quot;, name: &quot;Read Weather&quot;, group: &quot;Weather&quot;, description: &quot;ReadWeather&quot;)]
+            ReadWeather,
+
+            [PermissionValue(id: &quot;8&quot;, key: &quot;WriteWeather&quot;, name: &quot;Write Weather&quot;, group: &quot;Weather&quot;, description: &quot;WriteWeather&quot;)]
+            WriteWeather,
+
+            //... other permissions
+        }
+    }
+</code></pre>
+<h3 id="7-authorize-api-with-permissions">7. Authorize API with permissions</h3>
+<p>Decorates API actions with permission.</p>
+<pre><code class="lang-cs">        [HttpGet]
+        [PermissionAuthorize(WeatherPermission.ReadWeather)]
+        public IEnumerable&lt;WeatherForecast&gt; Get()
+        {
+            //... api logic
+        }
+</code></pre>
+<h2 id="recommended-content">Recommended content</h2>
+<p><a href="/articles/userManagement/overview"><strong>Read First ✓ ✓ ✓</strong></a></p>
+<blockquote>
+<p>Something you need to know before using the package to handle user management and authorization.</p>
+</blockquote>
+<p><a href="/articles/userManagement/authorize">Integration with ASP.NET Core's Role-based authorization ✓</a></p>
+<blockquote>
+<p>Integrate user management module with Role-based authorization in ASP.NET Core. In this way, you are allowed to authorize API with asp.net core's <code>[Authorize(Roles = &quot;****&quot;)]</code>.</p>
+</blockquote>
+<h2 id="guidance-for-different-databases">Guidance for different databases</h2>
+<p><a href="/articles/userManagement/cosmos">Use Azure CosmosDB as database</a></p>
+<p><a href="/articles/userManagement/sqlserver">Use SQL Server as database</a></p>
+<p>User other databases.</p>
+<blockquote>
+<p>The package can use all database engines supported by EF Core 5.0+. Here is a list -  <a href="https://docs.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli">EF Core 5.0 Database providers</a></p>
+</blockquote>
+<h2 id="guidance-for-configuration">Guidance for configuration</h2>
+<p><a href="/articles/userManagement/configuration">User Management Configuration</a></p>
+<h2 id="guidance-for-customization">Guidance for customization</h2>
+<p><a href="/articles/userManagement/customModel">Extend Data model - Company, Role, User</a></p>
+<p><a href="/articles/userManagement/dataAccess">Replace EF Core with your own data access</a></p>
+<h2 id="guidance-for-access-control-">Guidance for access control ✓</h2>
+<p><a href="/articles/userManagement/accessControl">Resource access control</a> guide you to control access on resource of company.</p>
+<h2 id="guidance-for-defining-premissions-outside-souce-code">Guidance for defining premissions outside souce code</h2>
+<p><a href="/articles/userManagement/permissionStore">Define permissions in json, database or other places</a></p>
 </li>
-<li><p><a href="/articles/DNV.SecretsManager.md">Secrets manager</a></p>
+<li><h1 id="secrets-manager">Secrets Manager</h1>
+<p>The <code>DNV.SecretsManager</code> package is a command line tool for managing secrets from the Azure KeyVault or Azure DevOps Variable Groups.</p>
+<p>This tool allows secrets to be downloaded and uploaded as structured JSON files, meaning secrets may be uploaded in structured collections where previously they might have been maintained individually.</p>
+<h2 id="what-it-does">What it does</h2>
+<p>Given a large collection of key vault secrets in an Azure Key vault such as those shown below:
+<img src="images/DNV.SecretsManager/keyvault-secrets.png" alt="KeyVault secrets"></p>
+<p>The secrets manager tool could be executed with a command:</p>
+<pre><code>secretsmanager keyvault -d -s &lt;keyvault-url&gt; -f output-file.json
+</code></pre>
+<p>The resulting <code>output-file.json</code> would look like:</p>
+<pre><code class="lang-json">{
+  &quot;Account&quot;: {
+    &quot;BaseUrl&quot;: &lt;secret value&gt;
+  },
+  &quot;Company&quot;: {
+    &quot;ApiKey&quot;: &lt;secret value&gt;,
+    &quot;Authority&quot;: &lt;secret value&gt;,
+    &quot;BaseUrl&quot;: &lt;secret value&gt;,
+    &quot;ClientId&quot;: &lt;secret value&gt;,
+    &quot;ClientSecret&quot;: &lt;secret value&gt;,
+    &quot;Resource&quot;: &lt;secret value&gt;
+  },
+  &quot;Customer&quot;: {
+    &quot;ApiKey&quot;: &lt;secret value&gt;,
+    &quot;Authority&quot;: &lt;secret value&gt;,
+    &quot;BaseUrl&quot;: &lt;secret value&gt;,
+    &quot;ClientId&quot;: &lt;secret value&gt;,
+    &quot;ClientSecret&quot;: &lt;secret value&gt;,
+    &quot;IsApiKeyOnly&quot;: &lt;secret value&gt;,
+    &quot;Resource&quot;: &lt;secret value&gt;
+  },
+  &quot;Emailer&quot;: {
+    &quot;BaseUri&quot;: &lt;secret value&gt;,
+    &quot;FunctionKey&quot;: &lt;secret value&gt;
+  ...
+</code></pre>
+<p>Conversely, an input json file (<code>input-file.json</code>) could be uploaded to an Azure Key vault by executing a command:</p>
+<pre><code>secretsmanager keyvault -u -s &lt;keyvault-url&gt; -f input-file.json
+</code></pre>
+<h2 id="hierachy">Hierachy</h2>
+<p>The secrets manager assumes a convention where the parent-child relationship between entities in a hierarchy are expressed with a <code>--</code> delimeter.</p>
+<p>In practice this means: to express that <code>Company</code> is the parent of <code>ApiKey</code> a key would be named <code>Company--ApiKey</code>, if there exists multiple children to a parent they would be aggregated in to a single parent as may be seen in the result above with keys: <code>Company--ApiKey</code>, <code>Company--Authority</code> and <code>Company--BaseUrl</code> etc.  Parent-child relationships may extend to far greater depth than the example given.</p>
+<h2 id="arrays">Arrays</h2>
+<p>It is also possible to include arrays of data in your configuration.  To express a collection of values in an array the indexes should be included explicity declared in place of the child name.  For example, an array may be expressed with a collection of the following keys: <code>Names--0</code>, <code>Names--1</code>, <code>Names--2</code> which would result in the following JSON:</p>
+<pre><code class="lang-json">{
+	&quot;Names&quot;: [
+		&lt;secret value&gt;,
+		&lt;secret-value&gt;,
+		&lt;secret-value&gt;
+	]
+}
+</code></pre>
+<hr>
+<h1 id="useage">Useage</h1>
+<pre><code>secretsmanager   &lt;command&gt; [&lt;args&gt;]
+
+Commands:
+        keyvault        Download or upload secrets from/to Azure Keyvault
+        variablegroup   Download or upload secrets from/to Azure Keyvault
+</code></pre>
+<hr>
+<h2 id="key-vault-command">Key vault command</h2>
+<pre><code>secretsmanager keyvault			[-h | --help]
+						 		-d | --download -u | --upload | -c | --clear
+						 		-s | --url &lt;url&gt;
+						 		-f | --filename &lt;filename&gt;
+</code></pre>
+<h3 id="options">Options</h3>
+<p><code>-h | --help</code></p>
+<p>Prints the synopsis of commands and options available.</p>
+<p><code>-d | --download</code></p>
+<p>Requests the secrets to be downloaded from the specified source to a JSON file.</p>
+<p><code>-u | --upload</code></p>
+<p>Requests that a provided JSON file be uploaded to a specified source.</p>
+<p><code>-c | --clear</code></p>
+<p>Deletes all secrets from the specified source.</p>
+<p><code>-s | --url &lt;url&gt;</code></p>
+<p>Provide the URL to the keyvault.</p>
+<p><code>-f | --filename &lt;filename&gt;</code></p>
+<p>Specify the file to which you would like to download to or upload from.</p>
+<hr>
+<h2 id="variable-group-command">Variable group command</h2>
+<pre><code>secretsmanager variablegroup	[-h | --help]
+								-d | --download -u | --upload | -c | --clear
+								-s | --base-url &lt;base-url&gt;
+								-o | --organization &lt;organization&gt;
+								-p | --pat &lt;pat&gt;
+								-g | --group-id &lt;group-id&gt;
+								-f | --filename &lt;filename&gt;
+</code></pre>
+<h3 id="options-1">Options</h3>
+<p><code>-h | --help</code></p>
+<p>Prints the synopsis of commands and options available.</p>
+<p><code>-d | --download</code></p>
+<p>Requests the secrets to be downloaded from the specified source to a JSON file.</p>
+<p><code>-u | --upload</code></p>
+<p>Requests that a provided JSON file be uploaded to a specified source.</p>
+<p><code>-c | --clear</code></p>
+<p>Deletes all secrets from the specified source.</p>
+<p><code>-s | --base-url &lt;base-url&gt;</code></p>
+<p>Provide the base URL to the Azure DevOps.</p>
+<p><code>-o | --organization &lt;organization&gt;</code></p>
+<p>Provide the organization under Azure DevOps to which a variable group belongs.</p>
+<p><code>-p | --pat &lt;pat&gt;</code></p>
+<p>Specify the Person Access Token for authentication.</p>
+<p><code>-g | --group-id &lt;group-id&gt;</code></p>
+<p>Specify the id of the variable group you would like to download from or upload to.</p>
+<p><code>-f | --filename &lt;filename&gt;</code></p>
+<p>Specify the file to which you would like to download to or upload from.</p>
 </li>
 </ul>
 <h2 id="integration">Integration</h2>
 <ul>
-<li><a href="/articles/DNVGL.Veracity.Services.Api.md">Veracity - My Services API v3 clients</a></li>
+<li><h1 id="veracity---my-services-api-v3-clients">Veracity - My Services API v3 Clients</h1>
+<p>Packages from the <code>DNVGL.Veracity.Services.Api</code> namespace provide lightweight .NET clients for Veracity My Services API v3 built on top of packages from the Solution Package.</p>
+<p>These packages allow developers to query and manipulate data from My services including user profiles, service profiles, notification messages, company profiles, admin roles and subscriptions.</p>
+<h1 id="view-points">View Points</h1>
+<p>As a client to API v3, the package is divided in to the following view points:
+| Name | Description | Supported authentication |
+|--|--|--|
+| <a href="/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.Directory.md">Directory</a> | Allows fetching and updating resources without a focus on a specifc user or service resource.  Recommended for core platform applications. | Client credentials |
+| <a href="/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.My.md">My</a> | Allows fetching information and making requests for a user authenticated by user credential flow. | User credentials |
+| <a href="/articles/DNVGL.Veracity.Services.Api/DNVGL.Veracity.Services.Api.This.md">This</a> | Allows manipulation and retrieval of information related to a service where an application is authenticated as a service owner. | Client credentials |</p>
+</li>
 </ul>
 <hr>
 <h2 id="getting-started">Getting started</h2>
 <ul>
-<li><a href="/articles/PackageInstall.md">Installing packages</a></li>
+<li><h1 id="package-install">Package Install</h1>
+<p>To install any package from the Solution Package collection, the package feed should be included in your nuget package sources:</p>
+<p>This may be added in Visual Studio by navigating to <strong>Tools</strong> &gt; <strong>NuGet Package Manager</strong> &gt; <strong>Package Manager Settings</strong>
+An <strong>Options</strong> window will appear, select the Package Sources node on the left hand pane the click the <img src="images/nuget-package-add-button.png" alt="Add nuget package button"> button, provide a Name and enter the Source below:</p>
+<pre><code>https://dnvgl-one.pkgs.visualstudio.com/_packaging/DNVGL.SolutionPackage/nuget/v3/index.json
+</code></pre>
+<p><img src="images/DNVGL.OAuth.Web/add-feed.png" alt="Package sources configuration"></p>
+<p>Click OK to complete.</p>
+<p>One done it will be possible to add any of the NuGet packages outlined in this documentation to your projects via the Package Manager in visual studio or via the Package Manager Console.</p>
+</li>
 </ul>
 </article>
           </div>
@@ -96,7 +1032,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/Veracity-Engineering-China/SolutionPackage/blob/main/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/veracity-engineering/SolutionPackage/blob/main/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
