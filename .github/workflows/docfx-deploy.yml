@@ -44,8 +44,8 @@ jobs:
         git add .
         
         echo "Commit changes to git"
-        git config user.email "github-actions-bot@dnv.com"
-        git config user.name "github actions boot"
+        git config --global user.email "github-actions-bot@dnv.com"
+        git config --global user.name "github actions boot"
         git commit -m "Update docs" || echo "No change to commit"
         
         echo "Push commit to remote"
