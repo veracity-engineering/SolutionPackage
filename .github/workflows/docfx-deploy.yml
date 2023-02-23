@@ -12,9 +12,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        submodules: true
     
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
@@ -23,7 +20,8 @@ jobs:
         
     - name: Update submodules
       run: |
-        git pull --recurse-submodules
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
       
     - name: Generate docs
       run: |
@@ -43,6 +41,7 @@ jobs:
         cd docs/_site
         
         echo "::debug::Add new files to git"
+        git fetch
         git add .
         
         echo "::debug::Commit changes to git"
@@ -51,4 +50,4 @@ jobs:
         git commit -m "Update docs" || echo "No change to commit"
         
         echo "::debug::Push commit to remote"
-        git push origin HEAD:gh-pages
+        git push https://bot:${{ secrets.GITHUB_TOKEN }}@github.com/veracity-engineering/SolutionPackage.git HEAD:gh-pages
