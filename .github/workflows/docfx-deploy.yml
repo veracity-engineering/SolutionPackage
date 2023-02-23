@@ -29,26 +29,26 @@ jobs:
       run: |
         echo '{"sdk":{"version": "6.0.406"}}' > global.json
         
-        echo "Restore nuget packages"
+        echo "::debug::Restore nuget packages"
         dotnet restore src/DNVGL.SolutionPackage.sln
         
-        echo "Update docfx"
+        echo "::debug::Update docfx"
         dotnet tool update -g docfx
         
-        echo "Generate docfx files"
+        echo "::debug::Generate docfx files"
         docfx docs/docfx.json 
         
     - name: publish gh-pages
       run: |
         cd docs/_site
         
-        echo "Add new files to git"
+        echo "::debug::Add new files to git"
         git add .
         
-        echo "Commit changes to git"
+        echo "::debug::Commit changes to git"
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
         git commit -m "Update docs" || echo "No change to commit"
         
-        echo "Push commit to remote"
+        echo "::debug::Push commit to remote"
         git push origin HEAD:gh-pages
