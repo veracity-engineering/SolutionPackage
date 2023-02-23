@@ -1,4 +1,4 @@
 - name: Tutorials
-  href: articles/
+  href: articles/toc.yml
 - name: Api Reference
-  href: api/
+  href: api/toc.yml

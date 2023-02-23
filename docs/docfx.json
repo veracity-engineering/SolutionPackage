@@ -13,12 +13,19 @@
 	"build": {
 		"content": [
 			{
-				"files": ["articles/**.md", "articles/toc.yml", "api/**.md", "api/**.yml", "toc.yml", "*.md"]
+        "files": [
+          "api/**.yml",
+          "api/**.md",
+          "articles/**.md",
+          "articles/**/toc.yml",
+          "toc.yml",
+          "*.md"
+        ]
 			}
 		],
 		"resource": [
 			{
-				"files": ["images/**","articles/images/**"]
+				"files": ["articles/images/**"]
 			}
 		],
 		"dest": "_site",
