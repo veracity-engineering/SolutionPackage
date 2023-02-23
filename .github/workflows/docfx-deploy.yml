@@ -12,20 +12,28 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        submodules: true
     
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '6.0.406'
         
+    - name: Update submodules
+      run: |
+        git submodule update --init --recursive
+        git submodule update --recursive --remote
+      
     - name: Generate docs
       run: |
-        git pull --recurse-submodules
         echo '{"sdk":{"version": "6.0.406"}}' > global.json
-        dotnet restore src/DNVGL.SolutionPackage.sln        
+        
+        echo "Restore nuget packages"
+        dotnet restore src/DNVGL.SolutionPackage.sln
+        
+        echo "Update docfx"
         dotnet tool update -g docfx
+        
+        echo "Generate docfx files"
         docfx docs/docfx.json 
         
     - name: publish gh-pages
@@ -33,6 +41,12 @@ jobs:
         cd docs/_site
         git config user.email "github-actions-bot@dnv.com"
         git config user.name "github actions boot"
+        
+        echo "Add new files to git"
         git add .
+        
+        echo "Commit changes to git"
         git commit -m "Update docs" || echo "No change to commit"
+        
+        echo "Push commit to remote"
         git push origin HEAD:gh-pages
