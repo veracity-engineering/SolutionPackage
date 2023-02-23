@@ -1,1 +1,7 @@
-[![Board Status](https://dev.azure.com/dnvgl-one/456fe6d6-0acc-47eb-8479-90237b03b54c/9ea15782-0c71-453f-ae6b-2211e2e98a57/_apis/work/boardbadge/34987032-8a5c-43c9-9bea-1dcd5a4a25e8)](https://dev.azure.com/dnvgl-one/456fe6d6-0acc-47eb-8479-90237b03b54c/_boards/board/t/9ea15782-0c71-453f-ae6b-2211e2e98a57/Microsoft.RequirementCategory/)
+
+
+
+# Package list
+- ![DNVGL.OAuth.Web](https://img.shields.io/nuget/v/DNVGL.OAuth.Web)
+- ![DNV.OAuth.Web.Extensions](https://img.shields.io/nuget/v/DNV.OAuth.Web.Extensions)
+- ![DNVGL.OAuth.Web.Swagger](https://img.shields.io/nuget/v/DNVGL.OAuth.Web.Swagger)
