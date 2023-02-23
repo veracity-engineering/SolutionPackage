@@ -23,8 +23,8 @@ jobs:
     - name: Generate docs
       run: |
         git pull --recurse-submodules
-        dotnet restore src/DNVGL.SolutionPackage.sln
-        
+        echo '{"sdk":{"version": "6.0.0","rollForward":"latestPatch"}}' > global.json
+        dotnet restore src/DNVGL.SolutionPackage.sln        
         dotnet tool update -g docfx
         docfx docs/docfx.json 
         
