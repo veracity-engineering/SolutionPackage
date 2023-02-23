@@ -14,7 +14,7 @@
       <link rel="stylesheet" href="../styles/docfx.css">
       <link rel="stylesheet" href="../styles/main.css">
       <meta property="docfx:navrel" content="../toc.html">
-      <meta property="docfx:tocrel" content="toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
     
     
     
@@ -56,14 +56,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
-          </div>
-        </div>
-        <div class="article row grid-right">
+        <div class="article row grid">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="oauth-http-client-factory">OAuth HTTP Client Factory</h1>
@@ -122,7 +115,7 @@
   ...
 }
 </code></pre>
-<p>If you require a HttpClient applying the user credential flow you should also include the web authentication (<code>AddOidc</code>) and token cache handling (<code>AddDistributedMemoryCache</code>) from the <a href="/articles/DNVGL.OAuth.Web.md">DNVGL.OAuth.Web</a> package.  Include the NuGet package in your project and call the required methods as below:</p>
+<p>If you require a HttpClient applying the user credential flow you should also include the web authentication (<code>AddOidc</code>) and token cache handling (<code>AddDistributedMemoryCache</code>) from the <a href="DNVGL.OAuth.Web.html">DNVGL.OAuth.Web</a> package.  Include the NuGet package in your project and call the required methods as below:</p>
 <pre><code class="lang-cs">public void ConfigureService(IServiceCollection services)
 {
   ...

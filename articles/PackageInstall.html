@@ -14,7 +14,7 @@
       <link rel="stylesheet" href="../styles/docfx.css">
       <link rel="stylesheet" href="../styles/main.css">
       <meta property="docfx:navrel" content="../toc.html">
-      <meta property="docfx:tocrel" content="toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
     
     
     
@@ -56,24 +56,17 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
-          </div>
-        </div>
-        <div class="article row grid-right">
+        <div class="article row grid">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="package-install">Package Install</h1>
 
 <p>To install any package from the Solution Package collection, the package feed should be included in your nuget package sources:</p>
 <p>This may be added in Visual Studio by navigating to <strong>Tools</strong> &gt; <strong>NuGet Package Manager</strong> &gt; <strong>Package Manager Settings</strong>
-An <strong>Options</strong> window will appear, select the Package Sources node on the left hand pane the click the <img src="../images/nuget-package-add-button.png" alt="Add nuget package button"> button, provide a Name and enter the Source below:</p>
+An <strong>Options</strong> window will appear, select the Package Sources node on the left hand pane the click the <img src="images/nuget-package-add-button.png" alt="Add nuget package button"> button, provide a Name and enter the Source below:</p>
 <pre><code>https://dnvgl-one.pkgs.visualstudio.com/_packaging/DNVGL.SolutionPackage/nuget/v3/index.json
 </code></pre>
-<p><img src="../images/DNVGL.OAuth.Web/add-feed.png" alt="Package sources configuration"></p>
+<p><img src="images/DNVGL.OAuth.Web/add-feed.png" alt="Package sources configuration"></p>
 <p>Click OK to complete.</p>
 <p>One done it will be possible to add any of the NuGet packages outlined in this documentation to your projects via the Package Manager in visual studio or via the Package Manager Console.</p>
 </article>
