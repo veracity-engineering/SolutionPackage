@@ -39,13 +39,13 @@ jobs:
     - name: publish gh-pages
       run: |
         cd docs/_site
-        git config user.email "github-actions-bot@dnv.com"
-        git config user.name "github actions boot"
         
         echo "Add new files to git"
         git add .
         
         echo "Commit changes to git"
+        git config user.email "github-actions-bot@dnv.com"
+        git config user.name "github actions boot"
         git commit -m "Update docs" || echo "No change to commit"
         
         echo "Push commit to remote"
