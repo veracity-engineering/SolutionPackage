@@ -23,7 +23,7 @@ jobs:
         
     - name: Update submodules
       run: |
-        git submodule update --recursive --remote
+        git pull --recurse-submodules
       
     - name: Generate docs
       run: |
