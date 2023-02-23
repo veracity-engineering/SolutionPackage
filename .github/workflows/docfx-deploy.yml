@@ -18,12 +18,12 @@ jobs:
     - name: Setup .NET 6
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.x'
+        dotnet-version: '6.0.406'
         
     - name: Generate docs
       run: |
         git pull --recurse-submodules
-        echo '{"sdk":{"version": "6.0.0","rollForward":"latestPatch"}}' > global.json
+        echo '{"sdk":{"version": "6.0.406"}}' > global.json
         dotnet restore src/DNVGL.SolutionPackage.sln        
         dotnet tool update -g docfx
         docfx docs/docfx.json 
