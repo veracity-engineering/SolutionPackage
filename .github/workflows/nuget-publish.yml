@@ -4,10 +4,10 @@
 name: Publish to nuget.org
 
 on:
-  push:
-    branches: ["main"]
-    paths: ["src/**"]
   workflow_dispatch:
+#  push:
+#    branches: ["main"]
+#    paths: ["src/**"]
 
 jobs:
   build:
