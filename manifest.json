@@ -1,6 +1,6 @@
 {
   "homepages": [],
-  "source_base_path": "/home/vsts/work/1/s/docs",
+  "source_base_path": "/home/runner/work/SolutionPackage/SolutionPackage/docs",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -592,7 +592,7 @@
       "output": {
         ".html": {
           "relative_path": "api/DNV.OAuth.Core.TokenValidator.DNVTokenValidator.html",
-          "hash": "2hwtzAYyUcswR5q2Hwo2rY8MGr+4O/oWLes7YF4NJXM="
+          "hash": "7EMY5T+zXaNFB8NJHp7Lhe1ew4E6IbSOgacg1QRBm+8="
         }
       },
       "version": ""
@@ -2176,7 +2176,7 @@
       "output": {
         ".html": {
           "relative_path": "api/DNVGL.OAuth.Web.JwtOptions.html",
-          "hash": "5sINVTiqIWm0SC5j7oxiVUQPmu3De6c5KyGpYarJrWg="
+          "hash": "IfvP5OWv6qYjfKJtoUsgk/jDthZD7aH7v4jA6/wzzTA="
         }
       },
       "version": ""
